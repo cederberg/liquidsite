@@ -171,7 +171,7 @@ public class DefaultController extends Controller {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         }
-        if (user.verifyPassword(password)) {
+        if (user != null && user.verifyPassword(password)) {
             request.setUser(user);
             request.sendRedirect(request.getPath());
         } else {
