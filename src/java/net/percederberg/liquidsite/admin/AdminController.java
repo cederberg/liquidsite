@@ -106,7 +106,7 @@ public class AdminController extends Controller {
         } else if (path.equals("home.html")) {
             view.pageHome(request);
         } else if (path.equals("site.html")) {
-            view.pageSite(request);
+            processViewSite(request);
         } else if (path.equals("content.html")) {
             view.pageContent(request);
         } else if (path.equals("users.html")) {
@@ -120,9 +120,9 @@ public class AdminController extends Controller {
         } else if (path.equals("delete-site.html")) {
             processDeleteObject(request);
         } else if (path.equals("loadsite.js")) {
-            view.scriptLoadSite(request);
+            processLoadSite(request);
         } else if (path.equals("opensite.js")) {
-            view.scriptOpenSite(request);
+            processOpenSite(request);
         }
     }
 
@@ -161,6 +161,30 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Processes a view site request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processViewSite(Request request) 
+        throws RequestException {
+
+        try {
+            view.pageSite(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            // TODO: show nice error page instead
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            // TODO: show nice error page instead
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
      * Processes the add object requests for the site view.
      * 
      * @param request        the request object
@@ -174,7 +198,7 @@ public class AdminController extends Controller {
         Object  parent;
         
         try {
-            parent = getRequestReference(request);
+            parent = view.getRequestReference(request);
             if (request.getParameter("prev") != null) {
                 if (step.equals("1")) {
                     request.sendRedirect("site.html");
@@ -295,7 +319,7 @@ public class AdminController extends Controller {
         String  error;
         
         try {
-            obj = getRequestReference(request);
+            obj = view.getRequestReference(request);
             if (obj instanceof Domain) {
                 if (request.getParameter("confirmed") == null) {
                     view.dialogDeleteDomain(request, (Domain) obj);
@@ -370,33 +394,48 @@ public class AdminController extends Controller {
         }
         view.dialogClose(request);
     }
-    
-    /**
-     * Returns the domain or content referenced by in a request.
-     * 
-     * @param request        the request
-     * 
-     * @return the domain or content object referenced, or
-     *         null if not found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private Object getRequestReference(Request request) 
-        throws ContentException, ContentSecurityException {
 
-        User    user = request.getUser();
-        String  type = request.getParameter("type");
-        String  id = request.getParameter("id");
-        
-        if (type == null || id == null) {
-            return null;
-        } else if (type.equals("domain")) {
-            return getContentManager().getDomain(user, id);
-        } else {
-            return getContentManager().getContent(user, Integer.parseInt(id));
+    /**
+     * Processes a JavaScript load site tree item request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processLoadSite(Request request) throws RequestException {
+        Object  obj;
+
+        try {
+            obj = view.getRequestReference(request);
+            view.scriptLoadSite(request, obj);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
+     * Processes a JavaScript open site tree item request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processOpenSite(Request request) throws RequestException {
+        Object  obj;
+
+        try {
+            obj = view.getRequestReference(request);
+            view.scriptOpenSite(request, obj);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
         }
     }
 }

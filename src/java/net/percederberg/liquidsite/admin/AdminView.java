@@ -23,9 +23,7 @@ package net.percederberg.liquidsite.admin;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -43,11 +41,6 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 class AdminView {
-
-    /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(AdminView.class);
 
     /**
      * The admin script helper.
@@ -126,10 +119,14 @@ class AdminView {
      *
      * @param request        the request object
      *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
      */
-    public void pageSite(Request request) throws RequestException {
+    public void pageSite(Request request) 
+        throws ContentException, ContentSecurityException {
+
         Object          focus = getSiteTreeFocus(request);
         User            user = request.getUser();
         Domain[]        domains;
@@ -137,28 +134,20 @@ class AdminView {
         StringBuffer    buffer = new StringBuffer();
         String          str;
         
-        try {
-            domains = manager.getDomains(user);
-            buffer.append(script.getTreeView(domains));
-            if (focus != null && focus instanceof Content) {
-                content = manager.getContent(user, 
-                                             ((Content) focus).getId());
-                if (content != null) {
-                    str = getTreeView(user, 
-                                      content.getDomain(), 
-                                      content.getParent(),
-                                      true);
-                    buffer.append(str);
-                    buffer.append(script.getTreeViewSelect(content));
-                }
-            } else if (focus != null && focus instanceof Domain) {
-                buffer.append(script.getTreeViewSelect((Domain) focus));
+        domains = manager.getDomains(user);
+        buffer.append(script.getTreeView(domains));
+        if (focus != null && focus instanceof Content) {
+            content = manager.getContent(user, ((Content) focus).getId());
+            if (content != null) {
+                str = scriptSiteTree(user, 
+                                     content.getDomain(), 
+                                     content.getParent(),
+                                     true);
+                buffer.append(str);
+                buffer.append(script.getTreeViewSelect(content));
             }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        } catch (ContentSecurityException e) {
-            throw RequestException.FORBIDDEN;
+        } else if (focus != null && focus instanceof Domain) {
+            buffer.append(script.getTreeViewSelect((Domain) focus));
         }
         request.setAttribute("initialize", buffer.toString());
         request.sendTemplate("admin/site.ftl");
@@ -280,31 +269,23 @@ class AdminView {
      * Shows the load site object JavaScript code.
      * 
      * @param request        the request object
+     * @param obj            the domain or content parent object
      *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void scriptLoadSite(Request request) throws RequestException {
-        String          type = request.getParameter("type", "");
-        String          id = request.getParameter("id", "0");
-        User            user = request.getUser();
-        Domain          domain;
-        Content         content;
-        String          buffer;
+    public void scriptLoadSite(Request request, Object obj) 
+        throws ContentException {
 
-        try {
-            if (type.equals("domain")) {
-                domain = manager.getDomain(user, id);
-                buffer = getTreeView(user, domain, null, false); 
-            } else {
-                content = manager.getContent(user, Integer.parseInt(id));
-                buffer = getTreeView(user, null, content, false); 
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        } catch (ContentSecurityException e) {
-            throw RequestException.FORBIDDEN;
+        User     user = request.getUser();
+        Content  content;
+        String   buffer;
+
+        if (obj instanceof Domain) {
+            buffer = scriptSiteTree(user, (Domain) obj, null, false); 
+        } else {
+            content = (Content) obj;
+            buffer = scriptSiteTree(user, null, content, false); 
         }
         request.sendData("text/javascript", buffer);
     }
@@ -313,33 +294,25 @@ class AdminView {
      * Shows the open site object JavaScript code.
      * 
      * @param request        the request object
+     * @param obj            the domain or content object
      * 
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void scriptOpenSite(Request request) throws RequestException {
-        String          type = request.getParameter("type", "");
-        String          id = request.getParameter("id", "0");
-        User            user = request.getUser();
-        Domain          domain;
-        Content         content;
-        String          buffer;
+    public void scriptOpenSite(Request request, Object obj) 
+        throws ContentException {
 
-        try {
-            if (type.equals("domain")) {
-                domain = manager.getDomain(user, id);
-                buffer = script.getObjectView(user, domain);
-                setSiteTreeFocus(request, domain);
-            } else {
-                content = manager.getContent(user, Integer.parseInt(id));
-                buffer = script.getObjectView(user, content);
-                setSiteTreeFocus(request, content);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        } catch (ContentSecurityException e) {
-            throw RequestException.FORBIDDEN;
+        User     user = request.getUser();
+        Content  content;
+        String   buffer;
+
+        if (obj instanceof Domain) {
+            buffer = script.getObjectView(user, (Domain) obj);
+            setSiteTreeFocus(request, obj);
+        } else {
+            content = (Content) obj;
+            buffer = script.getObjectView(user, content);
+            setSiteTreeFocus(request, content);
         }
         request.sendData("text/javascript", buffer);
     }
@@ -359,10 +332,10 @@ class AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getTreeView(User user, 
-                               Domain domain, 
-                               Content content,
-                               boolean recursive) 
+    private String scriptSiteTree(User user, 
+                                  Domain domain, 
+                                  Content content,
+                                  boolean recursive) 
         throws ContentException {
 
         Content[]  children; 
@@ -372,7 +345,7 @@ class AdminView {
             return script.getTreeView(domain, children);
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
-            return getTreeView(user, domain, content.getParent(), true) 
+            return scriptSiteTree(user, domain, content.getParent(), true) 
                  + script.getTreeView(content, children);
         } else {
             children = manager.getContentChildren(user, content);
@@ -406,6 +379,35 @@ class AdminView {
         request.setSessionAttribute("site.tree.focus", obj);
     }
     
+    /**
+     * Returns the domain or content referenced by in a request.
+     * 
+     * @param request        the request
+     * 
+     * @return the domain or content object referenced, or
+     *         null if not found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    public Object getRequestReference(Request request) 
+        throws ContentException, ContentSecurityException {
+
+        User    user = request.getUser();
+        String  type = request.getParameter("type");
+        String  id = request.getParameter("id");
+        
+        if (type == null || id == null) {
+            return null;
+        } else if (type.equals("domain")) {
+            return manager.getDomain(user, id);
+        } else {
+            return manager.getContent(user, Integer.parseInt(id));
+        }
+    }
+
     /**
      * Sets the domain or content reference attributes in a request.
      * 
