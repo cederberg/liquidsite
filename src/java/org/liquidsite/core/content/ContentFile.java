@@ -22,9 +22,11 @@
 package org.liquidsite.core.content;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
@@ -214,6 +216,8 @@ public class ContentFile extends Content {
     /**
      * Returns the text content of a file. If the file isn't a text
      * file or if the file size is too big, null will be returned.
+     * Also, if the text in the file isn't encoded as UTF-8, null
+     * will be returned.
      *
      * @param context        the servlet context (for the MIME type)
      *
@@ -226,11 +230,12 @@ public class ContentFile extends Content {
     public String getTextContent(ServletContext context)
         throws ContentException {
 
-        File        file = getFile();
-        String      mimeType = getMimeType(context);
-        FileReader  reader;
-        char[]      buffer;
-        int         length;
+        File             file = getFile();
+        String           mimeType = getMimeType(context);
+        FileInputStream  stream;
+        byte[]           buffer;
+        int              length;
+        boolean          skip = false;
 
         // Check for text file and maximum size
         if (!file.exists() || file.length() > 100000) {
@@ -239,17 +244,37 @@ public class ContentFile extends Content {
             return null;
         }
 
-        // Read text file
+        // Read text file to buffer
         try {
-            reader = new FileReader(file);
-            buffer = new char[(int) file.length()];
-            length = reader.read(buffer);
-            reader.close();
+            stream = new FileInputStream(file);
+            buffer = new byte[(int) file.length()];
+            length = stream.read(buffer);
+            stream.close();
         } catch (IOException e) {
             throw new ContentException("couldn't read file "+ getFileName(),
                                        e);
         }
-        return new String(buffer, 0, length);
+
+        // Simple check for valid UTF-8 (only works for latin-1 text)
+        for (int i = 0; i < length; i++) {
+            if (skip) {
+                skip = false;
+            } else if (buffer[i] == (byte) 0xC2
+                    || buffer[i] == (byte) 0xC3
+                    || buffer[i] == (byte) 0xC5) {
+
+                skip = true;
+            } else if (buffer[i] < 0) {
+                return null;
+            }
+        }
+
+        // Convert buffer to unicode string 
+        try {
+            return new String(buffer, 0, length, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     /**
@@ -262,10 +287,12 @@ public class ContentFile extends Content {
      *             properly
      */
     public void setTextContent(String content) throws ContentException {
-        FileWriter  writer;
+        FileOutputStream    stream;
+        OutputStreamWriter  writer;
 
         try {
-            writer = new FileWriter(getFile());
+            stream = new FileOutputStream(getFile());
+            writer = new OutputStreamWriter(stream, "UTF-8");
             writer.write(content);
             writer.close();
         } catch (IOException e) {
