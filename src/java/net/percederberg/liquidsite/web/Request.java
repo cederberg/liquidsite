@@ -594,6 +594,7 @@ public class Request {
      */
     private void commitFile(ServletContext context) throws IOException {
         File             file;
+        long             modified;
         FileInputStream  input;
         OutputStream     output;
         byte[]           buffer = new byte[4096];
@@ -602,10 +603,18 @@ public class Request {
         LOG.info("Handling request for " + this + " with file " +
                  responseData);
         file = new File(responseData);
+        modified = request.getDateHeader("If-Modified-Since");
+        if (modified != -1 && file.lastModified() < modified + 1000) {
+            LOG.trace("request response: HTTP 304, file " + file +
+                      " not modified");
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
         commitStaticHeaders(file.lastModified());
         try {
             input = new FileInputStream(file);
         } catch (IOException e) {
+            LOG.error("failed to read HTTP response file " + file, e);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
