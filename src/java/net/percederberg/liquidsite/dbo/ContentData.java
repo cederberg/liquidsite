@@ -30,7 +30,7 @@ import java.util.Date;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ContentData extends AbstractData {
+public class ContentData extends AbstractData implements Comparable {
 
     /**
      * The domain parameter.
@@ -103,5 +103,47 @@ public class ContentData extends AbstractData {
      */
     public ContentData() {
         super();
+    }
+    
+    /**
+     * Compares this object with the specified object for order. 
+     * Returns a negative integer, zero, or a positive integer as 
+     * this object is less than, equal to, or greater than the 
+     * specified object.
+     * 
+     * @param obj            the object to compare to
+     * 
+     * @return a negative integer, zero, or a positive integer as 
+     *         this object is less than, equal to, or greater than 
+     *         the specified object
+     * 
+     * @throws ClassCastException if the object isn't a ContentData
+     *             object
+     */
+    public int compareTo(Object obj) throws ClassCastException {
+        return compareTo((ContentData) obj);
+    }
+
+    /**
+     * Compares this object with the specified content data for 
+     * order. Returns a negative integer, zero, or a positive integer 
+     * as this object is less than, equal to, or greater than the 
+     * specified object. The ordering is based primarily on category
+     * and secondarily on name.
+     * 
+     * @param data           the content data to compare to
+     * 
+     * @return a negative integer, zero, or a positive integer as 
+     *         this object is less than, equal to, or greater than 
+     *         the specified object
+     */
+    public int compareTo(ContentData data) {
+        int category = data.getInt(CATEGORY) - getInt(CATEGORY);
+        
+        if (category != 0) {
+            return category;
+        } else {
+            return getString(NAME).compareTo(data.getString(NAME));
+        }
     }
 }

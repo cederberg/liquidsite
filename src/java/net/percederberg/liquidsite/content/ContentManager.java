@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -152,6 +153,7 @@ public class ContentManager {
         }
 
         // Create domain array
+        Collections.sort(list);
         res = new Domain[list.size()];
         for (int i = 0; i < list.size(); i++) {
             res[i] = (Domain) list.get(i);

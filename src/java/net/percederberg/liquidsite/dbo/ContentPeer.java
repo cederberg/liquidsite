@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
@@ -154,6 +155,7 @@ public class ContentPeer extends AbstractPeer {
             LOG.error(e.getMessage());
             throw new DatabaseObjectException(e);
         }
+        Collections.sort(list);
         return list;
     }
 
@@ -194,6 +196,7 @@ public class ContentPeer extends AbstractPeer {
             LOG.error(e.getMessage());
             throw new DatabaseObjectException(e);
         }
+        Collections.sort(list);
         return list;
     }
 

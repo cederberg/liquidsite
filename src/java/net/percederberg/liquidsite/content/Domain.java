@@ -35,7 +35,7 @@ import net.percederberg.liquidsite.dbo.DomainPeer;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Domain extends PersistentObject {
+public class Domain extends PersistentObject implements Comparable {
 
     /**
      * The domain data object.
@@ -145,6 +145,40 @@ public class Domain extends PersistentObject {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Compares this object with the specified object for order. 
+     * Returns a negative integer, zero, or a positive integer as 
+     * this object is less than, equal to, or greater than the 
+     * specified object.
+     * 
+     * @param obj            the object to compare to
+     * 
+     * @return a negative integer, zero, or a positive integer as 
+     *         this object is less than, equal to, or greater than 
+     *         the specified object
+     * 
+     * @throws ClassCastException if the object isn't a Domain object
+     */
+    public int compareTo(Object obj) throws ClassCastException {
+        return compareTo((Domain) obj);
+    }
+
+    /**
+     * Compares this object with the specified domain for order. 
+     * Returns a negative integer, zero, or a positive integer as 
+     * this object is less than, equal to, or greater than the 
+     * specified object. The ordering is based on domain name.
+     * 
+     * @param domain         the domain to compare to
+     * 
+     * @return a negative integer, zero, or a positive integer as 
+     *         this object is less than, equal to, or greater than 
+     *         the specified object
+     */
+    public int compareTo(Domain domain) {
+        return getName().compareTo(domain.getName());
     }
 
     /**
