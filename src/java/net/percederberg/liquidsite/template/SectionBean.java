@@ -24,8 +24,11 @@ package net.percederberg.liquidsite.template;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentSection;
+import net.percederberg.liquidsite.content.ContentSelector;
 
 /**
  * A section template bean. This class is used to access sections from
@@ -70,9 +73,9 @@ public class SectionBean {
     }
 
     /**
-     * Returns the section identifier.
+     * Returns the content identifier.
      *
-     * @return the section identifier
+     * @return the content identifier
      */
     public int getId() {
         if (section != null) {
@@ -127,9 +130,39 @@ public class SectionBean {
     }
 
     /**
+     * Returns all forums in this section. The forums will be ordered
+     * by their name.
+     *
+     * @return a list of the forums found (as forum beans)
+     */
+    public ArrayList getForums() {
+        ArrayList        results = new ArrayList();
+        ContentSelector  selector;
+        Content[]        content;
+
+        if (section != null) {
+            try {
+                selector = new ContentSelector(section.getDomain());
+                selector.requireParent(section);
+                selector.requireCategory(Content.FORUM_CATEGORY);
+                selector.sortByName(true);
+                selector.limitResults(0, 100);
+                content = baseBean.selectContent(selector);
+                for (int i = 0; i < content.length; i++) {
+                    results.add(new ForumBean(baseBean,
+                                              (ContentForum) content[i]));
+                }
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return results;
+    }
+
+    /**
      * Returns all documents in this section and any subsections. At
      * most the specified number of documents will be returned. The
-     * documents will be ordered by last modification date.
+     * documents will be ordered by the publication online date.
      *
      * @param offset         the number of documents to skip
      * @param count          the maximum number of documents
@@ -143,7 +176,7 @@ public class SectionBean {
     /**
      * Returns all documents in this section and any subsections. At
      * most the specified number of documents will be returned. The
-     * documents will be ordered by last modification date.
+     * documents will be ordered by the specified sort order.
      *
      * @param sorting        the sorting information
      * @param offset         the number of documents to skip
@@ -167,4 +200,5 @@ public class SectionBean {
         }
         return results;
     }
+
 }

@@ -28,12 +28,14 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.web.Request;
 
@@ -75,6 +77,16 @@ public class LiquidSiteBean {
      * The document bean.
      */
     private DocumentBean docBean = null;
+
+    /**
+     * The forum bean.
+     */
+    private ForumBean forumBean = null;
+
+    /**
+     * The topic bean.
+     */
+    private TopicBean topicBean = null;
 
     /**
      * The user bean.
@@ -165,6 +177,36 @@ public class LiquidSiteBean {
                                        getSitePath());
         }
         return docBean;
+    }
+
+    /**
+     * Returns the forum bean.
+     *
+     * @return the forum bean
+     */
+    public ForumBean getForum() {
+        ContentForum  forum;
+
+        if (forumBean == null) {
+            forum = request.getEnvironment().getForum();
+            forumBean = new ForumBean(this, forum);
+        }
+        return forumBean;
+    }
+
+    /**
+     * Returns the topic bean.
+     *
+     * @return the topic bean
+     */
+    public TopicBean getTopic() {
+        ContentTopic  topic;
+
+        if (topicBean == null) {
+            topic = request.getEnvironment().getTopic();
+            topicBean = new TopicBean(this, topic);
+        }
+        return topicBean;
     }
 
     /**
@@ -329,7 +371,8 @@ public class LiquidSiteBean {
 
     /**
      * Returns all document in the specified section path. All
-     * documents in subsections will also be returned.
+     * documents in subsections will also be returned. The documents
+     * will be ordered by the publication online date.
      *
      * @param path           the section path
      * @param offset         the number of documents to skip
@@ -343,7 +386,8 @@ public class LiquidSiteBean {
 
     /**
      * Returns all document in the specified section path. All
-     * documents in subsections will also be returned.
+     * documents in subsections will also be returned. The documents
+     * will be ordered by the specified sort order.
      *
      * @param path           the section path
      * @param sorting        the sorting information
@@ -587,6 +631,22 @@ public class LiquidSiteBean {
         for (int i = 0; i < children.length; i++) {
             findSubSections((ContentSection) children[i], result);
         }
+    }
+
+    /**
+     * Selects a set of content objects with a content selector.
+     *
+     * @param selector       the content selector
+     *
+     * @return the array of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    Content[] selectContent(ContentSelector selector)
+        throws ContentException {
+
+        return manager.getContentObjects(request.getUser(), selector);
     }
 
     /**
