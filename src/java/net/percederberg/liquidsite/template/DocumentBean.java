@@ -54,7 +54,7 @@ public class DocumentBean implements TemplateHashModel {
      * 
      * @param document       the content document
      */
-    DocumentBean(ContentDocument document) {
+    public DocumentBean(ContentDocument document) {
         this.document = document;
         this.metadata = new MetaDataBean(document);
     }

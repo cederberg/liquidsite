@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
@@ -666,6 +667,8 @@ public class ScriptView {
         } else if (content instanceof ContentFile) {
             return getPreviewUrl(content.getParent()) +  
                    content.toString(); 
+        } else if (content instanceof ContentDocument) {
+            return "preview/" + content.getId() + "/";
         } else {
             return null;
         }

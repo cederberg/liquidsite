@@ -37,6 +37,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.template.DocumentBean;
 
 /**
  * A helper class for the content view. This class contains methods 
@@ -309,7 +310,26 @@ public class ContentView extends AdminView {
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-document.ftl");
     }
-    
+
+    /**
+     * Shows the preview document page.
+     * 
+     * @param request        the request object
+     * @param doc            the document object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewPreviewDocument(Request request, ContentDocument doc)
+        throws ContentException {
+
+        request.setAttribute("properties", findSectionProperties(doc));
+        // TODO: The usage of the document bean should be nicer here.
+        //       Maybe when we have a proper request environment?
+        request.setAttribute("doc", new DocumentBean(doc));
+        request.sendTemplate("admin/preview-document.ftl");
+    }
+
     /**
      * Shows the load content object JavaScript code.
      * 

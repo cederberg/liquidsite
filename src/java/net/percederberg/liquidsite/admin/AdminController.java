@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
@@ -394,34 +395,19 @@ public class AdminController extends Controller {
     private void processPreview(Request request, String path)
         throws RequestException {
 
-        Content  site;
-        Content  page;
+        Content  content;
         int      id;
-        String   revision;
         int      pos;
 
         try {
             pos = path.indexOf("/");
             id = Integer.parseInt(path.substring(0, pos));
             path = path.substring(pos + 1);
-            site = manager.getContent(request.getUser(), id);
-            page = manager.findPage(site, path);
-            revision = request.getParameter("revision");
-            if (page != null && revision != null) {
-                page = page.getRevision(Integer.parseInt(revision));
-            }
-            if (page instanceof ContentSite
-             || page instanceof ContentFolder) {
-
-                page = manager.findIndexPage(page);
-            }
-            if (page == null) {
-                throw RequestException.RESOURCE_NOT_FOUND;
-            } else if (!page.hasReadAccess(request.getUser())) {
-                throw RequestException.FORBIDDEN;
-            } else {
-                request.setSite((ContentSite) site);
-                processPreview(request, page);
+            content = manager.getContent(request.getUser(), id);
+            if (content instanceof ContentSite) {
+                processPreview(request, (ContentSite) content, path);
+            } else if (content instanceof ContentDocument) {
+                processPreview(request, (ContentDocument) content, path);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -435,32 +421,112 @@ public class AdminController extends Controller {
             request.sendData("text/plain", "Cannot preview this object");
         }
     }
-    
+
     /**
-     * Processes a preview request for a specific page.
+     * Processes a preview request for a specific site.
      * 
      * @param request        the request object
-     * @param page           the content page or file object
+     * @param site           the content site object
+     * @param path           the preview path (within the site)
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws TemplateException if the page template couldn't be 
+     *             processed correctly 
+     */
+    private void processPreview(Request request,
+                                ContentSite site,
+                                String path)
+        throws RequestException, ContentException, TemplateException {
+
+        Content  page;
+        String   revision;
+
+        page = manager.findPage(site, path);
+        revision = request.getParameter("revision");
+        if (page != null && revision != null) {
+            page = page.getRevision(Integer.parseInt(revision));
+        }
+        if (page instanceof ContentSite || page instanceof ContentFolder) {
+            page = manager.findIndexPage(page);
+        }
+        if (page == null) {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        } else if (!page.hasReadAccess(request.getUser())) {
+            throw RequestException.FORBIDDEN;
+        } else {
+            request.setSite((ContentSite) site);
+            processPreview(request, page);
+        }
+    }
+
+    /**
+     * Processes a preview request for a specific document.
+     * 
+     * @param request        the request object
+     * @param doc            the content document object
+     * @param path           the preview path (within the document)
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws TemplateException if the page template couldn't be 
+     *             processed correctly 
+     */
+    private void processPreview(Request request,
+                                ContentDocument doc,
+                                String path)
+        throws RequestException, ContentException, TemplateException {
+
+        Content  content;
+        String   revision;
+
+        // TODO: handle attached document files here...
+        content = doc;
+        revision = request.getParameter("revision");
+        if (content != null && revision != null) {
+            content = content.getRevision(Integer.parseInt(revision));
+        }
+        if (content == null) {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        } else if (!content.hasReadAccess(request.getUser())) {
+            throw RequestException.FORBIDDEN;
+        } else {
+            processPreview(request, content);
+        }
+    }
+
+    /**
+     * Processes a preview request for a specific content object.
+     * 
+     * @param request        the request object
+     * @param content        the content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws TemplateException if the page template couldn't be 
      *             processed correctly 
      */
-    private void processPreview(Request request, Content page)
+    private void processPreview(Request request, Content content)
         throws ContentException, TemplateException {
 
         Template      template;
         StringWriter  buffer;
 
-        if (page instanceof ContentPage) {
+        if (content instanceof ContentPage) {
             buffer = new StringWriter();
             template = TemplateManager.getPageTemplate(request.getUser(),
-                                                       (ContentPage) page);
+                                                       (ContentPage) content);
             template.process(request, manager, buffer);
             request.sendData("text/html", buffer.toString());
-        } else if (page instanceof ContentFile) {
-            request.sendFile(((ContentFile) page).getFile());
+        } else if (content instanceof ContentFile) {
+            request.sendFile(((ContentFile) content).getFile());
+        } else if (content instanceof ContentDocument) {
+            AdminView.CONTENT.viewPreviewDocument(request,
+                                                  (ContentDocument) content);
         } else {
             AdminView.BASE.viewError(request, 
                                      "Cannot preview this object", 
