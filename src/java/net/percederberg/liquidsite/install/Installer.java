@@ -99,6 +99,9 @@ public class Installer {
         updaters.add(new DatabaseUpdater("0.7",
                                          "0.8",
                                          "UPDATE_LIQUIDSITE_TABLES_EMPTY.sql"));
+        updaters.add(new DatabaseUpdater("0.8",
+                                         "0.8.1",
+                                         "UPDATE_LIQUIDSITE_TABLES_EMPTY.sql"));
     }
 
     /**
