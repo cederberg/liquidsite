@@ -109,6 +109,26 @@ public class UserGroupPeer extends AbstractPeer {
     }
     
     /**
+     * Deletes a user group from the database.
+     * 
+     * @param data           the user group data object
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static void doDelete(UserGroupData data, DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("usergroup.delete");
+
+        query.addParameter(data.getString(UserGroupData.DOMAIN));
+        query.addParameter(data.getString(UserGroupData.USER));
+        query.addParameter(data.getString(UserGroupData.GROUP));
+        PEER.delete(query, con);
+    }
+    
+    /**
      * Deletes all user groups in a domain from the database.
      * 
      * @param domain         the domain name
