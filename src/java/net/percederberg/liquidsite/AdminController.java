@@ -40,6 +40,21 @@ public class AdminController extends Controller {
     private static final Log LOG = new Log(AdminController.class);
 
     /**
+     * The offline status constant.
+     */
+    private static final int OFFLINE_STATUS = 0;
+
+    /**
+     * The online status constant.
+     */
+    private static final int ONLINE_STATUS = 1;
+    
+    /**
+     * The modified status constant.
+     */
+    private static final int MODIFIED_STATUS = 2;
+
+    /**
      * Creates a new administration controller. 
      *
      * @param app            the application context
@@ -186,12 +201,43 @@ public class AdminController extends Controller {
         StringBuffer  buffer = new StringBuffer();
         String        type = request.getParameter("type", "");
         String        id = request.getParameter("id", "0");
+        Domain        domain = null;
+        Content       content = null;
+        Content[]     children; 
 
+        try {
+            if (type.equals("domain")) {
+                domain = getDomain(request.getUser(), id);
+                children = getContentManager().getSites(domain);
+            } else {
+                content = getContent(request.getUser(), 
+                                     Integer.parseInt(id));
+                children = content.getChildren();
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
         buffer.append("treeAddContainer('");
         buffer.append(id);
         buffer.append("');\n");
-// TODO:        treeAddItem('SAK', 1, "site", "www.sak.se", "www.sak.se/", 1);
-// TODO:        treeAddItem('SAK', 11, "site", "Intranet", "www.sak.se/intranet/", 1);
+        for (int i = 0; i < children.length; i++) {
+            // TODO: check user authorization
+            buffer.append("treeAddItem('");
+            buffer.append(id);
+            buffer.append("', ");
+            buffer.append(children[i].getId());
+            buffer.append(", '");
+            buffer.append(getContentType(children[i].getCategory()));
+            buffer.append("', '");
+            buffer.append(children[i].getName());
+            buffer.append("', '");
+            // TODO: add description 
+            buffer.append("', ");
+            // TODO: add real status
+            buffer.append(ONLINE_STATUS);
+            buffer.append(");\n");
+        }
         buffer.append("treeOpen('");
         buffer.append(type);
         buffer.append("', '");
@@ -215,16 +261,19 @@ public class AdminController extends Controller {
         Domain        domain = null;
         Content       content = null;
 
+        if (type.equals("domain")) {
+            domain = getDomain(request.getUser(), id);
+        } else {
+            content = getContent(request.getUser(), Integer.parseInt(id));
+        }
         buffer.append("objectShow('");
         buffer.append(type);
         buffer.append("', '");
         buffer.append(id);
         buffer.append("', '");
-        if (type.equals("domain")) {
-            domain = getDomain(request.getUser(), id);
+        if (domain != null) {
             buffer.append(domain.getName());
         } else {
-            content = getContent(request.getUser(), Integer.parseInt(id));
             buffer.append(content.getName());
         }
         buffer.append("');\n");
@@ -248,7 +297,10 @@ public class AdminController extends Controller {
             buffer.append(domains[i].getName());
             buffer.append("', '");
             buffer.append(domains[i].getDescription());
-            buffer.append("', 1);\n");
+            buffer.append("', ");
+            // TODO: set the correct status
+            buffer.append(ONLINE_STATUS);
+            buffer.append(");\n");
         }
         return buffer.toString();
     }
@@ -305,6 +357,22 @@ public class AdminController extends Controller {
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
+        }
+    }
+    
+    /**
+     * Returns the content type name for a content category.
+     * 
+     * @param category       the content category
+     * 
+     * @return the content type name
+     */
+    private String getContentType(int category) {
+        switch (category) {
+        case Content.SITE_CATEGORY:
+            return "site";
+        default:
+            return "";
         }
     }
 }
