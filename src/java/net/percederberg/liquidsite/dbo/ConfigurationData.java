@@ -40,7 +40,7 @@ public class ConfigurationData extends AbstractData {
      * The value parameter.
      */
     public static final Parameter VALUE =
-        new StringParameter(ConfigurationData.class, "NAME", "");
+        new StringParameter(ConfigurationData.class, "VALUE", "");
     
     /**
      * Creates a new configuration data object with default values.
