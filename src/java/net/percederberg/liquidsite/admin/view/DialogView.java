@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin.view;
@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -90,7 +91,7 @@ public class DialogView {
      * Shows the delete object confirmation dialog.
      * 
      * @param request        the request object
-     * @param obj            the domain or content object to delete
+     * @param obj            the object to delete
      */
     public void viewDelete(Request request, Object obj) {
         String  name;
@@ -103,6 +104,29 @@ public class DialogView {
         }
         request.setAttribute("name", name);
         request.sendTemplate("admin/dialog/delete-object.ftl");
+    }
+
+    /**
+     * Shows the delete user confirmation dialog.
+     * 
+     * @param request        the request object
+     * @param obj            the user or group to delete
+     */
+    public void viewDeleteUser(Request request, Object obj) {
+        String  type;
+        String  name;
+
+        if (obj instanceof User) {
+            type = "user";
+            name = ((User) obj).getName();
+        } else {
+            type = "group";
+            name = ((Group) obj).getName();
+        }
+        request.setAttribute("type", type);
+        request.setAttribute("domain", request.getParameter("domain"));
+        request.setAttribute("name", name);
+        request.sendTemplate("admin/dialog/delete-user.ftl");
     }
 
     /**

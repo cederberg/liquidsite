@@ -75,13 +75,14 @@ public class AdminRequestProcessor extends RequestProcessor {
         workflows.add(new SiteEditFormHandler());
         workflows.add(new ContentAddFormHandler());
         workflows.add(new ContentEditFormHandler());
-        workflows.add(new UsersAddFormHandler());
-        workflows.add(new UsersEditFormHandler());
         workflows.add(new PublishDialogHandler());
         workflows.add(new UnpublishDialogHandler());
         workflows.add(new RevertDialogHandler());
         workflows.add(new DeleteDialogHandler());
         workflows.add(new UnlockDialogHandler());
+        workflows.add(new UsersAddFormHandler());
+        workflows.add(new UsersEditFormHandler());
+        workflows.add(new UsersDeleteDialogHandler());
     }
 
     /**

@@ -1,5 +1,6 @@
 <#include "header.ftl">
 
+    <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
     function refresh() {
         document.getElementsByName("page").item(0).value = "1";
@@ -10,6 +11,11 @@
         document.getElementsByName("page").item(0).value = page;
         document.getElementsByName("filter").item(0).value = "${filter}";
         document.forms.item(0).submit();
+    }
+    
+    function openDeleteDialog(url) {
+        utilOpenDialog(url, 580, 310);
+        return false;
     }
     </script>
 
@@ -96,15 +102,16 @@
         </tr>
   </#if>
   <#list users as user>
-    <#assign link = "edit-users.html?type=user&domain=" + domain + 
-                    "&name=" + user.name>
+    <#assign params = "type=user&domain=" + domain + "&name=" + user.name>
         <tr>
-          <td><a href="${link}">${user.name?xml}</a></td>
+          <td><a href="edit-users.html?${params}">${user.name?xml}</a></td>
           <td>${user.realName?xml}</td>
           <td>${user.email?xml}</td>
           <td>${user.comment?xml}</td>
           <td>
-            <img src="images/icons/24x24/delete.png"  alt="Delete" />
+            <a href="#" title="Delete" 
+               onclick="return openDeleteDialog('delete-user.html?${params}')"
+               ><img src="images/icons/24x24/delete.png"  alt="Delete" /></a>
           </td>
         </tr>
   </#list>
@@ -121,14 +128,15 @@
         </tr>
   </#if>
   <#list groups as group>
-    <#assign link = "edit-users.html?type=group&domain=" + domain + 
-                    "&name=" + group.name>
+    <#assign params = "type=group&domain=" + domain + "&name=" + group.name>
         <tr>
-          <td><a href="${link}">${group.name?xml}</a></td>
+          <td><a href="edit-users.html?${params}">${group.name?xml}</a></td>
           <td>${group.description?xml}</td>
           <td>${group.comment?xml}</td>
           <td>
-            <img src="images/icons/24x24/delete.png"  alt="Delete" />
+            <a href="#" title="Delete" 
+               onclick="return openDeleteDialog('delete-user.html?${params}')"
+               ><img src="images/icons/24x24/delete.png"  alt="Delete" /></a>
           </td>
         </tr>
   </#list>
