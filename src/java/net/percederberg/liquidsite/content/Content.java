@@ -58,14 +58,19 @@ public abstract class Content extends PersistentObject implements Comparable {
     public static final int FOLDER_CATEGORY = 2;
 
     /**
+     * The page content category.
+     */
+    public static final int PAGE_CATEGORY = 3;
+
+    /**
      * The file content category.
      */
-    public static final int FILE_CATEGORY = 3;
+    public static final int FILE_CATEGORY = 4;
 
     /**
      * The template content category.
      */
-    public static final int TEMPLATE_CATEGORY = 4;
+    public static final int TEMPLATE_CATEGORY = 5;
 
     /**
      * The content data object.
@@ -285,6 +290,8 @@ public abstract class Content extends PersistentObject implements Comparable {
             return new ContentSite(data, latest, con);
         case FOLDER_CATEGORY:
             return new ContentFolder(data, latest, con);
+        case PAGE_CATEGORY:
+            return new ContentPage(data, latest, con);
         case FILE_CATEGORY:
             return new ContentFile(data, latest, con);
         case TEMPLATE_CATEGORY:
