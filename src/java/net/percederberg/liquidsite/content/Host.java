@@ -21,10 +21,13 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+import net.percederberg.liquidsite.dbo.HostData;
+import net.percederberg.liquidsite.dbo.HostPeer;
 
 /**
  * A web site host.
@@ -32,32 +35,129 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Host extends DataObject {
+public class Host extends PersistentObject {
 
     /**
-     * The domain the host belongs to.
+     * The host data object.
      */
-    private String domain = "";
+    private HostData data;
 
     /**
-     * The fully qualified host name.
-     */
-    private String name = "";
-    
-    /**
-     * The host description.
-     */
-    private String description = "";
-    
-    /**
-     * The host options.
+     * The host options. These options are read from and stored to
+     * the data object upon reading and writing. 
      */
     private HashMap options = new HashMap();
     
     /**
-     * Creates a new host with default values.
+     * Returns an array of all hosts in the database.
+     * 
+     * @return an array of all hosts in the database
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    public Host() {
+    public static Host[] findAll() throws ContentException {
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Host[]              res;
+
+        try {
+            list = HostPeer.doSelectAll(con);
+            res = new Host[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new Host((HostData) list.get(i));
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
+     * Returns an array of all hosts in a certain domain.
+     * 
+     * @param domain         the domain
+     * 
+     * @return an array of all hosts in the domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Host[] findByDomain(Domain domain)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Host[]              res;
+
+        try {
+            list = HostPeer.doSelectByDomain(domain.getName(), con);
+            res = new Host[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new Host((HostData) list.get(i));
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
+     * Returns a host with a specified name.
+     * 
+     * @param name           the host name
+     * 
+     * @return the host found, or
+     *         null if no matching host existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Host findByName(String name) throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        HostData            data;
+
+        try {
+            data = HostPeer.doSelectByName(name, con);
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        if (data == null) {
+            return null;
+        } else {
+            return new Host(data);
+        }
+    }
+
+    /**
+     * Creates a new host with default values.
+     * 
+     * @param domain         the domain
+     * @param name           the host name
+     */
+    public Host(Domain domain, String name) {
+        super(false);
+        this.data = new HostData();
+        this.data.setString(HostData.DOMAIN, domain.getName());
+        this.data.setString(HostData.NAME, name);
+    }
+
+    /**
+     * Creates a new host from a data object.
+     * 
+     * @param data           the host data object
+     */
+    private Host(HostData data) {
+        super(true);
+        this.data = data;
+        this.options = decodeMap(data.getString(HostData.OPTIONS));
     }
 
     /**
@@ -72,7 +172,7 @@ public class Host extends DataObject {
      */
     public boolean equals(Object obj) {
         if (obj instanceof Host) {
-            return name.equals(((Host) obj).name);
+            return getName().equals(((Host) obj).getName());
         } else {
             return false;
         }
@@ -84,7 +184,7 @@ public class Host extends DataObject {
      * @return a string representation of this object
      */
     public String toString() {
-        return name;
+        return getName();
     }
 
     /**
@@ -95,16 +195,7 @@ public class Host extends DataObject {
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
-        return ContentManager.getInstance().getDomain(domain);
-    }
-    
-    /**
-     * Sets the host domain.
-     * 
-     * @param domain         the new domain
-     */
-    public void setDomain(Domain domain) {
-        setDomainName(domain.getName());
+        return ContentManager.getInstance().getDomain(getDomainName());
     }
     
     /**
@@ -113,17 +204,7 @@ public class Host extends DataObject {
      * @return the host domain name
      */
     public String getDomainName() {
-        return domain;
-    }
-    
-    /**
-     * Sets the host domain.
-     * 
-     * @param domain         the new domain name
-     */
-    public void setDomainName(String domain) {
-        this.domain = domain;
-        setModified(true);
+        return data.getString(HostData.DOMAIN);
     }
     
     /**
@@ -132,17 +213,7 @@ public class Host extends DataObject {
      * @return the unique host name
      */
     public String getName() {
-        return name;
-    }
-    
-    /**
-     * Sets the host name.
-     * 
-     * @param name           the new host name
-     */
-    public void setName(String name) {
-        this.name = name;
-        setModified(true);
+        return data.getString(HostData.NAME);
     }
     
     /**
@@ -151,7 +222,7 @@ public class Host extends DataObject {
      * @return the host description
      */
     public String getDescription() {
-        return description;
+        return data.getString(HostData.DESCRIPTION);
     }
     
     /**
@@ -160,70 +231,9 @@ public class Host extends DataObject {
      * @param description    the new description
      */
     public void setDescription(String description) {
-        this.description = description;
-        setModified(true);
+        data.setString(HostData.DESCRIPTION, description);
     }
     
-    /**
-     * Returns the encoded options.
-     * 
-     * @return the encoded options
-     */
-    String getOptions() {
-        StringBuffer  buffer = new StringBuffer();
-        Iterator      iter = options.keySet().iterator();
-        String        name;
-        Object        value;
-
-        while (iter.hasNext()) {
-            name = (String) iter.next();
-            value = options.get(name);
-            if (buffer.length() > 0) {
-                buffer.append(":");
-            }
-            buffer.append(name);
-            if (value != null) {
-                buffer.append("=");
-                buffer.append(value);
-            }
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Sets the encoded options.
-     * 
-     * @param options        the new options
-     */
-    void setOptions(String options) {
-        String  name;
-        String  value;
-        String  str;
-        int     pos;
-
-        this.options.clear();
-        while (options.length() > 0) {
-            pos = options.indexOf(":");
-            if (pos > 0) {
-                str = options.substring(0, pos);
-                options = options.substring(pos + 1);
-            } else {
-                str = options;
-                options = "";
-            }
-            pos = str.indexOf("=");
-            if (pos > 0) {
-                name = str.substring(0, pos);
-                value = str.substring(pos + 1);
-            } else {
-                name = str;
-                value = null;
-            }
-            this.options.put(name, value);
-        }
-        setModified(true);
-    }
-
     /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
@@ -231,37 +241,62 @@ public class Host extends DataObject {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        Host  host = ContentManager.getInstance().getHost(name);
+        Host  host = getContentManager().getHost(getName());
 
-        if (domain.equals("")) {
+        if (getDomain().equals("")) {
             throw new ContentException("no domain set for host object");
         } else if (getDomain() == null) {
-            throw new ContentException("domain '" + domain + 
+            throw new ContentException("domain '" + getDomainName() + 
                                        "'does not exist");
-        } else if (name.equals("")) {
+        } else if (getName().equals("")) {
             throw new ContentException("no name set for host object");
-        } else if (isPersistent() && host == null) {
-            throw new ContentException("host '" + name + 
-                                       "' does not exist");
         } else if (!isPersistent() && host != null) {
-            throw new ContentException("host '" + name + 
+            throw new ContentException("host '" + getName() + 
                                        "' already exists");
         }
     }
 
     /**
-     * Saves this host to the database.
+     * Inserts the object data into the database.
      * 
      * @param con            the database connection to use
      * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
      */
-    public void save(DatabaseConnection con) throws ContentException {
-        if (!isPersistent()) {
-            HostPeer.doInsert(this, con);
-        } else if (isModified()) {
-            HostPeer.doUpdate(this, con);
-        }
+    protected void doInsert(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        data.setString(HostData.OPTIONS, encodeMap(options));
+        HostPeer.doInsert(data, con);
+    }
+
+    /**
+     * Updates the object data in the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doUpdate(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        data.setString(HostData.OPTIONS, encodeMap(options));
+        HostPeer.doUpdate(data, con);
+    }
+
+    /**
+     * Deletes the object data from the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doDelete(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        HostPeer.doDelete(data, con);
     }
 }

@@ -21,6 +21,9 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
@@ -114,6 +117,77 @@ public abstract class PersistentObject {
     }
 
     /**
+     * Encodes a map into a string. The map values or keys must 
+     * consist of normal ASCII characters, and may NOT contain the
+     * ':' or '=' characters as they are used in the encoding.
+     *
+     * @param map            the map to encode
+     *  
+     * @return the encoded map string
+     * 
+     * @see #decodeMap
+     */
+    protected static String encodeMap(HashMap map) {
+        StringBuffer  buffer = new StringBuffer();
+        Iterator      iter = map.keySet().iterator();
+        String        name;
+        Object        value;
+
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            value = map.get(name);
+            if (buffer.length() > 0) {
+                buffer.append(":");
+            }
+            buffer.append(name);
+            if (value != null) {
+                buffer.append("=");
+                buffer.append(value);
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Decodes a string into a map. The string must previously have
+     * been encoded with the encodeMap method.
+     *
+     * @param str            the encoded string
+     *  
+     * @return the unencoded map
+     * 
+     * @see #encodeMap
+     */
+    protected static HashMap decodeMap(String str) {
+        HashMap  map = new HashMap();
+        String   name;
+        String   value;
+        String   temp;
+        int      pos;
+
+        while (str.length() > 0) {
+            pos = str.indexOf(":");
+            if (pos > 0) {
+                temp = str.substring(0, pos);
+                str = str.substring(pos + 1);
+            } else {
+                temp = str;
+                str = "";
+            }
+            pos = temp.indexOf("=");
+            if (pos > 0) {
+                name = temp.substring(0, pos);
+                value = temp.substring(pos + 1);
+            } else {
+                name = temp;
+                value = null;
+            }
+            map.put(name, value);
+        }
+        return map;
+    }
+
+    /**
      * Creates a new persistent object.
      * 
      * @param persistent     the persistent flag
@@ -165,6 +239,7 @@ public abstract class PersistentObject {
         } finally {
             returnDatabaseConnection(con);
         }
+        // TODO: update content manager cache
     }
     
     /**
@@ -184,6 +259,7 @@ public abstract class PersistentObject {
         } finally {
             returnDatabaseConnection(con);
         }
+        // TODO: update content manager cache
     }
 
     /**

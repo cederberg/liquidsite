@@ -92,6 +92,7 @@ public class ContentManager {
      */
     public ContentManager(Application app) throws ContentException {
         ArrayList  list;
+        Host[]     hosts;
 
         instance = this;
         this.app = app;
@@ -101,9 +102,9 @@ public class ContentManager {
             for (int i = 0; i < list.size(); i++) {
                 addDomain((Domain) list.get(i));
             }
-            list = HostPeer.doSelectAll();
-            for (int i = 0; i < list.size(); i++) {
-                addHost((Host) list.get(i));
+            hosts = Host.findAll();
+            for (int i = 0; i < hosts.length; i++) {
+                addHost(hosts[i]);
             }
             LOG.trace("done initializing content manager cache");
         }
