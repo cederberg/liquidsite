@@ -23,7 +23,7 @@ package net.percederberg.liquidsite.template;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
+import java.util.Map;
 
 import freemarker.template.TemplateExceptionHandler;
 
@@ -77,7 +77,7 @@ public class Template {
     public void process(Request request, ContentManager manager, Writer out) 
         throws TemplateException {
 
-        HashMap  data = request.getAllAttributes();
+        Map  data = request.getAllAttributes();
 
         data.put("liquidsite", new LiquidSiteBean(request, manager));
         try {

@@ -60,13 +60,13 @@ public class Request {
      * response has been issued. 
      */
     private static final int NO_RESPONSE = 0;
-    
+
     /**
      * The data response type. This type is used when a data string
      * has been set as the request response.
      */
     private static final int DATA_RESPONSE = 1;
-     
+
     /**
      * The file response type. This type is used when a file has been
      * set as the request response. The response data contains the 
@@ -81,7 +81,7 @@ public class Request {
      * directory) when this type is set.
      */
     private static final int TEMPLATE_RESPONSE = 3;
-     
+
     /**
      * The redirect response type. This type is used when a request
      * redirect has been issued. The response data contains the 
@@ -93,7 +93,7 @@ public class Request {
      * The HTTP request. 
      */
     private HttpServletRequest request;
-    
+
     /**
      * The HTTP response. 
      */
@@ -114,7 +114,7 @@ public class Request {
      * The response data. 
      */
     private String responseData = null;
-    
+
     /**
      * The request environment.
      */
@@ -185,7 +185,13 @@ public class Request {
      * @return the request path with file name
      */
     public String getPath() {
-        return request.getRequestURI(); 
+        String  path = request.getPathInfo();
+
+        if (path == null) {
+            return request.getContextPath();
+        } else {
+            return request.getContextPath() + path;
+        }
     }
 
     /**
@@ -230,8 +236,7 @@ public class Request {
      * 
      * @return the map with request attribute names and values
      */
-    public HashMap getAllAttributes() {
-        // TODO: refactor to return pure map
+    public Map getAllAttributes() {
         HashMap      map = new HashMap();
         Enumeration  names;
         String       name;
@@ -436,7 +441,7 @@ public class Request {
      * @return a string representation of this request
      */
     public String toString() {
-        return request.getRequestURI();
+        return getPath();
     }
 
     /**
@@ -614,7 +619,6 @@ public class Request {
         out = response.getWriter();
         try {
             template = TemplateManager.getFileTemplate(responseData);
-            // TODO: return real content manager here?
             template.process(this, null, out);
         } catch (TemplateException e) {
             LOG.error("while processing " + responseData + " template", e);
