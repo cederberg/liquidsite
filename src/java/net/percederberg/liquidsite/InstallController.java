@@ -155,6 +155,14 @@ public class InstallController extends Controller {
      * internal resources used by this controller.
      */
     public void destroy() {
+        if (con != null) {
+            try {
+                con.setPoolSize(0);
+                con.update();
+            } catch (DatabaseConnectionException ignore) {
+                // Do ignore
+            }
+        }
     }
 
     /**
@@ -413,6 +421,7 @@ public class InstallController extends Controller {
         if (errorTech) {
             request.forward("/install/error.jsp");
         } else {
+            getApplication().restart();
             request.forward("/install/install5.jsp");
         }
     }
@@ -654,52 +663,53 @@ public class InstallController extends Controller {
         Configuration      config = new Configuration();
         ArrayList          tables = null;
         int                noTables = 0;
-        boolean            isLsDb = false;
-        boolean            conflict = false;
-        boolean            access = true;
+        String             type = "normal";
+        boolean            conflict;
         
         try {
             // get list of tables in database
             tables = con.listTables(db);
             noTables = tables.size();
+
+            // open a database connection
+            c = con.getConnection();
+            
+            try {
+                // check if LiquidSite database
+                c.setCatalog(db);
+                config.read(c);
+                type = config.get(Configuration.VERSION, "normal");
+            } catch (DatabaseException e) {
+                type = "noaccess";
+            } catch (ConfigurationException ignore) {
+                // Do ignore
+            } finally {
+                // close the database connection
+                con.returnConnection(c);
+            }
+            
+            // check for conflicts in table names
+            if (type.equals("normal")) {
+                conflict = false;
+                for (int i=0; i<noTables && !conflict; i++) {
+                    if (((String) tables.get(i)).startsWith("LS_")) {
+                        type = "conflict";
+                        conflict = true;
+                    }
+                }
+            }
+
         } catch (DatabaseException e) {
             // database not readable
-            access = false;
+            type = "noaccess";
             noTables = 0;
         }
         
-        // open a database connection
-        c = con.getConnection();
-            
-        try {
-            // check if LiquidSite database
-            c.setCatalog(db);
-            config.read(c);
-            isLsDb = config.get(Configuration.VERSION, null) != null;
-        } catch (DatabaseException ignore) {
-            // Do ignore
-        } catch (ConfigurationException ignore) {
-            // Do ignore
-        } finally {
-            // close the database connection
-            con.returnConnection(c);
-        }
-            
-        // check for conflicts in table names
-        if (! isLsDb) {
-            for (int i=0; i<noTables && !conflict; i++) {
-                if (((String) tables.get(i)).startsWith("LS_")) {
-                    conflict = true;
-                }
-            }
-        }
-                
+        
         // insert information
         info.put("name", db);
         info.put("noTables", new Integer(noTables));
-        info.put("isLsDb", new Boolean(isLsDb));
-        info.put("conflict", new Boolean(conflict));
-        info.put("access", new Boolean(access));
+        info.put("type", type);
                         
         return info;
     }
