@@ -85,7 +85,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     }
 
     /**
-     * Checks if the database user in an administrator.
+     * Checks if the database user is an administrator.
      * 
      * @return true if the database user is an administrator, or
      *         false otherwise
