@@ -359,13 +359,11 @@ table.compact {
 }
 table.compact th {
         padding: 0px; 
-        padding-left: 5px; 
-        padding-right: 5px;
+        padding-right: 10px;
 }
 table.compact td {
         padding: 0px; 
-        padding-left: 5px; 
-        padding-right: 5px;
+        padding-right: 10px;
 }
 
 /* Bordered table style */
