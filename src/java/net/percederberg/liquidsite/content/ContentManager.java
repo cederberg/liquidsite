@@ -51,20 +51,6 @@ public class ContentManager {
     private static final Log LOG = new Log(ContentManager.class);
 
     /**
-     * The content name comparator. This is used by administration
-     * content managers.
-     */
-    private static final Comparator NAME_COMPARATOR =
-        new NameComparator();
-
-    /**
-     * The content online comparator. This is used by normal content
-     * managers.
-     */
-    private static final Comparator ONLINE_COMPARATOR =
-        new OnlineComparator();
-
-    /**
      * The application context.
      */
     private Application app;
@@ -426,7 +412,7 @@ public class ContentManager {
 
         Content[]  children = InternalContent.findByParent(this, domain);
 
-        return postProcess(user, children, isAdmin());
+        return postProcess(user, children);
     }
 
     /**
@@ -451,7 +437,7 @@ public class ContentManager {
         Content[]  children;
 
         children = InternalContent.findByCategory(this, domain, category);
-        return postProcess(user, children, isAdmin());
+        return postProcess(user, children);
     }
 
     /**
@@ -471,7 +457,7 @@ public class ContentManager {
 
         Content[]  children = InternalContent.findByParent(this, parent);
 
-        return postProcess(user, children, isAdmin());
+        return postProcess(user, children);
     }
 
     /**
@@ -496,7 +482,7 @@ public class ContentManager {
         Content[]  children;
 
         children = InternalContent.findByCategory(this, parent, category);
-        return postProcess(user, children, isAdmin());
+        return postProcess(user, children);
     }
 
     /**
@@ -516,7 +502,7 @@ public class ContentManager {
 
         Content[]  children = InternalContent.findByParents(this, parents);
 
-        return postProcess(user, children, false);
+        return postProcess(user, children);
     }
 
     /**
@@ -718,21 +704,17 @@ public class ContentManager {
     /**
      * Post-processes an array of retrieved content objects. This
      * method checks that the objects are safe to return to the
-     * specified user, filtering out the ones that are not. This
-     * method will also sort the content objects.
+     * specified user, filtering out the ones that are not.
      *
      * @param user           the user requesting the object
      * @param content        the content objects found
-     * @param compareByName  the name-based comparison flag
      *
      * @return the readable and sorted content objects
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private Content[] postProcess(User user,
-                                  Content[] content,
-                                  boolean compareByName)
+    private Content[] postProcess(User user, Content[] content)
         throws ContentException {
 
         ArrayList  list = new ArrayList(content.length);
@@ -743,127 +725,8 @@ public class ContentManager {
                 list.add(content[i]);
             }
         }
-        if (compareByName) {
-            Collections.sort(list, NAME_COMPARATOR);
-        } else {
-            Collections.sort(list, ONLINE_COMPARATOR);
-        }
         res = new Content[list.size()];
         list.toArray(res);
         return res;
-    }
-
-
-    /**
-     * A content name comparator. This class compares the content
-     * categories and names to put objects in lexical order.
-     *
-     * @author   Per Cederberg, <per at percederberg dot net>
-     * @version  1.0
-     */
-    private static class NameComparator implements Comparator {
-
-        /**
-         * Compares two objects for order. Returns a negative
-         * integer, zero, or a positive integer as the first object
-         * is less than, equal to, or greater than the second object.
-         *
-         * @param obj1            the first object
-         * @param obj2            the second object
-         *
-         * @return a negative integer, zero, or a positive integer as
-         *         the first object is less than, equal to, or
-         *         greater than the second object
-         *
-         * @throws ClassCastException if both objects aren't Content
-         *             objects
-         */
-        public int compare(Object obj1, Object obj2)
-            throws ClassCastException {
-
-            return compareInternal((Content) obj1, (Content) obj2);
-        }
-
-        /**
-         * Compares two content objects for order. Returns a negative
-         * integer, zero, or a positive integer as the first object
-         * is less than, equal to, or greater than the second object.
-         *
-         * @param obj1            the first content object
-         * @param obj2            the second content object
-         *
-         * @return a negative integer, zero, or a positive integer as
-         *         the first object is less than, equal to, or
-         *         greater than the second object
-         */
-        private int compareInternal(Content obj1, Content obj2) {
-            int category = obj1.getCategory() - obj2.getCategory();
-
-            if (category != 0) {
-                return category;
-            } else {
-                return obj1.getName().compareTo(obj2.getName());
-            }
-        }
-    }
-
-
-    /**
-     * A content online comparator. This class compares the online
-     * publishing dates. Newer dates are considered to have
-     * precedence over older dates.
-     *
-     * @author   Per Cederberg, <per at percederberg dot net>
-     * @version  1.0
-     */
-    private static class OnlineComparator implements Comparator {
-
-        /**
-         * Compares two objects for order. Returns a negative
-         * integer, zero, or a positive integer as the first object
-         * is less than, equal to, or greater than the second object.
-         *
-         * @param obj1            the first object
-         * @param obj2            the second object
-         *
-         * @return a negative integer, zero, or a positive integer as
-         *         the first object is less than, equal to, or
-         *         greater than the second object
-         *
-         * @throws ClassCastException if both objects aren't Content
-         *             objects
-         */
-        public int compare(Object obj1, Object obj2)
-            throws ClassCastException {
-
-            return compareInternal((Content) obj1, (Content) obj2);
-        }
-
-        /**
-         * Compares two content objects for order. Returns a negative
-         * integer, zero, or a positive integer as the first object
-         * is less than, equal to, or greater than the second object.
-         *
-         * @param obj1            the first content object
-         * @param obj2            the second content object
-         *
-         * @return a negative integer, zero, or a positive integer as
-         *         the first object is less than, equal to, or
-         *         greater than the second object
-         */
-        private int compareInternal(Content obj1, Content obj2) {
-            Date  date1 = obj1.getOnlineDate();
-            Date  date2 = obj2.getOnlineDate();
-
-            if (date1 == null && date2 == null) {
-                return obj2.getId() - obj1.getId();
-            } else if (date1 == null) {
-                return -1;
-            } else if (date2 == null) {
-                return 1;
-            } else {
-                return date2.compareTo(date1);
-            }
-        }
     }
 }

@@ -53,14 +53,14 @@ public class ContentPeer extends AbstractPeer {
      * objects that are the latest revision, including unpublished or
      * working revisions.
      */
-    private static final int LATEST_STATUS = 1;
+    public static final int LATEST_STATUS = 1;
 
     /**
      * The published content status flag. This flag is set on content
      * objects that are the latest published revision, not including
      * working revisions.
      */
-    private static final int PUBLISHED_STATUS = 2;
+    public static final int PUBLISHED_STATUS = 2;
 
     /**
      * Returns a list of all content object revisions with the
@@ -144,86 +144,6 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
-     * Returns a list of content objects having the specified parent.
-     * By setting the parent content id to zero (0), all the root
-     * content objects in a domain can be retrieved. Only the highest
-     * revision of each content object will be returned. A flag can
-     * be set to regard the revision number zero (0) as the highest
-     * one.
-     *
-     * @param domain         the domain name
-     * @param parent         the parent content id
-     * @param maxIsZero      the revision zero is max flag
-     * @param con            the database connection to use
-     *
-     * @return a list of all matching content objects
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    public static ArrayList doSelectByParent(String domain,
-                                             int parent,
-                                             boolean maxIsZero,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("content.select.parent");
-
-        query.addParameter(domain);
-        query.addParameter(parent);
-        if (maxIsZero) {
-            query.addParameter(LATEST_STATUS);
-        } else {
-            query.addParameter(PUBLISHED_STATUS);
-        }
-        return PEER.selectList(query, con);
-    }
-
-    /**
-     * Returns a list of content objects having one of the specified
-     * parents. By adding a parent content id of zero (0), the root
-     * content objects in a domain can be retrieved. Only the highest
-     * revision of each content object will be returned. A flag can
-     * be set to regard the revision number zero (0) as the highest
-     * one.
-     *
-     * @param domain         the domain name
-     * @param parents        the array of parent content identifiers
-     * @param maxIsZero      the revision zero is max flag
-     * @param con            the database connection to use
-     *
-     * @return a list of all matching content objects
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    public static ArrayList doSelectByParents(String domain,
-                                              int[] parents,
-                                              boolean maxIsZero,
-                                              DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery();
-        StringBuffer   sql = new StringBuffer();
-
-        sql.append("SELECT * FROM LS_CONTENT WHERE DOMAIN = ");
-        appendSql(sql, domain);
-        sql.append(" AND ID NOT IN ");
-        appendSql(sql, parents);
-        sql.append(" AND PARENT IN ");
-        appendSql(sql, parents);
-        sql.append(" AND (STATUS & ");
-        if (maxIsZero) {
-            sql.append(LATEST_STATUS);
-        } else {
-            sql.append(PUBLISHED_STATUS);
-        }
-        sql.append(") > 0");
-        query.setSql(sql.toString());
-        return PEER.selectList(query, con);
-    }
-
-    /**
      * Returns the content object with the specified parent and name.
      * If multiple objects should match, any one of them can be
      * returned. Matches of old revisions of content objects will be
@@ -264,15 +184,9 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
-     * Returns a list of content objects having the specified
-     * category. Only the highest revision of each content object
-     * will be returned. A flag can be set to regard the revision
-     * number zero (0) as the highest one.
+     * Returns a list of content objects matching the specified query.
      *
-     * @param domain         the domain name
-     * @param parent         the parent content id
-     * @param category       the category
-     * @param maxIsZero      the revision zero is max flag
+     * @param query          the content query to use
      * @param con            the database connection to use
      *
      * @return a list of all matching content objects
@@ -280,24 +194,11 @@ public class ContentPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByCategory(String domain,
-                                               int parent,
-                                               int category,
-                                               boolean maxIsZero,
-                                               DatabaseConnection con)
+    public static ArrayList doSelectByQuery(ContentQuery query,
+                                            DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery  query = new DatabaseQuery("content.select.category");
-
-        query.addParameter(domain);
-        query.addParameter(parent);
-        query.addParameter(category);
-        if (maxIsZero) {
-            query.addParameter(LATEST_STATUS);
-        } else {
-            query.addParameter(PUBLISHED_STATUS);
-        }
-        return PEER.selectList(query, con);
+        return PEER.selectList(query.createSelectQuery(), con);
     }
 
     /**

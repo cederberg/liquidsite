@@ -27,6 +27,7 @@ import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
 import net.percederberg.liquidsite.dbo.ContentPeer;
+import net.percederberg.liquidsite.dbo.ContentQuery;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
@@ -164,13 +165,21 @@ class InternalContent {
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
         ArrayList           list;
 
         try {
-            list = ContentPeer.doSelectByParent(domain.getName(),
-                                                0,
-                                                manager.isAdmin(),
-                                                con);
+            query = new ContentQuery(domain.getName());
+            query.requireParent(0);
+            if (manager.isAdmin()) {
+                query.requireOnline(false);
+                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
+                query.sortByKey(ContentQuery.NAME_KEY, true);
+            } else {
+                query.requireOnline(true);
+                query.sortByKey(ContentQuery.ONLINE_KEY, false);
+            }
+            list = ContentPeer.doSelectByQuery(query, con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -197,13 +206,21 @@ class InternalContent {
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
         ArrayList           list;
 
         try {
-            list = ContentPeer.doSelectByParent(parent.getDomainName(),
-                                                parent.getId(),
-                                                manager.isAdmin(),
-                                                con);
+            query = new ContentQuery(parent.getDomainName());
+            query.requireParent(parent.getId());
+            if (manager.isAdmin()) {
+                query.requireOnline(false);
+                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
+                query.sortByKey(ContentQuery.NAME_KEY, true);
+            } else {
+                query.requireOnline(true);
+                query.sortByKey(ContentQuery.ONLINE_KEY, false);
+            }
+            list = ContentPeer.doSelectByQuery(query, con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -231,18 +248,23 @@ class InternalContent {
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
         ArrayList           list;
-        int[]               ids;
 
-        ids = new int[parents.length];
-        for (int i = 0; i < parents.length; i++) {
-            ids[i] = parents[i].getId();
-        }
         try {
-            list = ContentPeer.doSelectByParents(parents[0].getDomainName(),
-                                                 ids,
-                                                 manager.isAdmin(),
-                                                 con);
+            query = new ContentQuery(parents[0].getDomainName());
+            for (int i = 0; i < parents.length; i++) {
+                query.requireParent(parents[i].getId());
+            }
+            if (manager.isAdmin()) {
+                query.requireOnline(false);
+                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
+                query.sortByKey(ContentQuery.NAME_KEY, true);
+            } else {
+                query.requireOnline(true);
+                query.sortByKey(ContentQuery.ONLINE_KEY, false);
+            }
+            list = ContentPeer.doSelectByQuery(query, con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -356,14 +378,22 @@ class InternalContent {
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
         ArrayList           list;
 
         try {
-            list = ContentPeer.doSelectByCategory(domain.getName(),
-                                                  0,
-                                                  category,
-                                                  manager.isAdmin(),
-                                                  con);
+            query = new ContentQuery(domain.getName());
+            query.requireParent(0);
+            query.requireCategory(category);
+            if (manager.isAdmin()) {
+                query.requireOnline(false);
+                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
+                query.sortByKey(ContentQuery.NAME_KEY, true);
+            } else {
+                query.requireOnline(true);
+                query.sortByKey(ContentQuery.ONLINE_KEY, false);
+            }
+            list = ContentPeer.doSelectByQuery(query, con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -393,14 +423,22 @@ class InternalContent {
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
         ArrayList           list;
 
         try {
-            list = ContentPeer.doSelectByCategory(parent.getDomainName(),
-                                                  parent.getId(),
-                                                  category,
-                                                  manager.isAdmin(),
-                                                  con);
+            query = new ContentQuery(parent.getDomainName());
+            query.requireParent(parent.getId());
+            query.requireCategory(category);
+            if (manager.isAdmin()) {
+                query.requireOnline(false);
+                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
+                query.sortByKey(ContentQuery.NAME_KEY, true);
+            } else {
+                query.requireOnline(true);
+                query.sortByKey(ContentQuery.ONLINE_KEY, false);
+            }
+            list = ContentPeer.doSelectByQuery(query, con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
