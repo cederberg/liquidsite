@@ -93,15 +93,10 @@ public class Installer {
                                          "0.5",
                                          "UPDATE_LIQUIDSITE_TABLES_0.5.sql"));
         updaters.add(new Version06DatabaseUpdater());
-        updaters.add(new DatabaseUpdater("0.6",
-                                         "0.7",
-                                         "UPDATE_LIQUIDSITE_TABLES_EMPTY.sql"));
-        updaters.add(new DatabaseUpdater("0.7",
-                                         "0.8",
-                                         "UPDATE_LIQUIDSITE_TABLES_EMPTY.sql"));
-        updaters.add(new DatabaseUpdater("0.8",
-                                         "0.8.1",
-                                         "UPDATE_LIQUIDSITE_TABLES_EMPTY.sql"));
+        updaters.add(new DatabaseUpdater("0.6", "0.7"));
+        updaters.add(new DatabaseUpdater("0.7", "0.8"));
+        updaters.add(new DatabaseUpdater("0.8", "0.8.1"));
+        updaters.add(new DatabaseUpdater("0.8.1", "0.8.2"));
     }
 
     /**
@@ -253,6 +248,7 @@ public class Installer {
         }
     }
 
+
     /**
      * A database updater. This class handles a database update from
      * one version to another. Multiple database updaters can be
@@ -267,12 +263,12 @@ public class Installer {
         /**
          * The version to update from.
          */
-        private String fromVersion;
+        private String from;
 
         /**
          * The version to update to.
          */
-        private String toVersion;
+        private String to;
 
         /**
          * The SQL file containing the update statements.
@@ -280,18 +276,25 @@ public class Installer {
         private String sqlFile;
 
         /**
-         * Creates a new database update.
+         * Creates a new database update that performs no changes.
          *
-         * @param fromVersion    the version to update from
-         * @param toVersion      the version to update to
+         * @param from           the version to update from
+         * @param to             the version to update to
+         */
+        public DatabaseUpdater(String from, String to) {
+            this(from, to, null);
+        }
+
+        /**
+         * Creates a new database update from a SQL statement file.
+         *
+         * @param from           the version to update from
+         * @param to             the version to update to
          * @param sqlFile        the SQL file with update statements
          */
-        public DatabaseUpdater(String fromVersion,
-                               String toVersion,
-                               String sqlFile) {
-
-            this.fromVersion = fromVersion;
-            this.toVersion = toVersion;
+        public DatabaseUpdater(String from, String to, String sqlFile) {
+            this.from = from;
+            this.to = to;
             this.sqlFile = sqlFile;
         }
 
@@ -304,23 +307,23 @@ public class Installer {
          * version.
          *
          * @param installer      the installer to use
-         * @param fromVersion    the version to update from
+         * @param from           the version to update from
          */
-        public boolean canUpdate(Installer installer, String fromVersion) {
-            return this.fromVersion.equals(fromVersion)
-                && installer.canUpdate(this.toVersion);
+        public boolean canUpdate(Installer installer, String from) {
+            return this.from.equals(from)
+                && installer.canUpdate(this.to);
         }
 
         /**
          * Updates the Liquid Site database tables. The database must
          * already contain the specified Liquid Site version for this
-         * method to work. This method will call the installer to
-         * update the version created if needed. The update can thus
-         * handle an update path consisting of chaining several
+         * method to work. This method will also call the installer
+         * to further update the new version created. The update can
+         * thus handle an update path consisting of chaining several
          * updaters together.
          *
+         * @param installer      the installer to use
          * @param con            the database connection to use
-         * @param fromVersion    the database Liquid Site version
          *
          * @throws DatabaseException if a database statement execution
          *             failed
@@ -332,9 +335,11 @@ public class Installer {
         public void updateTables(Installer installer, DatabaseConnection con)
             throws DatabaseException, FileNotFoundException, IOException {
 
-            con.execute(new File(getSqlDir(), sqlFile));
+            if (sqlFile != null) {
+                con.execute(new File(getSqlDir(), sqlFile));
+            }
             updateTableContent(con);
-            installer.updateTables(con, toVersion);
+            installer.updateTables(con, to);
         }
 
         /**
