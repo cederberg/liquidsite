@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.form.FormValidationException;
 
@@ -154,12 +155,14 @@ public class ContentAddFormHandler extends AdminFormHandler {
     private void handleAddSection(Request request, Object parent) 
         throws ContentException, ContentSecurityException {
 
-        ContentSection  section;
-        Map             params = request.getAllParameters();
-        Iterator        iter = params.keySet().iterator();
-        String          name;
-        String          value;
-        
+        ContentSection      section;
+        Map                 params = request.getAllParameters();
+        Iterator            iter = params.keySet().iterator();
+        DocumentProperty    property;
+        String              name;
+        String              id;
+        String              str;
+
         if (parent instanceof Domain) {
             section = new ContentSection((Domain) parent);
         } else {
@@ -167,15 +170,31 @@ public class ContentAddFormHandler extends AdminFormHandler {
         }
         section.setName(request.getParameter("name"));
         section.setComment(request.getParameter("comment"));
-/* TODO: set document properties
         while (iter.hasNext()) {
             name = iter.next().toString();
-            if (name.startsWith("element.")) {
-                value = params.get(name).toString();
-                template.setElement(name.substring(8), value);
+            if (name.startsWith("property.") && name.endsWith(".position")) {
+                name = name.substring(0, name.length() - 9);
+                id = name.substring(9);
+                property = new DocumentProperty(id);
+                str = request.getParameter(name + ".name", id);
+                property.setName(str);
+                try {
+                    str = request.getParameter(name + ".position", "1");
+                    property.setPosition(Integer.parseInt(str));
+                } catch (NumberFormatException ignore) {
+                    // This is ignored
+                }
+                try {
+                    str = request.getParameter(name + ".type", "1");
+                    property.setType(Integer.parseInt(str));
+                } catch (NumberFormatException ignore) {
+                    // This is ignored
+                }
+                str = request.getParameter(name + ".description", "");
+                property.setDescription(str);
+                section.setDocumentProperty(id, property);
             }
         }
-*/
         section.save(request.getUser());
         AdminView.CONTENT.setContentTreeFocus(request, section);
     }
