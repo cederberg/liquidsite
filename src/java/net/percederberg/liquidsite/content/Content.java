@@ -609,19 +609,6 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns the child content objects. Only the highest revision 
-     * of each object will be returned.
-     * 
-     * @return the child content objects
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public Content[] getChildren() throws ContentException {
-        return findByParent(this);
-    }
-
-    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 

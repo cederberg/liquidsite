@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -127,18 +128,34 @@ public class ContentManager {
     }
 
     /**
-     * Returns an array of all domains. This method will only consult 
-     * the internal cache, and not the database.
+     * Returns an array of all domains readable by a user. This 
+     * method will only consult the internal cache, and not the 
+     * database.
      * 
-     * @return an array of all domains
+     * @param user           the user requesting the list
+     * 
+     * @return an array of all user readable domains
      */
-    public Domain[] getDomains() {
-        Domain[]  res = new Domain[domains.size()];
-        Iterator  iter = domains.values().iterator();
+    public Domain[] getDomains(User user) {
+        Iterator   iter = domains.values().iterator();
+        ArrayList  list = new ArrayList();
+        Domain[]   res;
+        Domain     domain;
         
+        // Find all readable domains
         for (int i = 0; iter.hasNext(); i++) {
-            res[i] = (Domain) iter.next();
+            domain = (Domain) iter.next();
+            if (domain.hasReadAccess(user)) {
+                list.add(domain);
+            }
         }
+
+        // Create domain array
+        res = new Domain[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = (Domain) list.get(i);
+        }
+
         return res;
     }
 
@@ -151,31 +168,45 @@ public class ContentManager {
      * @return the domain found, or
      *         null if no such domain exists
      */
-    public Domain getDomain(String name) {
+    Domain getDomain(String name) {
         return (Domain) domains.get(name);
     }
 
     /**
-     * Returns the root domain. This method will only consult the 
-     * internal cache, and not the database. 
+     * Returns a domain with the specified name readable by a user. 
+     * This method will only consult the internal cache, and not the
+     * database. 
      * 
-     * @return the root domain, or
+     * @param user           the user requesting the domain
+     * @param name           the domain name
+     * 
+     * @return the domain found, or
      *         null if no such domain exists
+     * 
+     * @throws ContentSecurityException if the specified domain 
+     *             wasn't readable by the user
      */
-    public Domain getRootDomain() {
-        return getDomain("ROOT");
+    public Domain getDomain(User user, String name) 
+        throws ContentSecurityException {
+
+        Domain  domain = getDomain(name);
+        
+        if (domain != null && !domain.hasReadAccess(user)) {
+            throw new ContentSecurityException(user, "read", domain);
+        }
+        return domain;
     }
 
     /**
-     * Returns a host with the specified name. This method will only 
-     * consult the internal cache, and not the database. 
-     * 
+     * Returns a host with the specified name. This method will only
+     * consult the internal cache, and not the database.
+     *
      * @param name           the host name
-     * 
+     *
      * @return the host found, or
      *         null if no such host exists
      */
-    public Host getHost(String name) {
+    Host getHost(String name) {
         return (Host) hosts.get(name);
     }
 
@@ -191,7 +222,7 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public Site[] getSites(Domain domain) throws ContentException {
+    Site[] getSites(Domain domain) throws ContentException {
         Site[]  res;
         
         if (sites.containsKey(domain.getName())) {
@@ -201,6 +232,36 @@ public class ContentManager {
             sites.put(domain.getName(), res);
             return res;
         }
+    }
+
+    /**
+     * Returns all user readable sites in a domain. This method will 
+     * retrieve the sites from the cache if possible, otherwise the 
+     * sites will be read from the database and added to the cache.
+     * 
+     * @param user           the user requesting the sites
+     * @param domain         the domain
+     * 
+     * @return the array of user readable sites in the domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Site[] getSites(User user, Domain domain) 
+        throws ContentException {
+
+        Site[]     sites = getSites(domain);
+        ArrayList  list = new ArrayList(sites.length);
+        Site[]     res;
+        
+        for (int i = 0; i < sites.length; i++) {
+            if (sites[i].hasReadAccess(user)) {
+                list.add(sites[i]);
+            }
+        }
+        res = new Site[list.size()];
+        list.toArray(res);
+        return res;
     }
 
     /**
@@ -216,8 +277,35 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public Content getContent(int id) throws ContentException {
+    Content getContent(int id) throws ContentException {
         return Content.findById(id);
+    }
+    
+    /**
+     * Returns the content object with the specified identifier and 
+     * highest revision readable by the user. This method may return 
+     * a content object from the cache.
+     * 
+     * @param user           the user requesting the content
+     * @param id             the content identifier
+     * 
+     * @return the content object found, or
+     *         null if no matching content existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    public Content getContent(User user, int id) 
+        throws ContentException, ContentSecurityException {
+
+        Content  content = getContent(id);
+
+        if (content != null && !content.hasReadAccess(user)) {
+            throw new ContentSecurityException(user, "read", content);
+        }
+        return content;
     }
     
     /**
@@ -234,10 +322,36 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public Content getContent(int id, int revision) 
+    Content getContent(int id, int revision) 
         throws ContentException {
 
         return Content.findByRevision(id, revision);
+    }
+
+    /**
+     * Returns the user readable child content objects. Only the 
+     * highest revision of each object will be returned.
+     * 
+     * @return the user readable child content objects
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content[] getContentChildren(User user, Content content) 
+        throws ContentException {
+
+        Content[]  children = Content.findByParent(content);
+        ArrayList  list = new ArrayList(children.length);
+        Content[]  res;
+
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].hasReadAccess(user)) {
+                list.add(children[i]);
+            }
+        } 
+        res = new Content[list.size()];
+        list.toArray(res);
+        return res;                    
     }
 
     /**
@@ -282,6 +396,52 @@ public class ContentManager {
         throws ContentException {
 
         return Group.findByName(domain, name);
+    }
+
+    /**
+     * Finds the site corresponding to a web request. This method 
+     * does NOT control access permissions and should thus ONLY be 
+     * used internally in the request processing. 
+     * 
+     * @param protocol       the request protocol (i.e. "http")
+     * @param hostname       the request host name
+     * @param port           the request port number
+     * @param path           the full request path
+     * 
+     * @return the site corresponding to the request, or
+     *         null if no matching site was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     */
+    public Site findSite(String protocol, 
+                         String hostname, 
+                         int port, 
+                         String path) 
+        throws ContentException {
+
+        Host    host;
+        Domain  domain;
+        Site[]  sites;
+        Site    res = null;
+        int     max = 0;
+        int     match;
+        
+        host = (Host) hosts.get(hostname);
+        if (host == null) {
+            domain = getDomain("ROOT");
+        } else {
+            domain = getDomain(host.getDomainName());
+        }
+        sites = getSites(domain);
+        for (int i = 0; i < sites.length; i++) {
+            match = sites[i].match(protocol, hostname, port, path); 
+            if (match > max) {
+                res = sites[i];
+                max = match;
+            }
+        }
+        return res;
     }
 
     /**

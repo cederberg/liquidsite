@@ -22,8 +22,6 @@
 package net.percederberg.liquidsite;
 
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
@@ -71,7 +69,6 @@ public class DefaultController extends Controller {
      * @throws RequestException if the request couldn't be processed
      */
     public void process(Request request) throws RequestException {
-        Domain  domain;
         Site    site;
         User    user;
         String  path = request.getPath();
@@ -79,11 +76,10 @@ public class DefaultController extends Controller {
 
         // Find domain & site
         try {
-            domain = getDomain(request);
-            if (domain == null) {
-                return;
-            }
-            site = getSite(request, domain);
+            site = getContentManager().findSite(request.getProtocol(), 
+                                                request.getHost(), 
+                                                request.getPort(), 
+                                                request.getPath());
             if (site == null) {
                 return;
             }
@@ -182,57 +178,5 @@ public class DefaultController extends Controller {
             request.setAttribute("error", "Invalid user name or password");
             processUnauthorized(request, site, path);
         }
-    }
-
-    /**
-     * Finds the domain corresponding to a request.
-     * 
-     * @param request        the request
-     * 
-     * @return the domain corresponding to the request, or
-     *         null if no matching domain was found
-     */
-    private Domain getDomain(Request request) {
-        Host  host = getContentManager().getHost(request.getHost());
-
-        if (host != null) {
-            return getContentManager().getDomain(host.getDomainName());
-        } else {
-            return getContentManager().getRootDomain();
-        }
-    }
-
-    /**
-     * Finds the site corresponding to a request.
-     * 
-     * @param request        the request
-     * @param domain         the request domain
-     * 
-     * @return the site corresponding to the request, or
-     *         null if no matching site was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     */
-    private Site getSite(Request request, Domain domain) 
-        throws ContentException {
-
-        Site[]  sites;
-        Site    res = null;
-        int     max = 0;
-        int     match;
-        
-        sites = getContentManager().getSites(domain);
-        for (int i = 0; i < sites.length; i++) {
-            match = sites[i].match(request.getProtocol(), 
-                                   request.getHost(), 
-                                   request.getPort(), 
-                                   request.getPath());
-            if (match > max) {
-                res = sites[i];
-                max = match;
-            }
-        }
-        return res;
     }
 }

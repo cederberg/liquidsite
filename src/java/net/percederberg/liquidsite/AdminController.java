@@ -26,6 +26,8 @@ import java.util.Date;
 
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
 
@@ -173,7 +175,8 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displaySite(Request request) {
-        request.setAttribute("initialize", getSiteInitializeScript());
+        request.setAttribute("initialize", 
+                             getSiteInitializeScript(request.getUser()));
         request.forward("/admin/site.jsp");
     }
 
@@ -213,31 +216,36 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displayLoadSite(Request request) throws RequestException {
-        StringBuffer  buffer = new StringBuffer();
-        String        type = request.getParameter("type", "");
-        String        id = request.getParameter("id", "0");
-        Domain        domain = null;
-        Content       content = null;
-        Content[]     children; 
+        StringBuffer    buffer = new StringBuffer();
+        String          type = request.getParameter("type", "");
+        String          id = request.getParameter("id", "0");
+        ContentManager  cm = getContentManager();
+        User            user = request.getUser();
+        Domain          domain = null;
+        Content         content = null;
+        Content[]       children; 
 
+        // Find object and children
         try {
             if (type.equals("domain")) {
-                domain = getDomain(request.getUser(), id);
-                children = getContentManager().getSites(domain);
+                domain = cm.getDomain(user, id);
+                children = cm.getSites(user, domain);
             } else {
-                content = getContent(request.getUser(), 
-                                     Integer.parseInt(id));
-                children = content.getChildren();
+                content = cm.getContent(user, Integer.parseInt(id));
+                children = cm.getContentChildren(user, content);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
         }
+
+        // Create JavaScript output
         buffer.append("treeAddContainer('");
         buffer.append(id);
         buffer.append("');\n");
         for (int i = 0; i < children.length; i++) {
-            // TODO: check user authorization
             buffer.append("treeAddItem('");
             buffer.append(id);
             buffer.append("', ");
@@ -270,17 +278,29 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displayOpenSite(Request request) throws RequestException {
-        StringBuffer  buffer = new StringBuffer();
-        String        type = request.getParameter("type", "");
-        String        id = request.getParameter("id", "0");
-        Domain        domain = null;
-        Content       content = null;
+        StringBuffer    buffer = new StringBuffer();
+        String          type = request.getParameter("type", "");
+        String          id = request.getParameter("id", "0");
+        ContentManager  cm = getContentManager();
+        User            user = request.getUser();
+        Domain          domain = null;
+        Content         content = null;
 
-        if (type.equals("domain")) {
-            domain = getDomain(request.getUser(), id);
-        } else {
-            content = getContent(request.getUser(), Integer.parseInt(id));
+        // Find object
+        try {
+            if (type.equals("domain")) {
+                domain = cm.getDomain(user, id);
+            } else {
+                content = cm.getContent(user, Integer.parseInt(id));
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
         }
+
+        // Create JavaScript output
         buffer.append("objectShow('");
         buffer.append(type);
         buffer.append("', '");
@@ -317,13 +337,14 @@ public class AdminController extends Controller {
     /**
      * Returns the JavaScript for initializing the site view.
      * 
+     * @param user           the user performing the operation
+     * 
      * @return the JavaScript for initializing the site view
      */
-    private String getSiteInitializeScript() {
+    private String getSiteInitializeScript(User user) {
         StringBuffer  buffer = new StringBuffer();
-        Domain[]      domains = getContentManager().getDomains();
+        Domain[]      domains = getContentManager().getDomains(user);
 
-        // TODO: authorize the user access to the domains
         for (int i = 0; i < domains.length; i++) {
             buffer.append("        treeAddItem(0, '");
             buffer.append(domains[i].getName());
@@ -339,61 +360,6 @@ public class AdminController extends Controller {
         return buffer.toString();
     }
 
-    /**
-     * Finds a specified domain object. This method also checks that
-     * the user has read access to the domain object.
-     * 
-     * @param user           the user performing the operation
-     * @param name           the domain name
-     * 
-     * @return the domain object, or
-     *         null if no domain object was found
-     * 
-     * @throws RequestException if the user didn't have access to the
-     *             domain object
-     */
-    private Domain getDomain(User user, String name) 
-        throws RequestException {
-
-        Domain  domain = getContentManager().getDomain(name);
-
-        if (domain == null || domain.hasReadAccess(user)) {
-            return domain;
-        } else {
-            throw RequestException.FORBIDDEN;
-        }
-    }
-
-    /**
-     * Finds a specified content object. This method also checks that
-     * the user has read access to the content object.
-     * 
-     * @param user           the user performing the operation
-     * @param id             the content id
-     * 
-     * @return the content object, or
-     *         null if no content object was found
-     * 
-     * @throws RequestException if the database couldn't be accessed
-     *             properly, or if the user didn't have access to the
-     *             content object
-     */
-    private Content getContent(User user, int id) throws RequestException {
-        Content  content;
-
-        try {
-            content = getContentManager().getContent(id);
-            if (content == null || content.hasReadAccess(user)) {
-                return content;
-            } else {
-                throw RequestException.FORBIDDEN;
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        }
-    }
-    
     /**
      * Returns the content type name for a content category.
      * 
