@@ -60,6 +60,7 @@ class AdminView {
     /**
      * The content manager to use.
      */
+    // FIXME: cannot cling to content manager instance!
     private ContentManager manager;
 
     /**

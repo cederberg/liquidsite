@@ -204,7 +204,7 @@ public class Host extends PersistentObject {
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
-        return ContentManager.getInstance().getDomain(getDomainName());
+        return getContentManager().getDomain(getDomainName());
     }
     
     /**
