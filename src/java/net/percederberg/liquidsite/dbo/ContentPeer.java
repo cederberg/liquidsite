@@ -167,28 +167,16 @@ public class ContentPeer extends AbstractPeer {
                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery("content.select.parent");
-        DatabaseResults  res;
-        ArrayList        list = new ArrayList();
-        ContentData      data;
+        DatabaseQuery  query = new DatabaseQuery("content.select.parent");
 
         query.addParameter(domain);
         query.addParameter(parent);
-        res = PEER.execute("reading content list", query, con);
-        try {
-            for (int i = 0; i < res.getRowCount(); i++) {
-                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
-                                             maxIsZero,
-                                             con);
-                if (data.getInt(ContentData.PARENT) == parent) {
-                    list.add(data);
-                }
-            }
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
+        if (maxIsZero) {
+            query.addParameter(LATEST_STATUS);
+        } else {
+            query.addParameter(PUBLISHED_STATUS);
         }
-        return list;
+        return PEER.selectList(query, con);
     }
 
     /**
@@ -215,37 +203,24 @@ public class ContentPeer extends AbstractPeer {
                                               DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery();
-        StringBuffer     sql = new StringBuffer();
-        DatabaseResults  res;
-        ArrayList        list = new ArrayList();
-        ContentData      data;
+        DatabaseQuery  query = new DatabaseQuery();
+        StringBuffer   sql = new StringBuffer();
 
-        sql.append("SELECT DISTINCT ID FROM LS_CONTENT WHERE DOMAIN = ");
+        sql.append("SELECT * FROM LS_CONTENT WHERE DOMAIN = ");
         appendSql(sql, domain);
         sql.append(" AND ID NOT IN ");
         appendSql(sql, parents);
         sql.append(" AND PARENT IN ");
         appendSql(sql, parents);
-        query.setSql(sql.toString());
-        res = PEER.execute("reading content list", query, con);
-        try {
-            for (int i = 0; i < res.getRowCount(); i++) {
-                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
-                                             maxIsZero,
-                                             con);
-                for (int j = 0; j < parents.length; j++) {
-                    if (data.getInt(ContentData.PARENT) == parents[j]) {
-                        list.add(data);
-                        break;
-                    }
-                }
-            }
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
+        sql.append(" AND (STATUS & ");
+        if (maxIsZero) {
+            sql.append(LATEST_STATUS);
+        } else {
+            sql.append(PUBLISHED_STATUS);
         }
-        return list;
+        sql.append(") > 0");
+        query.setSql(sql.toString());
+        return PEER.selectList(query, con);
     }
 
     /**
@@ -275,30 +250,17 @@ public class ContentPeer extends AbstractPeer {
                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery("content.select.name");
-        DatabaseResults  res;
-        ContentData      data;
+        DatabaseQuery  query = new DatabaseQuery("content.select.name");
 
         query.addParameter(domain);
         query.addParameter(parent);
         query.addParameter(name);
-        res = PEER.execute("reading content list", query, con);
-        try {
-            for (int i = 0; i < res.getRowCount(); i++) {
-                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
-                                             maxIsZero,
-                                             con);
-                if (data.getInt(ContentData.PARENT) == parent
-                 && data.getString(ContentData.NAME).equals(name)) {
-
-                    return data;
-                }
-            }
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
+        if (maxIsZero) {
+            query.addParameter(LATEST_STATUS);
+        } else {
+            query.addParameter(PUBLISHED_STATUS);
         }
-        return null;
+        return (ContentData) PEER.select(query, con);
     }
 
     /**
@@ -325,29 +287,17 @@ public class ContentPeer extends AbstractPeer {
                                                DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery("content.select.category");
-        DatabaseResults  res;
-        ArrayList        list = new ArrayList();
-        ContentData      data;
+        DatabaseQuery  query = new DatabaseQuery("content.select.category");
 
         query.addParameter(domain);
         query.addParameter(parent);
         query.addParameter(category);
-        res = PEER.execute("reading content list", query, con);
-        try {
-            for (int i = 0; i < res.getRowCount(); i++) {
-                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
-                                             maxIsZero,
-                                             con);
-                if (data.getInt(ContentData.PARENT) == parent) {
-                    list.add(data);
-                }
-            }
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
+        if (maxIsZero) {
+            query.addParameter(LATEST_STATUS);
+        } else {
+            query.addParameter(PUBLISHED_STATUS);
         }
-        return list;
+        return PEER.selectList(query, con);
     }
 
     /**
