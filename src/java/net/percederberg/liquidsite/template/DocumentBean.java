@@ -28,6 +28,7 @@ import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 
 import net.percederberg.liquidsite.content.ContentDocument;
+import net.percederberg.liquidsite.content.DocumentProperty;
 
 /**
  * A document template bean. This class is used to access document
@@ -78,16 +79,52 @@ public class DocumentBean implements TemplateHashModel {
      *         null if the document property wasn't found
      */
     public TemplateModel get(String id) {
+        String  str;
+
         if (id.equals("name")) {
             return new SimpleScalar(document.getName());
         } else if (id.equals("meta")) {
             return metadata;
         } else {
-            // TODO: text data should have <br/> inserted?
-            return new SimpleScalar(document.getProperty(id));
+            str = document.getProperty(id);
+            if (document.getPropertyType(id) != DocumentProperty.HTML_TYPE) {
+                str = createHtmlText(str);
+            }
+            return new SimpleScalar(str);
         }
     }
 
+    /**
+     * Creates an HTML escaped version of a string. This method will
+     * escape any occurencies of special HTML characters while also
+     * inserting HTML linebreaks instead of normal line breaks.
+     *
+     * @param str            the string to process
+     *
+     * @return the HTML encoded string
+     */
+    private String createHtmlText(String str) {
+        StringBuffer  buffer = new StringBuffer();
+        char          c;
+        
+        for (int i = 0; i < str.length(); i++) {
+            c = str.charAt(i);
+            if (c == '<') {
+                buffer.append("&lt;");
+            } else if (c == '>') {
+                buffer.append("&gt;");
+            } else if (c == '&') {
+                buffer.append("&amp;");
+            } else if (c == '\n') {
+                buffer.append("<br/>");
+            } else if (c == '\r') {
+                // Discard
+            } else {
+                buffer.append(c);
+            }
+        }
+        return buffer.toString();
+    }
 
     /**
      * A document meta-data bean.
