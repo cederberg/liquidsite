@@ -417,7 +417,7 @@ table.border td {
         font-weight: bold;
         color: rgb(80, 150, 120);
 }
-.figure {
+div.figure {
         background: white; 
         margin: 6px;
         padding: 0.5cm; 
@@ -426,22 +426,22 @@ table.border td {
         border-style: solid; 
         border-width: 1px;
 }
-.example {
+div.example {
         padding-left: 1.5em;
 }
-.illustration {
+div.illustration {
         text-align: center;
 }
 
 /* Layout styles */
-.decoration {
+div.decoration {
         float: right; 
         margin-top: -2em; 
         margin-bottom: 1em; 
         margin-left: 1em; 
         margin-right: -20px;
 }
-.border {
+div.border {
         padding: 1em; 
         border-style: solid; 
         border-width: 1px;
