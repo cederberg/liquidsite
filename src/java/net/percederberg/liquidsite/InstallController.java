@@ -21,16 +21,10 @@
 
 package net.percederberg.liquidsite;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Enumeration;
-import java.util.PropertyResourceBundle;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
@@ -107,14 +101,19 @@ public class InstallController extends Controller {
     private boolean errorHost;
     
     /**
-     * Error in the root username.
+     * Error in the username.
      */
     private boolean errorUsername;
     
     /**
-     * Error in the root password.
+     * Error in the password.
      */
     private boolean errorPassword;
+    
+    /**
+     * Error in re-typed password.
+     */
+    private boolean errorVerify;
     
     /**
      * The database to create already exists.
@@ -122,9 +121,9 @@ public class InstallController extends Controller {
     private boolean errorDbExists;
 
     /**
-     * Password verification failed for liquid site user.
+     * Password verification failed.
      */
-    private boolean errorVerify;
+    private boolean errorVerification;
     
     /**
      * The liquid site user to create already exists.
@@ -155,14 +154,7 @@ public class InstallController extends Controller {
      * internal resources used by this controller.
      */
     public void destroy() {
-        if (con != null) {
-            try {
-                con.setPoolSize(0);
-                con.update();
-            } catch (DatabaseConnectionException ignore) {
-                // Do ignore
-            }
-        }
+        closeConnector();
     }
 
     /**
@@ -174,39 +166,18 @@ public class InstallController extends Controller {
      * @param request        the request object to process
      */
     public void process(Request request) {
-        String path;
-        
-        // process the requested path
-        path = request.getPath();
-        if (path.equals("/liquidsite/install.html")) {
-            // installation
-            String step = request.getParameter("step");
-            if (step != null && step.equals("1")) {
-                install(request);
-            } else if (step != null && step.equals("2")) {
-                install2(request);
-            } else if (step != null && step.equals("3")) {
-                install3(request);
-            } else if (step != null && step.equals("4")) {
-                install4(request);
-            } else if (step != null && step.equals("5")) {
-                install5(request);
-            } else {
-                start(request);
-            }
-
+        String step = request.getParameter("step");
+        if (step != null && step.equals("1")) {
+            install2(request);
+        } else if (step != null && step.equals("2")) {
+            install3(request);
+        } else if (step != null && step.equals("3")) {
+            install4(request);
+        } else if (step != null && step.equals("4")) {
+            install5(request);
         } else {
-            start(request);
+            install(request);
         }
-    }
-
-    /**
-     * Forwards to the start installation page.
-     *
-     * @param request           the request object
-     */
-    private void start(Request request) {
-        request.forward("/install/start.jsp");
     }
 
     /**
@@ -240,6 +211,7 @@ public class InstallController extends Controller {
      */
     private void install2(Request request) {
         ArrayList dbsInfo = null;
+        boolean isAdmin = false;
 
         // initialize error variables
         initializeErrors();
@@ -250,11 +222,21 @@ public class InstallController extends Controller {
         // check database connection info
         checkDbConnInfo();
         
-        // if no error happened, create a connector to the database,
-        // and get all databases information
         if (!error) {
+            // close connector if already created
+            closeConnector();
+            
+            // create connector if connector not already created
             createConnector(host, rootUsername, rootPassword);
+            
+            // get databases information 
             dbsInfo = getDatabasesInfo();
+            
+            // get if database user entered is administrator
+            isAdmin = isAdministrator();
+            
+            // initialize dbsel variable
+            initializeDbsel(dbsInfo);
         }
 
         if (errorTech) {
@@ -268,6 +250,7 @@ public class InstallController extends Controller {
                 request.forward("/install/install.jsp");
             } else {
                 request.setAttribute("dbsInfo", dbsInfo);
+                request.setAttribute("isAdmin", new Boolean(isAdmin));
                 request.forward("/install/install2.jsp");
             }
         }
@@ -283,7 +266,8 @@ public class InstallController extends Controller {
     private void install3(Request request) {
         ArrayList dbsInfo = null;
         ArrayList users = null;
-        
+        boolean isAdmin = false;
+                
         // initialize error variables
         initializeErrors();
 
@@ -294,13 +278,16 @@ public class InstallController extends Controller {
         checkDbInfo();
 
         if (! errorTech) {
-            // if error, get the databases information, 
+            // if error, get the databases information,  
             // if not error, get the list of users
             if (error) {
                 dbsInfo = getDatabasesInfo();
             } else {
                 users = getUserNames();
             }
+
+            // get whether the connection database user is admin
+            isAdmin = isAdministrator();
         }
         
         if (errorTech) {
@@ -309,6 +296,7 @@ public class InstallController extends Controller {
         } else {
             // set request attributes
             setAttributes(request);
+            request.setAttribute("isAdmin", new Boolean(isAdmin));
         
             if (error) {
                 request.setAttribute("dbsInfo", dbsInfo);
@@ -349,7 +337,7 @@ public class InstallController extends Controller {
 
         } else {
             // reset passwords if they didn't match  
-            if (errorVerify) {
+            if (errorVerification) {
                 password = "";
                 verify = "";
             }
@@ -359,6 +347,8 @@ public class InstallController extends Controller {
 
             if (error) {
                 request.setAttribute("users", users);
+                request.setAttribute("isAdmin", 
+                    new Boolean(isAdministrator()));
                 request.forward("/install/install3.jsp");
             } else {
                 request.forward("/install/install4.jsp");
@@ -466,6 +456,7 @@ public class InstallController extends Controller {
         request.setAttribute("errorPassword", errorPassword);
         request.setAttribute("errorDbExists", errorDbExists);
         request.setAttribute("errorVerify", errorVerify);
+        request.setAttribute("errorVerification", errorVerification);
         request.setAttribute("errorUserExists", errorUserExists);
         request.setAttribute("errorConnection", errorConnection);
     }
@@ -483,9 +474,6 @@ public class InstallController extends Controller {
         }
         if (rootPassword == null) {
             rootPassword = "";
-        }
-        if (dbsel == null) {
-            dbsel = "";
         }
         if (database == null) {
             database = "liquidsite";
@@ -505,6 +493,42 @@ public class InstallController extends Controller {
     }
     
     /**
+     * Initializes the variable dbsel.
+     * 
+     * @param dbsInfo        databases info from which to 
+     *                       initialize dbsel
+     */
+    private void initializeDbsel(ArrayList dbsInfo) {
+        if (dbsel == null) {
+            if (isAdministrator()) {
+                dbsel = "";
+            } else if (dbsInfo.size() > 0) {
+                dbsel = (String) ((Hashtable) dbsInfo.get(0)).
+                    get("name");
+            }
+
+        } else {
+            boolean contained = false;
+
+            for (int i=0; i<dbsInfo.size() && !contained; i++) {
+                if (dbsel.equals((String) 
+                    ((Hashtable) dbsInfo.get(i)).get("name"))) {
+                    contained = true;
+                }
+            }
+            
+            if (!contained) {
+                if (isAdministrator()) {
+                    dbsel = "";
+                } else if (dbsInfo.size() > 0) {
+                    dbsel = (String) ((Hashtable) dbsInfo.get(0)).
+                        get("name");
+                }
+            }
+        }
+    }
+    
+    /**
      * Sets the error variables to false.
      */
     private void initializeErrors() {
@@ -514,6 +538,7 @@ public class InstallController extends Controller {
         errorPassword = false;
         errorDbExists = false;
         errorVerify = false;
+        errorVerification = false;
         errorUserExists = false;
         errorConnection = false;
         errorTech = false;
@@ -562,16 +587,58 @@ public class InstallController extends Controller {
      * @param users          the names of the database users 
      */
     private void checkUserInfo(ArrayList users) {
-        if (usersel.equals("") && username.equals("")) {
-            error = true;
-        } else if (usersel.equals("") && users.contains(username)) {
-            error = true;
-            errorUserExists = true;
-        } 
+        if (isAdministrator()) {
+            if (usersel.equals("")) {
+                if (username.equals("")) {
+                    error = true;
+                    errorUsername = true;
+                }
+                if (password.equals("")) {
+                    error = true;
+                    errorPassword = true;
+                }
+                if (verify.equals("")) {
+                    error = true;
+                    errorVerify = true;
+                }
+                if (users.contains(username)) {
+                    error = true;
+                    errorUserExists = true;
+                }
         
-        if (!password.equals(verify)) {
-            error = true;
-            errorVerify = true;
+                if (!errorPassword && !errorVerify && 
+                    !password.equals(verify)) {
+                    error = true;
+                    errorVerification = true;
+                }
+
+            } else {
+                if (password.equals("")) {
+                    error = true;
+                    errorPassword = true;
+                } else {
+                    MySQLDatabaseConnector c;
+
+                    // set a connection and perform a query
+                    c = new MySQLDatabaseConnector(host, usersel, 
+                        password);
+                    try {
+                        c.setPoolSize(1);
+                        c.listDatabases();
+                    } catch (Exception e) {
+                        error = true;
+                        errorVerification = true;
+                    } finally {
+                        // free connection
+                        c.setPoolSize(0);
+                        try {
+                            c.update();
+                        } catch (Exception ignore) {
+                            // Do ignore
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -588,6 +655,46 @@ public class InstallController extends Controller {
                                  String password) {
         con = new MySQLDatabaseConnector(host, username, password);
         con.setPoolSize(1);
+    }
+
+    /**
+     * Closes the connector if it was created.
+     */
+    private void closeConnector() {
+        if (con != null) {
+            con.setPoolSize(0);
+            try {
+                con.update();
+            } catch (DatabaseConnectionException ignore) {
+                // Do ignore
+            }
+            con = null;
+        }
+    }
+
+    /**
+     * Checks if the connector's database user is administrator.
+     * 
+     * @return true if the connector's database user is administrator,
+     *         false otherwise
+     */
+
+    private boolean isAdministrator() {
+        boolean isAdmin = false;
+        
+        try {
+            isAdmin = con.isAdministrator();
+        } catch (DatabaseConnectionException e) {
+            error = true;
+            errorConnection = true;
+            e.printStackTrace();
+        } catch (DatabaseException e) {
+            error = true;
+            errorTech = true;
+            e.printStackTrace();
+        }
+        
+        return isAdmin;
     }
 
     /**
@@ -762,16 +869,21 @@ public class InstallController extends Controller {
         ArrayList users = new ArrayList();
         
         // get list of users
-        try {
-            users = con.listUsers();
-        } catch (DatabaseConnectionException e) {
-            error = true;
-            errorConnection = true;
-            e.printStackTrace();
-        } catch (DatabaseException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
+        if (isAdministrator()) {
+            try {
+                users = con.listUsers();
+            } catch (DatabaseConnectionException e) {
+                error = true;
+                errorConnection = true;
+                e.printStackTrace();
+            } catch (DatabaseException e) {
+                error = true;
+                errorTech = true;
+                e.printStackTrace();
+            }
+            
+        } else {
+            users.add(rootUsername);
         }
             
         return users;
