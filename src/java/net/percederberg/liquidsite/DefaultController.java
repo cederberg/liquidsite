@@ -21,13 +21,19 @@
 
 package net.percederberg.liquidsite;
 
+import java.io.StringWriter;
+
 import net.percederberg.liquidsite.admin.AdminController;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.template.Template;
+import net.percederberg.liquidsite.template.TemplateException;
+import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
  * A controller for normal requests.
@@ -152,7 +158,9 @@ public class DefaultController extends Controller {
     private void processAuthorized(Request request, Content page)
         throws RequestException {
 
-        if (page instanceof ContentFile) {
+        if (page instanceof ContentPage) {
+            processContentPage(request, (ContentPage) page);
+        } else if (page instanceof ContentFile) {
             try {
                 request.sendFile(((ContentFile) page).getFile());
             } catch (ContentException e) {
@@ -218,6 +226,30 @@ public class DefaultController extends Controller {
             }
             request.setUser(null);
             request.setAttribute("error", "Invalid user name or password");
+        }
+    }
+
+    /**
+     * Processes a request to a content page.
+     *
+     * @param request        the request object
+     * @param page           the page requested
+     * 
+     * @throws RequestException if the request couldn't be processed
+     */
+    private void processContentPage(Request request, ContentPage page) 
+        throws RequestException {
+
+        Template      template;
+        StringWriter  buffer = new StringWriter();
+
+        try {
+            template = TemplateManager.getPageTemplate(page);
+            template.process(request, buffer);
+            request.sendData("text/html", buffer.toString());
+        } catch (TemplateException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
         }
     }
 }

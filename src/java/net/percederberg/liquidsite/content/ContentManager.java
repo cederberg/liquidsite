@@ -554,6 +554,12 @@ public class ContentManager {
             } else {
                 return "";
             }
+        case Content.PAGE_CATEGORY:
+            if (path.startsWith(page.getName())) {
+                return page.getName();
+            } else {
+                return "";
+            }
         case Content.FILE_CATEGORY:
             if (path.startsWith(page.getName())) {
                 return page.getName();
