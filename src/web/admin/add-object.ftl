@@ -15,6 +15,9 @@
     </script>
 
     <form method="post" accept-charset="UTF-8">
+<#if startpage?has_content>
+      <input type="hidden" name="liquidsite.startpage" value="${startpage}" />
+</#if>
       <input type="hidden" name="liquidsite.step" value="1" />
       <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />

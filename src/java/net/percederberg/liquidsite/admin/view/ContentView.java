@@ -132,6 +132,10 @@ public class ContentView extends AdminView {
                 request.setAttribute("enableFile", true);
             }
         }
+        if (request.getParameter("liquidsite.startpage") != null) {
+            request.setAttribute("startpage", 
+                                 request.getParameter("liquidsite.startpage"));
+        }
         request.sendTemplate("admin/add-object.ftl");
     }
 
