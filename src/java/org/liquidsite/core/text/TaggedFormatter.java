@@ -16,13 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004, 2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * A tagged text formatter. This class contains static methods for
@@ -33,6 +34,8 @@ import java.util.HashMap;
  */
 public class TaggedFormatter {
 
+    // TODO: add unit tests for all methods
+
     /**
      * Cleans a tagged text string. Unneeded line feeds and space
      * characters will be removed.
@@ -42,6 +45,386 @@ public class TaggedFormatter {
      * @return the cleaned tagged text string
      */
     public static String clean(String text) {
+        StringBuffer  result = new StringBuffer();
+        int           pos;
+
+        text = cleanWhitespace(text);
+        pos = cleanBlock(text, 0, result);
+        while (pos < text.length()) {
+            if (text.charAt(pos) == '\n') {
+                pos++;
+            } else {
+                result.append("\n\n");
+                pos = cleanBlock(text, pos, result);
+            }
+        }
+        return cleanWhitespace(result.toString());
+    }
+
+
+    /**
+     * Cleans a single block in a tagged text string. This will
+     * normalize all tags and clean an inline content. This method
+     * returns when a block break or double newline is encountered.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position
+     */
+    private static int cleanBlock(String text, int pos, StringBuffer result) {
+        int     backupLength;
+        int     newPos;
+        String  tag;
+
+        if (text.charAt(pos) == '<') {
+            backupLength = result.length();
+            newPos = cleanTag(text, pos, result);
+            tag = result.substring(backupLength);
+            if (newPos < pos + 3) {
+                pos = cleanInline(text, newPos, result);
+            } else if (tag.equals("")){  // This is the <p> tag
+                pos = cleanInline(text, newPos, result);
+                if (text.startsWith("</p>", pos)) {
+                    pos += 4;
+                }
+            } else if (tag.equals("<h1>")) {
+                pos = cleanInline(text, newPos, result);
+                pos = cleanTagEnd(text, pos, "</h1>", result);
+            } else if (tag.equals("<h2>")) {
+                pos = cleanInline(text, newPos, result);
+                pos = cleanTagEnd(text, pos, "</h2>", result);
+            } else if (tag.equals("<h3>")) {
+                pos = cleanInline(text, newPos, result);
+                pos = cleanTagEnd(text, pos, "</h3>", result);
+            } else if (tag.startsWith("<list")) {
+                result.append("\n");
+                pos = cleanList(text, newPos, result);
+                pos = cleanTagEnd(text, pos, "</list>", result);
+            } else {
+                result.setLength(backupLength);
+                pos = cleanInline(text, pos, result);
+            }
+        } else {
+            pos = cleanInline(text, pos, result);
+        }
+
+        return pos;
+    }
+
+    /**
+     * Cleans the inline content in a tagged text string. This will
+     * normalize all tags. This method returns when it encounters a
+     * block tag or a double newline.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position
+     */
+    private static int cleanInline(String text, int pos, StringBuffer result) {
+        LinkedList  stack = new LinkedList();
+        int         backupLength;
+        int         newPos;
+        String      tag;
+
+        while (pos < text.length()) {
+            if (text.startsWith("\n\n", pos)
+             || text.startsWith("\n<p", pos)
+             || text.startsWith("\n<h", pos)
+             || text.startsWith("\n<list", pos)
+             || text.startsWith("\n<item", pos)) {
+
+                break;
+            } else if (text.charAt(pos) == '<') {
+                backupLength = result.length();
+                newPos = cleanTag(text, pos, result);
+                tag = result.substring(backupLength);
+                if (newPos < pos + 3) {
+                    pos = newPos;
+                } else if (tag.equals("<b>")) {
+                    stack.addLast("</b>");
+                    pos = newPos;
+                } else if (tag.equals("<i>")) {
+                    stack.addLast("</i>");
+                    pos = newPos;
+                } else if (tag.startsWith("<link")) {
+                    stack.addLast("</link>");
+                    pos = newPos;
+                } else if (tag.startsWith("<image")) {
+                    pos = newPos;
+                } else if (tag.equals("</b>")
+                        || tag.equals("</i>")
+                        || tag.equals("</link>")) {
+
+                    result.setLength(backupLength);
+                    if (stack.contains(tag)) {
+                        while (!stack.getLast().equals(tag)) {
+                            result.append(stack.removeLast());
+                        }
+                        result.append(stack.removeLast());
+                    }
+                    pos = newPos;
+                } else {
+                    result.setLength(backupLength);
+                    break;
+                }
+            } else {
+                result.append(text.charAt(pos));
+                pos++;
+            }
+        }
+        while (stack.size() > 0) {
+            result.append(stack.removeLast());
+        }
+        return pos;
+    }
+
+    /**
+     * Cleans the list content in a tagged text string. This will
+     * normalize all tags. This method returns when it encounters the
+     * end of the list.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position
+     */
+    private static int cleanList(String text, int pos, StringBuffer result) {
+        int     backupLength;
+        int     newPos;
+        String  tag;
+
+        while (pos < text.length()) {
+            if (text.charAt(pos) == '\n') {
+                pos++;
+            } else if (text.charAt(pos) == '<') {
+                backupLength = result.length();
+                newPos = cleanTag(text, pos, result);
+                tag = result.substring(backupLength);
+                if (newPos < pos + 3) {
+                    result.insert(backupLength, "<item>");
+                    pos = cleanInline(text, newPos, result);
+                    pos = cleanTagEnd(text, pos, "</item>", result);
+                    result.append("\n");
+                } else if (tag.equals("<item>")) {
+                    pos = cleanInline(text, newPos, result);
+                    pos = cleanTagEnd(text, pos, "</item>", result);
+                    result.append("\n");
+                } else if (tag.equals("</item>")) {
+                    result.setLength(backupLength);
+                    pos = newPos;
+                } else if (tag.equals("</list>")) {
+                    result.setLength(backupLength);
+                    break;
+                } else if (tag.equals("<b>")
+                        || tag.equals("<i>")
+                        || tag.startsWith("<link")
+                        || tag.startsWith("<image")) {
+
+                    result.setLength(backupLength);
+                    result.append("<item>");
+                    pos = cleanInline(text, pos, result);
+                    pos = cleanTagEnd(text, pos, "</item>", result);
+                    result.append("\n");
+                } else {
+                    result.setLength(backupLength);
+                    break;
+                }
+            } else {
+                result.append("<item>");
+                pos = cleanInline(text, pos, result);
+                pos = cleanTagEnd(text, pos, "</item>", result);
+                result.append("\n");
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * Cleans and normalizes a tag in a tagged text string.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position (after the tag)
+     */
+    private static int cleanTag(String text, int pos, StringBuffer result) {
+        int      start = pos;
+        int      end;
+        String   name;
+        boolean  insideQuote = false;
+        boolean  isEnd = false;
+
+        // Find ending '>' character
+        while (pos < text.length()
+            && (text.charAt(pos) != '>' || insideQuote)) {
+
+            if (text.charAt(pos) == '"') {
+                insideQuote = !insideQuote;
+            }
+            pos++;
+        }
+        if (pos >= text.length()) {
+            result.append("<");
+            return start + 1;
+        }
+        end = pos + 1;
+
+        // Find tag name and attribute start
+        pos = text.indexOf(' ', start);
+        if (pos < 0 || pos >= end) {
+            pos = end - 1;
+        }
+        name = text.substring(start + 1, pos);
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+            isEnd = true;
+        }
+
+        // Check for unknown tag names
+        if (!name.equals("h1") && !name.equals("h2")
+         && !name.equals("h3") && !name.equals("p") 
+         && !name.equals("b") && !name.equals("i")
+         && !name.equals("link") && !name.equals("image")
+         && !name.equals("list") && !name.equals("item")) {
+
+            result.append("<");
+            return start + 1;
+        }
+        if (isEnd && name.equals("image")) {
+            return end;
+        }
+
+        // Check for suppressed tags
+        if (name.equals("p")) {
+            return end;
+        }
+
+        // Normalize tag
+        result.append("<");
+        if (isEnd) {
+            result.append("/");
+        }
+        result.append(name);
+        
+        // Normalize tag attributes
+        if (!isEnd) {
+            if (name.equals("link")
+             || name.equals("image")
+             || name.equals("list")) {
+
+                cleanTagAttributes(text, pos, end - 1, name, result);
+            }
+            if (name.equals("image")) {
+                result.append(" /");
+            }
+        }
+        result.append(">");
+
+        return end;
+    }
+
+    /**
+     * Cleans an end tag in a tagged text string. This will print the
+     * end tag to the result, and if the string contains the
+     * specified end tag the current text position will be advanced.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param tag            the end tag to print
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position (after the tag)
+     */
+    private static int cleanTagEnd(String text,
+                                   int pos,
+                                   String tag,
+                                   StringBuffer result) {
+
+        result.append(tag);
+        if (text.startsWith(tag, pos)) {
+            pos += tag.length();
+        }
+        return pos;
+    }
+
+    /**
+     * Cleans and normalizes a tag attribute string.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param end            the end position of the tag (inclusive)
+     * @param tagName        the tag name
+     * @param result         the cleaned tagged text
+     */
+    private static void cleanTagAttributes(String text,
+                                           int pos,
+                                           int end,
+                                           String tagName,
+                                           StringBuffer result) {
+
+        HashMap  attributes = new HashMap();
+        String   str;
+
+        // Parse tag attributes
+        if (text.charAt(end) == '>') {
+            end--;
+        }
+        if (tagName.equals("image") && text.charAt(end) == '/') {
+            end--;
+        }
+        attributes = parseTagAttributes(text, pos, end + 1);
+
+        // Normalize attributes
+        if (tagName.equals("list")) {
+            str = (String) attributes.get("type");
+            if (str != null && !str.equals("")) {
+                result.append(" type=\"");
+                result.append(str);
+                result.append("\"");
+            }
+        } else if (tagName.equals("link")) {
+            str = (String) attributes.get("url");
+            result.append(" url=\"");
+            if (str != null) {
+                result.append(str);
+            }
+            result.append("\"");
+            str = (String) attributes.get("window");
+            if (str != null) {
+                result.append(" window=\"");
+                result.append(str);
+                result.append("\"");
+            }
+        } else if (tagName.equals("image")) {
+            str = (String) attributes.get("url");
+            result.append(" url=\"");
+            if (str != null) {
+                result.append(str);
+            }
+            result.append("\"");
+            str = (String) attributes.get("layout");
+            if (str != null) {
+                result.append(" layout=\"");
+                result.append(str);
+                result.append("\"");
+            }
+        }
+    }
+
+    /**
+     * Cleans a tagged text string for excessive whitespace.
+     *
+     * @param text           the tagged text string
+     *
+     * @return the cleaned tagged text string
+     */
+    private static String cleanWhitespace(String text) {
         StringBuffer  buffer = new StringBuffer();
         int           pos;
 
@@ -61,6 +444,13 @@ public class TaggedFormatter {
             buffer.setLength(buffer.length() - 1);
         }
 
+        // Replace tab characters with spaces
+        pos = buffer.indexOf("\t");
+        while (pos > 0) {
+            buffer.replace(pos, pos + 1, " ");
+            pos = buffer.indexOf("\t");
+        }
+
         // Remove duplicate empty lines
         pos = buffer.indexOf("\n\n\n");
         while (pos > 0) {
@@ -68,7 +458,6 @@ public class TaggedFormatter {
             pos = buffer.indexOf("\n\n\n");
         }
 
-        // TODO: reformat lists and list items
         return buffer.toString();
     }
 
@@ -87,7 +476,10 @@ public class TaggedFormatter {
         StringBuffer  buffer = new StringBuffer();
         String        str;
 
+        // TODO: change to implementation similar to clean()
+
         // Clean formatted text
+        // TODO: remove this, add to installer instead?
         text = clean(text);
 
         // Split into paragraphs
@@ -306,6 +698,71 @@ public class TaggedFormatter {
                 value = value.substring(0, value.length() - 1);
             }
             result.put(name, value);
+        }
+        return result;
+    }
+
+    /**
+     * Parses the tag attributes. This method extracts all the
+     * attributes and their values from the string and returns the
+     * mappings in a hash map.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param end            the end position (exclusive)
+     *
+     * @return the hash map with attribute names and values
+     */
+    private static HashMap parseTagAttributes(String text, int pos, int end) {
+        HashMap  result = new HashMap();
+        String   name;
+        String   value;
+        int      temp;
+
+        while (pos < end) {
+            if (text.charAt(pos) == ' ') {
+                pos++;
+            } else {
+                temp = text.indexOf('=', pos);
+                if (temp <= 0 || temp >= end) {
+                    name = text.substring(pos, end).trim();
+                    result.put(name, "");
+                    break;
+                }
+                name = text.substring(pos, temp).trim();
+                pos = temp + 1;
+                while (text.charAt(pos) == ' '
+                    || text.charAt(pos) == '\n') {
+
+                    pos++;
+                    if (pos >= end) {
+                        break;
+                    }
+                }
+                if (pos >= end) {
+                    result.put(name, "");
+                    break;
+                } else if (text.charAt(pos) == '"') {
+                    temp = text.indexOf('"', pos + 1);
+                    if (temp < 0 || temp >= end) {
+                        value = text.substring(pos + 1, end);
+                        pos = end;
+                    } else {
+                        value = text.substring(pos + 1, temp);
+                        pos = temp + 1;
+                    }
+                } else {
+                    temp = text.indexOf(' ', pos);
+                    if (temp < 0 || temp >= end) {
+                        value = text.substring(pos, end);
+                        pos = end;
+                    } else {
+                        value = text.substring(pos, temp);
+                        pos = temp + 1;
+                    }
+                }
+                result.put(name, value);
+            }
         }
         return result;
     }
