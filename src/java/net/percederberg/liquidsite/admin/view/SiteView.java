@@ -256,7 +256,7 @@ public class SiteView extends AdminView {
             setRequestTemplates(request, page.getDomain(), 0);
             name = page.getName();
             parent = page.getParentId();
-            site = findSite((Content) reference);
+            site = findSite(page);
             folders = findFolders(request.getUser(), site, null);
             template = String.valueOf(page.getTemplateId());
             comment = "";
@@ -308,28 +308,59 @@ public class SiteView extends AdminView {
         request.setAttribute("locals", locals);
         request.sendTemplate("admin/edit-page.ftl");
     }
-    
+
     /**
      * Shows the add or edit file page.
-     * 
+     *
      * @param request        the request object
      * @param reference      the reference object (parent or file)
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void viewEditFile(Request request, Object reference) {
-        String  name;
-        String  comment;
+    public void viewEditFile(Request request, Object reference)
+        throws ContentException {
 
+        ContentFile  file;
+        ContentSite  site;
+        String       name;
+        int          parent;
+        ArrayList    folders = null;
+        String       comment;
+        String       str;
+
+        // Find default values
         AdminUtils.setReference(request, reference);
         if (reference instanceof ContentFile) {
-            name = ((ContentFile) reference).getName();
+            file = (ContentFile) reference;
+            name = file.getName();
+            parent = file.getParentId();
+            site = findSite(file);
+            folders = findFolders(request.getUser(), site, null);
             comment = "";
         } else {
             name = "";
+            parent = 0;
             comment = "Created";
         }
-        request.setAttribute("name", request.getParameter("name", name));
-        request.setAttribute("comment", 
-                             request.getParameter("comment", comment));
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            try {
+                str = request.getParameter("parent", "0");
+                parent = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                parent = 0;
+            }
+            comment = request.getParameter("comment", "");
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("parent", String.valueOf(parent));
+        request.setAttribute("folders", folders);
+        request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-file.ftl");
     }
     
@@ -340,26 +371,54 @@ public class SiteView extends AdminView {
      * @param request        the request object
      * @param parent         the parent object, or null
      * @param folder         the folder object, or null
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     public void viewEditFolder(Request request, 
                                Object parent, 
-                               ContentFolder folder) {
+                               ContentFolder folder)
+        throws ContentException {
 
-        String  name;
-        String  comment;
+        ContentSite  site;
+        String       name;
+        int          parentId;
+        ArrayList    folders = null;
+        String       comment;
+        String       str;
 
+        // Find default values
         if (parent != null) {
             AdminUtils.setReference(request, parent);
             name = "";
+            parentId = 0;
             comment = "Created";
         } else {
             AdminUtils.setReference(request, folder);
             name = folder.getName();
+            parentId = folder.getParentId();
+            site = findSite(folder);
+            folders = findFolders(request.getUser(), site, folder);
             comment = "";
         }
-        request.setAttribute("name", request.getParameter("name", name));
-        request.setAttribute("comment", 
-                             request.getParameter("comment", comment));
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            try {
+                str = request.getParameter("parent", "0");
+                parentId = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                parentId = 0;
+            }
+            comment = request.getParameter("comment", "");
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("parent", String.valueOf(parentId));
+        request.setAttribute("folders", folders);
+        request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-folder.ftl");
     }
     

@@ -322,8 +322,16 @@ class SiteEditFormHandler extends AdminFormHandler {
     private void handleEditFolder(Request request, ContentFolder folder) 
         throws ContentException, ContentSecurityException {
 
+        int  id;
+
         folder.setRevisionNumber(0);
         folder.setName(request.getParameter("name"));
+        try {
+            id = Integer.parseInt(request.getParameter("parent"));
+            folder.setParentId(id);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
         folder.setComment(request.getParameter("comment"));
         folder.save(request.getUser());
     }
@@ -396,10 +404,17 @@ class SiteEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         FileParameter  param;
+        int            id;
         
         try {
             file.setRevisionNumber(0);
             file.setName(request.getParameter("name"));
+            try {
+                id = Integer.parseInt(request.getParameter("parent"));
+                file.setParentId(id);
+            } catch (NumberFormatException ignore) {
+                // This is ignored
+            }
             file.setComment(request.getParameter("comment"));
             param = request.getFileParameter("content");
             if (param != null && param.getSize() > 0) {

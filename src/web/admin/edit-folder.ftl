@@ -60,23 +60,44 @@
             any spaces.</p>
           </td>
         </tr>
+<#if !isadd>
+        <tr>
+          <th>
+            Parent&nbsp;Folder:
+          </th>
+          <td class="field">
+            <select tabindex="2" name="parent">
+  <#list folders as item>
+    <#if parent == item.id>
+              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+    <#else>
+              <option value="${item.id}">${item.name?xml}</option>
+    </#if>
+  </#list>
+            </select>
+            <p>The parent folder controls the location of the folder.
+            Note that changing parent will also modify the folder
+            URL.</p>
+          </td>
+        </tr>
+</#if>
         <tr>
           <th>
             Comment:
           </th>
           <td class="field">
-            <input type="text" tabindex="2" size="40"
+            <input type="text" tabindex="3" size="40"
                    name="comment" value="${comment}" />
             <p>The revision comment.</p>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="4" onclick="previous()">
+            <button type="button" tabindex="5" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" tabindex="3">
+            <button type="submit" tabindex="4">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>
