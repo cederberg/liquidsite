@@ -282,6 +282,8 @@ class AdminView {
             }
         } else if (focus != null && focus instanceof Domain) {
             buffer.append(script.getTreeViewSelect((Domain) focus));
+        } else if (focus == null && domains.length > 0) {
+            buffer.append(script.getTreeViewSelect(domains[0]));
         }
         request.setAttribute("initialize", buffer.toString());
         request.sendTemplate("admin/site.ftl");
