@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.web.Request;
@@ -343,7 +344,6 @@ public class LiquidSiteBean {
         ContentSection  section;
 
         // TODO: add sorting (and remove the one that exists)
-        // TODO: add filtering
         try {
             domain = request.getEnvironment().getDomain();
             content = findContent(path, domain);
@@ -499,25 +499,24 @@ public class LiquidSiteBean {
                        ArrayList results)
         throws ContentException {
 
+        ContentSelector   selector;
         ContentSection[]  sections;
         Content[]         children;
         DocumentBean      doc;
 
+        selector = new ContentSelector(section.getDomain());
         sections = findSections(section);
-        children = manager.getContentChildren(request.getUser(), sections);
-        // TODO: implement offset and count in SQL
+        for (int i = 0; i < sections.length; i++) {
+            selector.requireParent(sections[i]);
+        }
+        selector.requireCategory(Content.DOCUMENT_CATEGORY);
+        selector.limitResults(offset, count);
+        children = manager.getContentObjects(request.getUser(), selector);
         for (int i = 0; i < children.length; i++) {
-            if (children[i] instanceof ContentDocument) {
-                if (offset > 0) {
-                    offset--;
-                } else if (count > 0) {
-                    count--;
-                    doc = new DocumentBean((ContentDocument) children[i],
-                                           section,
-                                           getSitePath());
-                    results.add(doc);
-                }
-            }
+            doc = new DocumentBean((ContentDocument) children[i],
+                                   section,
+                                   getSitePath());
+            results.add(doc);
         }
     }
 

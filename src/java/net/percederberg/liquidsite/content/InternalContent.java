@@ -149,132 +149,6 @@ class InternalContent {
     }
 
     /**
-     * Returns an array of root content objects in the specified
-     * domain. Only the latest revision of each content object will
-     * be returned.
-     *
-     * @param manager        the content manager to use
-     * @param domain         the domain
-     *
-     * @return an array of content objects found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static Content[] findByParent(ContentManager manager, Domain domain)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
-        ArrayList           list;
-
-        try {
-            query = new ContentQuery(domain.getName());
-            query.requireParent(0);
-            if (manager.isAdmin()) {
-                query.requireOnline(false);
-                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
-                query.sortByKey(ContentQuery.NAME_KEY, true);
-            } else {
-                query.requireOnline(true);
-                query.sortByKey(ContentQuery.ONLINE_KEY, false);
-            }
-            list = ContentPeer.doSelectByQuery(query, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Returns an array of content objects having the specified
-     * parent. Only the latest revision of each content object will
-     * be returned.
-     *
-     * @param manager        the content manager to use
-     * @param parent         the parent content
-     *
-     * @return an array of content objects found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static Content[] findByParent(ContentManager manager, Content parent)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
-        ArrayList           list;
-
-        try {
-            query = new ContentQuery(parent.getDomainName());
-            query.requireParent(parent.getId());
-            if (manager.isAdmin()) {
-                query.requireOnline(false);
-                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
-                query.sortByKey(ContentQuery.NAME_KEY, true);
-            } else {
-                query.requireOnline(true);
-                query.sortByKey(ContentQuery.ONLINE_KEY, false);
-            }
-            list = ContentPeer.doSelectByQuery(query, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Returns an array of content objects having one of the
-     * specified parents. Only the latest revision of each content
-     * object will be returned.
-     *
-     * @param manager        the content manager to use
-     * @param parents        the parent content identifiers
-     *
-     * @return an array of content objects found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static Content[] findByParents(ContentManager manager,
-                                   Content[] parents)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
-        ArrayList           list;
-
-        try {
-            query = new ContentQuery(parents[0].getDomainName());
-            for (int i = 0; i < parents.length; i++) {
-                query.requireParent(parents[i].getId());
-            }
-            if (manager.isAdmin()) {
-                query.requireOnline(false);
-                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
-                query.sortByKey(ContentQuery.NAME_KEY, true);
-            } else {
-                query.requireOnline(true);
-                query.sortByKey(ContentQuery.ONLINE_KEY, false);
-            }
-            list = ContentPeer.doSelectByQuery(query, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
      * Returns the content object with the specified name in the
      * domain root. Only the latest revision of the content object
      * will be returned.
@@ -359,6 +233,51 @@ class InternalContent {
     }
 
     /**
+     * Returns an array of root content objects in the specified
+     * domain. Only the latest revision of each content object will
+     * be returned.
+     *
+     * @param manager        the content manager to use
+     * @param domain         the domain
+     *
+     * @return an array of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    static Content[] findByParent(ContentManager manager, Domain domain)
+        throws ContentException {
+
+        ContentSelector  selector = new ContentSelector(domain);
+
+        selector.requireRootParent();
+        return findBySelector(manager, selector);
+    }
+
+    /**
+     * Returns an array of content objects having the specified
+     * parent. Only the latest revision of each content object will
+     * be returned.
+     *
+     * @param manager        the content manager to use
+     * @param parent         the parent content
+     *
+     * @return an array of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    static Content[] findByParent(ContentManager manager, Content parent)
+        throws ContentException {
+
+        ContentSelector  selector;
+
+        selector = new ContentSelector(parent.getDomainName());
+        selector.requireParent(parent);
+        return findBySelector(manager, selector);
+    }
+
+    /**
      * Returns an array of root content objects with the specified
      * category. Only the latest revision of each content object will
      * be returned.
@@ -377,30 +296,11 @@ class InternalContent {
                                     int category)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
-        ArrayList           list;
+        ContentSelector  selector = new ContentSelector(domain);
 
-        try {
-            query = new ContentQuery(domain.getName());
-            query.requireParent(0);
-            query.requireCategory(category);
-            if (manager.isAdmin()) {
-                query.requireOnline(false);
-                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
-                query.sortByKey(ContentQuery.NAME_KEY, true);
-            } else {
-                query.requireOnline(true);
-                query.sortByKey(ContentQuery.ONLINE_KEY, false);
-            }
-            list = ContentPeer.doSelectByQuery(query, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
+        selector.requireRootParent();
+        selector.requireCategory(category);
+        return findBySelector(manager, selector);
     }
 
     /**
@@ -422,22 +322,37 @@ class InternalContent {
                                     int category)
         throws ContentException {
 
+        ContentSelector  selector;
+
+        selector = new ContentSelector(parent.getDomainName());
+        selector.requireParent(parent);
+        selector.requireCategory(category);
+        return findBySelector(manager, selector);
+    }
+
+    /**
+     * Returns an array of content objects matching the specified
+     * selector. Only the latest revision of each content object will
+     * be returned.
+     *
+     * @param manager        the content manager to use
+     * @param selecto        the content selector
+     *
+     * @return an array of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    static Content[] findBySelector(ContentManager manager,
+                                    ContentSelector selector)
+        throws ContentException {
+
         DatabaseConnection  con = getDatabaseConnection(manager);
         ContentQuery        query;
         ArrayList           list;
 
         try {
-            query = new ContentQuery(parent.getDomainName());
-            query.requireParent(parent.getId());
-            query.requireCategory(category);
-            if (manager.isAdmin()) {
-                query.requireOnline(false);
-                query.sortByKey(ContentQuery.CATEGORY_KEY, true);
-                query.sortByKey(ContentQuery.NAME_KEY, true);
-            } else {
-                query.requireOnline(true);
-                query.sortByKey(ContentQuery.ONLINE_KEY, false);
-            }
+            query = selector.getContentQuery(manager);
             list = ContentPeer.doSelectByQuery(query, con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {

@@ -486,23 +486,25 @@ public class ContentManager {
     }
 
     /**
-     * Returns the user readable child content objects. Only the
-     * highest revision of each object will be returned.
+     * Returns the user readable content objects matching the
+     * selector. Only the highest revision of each object will be
+     * returned.
      *
      * @param user           the user requesting the content
-     * @param parents        the content parents
+     * @param selector       the content selector
      *
-     * @return the user readable child content objects
+     * @return the user readable content objects
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public Content[] getContentChildren(User user, Content[] parents)
+    public Content[] getContentObjects(User user, ContentSelector selector)
         throws ContentException {
 
-        Content[]  children = InternalContent.findByParents(this, parents);
+        Content[]  content;
 
-        return postProcess(user, children);
+        content = InternalContent.findBySelector(this, selector);
+        return postProcess(user, content);
     }
 
     /**
@@ -721,12 +723,16 @@ public class ContentManager {
         Content[]  res;
 
         for (int i = 0; i < content.length; i++) {
-            if (isOnline(content[i]) && isReadable(user, content[i])) {
+            if (isReadable(user, content[i])) {
                 list.add(content[i]);
             }
         }
-        res = new Content[list.size()];
-        list.toArray(res);
+        if (content.length == list.size()) {
+            res = content;
+        } else {
+            res = new Content[list.size()];
+            list.toArray(res);
+        }
         return res;
     }
 }

@@ -137,6 +137,16 @@ public class ContentQuery {
     }
 
     /**
+     * Checks if the query contains sort columns.
+     *
+     * @return true if the query sorts the results, or
+     *         false otherwise
+     */
+    public boolean isSorting() {
+        return sortColumns.size() > 0;
+    }
+
+    /**
      * Adds a content parent requirement. By default any content
      * parent will be accepted. By calling this method several times
      * with different parents, a set of content parents will be
@@ -275,8 +285,6 @@ public class ContentQuery {
             sql.append(" AND c.PARENT = ");
             sql.append(parents.get(0));
         } else if (parents.size() > 1) {
-            sql.append(" AND c.ID NOT IN ");
-            appendSql(sql, parents);
             sql.append(" AND c.PARENT IN ");
             appendSql(sql, parents);
         }

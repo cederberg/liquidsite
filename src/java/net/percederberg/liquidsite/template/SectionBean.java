@@ -140,7 +140,6 @@ public class SectionBean {
         ArrayList  results = new ArrayList();
 
         // TODO: add sorting (and remove the one that exists)
-        // TODO: add filtering
         if (section != null) {
             try {
                 baseBean.findDocuments(section, offset, count, results);

@@ -39,12 +39,12 @@ public class ContentDocument extends Content {
     /**
      * The document property content attribute prefix.
      */
-    private static final String PROPERTY_PREFIX = "PROPERTY.";
+    static final String PROPERTY_PREFIX = "PROPERTY.";
 
     /**
      * The document property type content attribute prefix.
      */
-    private static final String PROPERTY_TYPE_PREFIX = "PROPERTYTYPE.";
+    static final String PROPERTY_TYPE_PREFIX = "PROPERTYTYPE.";
 
     /**
      * Creates a new document with default values.
