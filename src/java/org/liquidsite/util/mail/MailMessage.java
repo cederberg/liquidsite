@@ -89,6 +89,31 @@ public class MailMessage {
     }
 
     /**
+     * Returns a string representation of this mail message.
+     *
+     * @return a string representation of this mail message
+     */
+    public String toString() {
+        StringBuffer  buffer = new StringBuffer();
+        String        str;
+
+        buffer.append("To: ");
+        buffer.append(getRecipients());
+        buffer.append("\n");
+        str = getReplyTo();
+        if (str != null) {
+            buffer.append("Reply-To: ");
+            buffer.append(str);
+            buffer.append("\n");
+        }
+        buffer.append("Subject: ");
+        buffer.append(getSubject());
+        buffer.append("\n\n");
+        buffer.append(getText());
+        return buffer.toString();
+    }
+
+    /**
      * Checks if this message is valid. A message becomes valid once
      * it has at least one recipient and non-empty subject and text
      * content.
@@ -128,10 +153,12 @@ public class MailMessage {
      *
      * @param recipients     the message recipient addresses
      *
-     * @throws MailException if the list of message recipient addresses
-     *             wasn't possible to parse correctly
+     * @throws MailMessageException if the list of message recipient
+     *             addresses wasn't possible to parse correctly
      */
-    public void setRecipients(String recipients) throws MailException {
+    public void setRecipients(String recipients)
+        throws MailMessageException {
+
         this.recipients.clear();
         addRecipients(recipients);
     }
@@ -143,10 +170,12 @@ public class MailMessage {
      *
      * @param recipients     the message recipient addresses
      *
-     * @throws MailException if the list of message recipient addresses
-     *             wasn't possible to parse correctly
+     * @throws MailMessageException if the list of message recipient
+     *             addresses wasn't possible to parse correctly
      */
-    public void addRecipients(String recipients) throws MailException {
+    public void addRecipients(String recipients)
+        throws MailMessageException {
+
         InternetAddress[]  addresses;
         String             error;
 
@@ -155,7 +184,7 @@ public class MailMessage {
         } catch (AddressException e) {
             error = "failed to parse mail address(es) '" + recipients + "'";
             LOG.info(error, e);
-            throw new MailException(error, e);
+            throw new MailMessageException(error, e);
         }
         for (int i = 0; i < addresses.length; i++) {
             this.recipients.add(addresses[i]);
@@ -181,10 +210,10 @@ public class MailMessage {
      *
      * @param address        the reply-to address
      *
-     * @throws MailException if the reply-to address wasn't possible
-     *             to parse correctly
+     * @throws MailMessageException if the reply-to address wasn't
+     *             possible to parse correctly
      */
-    public void setReplyTo(String address) throws MailException {
+    public void setReplyTo(String address) throws MailMessageException {
         String  error;
 
         try {
@@ -192,7 +221,7 @@ public class MailMessage {
         } catch (AddressException e) {
             error = "failed to parse mail reply-to address '" + address + "'";
             LOG.info(error, e);
-            throw new MailException(error, e);
+            throw new MailMessageException(error, e);
         }
     }
 
@@ -281,11 +310,11 @@ public class MailMessage {
      *
      * @return the Java MIME messages created
      *
-     * @throws MailException if the messages couldn't be created
-     *             correctly
+     * @throws MailMessageException if the messages couldn't be
+     *             created correctly
      */
     protected MimeMessage[] createMessages(Session session)
-        throws MailException {
+        throws MailMessageException {
 
         MimeMessage[]      msgs = new MimeMessage[recipients.size()];
         InternetAddress[]  addresses;
@@ -312,7 +341,7 @@ public class MailMessage {
             error = "failed to create mail message to '" + getRecipients() +
                     "'";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailMessageException(error, e);
         }
         return msgs;
     }

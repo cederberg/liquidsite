@@ -39,8 +39,8 @@ import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
-import org.liquidsite.util.mail.MailException;
 import org.liquidsite.util.mail.MailMessage;
+import org.liquidsite.util.mail.MailMessageException;
 import org.liquidsite.util.mail.MailQueue;
 
 /**
@@ -638,7 +638,7 @@ class BeanContext {
             msg.setAttribute("IP", request.getRemoteAddr());
             MailQueue.getInstance().add(msg);
             return true;
-        } catch (MailException e) {
+        } catch (MailMessageException e) {
             LOG.warning("couldn't send mail", e);
             return false;
         }

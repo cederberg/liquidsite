@@ -199,41 +199,42 @@ public class MailQueue {
      *
      * @param message        the message to add
      *
-     * @throws MailException if the message wasn't valid or if the
-     *             queue was full
+     * @throws MailMessageException if the message wasn't valid or if
+     *             the queue was full
      */
-    public synchronized void add(MailMessage message) throws MailException {
-        String        error;
+    public void add(MailMessage message) throws MailMessageException {
+        String  error;
 
         if (!message.isValid()) {
-            error = "attempt to send invalid mail message to '" +
+            error = "invalid mail message to '" +
                     message.getRecipients() + "'";
             LOG.warning(error);
-            throw new MailException(error);
+            throw new MailMessageException(error);
         }
         if (queue.size() >= MAX_QUEUE_SIZE) {
             error = "mail queue full, message to '" +
                     message.getRecipients() + "' rejected";
             LOG.error(error);
-            throw new MailException(error);
+            throw new MailMessageException(error);
         }
         if (session == null) {
             error = "mail not initialized, message to '" +
                     message.getRecipients() + "' rejected";
             LOG.error(error);
-            throw new MailException(error);
+            throw new MailMessageException(error);
         }
-        addMessageText(message);
-        queue.addLast(message);
+        adjustMessageText(message);
+        enqueue(message);
         LOG.trace("queued mail message to '" + message.getRecipients() + "'");
     }
 
     /**
-     * Adds the configured message header and footer text.
+     * Adjust the message text by adding the configured message
+     * header and footer.
      *
      * @param message        the message to modify
      */
-    private void addMessageText(MailMessage message) {
+    private void adjustMessageText(MailMessage message) {
         StringBuffer  buffer = new StringBuffer();
         Iterator      iter;
         String        str;
@@ -254,27 +255,53 @@ public class MailQueue {
     }
 
     /**
+     * Processes the mail messages in the queue. If the queue is
+     * empty, nothing is done. The messages are removed from the
+     * queue only if sent correctly or if they are invalid. On mail
+     * transport error, the mail messages will remain in the queue.
+     *
+     * @throws MailTransportException if the mail transport couldn't
+     *             be initialized correctly
+     */
+    public void process() throws MailTransportException {
+        int          count = queue.size();
+        MailMessage  message;
+
+        while (count-- > 0) {
+            try {
+                processFirst();
+            } catch (MailMessageException e) {
+                message = dequeue();
+                LOG.error("dumping message due to error:\n\n" + message + "\n");
+            }
+        }
+    }
+
+    /**
      * Processes the first mail message in the queue. If the queue is
      * empty, nothing is done. The message is removed from the queue
-     * only if it has been sent correctly. This method is thread-safe.
+     * only if it has been sent correctly.
      *
-     * @throws MailException if the message couldn't be sent correctly
+     * @throws MailTransportException if the mail transport couldn't
+     *             be initialized correctly
+     * @throws MailMessageException if the mail message couldn't be
+     *             sent due to an error in the message 
      */
-    public void process() throws MailException {
+    private void processFirst()
+        throws MailTransportException, MailMessageException {
+
         MailMessage  message;
         Transport    transport;
         Message[]    msgs;
         String       error;
 
         // Get first message
-        synchronized (this) {
-            if (queue.size() <= 0 || session == null) {
-                return;
-            }
-            message = (MailMessage) queue.getFirst();
-            LOG.trace("starting processing of mail message to '" +
-                      message.getRecipients() + "'");
+        message = getFirst();
+        if (message == null || session == null) {
+            return;
         }
+        LOG.trace("starting processing of mail message to '" +
+                  message.getRecipients() + "'");
 
         // Connect to SMTP server
         try {
@@ -282,22 +309,22 @@ public class MailQueue {
         } catch (NoSuchProviderException e) {
             error = "failed to create SMTP transport";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailTransportException(error, e);
         }
         try {
             transport.connect();
         } catch (AuthenticationFailedException e) {
             error = "failed to authenticate to SMTP server";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailTransportException(error, e);
         } catch (MessagingException e) {
             error = "unknown error while sending message";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailTransportException(error, e);
         } catch (IllegalStateException e) {
             error = "already connected to SMTP transport";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailTransportException(error, e);
         }
 
         // Send mail messages
@@ -309,11 +336,11 @@ public class MailQueue {
         } catch (SendFailedException e) {
             error = "failed to send mail message";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailMessageException(error, e);
         } catch (MessagingException e) {
             error = "unknown error while sending message";
             LOG.error(error, e);
-            throw new MailException(error, e);
+            throw new MailMessageException(error, e);
         } finally {
             try {
                 transport.close();
@@ -323,10 +350,48 @@ public class MailQueue {
         }
 
         // Dequeue sent message
-        synchronized (this) {
-            queue.removeFirst();
-        }
+        dequeue();
         LOG.trace("finished processing of mail message to '" +
                   message.getRecipients() + "'");
+    }
+
+    /**
+     * Returns the first mail message in the queue. This method is
+     * thread-safe.
+     *
+     * @return the first mail message in the queue, or
+     *         null if the queue was empty
+     */
+    private synchronized MailMessage getFirst() {
+        if (queue.isEmpty()) {
+            return null;
+        } else {
+            return (MailMessage) queue.getFirst();
+        }
+    }
+
+    /**
+     * Adds a new message last in the queue. This method is
+     * thread-safe.
+     *
+     * @param message        the mail message to add
+     */
+    private synchronized void enqueue(MailMessage message) {
+        queue.addLast(message);
+    }
+
+    /**
+     * Removes the first message in the queue and returns it. This
+     * method is thread-safe.
+     *
+     * @return the removed mail message, or
+     *         null if the queue was empty
+     */
+    private synchronized MailMessage dequeue() {
+        if (queue.isEmpty()) {
+            return null;
+        } else {
+            return (MailMessage) queue.removeFirst();
+        }
     }
 }

@@ -41,7 +41,7 @@ import org.liquidsite.util.db.DatabaseConnectionException;
 import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.db.MySQLDatabaseConnector;
 import org.liquidsite.util.log.Log;
-import org.liquidsite.util.mail.MailException;
+import org.liquidsite.util.mail.MailTransportException;
 import org.liquidsite.util.mail.MailQueue;
 
 /**
@@ -451,26 +451,33 @@ public class LiquidSiteServlet extends HttpServlet
          * The loop delay in milliseconds. The thread will wait for
          * this period of time in each pass of the monitor loop.
          */
-        private static final int LOOP_DELAY = 100;
+        private static final int LOOP_DELAY = 1000;
 
         /**
          * The stop timeout in milliseconds.
          */
-        private static final int STOP_TIMEOUT = 1000;
+        private static final int STOP_TIMEOUT = 3000;
 
         /**
          * The database update threshold. This is the number of loop
          * iterations to skip in between calls to update() in the
          * database connector.
          */
-        private static final int DATABASE_UPDATE_THRESHOLD = 600;
+        private static final int DATABASE_UPDATE_THRESHOLD = 60;
 
         /**
          * The mail processing threshold. This is the number of loop
          * iterations to skip in between calls to process() in the
          * mail queue.
          */
-        private static final int MAIL_PROCESS_THRESHOLD = 10;
+        private static final int MAIL_PROCESS_THRESHOLD = 5;
+
+        /**
+         * The mail error threshold. This is the number of loop
+         * iterations to skip mail processing upon a mail transport
+         * error.
+         */
+        private static final int MAIL_ERROR_THRESHOLD = 60;
 
         /**
          * The alive flag. If this flag is set to false, the thread
@@ -552,8 +559,10 @@ public class LiquidSiteServlet extends HttpServlet
                 mailCounter = 0;
                 try {
                     MailQueue.getInstance().process();
-                } catch (MailException e) {
+                } catch (MailTransportException e) {
                     LOG.error(e.getMessage());
+                    mailCounter = MAIL_PROCESS_THRESHOLD -
+                                  MAIL_ERROR_THRESHOLD;
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*
- * MailException.java
+ * MailMessageException.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -22,31 +22,32 @@
 package org.liquidsite.util.mail;
 
 /**
- * A mail exception. This exception is thrown when a mail operation
- * couldn't be executed correctly. This may be due to invalid
- * addresses, incorrect mail configuration or similar.
+ * A mail message exception. This exception is thrown when a mail
+ * message couldn't be sent correctly. This may be due to invalid
+ * addresses, missing fields or similar. The mail message that caused
+ * this error is normally discarded and logged.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class MailException extends Exception {
+public class MailMessageException extends Exception {
 
     /**
-     * Creates a new mail exception.
+     * Creates a new mail message exception.
      *
      * @param message        the error message
      */
-    public MailException(String message) {
+    public MailMessageException(String message) {
         super(message);
     }
 
     /**
-     * Creates a new mail exception.
+     * Creates a new mail message exception.
      *
      * @param message        the error message
      * @param cause          the root cause to the error
      */
-    public MailException(String message, Exception cause) {
+    public MailMessageException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
     }
 }
