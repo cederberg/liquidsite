@@ -88,11 +88,11 @@
           </th>
           <td class="field">
   <#if prop.type == 1>
-            <input type="text" tabindex="3" size="30"
+            <input type="text" tabindex="3" size="50"
                    name="property.${prop.id}" value="${data[prop.id]}" />
   <#else>
             <textarea tabindex="3" rows="6" cols="60"
-                      name="property.${prop.id}">${data[prop.id]}</textarea>
+                      name="property.${prop.id}">${data[prop.id]?xml}</textarea>
   </#if>
             <p>${prop.description}</p>
           </td>
