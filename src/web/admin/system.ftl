@@ -22,7 +22,7 @@
       <input type="hidden" name="action" value="none" />
       <table class="form">
         <tr>
-          <th>
+          <th style="width: 120px;">
             <button type="submit" onclick="return doRestart();">
               <img src="images/icons/24x24/refresh.png" />
               Restart
