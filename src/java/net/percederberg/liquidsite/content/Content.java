@@ -756,7 +756,7 @@ public abstract class Content extends PersistentObject {
 
         if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
             throw new ContentSecurityException(user, "publish", this);
-        } else if (getRevisionNumber() <= 0 !hasWriteAccess(user)) {
+        } else if (getRevisionNumber() <= 0 && !hasWriteAccess(user)) {
             throw new ContentSecurityException(user, "write", this);
         }
         validate();
