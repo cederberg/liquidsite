@@ -137,6 +137,11 @@ public class InstallController extends Controller {
     private boolean errorConnection;
 
     /**
+     * Technical error.
+     */
+    private boolean errorTech;
+
+    /**
      * Creates a new install controller. 
      *
      * @param app            the application context
@@ -243,15 +248,20 @@ public class InstallController extends Controller {
             createConnector(host, rootUsername, rootPassword);
             dbsInfo = getDatabasesInfo();
         }
-        
-        // set request attributes
-        setAttributes(request);
-        
-        if (error) {
-            request.forward("/install/install.jsp");
+
+        if (errorTech) {
+            request.forward("/install/error.jsp");
+
         } else {
-            request.setAttribute("dbsInfo", dbsInfo);
-            request.forward("/install/install2.jsp");
+            // set request attributes
+            setAttributes(request);
+        
+            if (error) {
+                request.forward("/install/install.jsp");
+            } else {
+                request.setAttribute("dbsInfo", dbsInfo);
+                request.forward("/install/install2.jsp");
+            }
         }
     }
 
@@ -275,23 +285,30 @@ public class InstallController extends Controller {
         // check database info
         checkDbInfo();
 
-        // if error, get the databases information, 
-        // if not error, get the list of users
-        if (error) {
-            dbsInfo = getDatabasesInfo();
-        } else {
-            users = getUserNames(); 
+        if (! errorTech) {
+            // if error, get the databases information, 
+            // if not error, get the list of users
+            if (error) {
+                dbsInfo = getDatabasesInfo();
+            } else {
+                users = getUserNames();
+            }
         }
         
-        // set request attributes
-        setAttributes(request);
-        
-        if (error) {
-            request.setAttribute("dbsInfo", dbsInfo);
-            request.forward("/install/install2.jsp");
+        if (errorTech) {
+            request.forward("/install/error.jsp");
+
         } else {
-            request.setAttribute("users", users);
-            request.forward("/install/install3.jsp");
+            // set request attributes
+            setAttributes(request);
+        
+            if (error) {
+                request.setAttribute("dbsInfo", dbsInfo);
+                request.forward("/install/install2.jsp");
+            } else {
+                request.setAttribute("users", users);
+                request.forward("/install/install3.jsp");
+            }
         }
     }
 
@@ -313,18 +330,31 @@ public class InstallController extends Controller {
 
         // get the list of users
         users = getUserNames();
+
+        if (!error) {        
+            // check user info
+            checkUserInfo(users);
+        }
         
-        // check user info
-        checkUserInfo(users);
+        if (errorTech) {
+            request.forward("/install/error.jsp");
 
-        // set request attributes
-        setAttributes(request);
-
-        if (error) {
-            request.setAttribute("users", users);
-            request.forward("/install/install3.jsp");
         } else {
-            request.forward("/install/install4.jsp");
+            // reset passwords if they didn't match  
+            if (errorVerify) {
+                password = "";
+                verify = "";
+            }
+            
+            // set request attributes
+            setAttributes(request);
+
+            if (error) {
+                request.setAttribute("users", users);
+                request.forward("/install/install3.jsp");
+            } else {
+                request.forward("/install/install4.jsp");
+            }
         }
     }
 
@@ -341,12 +371,11 @@ public class InstallController extends Controller {
         // get info from request
         getParameters(request);
         
+        // get selected database and user
+        db = (dbsel.equals("")) ? database : dbsel;
+        user = (usersel.equals("")) ? username : usersel;
+
         try {
-
-            // get selected database and user
-            db = (dbsel.equals("")) ? database : dbsel;
-            user = (usersel.equals("")) ? username : usersel;
-
             // drop database if exists
             if (!dbsel.equals("")) {
                 con.deleteDatabase(db);
@@ -362,39 +391,30 @@ public class InstallController extends Controller {
             con.addAccessPrivileges(db, user);
 
             // create tables
-            con.executeSql(getFile("WEB-INF/sql/create-tables.sql"));
+            createTables(db); 
 
             // create config file and table
             writeConfiguration(host, db, user, password);
-
+            
         } catch (DatabaseConnectionException e) {
-            // TODO write log
+            error = true;
+            errorConnection = true;
             e.printStackTrace();
-            // forward to error page
-            request.forward("/install/error.jsp");
-            return;
         } catch (DatabaseException e) {
-            // TODO write log
+            error = true;
+            errorTech = true;
             e.printStackTrace();
-            // forward to error page
-            request.forward("/install/error.jsp");
-            return;
         } catch (ConfigurationException e) {
-            // TODO write log
+            error = true;
+            errorTech = true;
             e.printStackTrace();
-            // forward to error page
-            request.forward("/install/error.jsp");
-            return;
-        } catch (IOException e) {
-            // TODO write log
-            e.printStackTrace();
-            // forward to error page
-            request.forward("/install/error.jsp");
-            return;
         }
         
-        // forward to next page
-        request.forward("/install/install5.jsp");
+        if (errorTech) {
+            request.forward("/install/error.jsp");
+        } else {
+            request.forward("/install/install5.jsp");
+        }
     }
 
     /**
@@ -487,6 +507,7 @@ public class InstallController extends Controller {
         errorVerify = false;
         errorUserExists = false;
         errorConnection = false;
+        errorTech = false;
     }
 
     /**
@@ -532,21 +553,16 @@ public class InstallController extends Controller {
      * @param users          the names of the database users 
      */
     private void checkUserInfo(ArrayList users) {
-        // get list of users
-        users = getUserNames(); 
-
-        // check input info
         if (usersel.equals("") && username.equals("")) {
             error = true;
         } else if (usersel.equals("") && users.contains(username)) {
             error = true;
             errorUserExists = true;
-        }
-        if (!error && !password.equals(verify)) {
+        } 
+        
+        if (!password.equals(verify)) {
             error = true;
             errorVerify = true;
-            password = "";
-            verify = "";
         }
     }
 
@@ -581,22 +597,31 @@ public class InstallController extends Controller {
         ArrayList            dbsInfo = new ArrayList();
         Hashtable            info;
         
-        // get databases information
         try {
+            // load database functions
+            con.loadFunctions(getFile("WEB-INF/database.properties"));
+
+            // get databases information
             dbs = con.listDatabases();
             for (int i = 0; i < dbs.size(); i++) {
                 info = getDatabaseInfo((String) dbs.get(i));
                 dbsInfo.add(info);
             }
+        } catch (FileNotFoundException e) {
+            error = true;
+            errorTech = true;
+            e.printStackTrace();
+        } catch (IOException e) {
+            error = true;
+            errorTech = true;
+            e.printStackTrace();
         } catch (DatabaseException e) {
             error = true;
-            // TODO write log
+            errorTech = true;
             e.printStackTrace();
         } catch (DatabaseConnectionException e) {
-            // update error variables
             error = true;
             errorConnection = true;
-            // TODO write log
             e.printStackTrace();
         }
         
@@ -627,41 +652,46 @@ public class InstallController extends Controller {
         DatabaseConnection c;
         Hashtable          info = new Hashtable(3);
         Configuration      config = new Configuration();
-        ArrayList          tables;
+        ArrayList          tables = null;
         int                noTables = 0;
         boolean            isLsDb = false;
         boolean            conflict = false;
         boolean            access = true;
         
         try {
-            // count number of tables in database
+            // get list of tables in database
             tables = con.listTables(db);
             noTables = tables.size();
-                    
-            // open a database connection
-            c = con.getConnection();
+        } catch (DatabaseException e) {
+            // database not readable
+            access = false;
+            noTables = 0;
+        }
+        
+        // open a database connection
+        c = con.getConnection();
             
-            try {
-                // check if LiquidSite database
-                c.setCatalog(db);
-                config.read(c);
-                isLsDb = config.get(Configuration.VERSION, null) 
-                  != null;
-            } finally {
-                // close the database connection
-                con.returnConnection(c);
-            }
+        try {
+            // check if LiquidSite database
+            c.setCatalog(db);
+            config.read(c);
+            isLsDb = config.get(Configuration.VERSION, null) != null;
+        } catch (DatabaseException ignore) {
+            // Do ignore
+        } catch (ConfigurationException ignore) {
+            // Do ignore
+        } finally {
+            // close the database connection
+            con.returnConnection(c);
+        }
             
-            // check for conflicts in table names
-            for (int i=0; i<noTables && !conflict && !isLsDb; i++) {
+        // check for conflicts in table names
+        if (! isLsDb) {
+            for (int i=0; i<noTables && !conflict; i++) {
                 if (((String) tables.get(i)).startsWith("LS_")) {
                     conflict = true;
                 }
             }
-        } catch (DatabaseException e) {
-            access = false;
-        } catch (ConfigurationException ignore) {
-            // Do ignore
         }
                 
         // insert information
@@ -685,11 +715,13 @@ public class InstallController extends Controller {
         // get list of databases
         try {
             databases = con.listDatabases();
-        } catch (Exception e) {
-            // update error variables
+        } catch (DatabaseConnectionException e) {
             error = true;
             errorConnection = true;
-            // TODO write log
+            e.printStackTrace();
+        } catch (DatabaseException e) {
+            error = true;
+            errorTech = true;
             e.printStackTrace();
         }
         
@@ -723,15 +755,12 @@ public class InstallController extends Controller {
         try {
             users = con.listUsers();
         } catch (DatabaseConnectionException e) {
-            // connection error
             error = true;
             errorConnection = true;
-            // TODO write log
             e.printStackTrace();
         } catch (DatabaseException e) {
             error = true;
-            errorConnection = true;
-            // TODO write log
+            errorTech = true;
             e.printStackTrace();
         }
             
@@ -799,6 +828,35 @@ public class InstallController extends Controller {
     }
 
     /**
+     * Creates the LiquidSite tables in a given database.
+     *
+     * @param database       the database name
+     *
+     * @throws DatabaseConnectionException if the connection to the
+     *             database couldn't be established
+     * @throws DatabaseException if the tables couldn't be created
+     */
+    private void createTables(String database) 
+        throws DatabaseConnectionException, DatabaseException {
+        
+        DatabaseConnection c;
+        
+        c = con.getConnection();
+        try {
+            c.setCatalog(database);
+            c.executeSql(getFile("WEB-INF/sql/create-tables.sql"));
+        } catch (FileNotFoundException e) {
+            throw new DatabaseException("couldn't find file " +
+                "'create-tables.sql'", e);
+        } catch (IOException e) {
+            throw new DatabaseException("couldn't read file " +
+                "'create-tables.sql'", e);
+        } finally {
+            con.returnConnection(c);
+        }
+    }
+    
+    /**
      * Writes the configuration file and database table. 
      *
      * @param host           the host name
@@ -806,12 +864,12 @@ public class InstallController extends Controller {
      * @param username       the user name
      * @param password       the user password
      *
-     * @throws ConfigurationException if the configuration
-     *             could not be written
      * @throws DatabaseConnectionException if a connection to
      *             the database could not be established
      * @throws DatabaseException if the given database name does
      *             not exist
+     * @throws ConfigurationException if the configuration
+     *             could not be written
      */
     private void writeConfiguration(String host,
                                     String database,
@@ -820,16 +878,18 @@ public class InstallController extends Controller {
         throws DatabaseConnectionException, DatabaseException, 
                ConfigurationException {
 
-        Configuration config;
         DatabaseConnection c;
+        Configuration      config;
         
         // load functions
         try {
             con.loadFunctions(getFile("WEB-INF/database.properties"));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            throw new ConfigurationException("cannot find file " +
+                "'database.properties'", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ConfigurationException("cannot read file " +
+                "'database.properties'", e);
         }
         
         // get the application configuration
