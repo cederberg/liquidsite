@@ -31,8 +31,13 @@ import net.percederberg.liquidsite.ConfigurationException;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
+import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
+import net.percederberg.liquidsite.db.DatabaseResults;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
+import net.percederberg.liquidsite.dbo.ContentPeer;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
  * The install helper class. This class handles all the installation
@@ -88,9 +93,7 @@ public class Installer {
         updaters.add(new DatabaseUpdater("0.4",
                                          "0.5",
                                          "UPDATE_LIQUIDSITE_TABLES_0.5.sql"));
-        updaters.add(new DatabaseUpdater("0.5",
-                                         "0.6",
-                                         "UPDATE_LIQUIDSITE_TABLES_0.6.sql"));
+        updaters.add(new Version06DatabaseUpdater());
     }
 
     /**
@@ -314,7 +317,80 @@ public class Installer {
             throws DatabaseException, FileNotFoundException, IOException {
 
             con.execute(new File(sqlDir, sqlFile));
+            updateTableContent(con);
             installer.updateTables(con, toVersion);
+        }
+
+        /**
+         * Updates the Liquid Site database table content. This method
+         * is called by the updateTables() method, directly after
+         * executing the SQL script and before calling the next
+         * updater in the chain. The default implementation of this
+         * method does nothing.
+         *
+         * @param con            the database connection to use
+         *
+         * @throws DatabaseException if a database statement execution
+         *             failed
+         * @throws FileNotFoundException if an update tables SQL file
+         *             couldn't be found
+         * @throws IOException if an update tables SQL file couldn't be
+         *             read
+         */
+        protected void updateTableContent(DatabaseConnection con)
+            throws DatabaseException, FileNotFoundException, IOException {
+
+            // Do nothing in the default implementation
+        }
+    }
+
+
+    /**
+     * A database updater. This class handles a database update from
+     * one version to another. Multiple database updaters can be
+     * chained together to provide an update path across several
+     * versions.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    private class Version06DatabaseUpdater extends DatabaseUpdater {
+
+        /**
+         * Creates a new database updater for version 0.6.
+         */
+        public Version06DatabaseUpdater() {
+            super("0.5", "0.6", "UPDATE_LIQUIDSITE_TABLES_0.6.sql");
+        }
+
+        /**
+         * Updates the Liquid Site database table content. This method
+         * is called by the updateTables() method, directly after
+         * executing the SQL script and before calling the next
+         * updater in the chain.
+         *
+         * @param con            the database connection to use
+         *
+         * @throws DatabaseException if a database statement execution
+         *             failed
+         */
+        protected void updateTableContent(DatabaseConnection con)
+            throws DatabaseException {
+
+            DatabaseQuery    query = new DatabaseQuery();
+            DatabaseResults  res;
+
+            query.setSql("SELECT DISTINCT(ID) FROM LS_CONTENT");
+            res = con.execute(query);
+            for (int i = 0; i < res.getRowCount(); i++) {
+                try {
+                    ContentPeer.doStatusUpdate(res.getRow(i).getInt(0), con);
+                } catch (DatabaseDataException e) {
+                    throw new DatabaseException(e.getMessage());
+                } catch (DatabaseObjectException e) {
+                    throw new DatabaseException(e.getMessage());
+                }
+            }
         }
     }
 }

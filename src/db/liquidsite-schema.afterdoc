@@ -485,6 +485,20 @@
         </description>
         <type name="VARCHAR" size="200" required="true" />
       </column>
+      <column name="STATUS">
+        <description>
+          The content object revision status. This is a bit flag that
+          is used to flag the latest work and published revisions.
+          These flags are needed when searching for multiple matching
+          content objects, as hits from older revisions must be
+          filtered out already in the query for performance reasons.
+          This flag is be modified when adding new revisions, or when
+          removing old revisions. The modification of this flag
+          doesn't affect any other column, such as the last
+          modification date or similar.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
       <primarykey>
         <description>
           The content is uniquely indexed by the object identifier and
@@ -553,6 +567,13 @@
           attribute has no data.
         </description>
         <type name="TEXT" required="true" />
+      </column>
+      <column name="STATUS">
+        <description>
+          The content object revision status.
+        </description>
+        <type name="SMALLINT" required="true" />
+        <ref table="LS_CONTENT" column="STATUS" />
       </column>
       <primarykey>
         <description>

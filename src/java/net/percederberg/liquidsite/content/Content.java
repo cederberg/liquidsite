@@ -621,6 +621,7 @@ public abstract class Content extends PersistentObject {
         try {
             SecurityManager.getInstance().checkDelete(user, this);
             ContentPeer.doDeleteRevision(getId(), getRevisionNumber(), con);
+            ContentPeer.doStatusUpdate(getId(), con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -651,6 +652,7 @@ public abstract class Content extends PersistentObject {
             ContentPeer.doInsert(data, con);
             doWriteAttributes(con, true);
             oldRevision = getRevisionNumber();
+            ContentPeer.doStatusUpdate(getId(), con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -684,6 +686,7 @@ public abstract class Content extends PersistentObject {
                 ContentPeer.doUpdate(data, con);
                 doWriteAttributes(con, false);
             }
+            ContentPeer.doStatusUpdate(getId(), con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);

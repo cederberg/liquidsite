@@ -49,6 +49,20 @@ public class ContentPeer extends AbstractPeer {
     private static final ContentPeer PEER = new ContentPeer();
 
     /**
+     * The latest content status flag. This flag is set on content
+     * objects that are the latest revision, including unpublished or
+     * working revisions.
+     */
+    private static final int LATEST_STATUS = 1;
+
+    /**
+     * The published content status flag. This flag is set on content
+     * objects that are the latest published revision, not including
+     * working revisions.
+     */
+    private static final int PUBLISHED_STATUS = 2;
+
+    /**
      * Returns a list of all content object revisions with the
      * specified id.
      *
@@ -345,6 +359,8 @@ public class ContentPeer extends AbstractPeer {
      *
      * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
+     *
+     * @see #doStatusUpdate
      */
     public static synchronized void doInsert(ContentData data,
                                              DatabaseConnection con)
@@ -377,6 +393,8 @@ public class ContentPeer extends AbstractPeer {
      *
      * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
+     *
+     * @see #doStatusUpdate
      */
     public static void doUpdate(ContentData data, DatabaseConnection con)
         throws DatabaseObjectException {
@@ -454,6 +472,8 @@ public class ContentPeer extends AbstractPeer {
      *
      * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
+     *
+     * @see #doStatusUpdate
      */
     public static void doDeleteRevision(int id,
                                         int revision,
@@ -466,6 +486,104 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(revision);
         PEER.delete(query, con);
         AttributePeer.doDeleteRevision(id, revision, con);
+    }
+
+    /**
+     * Updates the status flags for all content object revisions. This
+     * method will read the database to extract the latest revisions,
+     * clear any previous status flags, and then set the new flags.
+     * This method also updates the status flags in related
+     * attributes. When finished inserting, updating or deleting in
+     * the content and attribute tables, this method should always be
+     * called.
+     *
+     * @param id             the content identifier
+     * @param con            the database connection to use
+     *
+     * @throws DatabaseObjectException if the database couldn't be
+     *             accessed properly
+     */
+    public static void doStatusUpdate(int id,
+                                      DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query;
+        DatabaseResults  res;
+        int              min;
+        int              max;
+
+        query = new DatabaseQuery("content.select.revision.minmax");
+        query.addParameter(id);
+        res = PEER.execute("finding min & max content revision", query, con);
+        if (res.getRowCount() > 0) {
+            try {
+                min = res.getRow(0).getInt(0);
+                max = res.getRow(0).getInt(1);
+            } catch (DatabaseDataException e) {
+                LOG.error(e.getMessage());
+                throw new DatabaseObjectException(e);
+            }
+        } else {
+            throw new DatabaseObjectException("no content identifier " + id);
+        }
+        doStatusClear(id, con);
+        if (max > 0) {
+            doStatusSet(id, max, PUBLISHED_STATUS, con);
+        }
+        if (min > 0) {
+            doStatusSet(id, max, LATEST_STATUS, con);
+        } else {
+            doStatusSet(id, min, LATEST_STATUS, con);
+        }
+    }
+
+    /**
+     * Clears the status flags for all content object revisions. This
+     * method also clears the status flags in related attributes.
+     *
+     * @param id             the content identifier
+     * @param con            the database connection to use
+     *
+     * @throws DatabaseObjectException if the database couldn't be
+     *             accessed properly
+     */
+    private static void doStatusClear(int id, DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("content.status.clear");
+
+        query.addParameter(id);
+        PEER.update(query, con);
+        AttributePeer.doStatusClear(id, con);
+    }
+
+    /**
+     * Sets a status flag bit for a content object revision. The bit
+     * flag will be added to the status flags without clearing any
+     * other bit flag (logical OR). This method also sets the same bit
+     * in related attributes.
+     *
+     * @param id             the content identifier
+     * @param revision       the content revision
+     * @param flag           the bit flag to set
+     * @param con            the database connection to use
+     *
+     * @throws DatabaseObjectException if the database couldn't be
+     *             accessed properly
+     */
+    private static void doStatusSet(int id,
+                                    int revision,
+                                    int flag,
+                                    DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("content.status.set");
+
+        query.addParameter(flag);
+        query.addParameter(id);
+        query.addParameter(revision);
+        PEER.update(query, con);
+        AttributePeer.doStatusSet(id, revision, flag, con);
     }
 
     /**
@@ -483,7 +601,7 @@ public class ContentPeer extends AbstractPeer {
     private static int getNewId(DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery("content.select.maxid");
+        DatabaseQuery    query = new DatabaseQuery("content.select.id.max");
         DatabaseResults  res;
         int              id = 0;
 
