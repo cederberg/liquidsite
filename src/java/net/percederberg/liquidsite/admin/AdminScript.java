@@ -243,6 +243,7 @@ class AdminScript {
         buffer.append(getLock(content.getLock()));
         buffer.append(");\n");
         buffer.append(getButtons(user, content));
+        buffer.append(getRevisions(content));
         buffer.append(getPermissions(content));
         return buffer.toString();
     }
@@ -288,6 +289,66 @@ class AdminScript {
         if (content.hasWriteAccess(user)) {
             buffer.append("objectAddNewButton('add-site.html');\n");
         }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting content revisions.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript for presenting content revisions
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getRevisions(Content content) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        Content[]     revisions;
+        Content       work = null;
+        
+        revisions = content.getAllRevisions();
+        for (int i = 0; i < revisions.length; i++) {
+            if (revisions[i].getRevisionNumber() == 0) {
+                work = revisions[i];
+            }
+        }
+        if (work != null) {
+            buffer.append(getRevision(work));
+        }
+        for (int i = 0; i < revisions.length; i++) {
+            if (revisions[i] != work) {
+                buffer.append(getRevision(revisions[i]));
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting a content revision.
+     * 
+     * @param revision       the content revison object
+     * 
+     * @return the JavaScript for presenting a content revision
+     */
+    private String getRevision(Content revision) {
+        StringBuffer  buffer = new StringBuffer();
+        
+        buffer.append("objectAddRevision(");
+        if (revision.getRevisionNumber() == 0) {
+            buffer.append("'Work'");
+        } else {
+            buffer.append(revision.getRevisionNumber());
+        }
+        buffer.append(", ");
+        buffer.append(getDate(revision.getModifiedDate()));
+        buffer.append(", ");
+        buffer.append(getString(revision.getAuthorName()));
+        buffer.append(", ");
+        buffer.append(getString(revision.getComment()));
+        buffer.append(", null, null);\n");
         return buffer.toString();
     }
 
