@@ -754,11 +754,10 @@ public abstract class Content extends PersistentObject {
     protected void doInsert(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        if (!hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        }
         if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
             throw new ContentSecurityException(user, "publish", this);
+        } else if (getRevisionNumber() <= 0 !hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
         }
         validate();
         data.setString(ContentData.AUTHOR, user.getName());
@@ -786,11 +785,10 @@ public abstract class Content extends PersistentObject {
     protected void doUpdate(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        if (!hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        }
         if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
             throw new ContentSecurityException(user, "publish", this);
+        } else if (getRevisionNumber() <= 0 && !hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
         }
         validate();
         data.setString(ContentData.AUTHOR, user.getName());

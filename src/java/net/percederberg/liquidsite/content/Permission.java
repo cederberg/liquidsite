@@ -525,9 +525,9 @@ public class Permission extends PersistentObject {
         throws ContentException, ContentSecurityException {
 
         if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        } else if (!getDomain().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
+            throw new ContentSecurityException(user, "delete", this);
+        } else if (getContentId() == 0 && !getDomain().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
         }
         validate();
         try {
@@ -553,9 +553,9 @@ public class Permission extends PersistentObject {
         throws ContentException, ContentSecurityException {
 
         if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        } else if (!getDomain().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
+            throw new ContentSecurityException(user, "delete", this);
+        } else if (getContentId() == 0 && !getDomain().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
         }
         validate();
         try {
@@ -582,7 +582,7 @@ public class Permission extends PersistentObject {
 
         if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
             throw new ContentSecurityException(user, "delete", this);
-        } else if (!getDomain().hasAdminAccess(user)) {
+        } else if (getContentId() == 0 && !getDomain().hasAdminAccess(user)) {
             throw new ContentSecurityException(user, "delete", this);
         }
         try {
