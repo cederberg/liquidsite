@@ -89,18 +89,6 @@ class CacheManager {
     }
     
     /**
-     * Adds an array of persistent objects to the cache.
-     * 
-     * @param key            the key to use for retrieval
-     * @param objs           the array to add
-     */
-    public void add(PersistentObject key, PersistentObject[] objs) {
-        if (key instanceof Domain && objs instanceof ContentSite[]) {
-            sites.put(((Domain) key).getName(), objs);
-        }
-    }
-
-    /**
      * Adds a set of persistent objects to the cache. The objects
      * will be added individually. That is, the array itself will not
      * be stored in the cache.
@@ -111,6 +99,16 @@ class CacheManager {
         for (int i = 0; i < objs.length; i++) {
             add(objs[i]);
         }
+    }
+
+    /**
+     * Adds an array of content sites to the cache.
+     * 
+     * @param domain         the domain to use for retrieval
+     * @param content        the array of content sites
+     */
+    public void addSites(Domain domain, Content[] content) {
+        sites.put(domain.getName(), content);
     }
 
     /**
@@ -179,7 +177,7 @@ class CacheManager {
      * @return the array of sites in the domain, or
      *         null if not present in the cache
      */
-    public ContentSite[] getSites(Domain domain) {
-        return (ContentSite[]) sites.get(domain.getName());
+    public Content[] getSites(Domain domain) {
+        return (Content[]) sites.get(domain.getName());
     }
 }

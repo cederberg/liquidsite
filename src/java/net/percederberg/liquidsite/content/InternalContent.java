@@ -337,6 +337,80 @@ class InternalContent {
     }
 
     /**
+     * Returns an array of root content objects with the specified 
+     * category. Only the latest revision of each content object will 
+     * be returned.
+     *
+     * @param manager        the content manager to use
+     * @param domain         the domain
+     * @param category       the content category
+     *
+     * @return an array of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static Content[] findByCategory(ContentManager manager,
+                                    Domain domain,
+                                    int category) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ArrayList           list;
+
+        try {
+            list = ContentPeer.doSelectByCategory(domain.getName(),
+                                                  0,
+                                                  category,
+                                                  manager.isAdmin(),
+                                                  con);
+            return createContent(manager, list, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
+     * Returns an array of content objects with the specified parent
+     * and category. Only the latest revision of each content object
+     * will be returned.
+     *
+     * @param manager        the content manager to use
+     * @param parent         the parent content object
+     * @param category       the content category
+     *
+     * @return an array of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static Content[] findByCategory(ContentManager manager,
+                                    Content parent,
+                                    int category) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ArrayList           list;
+
+        try {
+            list = ContentPeer.doSelectByCategory(parent.getDomainName(),
+                                                  parent.getId(),
+                                                  category,
+                                                  manager.isAdmin(),
+                                                  con);
+            return createContent(manager, list, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
      * Creates an array of content objects. The content subclass
      * matching the category value will be used.
      * 

@@ -21,12 +21,8 @@
 
 package net.percederberg.liquidsite.content;
 
-import java.util.ArrayList;
-
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
-import net.percederberg.liquidsite.dbo.ContentPeer;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
  * A web site.
@@ -65,44 +61,6 @@ public class ContentSite extends Content {
      * The administration site flag.
      */
     private static final int ADMIN_FLAG = 1;
-
-    /**
-     * Returns an array of all domain sites in the database.
-     *
-     * @param manager        the content manager to use
-     * @param domain         the domain
-     * 
-     * @return an array of all domain sites in the database
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    static ContentSite[] findByDomain(ContentManager manager, Domain domain) 
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        ContentSite[]       res;
-        ContentData         data;
-
-        try {
-            list = ContentPeer.doSelectByCategory(domain.getName(),
-                                                  0,
-                                                  Content.SITE_CATEGORY,
-                                                  manager.isAdmin(),
-                                                  con);
-            res = new ContentSite[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                data = (ContentData) list.get(i);
-                res[i] = new ContentSite(manager, data, con);
-            }
-        } catch (DatabaseObjectException e) {
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-        return res;
-    }
 
     /**
      * Creates a new site with default values.
@@ -337,7 +295,8 @@ public class ContentSite extends Content {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        ContentSite[]  sites = findByDomain(getContentManager(), getDomain());
+        Content[]    sites;
+        ContentSite  site;
 
         super.validate();
         if (!getProtocol().equals("http") && !getProtocol().equals("https")) {
@@ -345,12 +304,16 @@ public class ContentSite extends Content {
         } else if (getHost().equals("")) {
             throw new ContentException("no host name set for site");
         }
+        sites = InternalContent.findByCategory(getContentManager(),
+                                               getDomain(),
+                                               SITE_CATEGORY);
         for (int i = 0; i < sites.length; i++) {
-            if (sites[i].getId() != getId()
-             && sites[i].getProtocol().equals(getProtocol())
-             && sites[i].getHost().equals(getHost())
-             && sites[i].getPort() == getPort()
-             && sites[i].getDirectory().equals(getDirectory())) {
+            site = (ContentSite) sites[i];
+            if (site.getId() != getId()
+             && site.getProtocol().equals(getProtocol())
+             && site.getHost().equals(getHost())
+             && site.getPort() == getPort()
+             && site.getDirectory().equals(getDirectory())) {
 
                 throw new ContentException("an identical site is already " +
                                            "in the database");
