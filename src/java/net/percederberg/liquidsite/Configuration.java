@@ -99,6 +99,12 @@ public class Configuration {
         "liquidsite.file.dir";
 
     /**
+     * The statistics data directory key.
+     */
+    public static final String STATS_DIRECTORY = 
+        "liquidsite.stats.dir";
+
+    /**
      * The temporary file upload directory key.
      */
     public static final String UPLOAD_DIRECTORY = 

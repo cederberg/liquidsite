@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
@@ -38,6 +39,7 @@ import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.template.TemplateException;
 
 /**
@@ -65,6 +67,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      */
     public AdminRequestProcessor(Application app) {
         super(new ContentManager(app, true), app.getBaseDir());
+        AdminUtils.setConfiguration(app.getConfig());
         AdminUtils.setContentManager(getContentManager());
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
@@ -140,6 +143,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             processSessionPing(request);
         } else if (path.startsWith("preview/")) {
             processPreview(request, path.substring(8));
+        } else if (path.startsWith("stats/")) {
+            processStats(request, path.substring(6));
         } else {
             processWorkflow(request, path);
         }
@@ -569,6 +574,42 @@ public class AdminRequestProcessor extends RequestProcessor {
                                                  (ContentSection) content);
         } else {
             throw RequestException.RESOURCE_NOT_FOUND;
+        }
+    }
+
+    /**
+     * Processes the statistics requests.
+     * 
+     * @param request        the request object
+     * @param path           the statistics file path
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processStats(Request request, String path)
+        throws RequestException {
+
+        Domain  domain;
+        File    file;
+
+        try {
+            domain = request.getEnvironment().getDomain();
+            if (!domain.hasAdminAccess(request.getUser())) {
+                throw RequestException.FORBIDDEN;
+            }
+            file = AdminUtils.getStatisticsDir(domain);
+            if (file == null) {
+                throw RequestException.RESOURCE_NOT_FOUND;
+            }
+            file = new File(file, path);
+            if (file.canRead()) {
+                request.sendFile(file);
+            } else {
+                throw RequestException.RESOURCE_NOT_FOUND;
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            request.sendData("text/plain", e.getMessage());
         }
     }
 }

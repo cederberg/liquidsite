@@ -154,17 +154,24 @@ function objectAddStatusProperty(status, lockUser, lockDate) {
  * @param name                the property label
  * @param value               the property value
  * @param style               the property value CSS class (or null)
+ * @param link                the property URL link (or null)
  */
-function objectAddProperty(name, value, style) {
+function objectAddProperty(name, value, style, link) {
     var tbody = document.getElementById("objectproperties");
     var tr = document.createElement("tr");
     var td = document.createElement("td");
+    var a;
 
     objectInternalAddElement(tr, "th", name + ":");
     if (style != null) {
         td.className = style;
     }
-    td.appendChild(document.createTextNode(value));
+    if (link == null) {
+       td.appendChild(document.createTextNode(value));
+    } else {
+       a = objectInternalAddElement(td, "a", value);
+       a.href = link;
+    }
     tr.appendChild(td);
     tbody.appendChild(tr);
 }

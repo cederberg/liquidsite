@@ -21,11 +21,13 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import net.percederberg.liquidsite.Configuration;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -44,9 +46,32 @@ import net.percederberg.liquidsite.content.User;
 public class AdminUtils {
 
     /**
+     * The configuration used for administration.
+     */
+    private static Configuration config = null;
+
+    /**
      * The content manager used for administration.
      */
     private static ContentManager manager = null;
+
+    /**
+     * Returns the configuration currently used
+     * 
+     * @return the configuraiton currently used
+     */
+    public static Configuration getConfiguration() {
+        return config;
+    }
+
+    /**
+     * Sets the configuration currently used.
+     * 
+     * @param config         the configuration to use
+     */
+    static void setConfiguration(Configuration config) {
+        AdminUtils.config = config;
+    }
 
     /**
      * Returns the content manager for administration.
@@ -71,6 +96,30 @@ public class AdminUtils {
      */
     static void setContentManager(ContentManager manager) {
         AdminUtils.manager = manager;
+    }
+
+    /**
+     * Returns the statistics directory for a domain.
+     *
+     * @param domain         the domain object
+     *
+     * @return the statistics directory, or
+     *         null if not configured or readable
+     */
+    public static File getStatisticsDir(Domain domain) {
+        String  dir;
+        File    file;
+
+        dir = config.get(Configuration.STATS_DIRECTORY, null);
+        if (dir == null) {
+            return null;
+        }
+        file = new File(dir, domain.getName());
+        if (file.exists() && file.canRead()) {
+            return file;
+        } else {
+            return null;
+        }
     }
 
     /**

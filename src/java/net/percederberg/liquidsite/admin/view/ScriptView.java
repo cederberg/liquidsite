@@ -229,6 +229,15 @@ public class ScriptView {
         str = domain.getDescription();
         buffer.append(AdminUtils.getScriptString(str));
         buffer.append(");\n");
+        if (domain.hasAdminAccess(user)) {
+            buffer.append("objectAddProperty('Statistics', ");
+            if (AdminUtils.getStatisticsDir(domain) == null) {
+                buffer.append("'Unavailable'");
+            } else {
+                buffer.append("'Available', null, 'stats/index.html'");
+            }
+            buffer.append(");\n");
+        }
         buffer.append(getButtons(user, domain, view));
         buffer.append(getHosts(domain));
         buffer.append(getPermissions(domain, false));
