@@ -263,20 +263,24 @@ function tagEditInternalAddLink(editor) {
            "<th width='20%'>URL:</th>\n" +
            "<td width='80%'>\n" +
            "<input name='url' size='40' />\n" + 
+           "<script type='text/javascript'>\n" +
+           "document.getElementsByName('url').item(0).focus();\n" +
+           "</script>\n" +
            "</td>\n" +
            "</tr>\n" +
            "<tr>\n" +
            "<th>Type:</th>\n" +
            "<td>\n" +
-           "<select name='window'>\n" +
+           "<select name='type'>\n" +
            "<option value=''>Normal</option>\n" +
            "<option value='new'>New Window</option>\n" +
+           "<option value='mail'>Mail Address</option>\n" +
            "</select>\n" +
            "</td>\n" +
            "</tr>\n";
     js = "var url = document.getElementsByName('url').item(0).value;\n" +
-         "var win = document.getElementsByName('window').item(0).value;\n" +
-         "opener.tagEditInternalInsertLink(" + editor + ", url, win);\n" +
+         "var type = document.getElementsByName('type').item(0).value;\n" +
+         "opener.tagEditInternalInsertLink(" + editor + ", url, type);\n" +
          "window.close();\n";
     utilCreateDialog("Insert Link",
                      "Enter link URL and type.",
@@ -291,13 +295,15 @@ function tagEditInternalAddLink(editor) {
  *
  * @param editor             the editor number
  * @param url                the URL
- * @param window             the link window
+ * @param type               the link type
  */
-function tagEditInternalInsertLink(editor, url, window) {
+function tagEditInternalInsertLink(editor, url, type) {
     var  tag;
 
-    if (window != "") {
-        tag = "<link url=" + url + " window=" + window + ">";
+    if (type == "new") {
+        tag = "<link url=" + url + " window=new>";
+    } else if (type == "mail") {
+        tag = "<link url=mailto:" + url + ">";
     } else {
         tag = "<link url=" + url + ">";
     }
