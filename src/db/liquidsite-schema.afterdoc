@@ -117,6 +117,18 @@
         </description>
         <type name="VARCHAR" size="30" required="true" />
       </column>
+      <column name="PASSWORD">
+        <description>
+          The encoded user password. The password is not stored in
+          plain text in this column, rather a base-64 encoded MD5 
+          hash of the password is stored. This makes it impossible
+          to recover a lost password, but also provides more 
+          security. The password MD5 hash is generated from both the
+          user name and password, making it impossible to find 
+          identical passwords by checking the hashed values.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+      </column>
       <column name="REAL_NAME">
         <description>
           The real name of the user.
