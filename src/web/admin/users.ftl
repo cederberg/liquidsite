@@ -123,7 +123,11 @@
           <th>Members</th>
           <th>&nbsp;</th>
         </tr>
-  <#if groups?size = 0>
+  <#if domain = "">
+        <tr>
+          <td colspan="4">Superusers cannot belong to groups</td>
+        </tr>
+  <#elseif groups?size = 0>
         <tr>
           <td colspan="4">No groups found</td>
         </tr>
@@ -155,14 +159,12 @@
 </#if>
         <input type="hidden" name="domain" value="${domain}" />
         <p>
-<#if !users?exists && domain = "">
-          <button type="button" disabled="disabled">
-<#else>
+<#if users?exists || domain != "">
           <button type="submit">
-</#if>
             <img src="images/icons/24x24/add.png" />
             Add New
           </button>
+</#if>
         </p>
       </form>
 
