@@ -53,6 +53,11 @@ public class AdminController extends Controller {
     private AdminScript script = new AdminScript();
 
     /**
+     * The admin form validator.
+     */
+    private AdminValidator validator = new AdminValidator();
+
+    /**
      * Creates a new administration controller. 
      *
      * @param app            the application context
@@ -188,41 +193,32 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void processAddDomain(Request request) throws RequestException {
-        String  name = request.getParameter("name", "");
-        String  description = request.getParameter("description", "");
-        String  hostname = request.getParameter("host", "");
         Domain  domain;
         Host    host;
         String  error;
         
-        // TODO: check for existing domains and hosts, and invalid input
-        if (name.equals("")) {
-            request.setAttribute("error", "No domain name specified");
+        try {
+            validator.validateAddDomain(request);
+            domain = new Domain(request.getParameter("name"));
+            domain.setDescription(request.getParameter("description"));
+            domain.save(request.getUser());
+            host = new Host(domain, request.getParameter("host"));
+            host.setDescription("Default domain host");
+            host.save(request.getUser());
+            request.setSessionAttribute("site.view.type", "domain");
+            request.setSessionAttribute("site.view.id", domain.getName());
+            request.sendRedirect("site.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
             displayAddDomain(request);
-        } else if (hostname.equals("")) {
-            request.setAttribute("error", "No host name specified");
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            error = "Failed to save to database, " + e.getMessage();
+            request.setAttribute("error", error);
             displayAddDomain(request);
-        } else {
-            try {
-                domain = new Domain(name);
-                domain.setDescription(description);
-                domain.save(request.getUser());
-                host = new Host(domain, hostname);
-                host.setDescription("Default domain host");
-                host.save(request.getUser());
-                request.setSessionAttribute("site.view.type", "domain");
-                request.setSessionAttribute("site.view.id", name);
-                request.sendRedirect("site.html");
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-                error = "Failed to save to database. Detailed message: " +
-                         e.getMessage();
-                request.setAttribute("error", error);
-                displayAddDomain(request);
-            } catch (ContentSecurityException e) {
-                LOG.warning(e.getMessage());
-                throw RequestException.FORBIDDEN;
-            }
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            throw RequestException.FORBIDDEN;
         }
     }
 
