@@ -28,7 +28,6 @@ import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
@@ -131,14 +130,21 @@ class PublishDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = AdminUtils.getContentManager();
-        User            user = request.getUser();
-        Content         content = (Content) AdminUtils.getReference(request);
-        Content         max;
-        String          date;
+        User       user = request.getUser();
+        Content    content = (Content) AdminUtils.getReference(request);
+        Content[]  revisions;
+        Content    max = content;
+        String     date;
 
         if (content.getRevisionNumber() == 0) {
-            max = manager.getContent(user, content.getId());
+            revisions = content.getAllRevisions();
+            for (int i = 0; i < revisions.length; i++) {
+                if (max.getRevisionNumber() <
+                    revisions[i].getRevisionNumber()) {
+
+                    max = revisions[i];
+                }
+            }
             content.setRevisionNumber(max.getRevisionNumber() + 1);
             content.setOfflineDate(max.getOfflineDate());
         } else {

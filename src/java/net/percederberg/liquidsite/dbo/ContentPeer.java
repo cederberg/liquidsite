@@ -97,9 +97,11 @@ public class ContentPeer extends AbstractPeer {
 
     /**
      * Returns the content object with the specified id and highest
-     * revision.
+     * revision. A flag can be set to regard the revision number zero
+     * (0) as the highest one.
      * 
      * @param id             the content id
+     * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
      * 
      * @return the content found, or
@@ -108,12 +110,21 @@ public class ContentPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static ContentData doSelectByMaxRevision(int id, 
+    public static ContentData doSelectByMaxRevision(int id,
+                                                    boolean maxIsZero,
                                                     DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery  query = new DatabaseQuery("content.select.id");
-        
+        DatabaseQuery  query;
+        ContentData    data;
+
+        if (maxIsZero) {
+            data = doSelectByRevision(id, 0, con);
+            if (data != null) {
+                return data;
+            }
+        }
+        query = new DatabaseQuery("content.select.id");
         query.addParameter(id);
         return (ContentData) PEER.select(query, con);
     }
@@ -121,11 +132,14 @@ public class ContentPeer extends AbstractPeer {
     /**
      * Returns a list of content objects having the specified parent.
      * By setting the parent content id to zero (0), all the root
-     * content objects in a domain can be retrieved. Only the latest 
-     * revision of each content object will be returned.
+     * content objects in a domain can be retrieved. Only the highest
+     * revision of each content object will be returned. A flag can
+     * be set to regard the revision number zero (0) as the highest
+     * one.
      * 
      * @param domain         the domain name
      * @param parent         the parent content id
+     * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
      * 
      * @return a list of all matching content objects
@@ -134,7 +148,8 @@ public class ContentPeer extends AbstractPeer {
      *             accessed properly
      */
     public static ArrayList doSelectByParent(String domain,
-                                             int parent, 
+                                             int parent,
+                                             boolean maxIsZero,
                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
@@ -149,6 +164,7 @@ public class ContentPeer extends AbstractPeer {
         try {
             for (int i = 0; i < res.getRowCount(); i++) {
                 data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
+                                             maxIsZero,
                                              con);
                 if (data.getInt(ContentData.PARENT) == parent) {
                     list.add(data);
@@ -163,11 +179,13 @@ public class ContentPeer extends AbstractPeer {
 
     /**
      * Returns a list of content objects having the specified 
-     * category. Only the latest revision of each content object will 
-     * be returned.
+     * category. Only the highest revision of each content object
+     * will be returned. A flag can be set to regard the revision
+     * number zero (0) as the highest one.
      * 
      * @param domain         the domain name
      * @param category       the category
+     * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
      * 
      * @return a list of all matching content objects
@@ -176,7 +194,8 @@ public class ContentPeer extends AbstractPeer {
      *             accessed properly
      */
     public static ArrayList doSelectByCategory(String domain,
-                                               int category, 
+                                               int category,
+                                               boolean maxIsZero,
                                                DatabaseConnection con)
         throws DatabaseObjectException {
 
@@ -191,6 +210,7 @@ public class ContentPeer extends AbstractPeer {
         try {
             for (int i = 0; i < res.getRowCount(); i++) {
                 data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
+                                             maxIsZero,
                                              con);
                 list.add(data);
             }

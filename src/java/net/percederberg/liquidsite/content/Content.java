@@ -159,7 +159,9 @@ public abstract class Content extends PersistentObject implements Comparable {
         ContentData         data;
 
         try {
-            data = ContentPeer.doSelectByMaxRevision(id, con);
+            data = ContentPeer.doSelectByMaxRevision(id,
+                                                     manager.isAdmin(),
+                                                     con);
             if (data != null) {
                 return createContent(manager, data, con);
             } else {
@@ -230,7 +232,10 @@ public abstract class Content extends PersistentObject implements Comparable {
         ArrayList           list;
 
         try {
-            list = ContentPeer.doSelectByParent(domain.getName(), 0, con);
+            list = ContentPeer.doSelectByParent(domain.getName(),
+                                                0,
+                                                manager.isAdmin(),
+                                                con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -261,7 +266,8 @@ public abstract class Content extends PersistentObject implements Comparable {
 
         try {
             list = ContentPeer.doSelectByParent(parent.getDomainName(),
-                                                parent.getId(), 
+                                                parent.getId(),
+                                                manager.isAdmin(),
                                                 con);
             return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
