@@ -72,6 +72,60 @@ abstract class Peer {
     }
 
     /**
+     * Returns the current application database connector.
+     * 
+     * @return the current application database connector
+     * 
+     * @throws ContentException if no content manager or database
+     *             connector is available
+     */
+    protected static DatabaseConnector getDatabase() 
+        throws ContentException {
+        
+        DatabaseConnector  db;
+
+        db = getContentManager().getApplication().getDatabase();
+        if (db == null) {
+            LOG.error("no database connector available");
+            throw new ContentException("no database connector available");
+        }
+        return db;
+    }
+
+    /**
+     * Returns a database connection.
+     * 
+     * @return a database connection
+     * 
+     * @throws ContentException if no database connector is available
+     *             or connection could be made
+     */
+    protected static DatabaseConnection getDatabaseConnection() 
+        throws ContentException {
+        
+        try {
+            return getDatabase().getConnection();
+        } catch (DatabaseConnectionException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e.getMessage());
+        }
+    }
+
+    /**
+     * Disposes of a database connection.
+     * 
+     * @param con            the database connection
+     * 
+     * @throws ContentException if no content manager or database
+     *             connector is available
+     */
+    protected static void returnDatabaseConnection(DatabaseConnection con) 
+        throws ContentException {
+        
+        getDatabase().returnConnection(con);
+    }
+
+    /**
      * Executes a database query or statement.
      * 
      * @param log            the log message
@@ -93,17 +147,14 @@ abstract class Peer {
         DatabaseResults    res;
              
         if (con == null) {
-            db = getContentManager().getApplication().getDatabase();
+            db = getDatabase();
         }
         try {
             LOG.debug(log);
-            if (db != null) {
-                res = db.execute(query);
-            } else if (con != null) {
+            if (con != null) {
                 res = con.execute(query);
             } else {
-                LOG.error(log + ": no database available");
-                throw new ContentException(log + ": no database available");
+                res = db.execute(query);
             }
             LOG.debug("done " + log);
         } catch (DatabaseConnectionException e) {
