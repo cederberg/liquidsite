@@ -3,6 +3,7 @@
 <#include "header.ftl">
 
     <script type="text/javascript" src="script/util.js"></script>
+    <script type="text/javascript" src="script/htmledit.js"></script>
     <script type="text/javascript">
     function initialize() {
         utilFocusElement("name");
@@ -14,7 +15,7 @@
     }
     </script>
 
-    <form method="post" accept-charset="UTF-8">
+    <form method="post" accept-charset="UTF-8" onsubmit="htmlEditSubmit()">
 <#if isadd>
       <input type="hidden" name="liquidsite.step" value="2" />
 <#else>
@@ -90,11 +91,22 @@
   <#if prop.type == 1>
             <input type="text" tabindex="3" size="50"
                    name="property.${prop.id}" value="${data[prop.id]}" />
-  <#else>
+            <p>${prop.description}</p>
+  <#elseif prop.type == 2>
+            ${prop.description}<br/><br/>
             <textarea tabindex="3" rows="6" cols="60"
                       name="property.${prop.id}">${data[prop.id]?xml}</textarea>
+  <#elseif prop.type == 3>
+    <#assign text = data[prop.id]?replace("'", "\\'")>
+    <#assign text = text?replace("\r", "")>
+    <#assign text = text?replace("\n", "\\n")>
+            ${prop.description}<br/><br/>
+            <div id="property.${prop.id}.toolbar"></div>
+            <div id="property.${prop.id}.editor"></div>
+            <script type="text/javascript">
+            htmlEditInitialize('property.${prop.id}', '${text}', 3);
+            </script>
   </#if>
-            <p>${prop.description}</p>
           </td>
         </tr>
 </#list>

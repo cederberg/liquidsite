@@ -176,7 +176,13 @@ button img {
         height: 24px;
         vertical-align: -40%;
 }
-
+iframe {
+        background: white;
+        border-top: solid 2px rgb(128,128,128);
+        border-left: solid 2px rgb(128,128,128);
+        border-right: solid 2px rgb(240,240,240);
+        border-bottom: solid 2px rgb(240,240,240);
+}
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -314,6 +320,37 @@ table.dialog button {
 .treeview a:hover {
         background: none;
         text-decoration: none;
+}
+
+/* Toolbar table style */
+table.toolbar {
+        width: 100%;
+        border: solid 1px rgb(128,128,128);
+        border-bottom: none;
+        padding: 0px;
+        background: rgb(230,230,230);
+}
+table.toolbar td {
+        padding: 0px; 
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-left: 6px;
+        padding-right: 6px;
+}
+table.toolbar select {
+        vertical-align: middle;
+}
+table.toolbar .button {
+        border: solid 2px rgb(230,230,230);
+        padding: 1px;
+}
+table.toolbar .buttonup {
+        border: outset 2px rgb(230,230,230);
+        padding: 1px;
+}
+table.toolbar .buttondown {
+        border: inset 2px rgb(230,230,230);
+        padding: 1px;
 }
 
 /* Compact table style */

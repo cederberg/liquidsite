@@ -236,13 +236,11 @@ function propertyInternalDisplayProperty(position, property) {
 	if (property.type == 2) {
 	    option.selected = "selected";
 	}
-/* TODO: uncomment this when HTML is supported
 	option = utilAddElement(select, "option", "Formatted Text (HTML)");
 	option.value = 3;
 	if (property.type == 3) {
 	    option.selected = "selected";
 	}
-*/
     utilAddElement(td, "br");
     utilAddElement(td, "br");
     span = utilAddElement(td, "span", "Description:");
