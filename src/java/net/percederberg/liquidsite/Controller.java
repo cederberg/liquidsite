@@ -23,6 +23,8 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 
+import net.percederberg.liquidsite.content.ContentManager;
+
 /**
  * A request controller.
  *
@@ -69,6 +71,15 @@ public abstract class Controller {
         return application;
     }
     
+    /**
+     * Returns the application content manager.
+     * 
+     * @return the application content manager
+     */
+    protected ContentManager getContentManager() {
+        return getApplication().getContentManager();
+    }
+
     /**
      * Returns a file in the application context. The file path is
      * specified relative to the application base directory.

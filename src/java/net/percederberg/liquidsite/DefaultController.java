@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite;
 
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Site;
@@ -183,15 +182,6 @@ public class DefaultController extends Controller {
             request.setAttribute("error", "Invalid user name or password");
             processUnauthorized(request, site, path);
         }
-    }
-
-    /**
-     * Returns the application content manager.
-     * 
-     * @return the application content manager
-     */
-    private ContentManager getContentManager() {
-        return getApplication().getContentManager();
     }
 
     /**
