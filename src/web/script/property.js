@@ -231,16 +231,18 @@ function propertyInternalDisplayProperty(position, property) {
                                    "].type = this.value");
 	option = utilAddElement(select, "option", "Plain Text");
 	option.value = 1;
-	option = utilAddElement(select, "option", "Formatted Text (Tags)");
+	option = utilAddElement(select, "option", "Formatted Text");
 	option.value = 2;
 	if (property.type == 2) {
 	    option.selected = "selected";
 	}
+/* XXX: disabled, possible target for future removal
 	option = utilAddElement(select, "option", "Formatted Text (HTML)");
 	option.value = 3;
 	if (property.type == 3) {
 	    option.selected = "selected";
 	}
+*/	
     utilAddElement(td, "br");
     utilAddElement(td, "br");
     span = utilAddElement(td, "span", "Description:");

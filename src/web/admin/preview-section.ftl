@@ -31,7 +31,7 @@
   <#if prop.type == 1>
           Plain Text
   <#elseif prop.type == 2>
-          Formatted Text (Tags)
+          Formatted Text
   <#else>
           Formatted Text (HTML)
   </#if>
