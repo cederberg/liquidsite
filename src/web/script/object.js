@@ -83,6 +83,9 @@ function objectShow(type, id, name) {
     parent.className = "compact";
     parent.appendChild(child);
     OBJECT_ROOT.appendChild(parent);
+    child = document.createElement("p");
+    child.id = "objectbuttons";
+    OBJECT_ROOT.appendChild(child);
 }
 
 /**
@@ -339,11 +342,6 @@ function objectInternalAddButton(text, image, script) {
     var button = document.createElement("button");
     var img = document.createElement("img");
 
-    if (p == null) {
-        p = document.createElement("p");
-        p.id = "objectbuttons";
-        OBJECT_ROOT.appendChild(p);
-    }
     img.src = OBJECT_SMALL_ICON_PATH + image;
     button.onclick = new Function(script);
     button.appendChild(img);

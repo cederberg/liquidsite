@@ -419,3 +419,24 @@ table.border td {
 .incorrect {
         color: red;
 }
+.online {
+}
+.offline,
+a.offline,
+a.offline:link,
+a.offline:active,
+a.offline:visited {
+        font-weight: bold;
+        color: red;
+}
+.modified,
+a.modified,
+a.modified:link,
+a.modified:active,
+a.modified:visited {
+        font-weight: bold;
+        color: green;
+}
+.inherited {
+        background: rgb(235, 235, 235);
+}

@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -254,7 +255,7 @@ public class AdminController extends Controller {
             buffer.append("', ");
             buffer.append(children[i].getId());
             buffer.append(", '");
-            buffer.append(getContentType(children[i].getCategory()));
+            buffer.append(getScriptCategory(children[i].getCategory()));
             buffer.append("', '");
             buffer.append(children[i].getName());
             buffer.append("', '");
@@ -281,20 +282,19 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displayOpenSite(Request request) throws RequestException {
-        StringBuffer    buffer = new StringBuffer();
         String          type = request.getParameter("type", "");
         String          id = request.getParameter("id", "0");
         ContentManager  cm = getContentManager();
         User            user = request.getUser();
-        Domain          domain = null;
-        Content         content = null;
+        Content         content;
+        String          script;
 
-        // Find object
         try {
             if (type.equals("domain")) {
-                domain = cm.getDomain(user, id);
+                script = getObjectViewScript(cm.getDomain(user, id));
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
+                script = getObjectViewScript(content);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -302,39 +302,7 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
         }
-
-        // Create JavaScript output
-        buffer.append("objectShow('");
-        buffer.append(type);
-        buffer.append("', '");
-        buffer.append(id);
-        buffer.append("', '");
-        if (domain != null) {
-            buffer.append(domain.getName());
-        } else {
-            buffer.append(content.getName());
-        }
-        buffer.append("');\n");
-        if (domain != null) {
-            buffer.append("objectAddProperty('Name', '");
-            buffer.append(domain.getDescription());
-            buffer.append("');\n");
-        } else {
-            buffer.append("objectAddUrlProperty('");
-            // TODO: add content URL
-            buffer.append(content.toString());
-            buffer.append("');\n");
-            buffer.append("objectAddOnlineProperty(");
-            buffer.append(getDateString(content.getOnlineDate()));
-            buffer.append(", ");
-            buffer.append(getDateString(content.getOfflineDate()));
-            buffer.append(");\n");
-            buffer.append("objectAddStatusProperty(");
-            // TODO: get correct status value
-            buffer.append(ONLINE_STATUS);
-            buffer.append(", null);\n");
-        }
-        request.sendData("text/javascript", buffer.toString());
+        request.sendData("text/javascript", script);
     }
 
     /**
@@ -375,33 +343,214 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Returns the content type name for a content category.
+     * Returns the JavaScript for presenting an object view.
+     * 
+     * @param domain         the domain object
+     * 
+     * @return the JavaScript for presenting an object view
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getObjectViewScript(Domain domain) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+
+        buffer.append("objectShow('domain', '");
+        buffer.append(domain.getName());
+        buffer.append("', '");
+        buffer.append(domain.getName());
+        buffer.append("');\n");
+        buffer.append("objectAddProperty('Name', '");
+        buffer.append(domain.getDescription());
+        buffer.append("');\n");
+        buffer.append(getPermissionsScript(domain));
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting an object view.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript for presenting an object view
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getObjectViewScript(Content content) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+
+        buffer.append("objectShow('");
+        buffer.append(getScriptCategory(content.getCategory()));
+        buffer.append("', ");
+        buffer.append(content.getId());
+        buffer.append(", '");
+        buffer.append(content.getName());
+        buffer.append("');\n");
+        buffer.append("objectAddUrlProperty('");
+        // TODO: add content URL
+        buffer.append(content.toString());
+        buffer.append("');\n");
+        buffer.append("objectAddOnlineProperty(");
+        buffer.append(getDateScript(content.getOnlineDate()));
+        buffer.append(", ");
+        buffer.append(getDateScript(content.getOfflineDate()));
+        buffer.append(");\n");
+        buffer.append("objectAddStatusProperty(");
+        // TODO: get correct status value
+        buffer.append(ONLINE_STATUS);
+        buffer.append(", null);\n");
+        buffer.append(getPermissionsScript(content));
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting domain permissions.
+     * 
+     * @param domain         the domain object
+     * 
+     * @return the JavaScript for presenting domain permissions
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getPermissionsScript(Domain domain) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        Permission[]  permissions;
+        
+        permissions = domain.getPermissions();
+        if (permissions.length == 0) {
+            buffer.append(getPermissionScript(null, true));
+        }
+        for (int i = 0; i < permissions.length; i++) {
+            buffer.append(getPermissionScript(permissions[i], false));
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting content permissions.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript for presenting content permissions
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getPermissionsScript(Content content) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        Permission[]  permissions;
+        Content       parent = content;
+        boolean       inherited = false;
+        
+        // Find permissions
+        permissions = content.getPermissions();
+        while (permissions.length == 0 && parent != null) {
+            inherited = true;
+            parent = parent.getParent();
+            if (parent != null) {
+                permissions = parent.getPermissions();
+            }
+        }
+        if (parent == null) {
+            return getPermissionsScript(content.getDomain());
+        }
+
+        // Create permission script
+        for (int i = 0; i < permissions.length; i++) {
+            buffer.append(getPermissionScript(permissions[i], inherited));
+        }
+
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting a permission.
+     * 
+     * @param perm           the permission object, or null
+     * @param inherited      the inherited flag
+     * 
+     * @return the JavaScript for presenting a permission
+     */
+    private String getPermissionScript(Permission perm, boolean inherited) {
+        StringBuffer  buffer = new StringBuffer();
+        
+        buffer.append("objectAddPermission(");
+        if (perm == null) {
+            buffer.append("null, null, false, false, false, false");
+        } else {
+            buffer.append(getStringScript(perm.getUserName()));
+            buffer.append(", ");
+            buffer.append(getStringScript(perm.getGroupName()));
+            buffer.append(", ");
+            buffer.append(perm.getRead());
+            buffer.append(", ");
+            buffer.append(perm.getWrite());
+            buffer.append(", ");
+            buffer.append(perm.getPublish());
+            buffer.append(", ");
+            buffer.append(perm.getAdmin());
+        }
+        buffer.append(", ");
+        buffer.append(!inherited);
+        buffer.append(");\n");
+
+        return buffer.toString();
+    }
+
+    /**
+     * Returns a JavaScript representation of a date.
+     * 
+     * @param date           the date to present, or null
+     * 
+     * @return a JavaScript representation of the date
+     */
+    private String getDateScript(Date date) {
+        if (date == null) {
+            return "null";
+        } else {
+            return "'" + DATE_FORMAT.format(date) + "'"; 
+        }
+    }
+
+    /**
+     * Returns a JavaScript representation of a string. This method
+     * will present empty strings as null.
+     * 
+     * @param str            the string to present, or null
+     * 
+     * @return a JavaScript representation of the string
+     */
+    private String getStringScript(String str) {
+        if (str == null || str.equals("")) {
+            return "null";
+        } else {
+            return "'" + str + "'";
+        }
+    }
+
+    /**
+     * Returns the JavaScript content category name.
      * 
      * @param category       the content category
      * 
-     * @return the content type name
+     * @return the JavaScript content category name
      */
-    private String getContentType(int category) {
+    private String getScriptCategory(int category) {
         switch (category) {
         case Content.SITE_CATEGORY:
             return "site";
         default:
             return "";
-        }
-    }
-    
-    /**
-     * Returns a JavaScript string representation of a date.
-     * 
-     * @param date           the date to present, or null
-     * 
-     * @return a JavaScript string representation of the date
-     */
-    private String getDateString(Date date) {
-        if (date == null) {
-            return "null";
-        } else {
-            return "'" + DATE_FORMAT.format(date) + "'"; 
         }
     }
 }
