@@ -29,5 +29,10 @@ package net.percederberg.liquidsite;
  */
 public interface Controller {
 
+    /**
+     * Processes a request.
+     * 
+     * @param request        the request to process
+     */
     void process(Request request);
 }

@@ -21,15 +21,15 @@
 
 package net.percederberg.liquidsite;
 
-import net.percederberg.liquidsite.db.*;
-
 import java.io.IOException;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.percederberg.liquidsite.db.DatabaseConnectionException;
+import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 
 /**
  * A front controller servlet. This class handles all incoming HTTP
@@ -40,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FrontControllerServlet extends HttpServlet {
 
+    /**
+     * The installation controller.
+     */
     private InstallController install;
 
     /**
@@ -49,15 +52,16 @@ public class FrontControllerServlet extends HttpServlet {
      */
     public void init() throws ServletException {
 
-        // load mysql driver
+        // Load MySQL JDBC driver
         try {
             MySQLDatabaseConnector.loadDriver();
         } catch (DatabaseConnectionException e) {
-            // TODO send error page
+            // TODO: log this error properly
+            e.printStackTrace();
         }
 
-        // create installer
-	install = new InstallController(this);
+        // Create install controller
+        install = new InstallController(this);
     }
 
     /**
@@ -99,7 +103,13 @@ public class FrontControllerServlet extends HttpServlet {
         }
     }
     
+    /**
+     * Processes an incoming request.
+     * 
+     * @param request        the request object
+     */
     private void process(Request request) {
-	install.process(request);
+        // TODO: implement this method properly
+        install.process(request);
     }
 }
