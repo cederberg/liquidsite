@@ -143,6 +143,7 @@ class PublishDialogHandler extends AdminDialogHandler {
         }
         recursive = request.getParameter("recursive", "").equals("true");
         comment = request.getParameter("comment");
+        content.setComment(comment);
         publish(request.getUser(), content, date, comment, recursive);
         return 0;
     }
