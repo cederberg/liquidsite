@@ -160,6 +160,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             processSessionPing(request);
         } else if (path.startsWith("preview/")) {
             processPreview(request, path.substring(8));
+        } else if (path.startsWith("sessionpreview/")) {
+            processSessionPreview(request, path.substring(15));
         } else if (path.startsWith("stats/")) {
             processStats(request, path.substring(6));
         } else {
@@ -647,6 +649,27 @@ public class AdminRequestProcessor extends RequestProcessor {
                                                  (ContentSection) content);
         } else {
             throw RequestException.RESOURCE_NOT_FOUND;
+        }
+    }
+
+    /**
+     * Processes the session preview requests.
+     *
+     * @param request        the request object
+     * @param path           the preview path
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processSessionPreview(Request request, String path)
+        throws RequestException {
+
+        File  file = request.getSession().getFile(path);
+
+        if (file == null) {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        } else {
+            request.sendFile(file, true);
         }
     }
 

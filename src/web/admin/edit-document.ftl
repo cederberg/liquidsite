@@ -184,7 +184,8 @@
               <tr>
                 <td>
   <#if file.id = "0">
-                  ${file.name} (New)
+                  <a href="sessionpreview/${file.name}"
+                     target="_blank">${file.name}</a> (New)
   <#else>
                   <a href="preview/${file.id}/${file.name}"
                      target="_blank">${file.name}</a>
