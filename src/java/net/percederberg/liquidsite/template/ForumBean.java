@@ -27,6 +27,7 @@ import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentForum;
+import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentTopic;
 
@@ -45,9 +46,9 @@ public class ForumBean {
     private static final Log LOG = new Log(ForumBean.class);
 
     /**
-     * The base template bean.
+     * The bean context.
      */
-    private LiquidSiteBean baseBean;
+    private BeanContext context;
 
     /**
      * The forum being encapsulated.
@@ -74,13 +75,23 @@ public class ForumBean {
     }
 
     /**
+     * Creates a new forum template bean based on the request
+     * environment forum.
+     *
+     * @param context        the bean context
+     */
+    ForumBean(BeanContext context) {
+        this(context, context.getRequest().getEnvironment().getForum());
+    }
+
+    /**
      * Creates a new forum template bean.
      *
-     * @param baseBean       the base template bean
+     * @param context        the bean context
      * @param forum          the content forum, or null
      */
-    ForumBean(LiquidSiteBean baseBean, ContentForum forum) {
-        this.baseBean = baseBean;
+    ForumBean(BeanContext context, ContentForum forum) {
+        this.context = context;
         this.forum = forum;
     }
 
@@ -121,6 +132,23 @@ public class ForumBean {
     }
 
     /**
+     * Returns the forum parent, i.e. the section.
+     *
+     * @return the forum parent
+     */
+    public SectionBean getParent() {
+        if (forum != null) {
+            try {
+                return new SectionBean(context,
+                                       (ContentSection) forum.getParent());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return new SectionBean();
+    }
+
+    /**
      * Returns the forum description.
      *
      * @return the forum description
@@ -143,7 +171,7 @@ public class ForumBean {
 
         if (forum != null) {
             moderator = forum.getModeratorName();
-            return baseBean.getUser().inGroup(moderator);
+            return context.findUser("").inGroup(moderator);
         }
         return false;
     }
@@ -210,7 +238,7 @@ public class ForumBean {
     public int getTopicCount() {
         if (forum != null) {
             try {
-                return baseBean.countContent(createTopicSelector());
+                return context.countContent(createTopicSelector());
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -238,9 +266,9 @@ public class ForumBean {
                 selector = createTopicSelector();
                 selector.sortByModified(false);
                 selector.limitResults(offset, count);
-                content = baseBean.selectContent(selector);
+                content = context.findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new TopicBean(baseBean,
+                    results.add(new TopicBean(context,
                                               (ContentTopic) content[i]));
                 }
             } catch (ContentException e) {
@@ -284,9 +312,9 @@ public class ForumBean {
 
         Content[]  content;
 
-        content = baseBean.selectContent(selector);
+        content = context.findContent(selector);
         if (content.length > 0) {
-            return new TopicBean(baseBean, (ContentTopic) content[0]);
+            return new TopicBean(context, (ContentTopic) content[0]);
         } else {
             return null;
         }

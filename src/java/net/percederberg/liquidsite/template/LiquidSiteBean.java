@@ -22,24 +22,6 @@
 package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.ContentForum;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentPage;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.ContentSelector;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTopic;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.web.Request;
 
 /**
  * A LiquidSite template bean. This class is used to insert the
@@ -51,19 +33,9 @@ import net.percederberg.liquidsite.web.Request;
 public class LiquidSiteBean {
 
     /**
-     * The class logger.
+     * The bean context.
      */
-    private static final Log LOG = new Log(LiquidSiteBean.class);
-
-    /**
-     * The request being processed.
-     */
-    private Request request;
-
-    /**
-     * The content manager to use.
-     */
-    private ContentManager manager;
+    private BeanContext context;
 
     /**
      * The request bean.
@@ -91,36 +63,12 @@ public class LiquidSiteBean {
     private TopicBean topicBean = null;
 
     /**
-     * The user beans. Each user is indexed by the user name.
-     */
-    private HashMap users = new HashMap();
-
-    /**
-     * The relative path to the site root directory. The path is
-     * relative to the request URL and may be empty if the request
-     * refers to an object in the site root directory. Otherwise the
-     * path ends with an "/" character.
-     */
-    private String sitePath = null;
-
-    /**
-     * The relative path to the page directory. The path is relative
-     * to the request URL and may be empty if the request refers to
-     * an object in the page directory. Otherwise the path ends with
-     * an "/" character. Note that the page path is NOT always an
-     * empty string (consider dynamic pages linked to sections).
-     */
-    private String pagePath = null;
-
-    /**
      * Creates a new LiquidSite template bean.
      *
-     * @param request        the request object
-     * @param manager        the content manager to use
+     * @param context        the bean context
      */
-    LiquidSiteBean(Request request, ContentManager manager) {
-        this.request = request;
-        this.manager = manager;
+    LiquidSiteBean(BeanContext context) {
+        this.context = context;
     }
 
     /**
@@ -148,7 +96,7 @@ public class LiquidSiteBean {
      */
     public RequestBean getRequest() {
         if (requestBean == null) {
-            requestBean = new RequestBean(request);
+            requestBean = new RequestBean(context);
         }
         return requestBean;
     }
@@ -159,11 +107,8 @@ public class LiquidSiteBean {
      * @return the section bean
      */
     public SectionBean getSection() {
-        ContentSection  section;
-
         if (sectionBean == null) {
-            section = request.getEnvironment().getSection();
-            sectionBean = new SectionBean(this, section);
+            sectionBean = new SectionBean(context);
         }
         return sectionBean;
     }
@@ -175,8 +120,7 @@ public class LiquidSiteBean {
      */
     public DocumentBean getDoc() {
         if (docBean == null) {
-            docBean = new DocumentBean(request.getEnvironment().getDocument(),
-                                       getSitePath());
+            docBean = new DocumentBean(context);
         }
         return docBean;
     }
@@ -187,11 +131,8 @@ public class LiquidSiteBean {
      * @return the forum bean
      */
     public ForumBean getForum() {
-        ContentForum  forum;
-
         if (forumBean == null) {
-            forum = request.getEnvironment().getForum();
-            forumBean = new ForumBean(this, forum);
+            forumBean = new ForumBean(context);
         }
         return forumBean;
     }
@@ -202,11 +143,8 @@ public class LiquidSiteBean {
      * @return the topic bean
      */
     public TopicBean getTopic() {
-        ContentTopic  topic;
-
         if (topicBean == null) {
-            topic = request.getEnvironment().getTopic();
-            topicBean = new TopicBean(this, topic);
+            topicBean = new TopicBean(context);
         }
         return topicBean;
     }
@@ -217,110 +155,7 @@ public class LiquidSiteBean {
      * @return the user bean for the current user
      */
     public UserBean getUser() {
-        User    user = request.getUser();
-        String  name;
-
-        name = (user == null) ? "" : user.getName();
-        if (!users.containsKey(name)) {
-            users.put(name, new UserBean(user));
-        }
-        return (UserBean) users.get(name);
-    }
-
-    /**
-     * Returns the relative path to the site root directory. The path
-     * is relative to the request URL and may be empty if the request
-     * refers to an object in the site root directory. Otherwise the
-     * path ends with an "/" character. The result of this method
-     * will be stored in an instance variable to avoid calculations
-     * on further requests.
-     *
-     * @return the relative path to the site root directory
-     */
-    private String getSitePath() {
-        ContentSite   site;
-
-        if (sitePath == null) {
-            site = request.getEnvironment().getSite();
-            sitePath = getRelativePath(site.getDirectory());
-        }
-        return sitePath;
-    }
-
-    /**
-     * Returns the relative path to the page directory. The path is
-     * relative to the request URL and may be empty if the request
-     * refers directly to an object in the page directory. Otherwise
-     * the path ends with an "/" character. Note that the page path
-     * is NOT always an empty string (consider dynamic pages linked
-     * to sections).
-     *
-     * @return the relative path to the page directory
-     */
-    private String getPagePath() {
-        ContentPage   page;
-
-        if (pagePath == null) {
-            page = request.getEnvironment().getPage();
-            if (page == null) {
-                pagePath = getSitePath();
-            } else {
-                try {
-                    pagePath = getRelativePath(getContentPath(page));
-                } catch (ContentException e) {
-                    LOG.error(e.getMessage());
-                    pagePath = "";
-                }
-            }
-        }
-        return pagePath;
-    }
-
-    /**
-     * Returns the absolute path to a content object.
-     *
-     * @param content        the content object
-     *
-     * @return the absolute path to a content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getContentPath(Content content) throws ContentException {
-        if (content instanceof ContentSite) {
-            return request.getEnvironment().getSite().getDirectory();
-        } else if (content instanceof ContentFolder) {
-            return getContentPath(content.getParent()) +
-                   content.getName() + "/";
-        } else if (content != null) {
-            return getContentPath(content.getParent());
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the relative path to a specified base path. The
-     * specified path is assumed to be a part of the complete request
-     * path. This method will return an empty string if the request
-     * refers to a object in the specified directory.
-     *
-     * @param basePath       the absolute base path
-     *
-     * @return the relative path to the base path for the request
-     */
-    private String getRelativePath(String basePath) {
-        StringBuffer  buffer = new StringBuffer();
-        String        path;
-        int           pos;
-
-        path = request.getPath();
-        path = path.substring(basePath.length());
-        while ((pos = path.indexOf('/')) >= 0) {
-            buffer.append("../");
-            path = path.substring(pos + 1);
-        }
-        return buffer.toString();
+        return context.findUser("");
     }
 
     /**
@@ -339,10 +174,20 @@ public class LiquidSiteBean {
         if (path.indexOf(":") >= 0) {
             return path;
         } else if (path.startsWith("/")) {
-            return getSitePath() + path.substring(1);
+            return context.getSitePath() + path.substring(1);
         } else {
-            return getPagePath() + path;
+            return context.getPagePath() + path;
         }
+    }
+
+    /**
+     * Returns the number of documents in the specified section and
+     * any subsections.
+     *
+     * @return the number of documents found
+     */
+    public int countDocuments(String path) {
+        return context.countDocuments(path);
     }
 
     /**
@@ -354,29 +199,11 @@ public class LiquidSiteBean {
      *         an empty document if not found
      */
     public DocumentBean findDocument(String path) {
-        Domain   domain;
-        Content  content;
-
-        try {
-            domain = request.getEnvironment().getDomain();
-            content = findContent(path, domain);
-            if (content instanceof ContentDocument) {
-                return new DocumentBean((ContentDocument) content,
-                                        (ContentSection) content.getParent(),
-                                        getSitePath());
-            } else {
-                LOG.error("failed to find document: " + path);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-        }
-        return new DocumentBean();
+        return context.findDocument(path);
     }
 
     /**
-     * Returns all document in the specified section path. All
+     * Returns all documents in the specified section path. All
      * documents in subsections will also be returned. The documents
      * will be ordered by the publication online date.
      *
@@ -407,29 +234,7 @@ public class LiquidSiteBean {
                                    int offset,
                                    int count) {
 
-        ArrayList       results = new ArrayList();
-        Domain          domain;
-        Content         content;
-        ContentSection  section;
-
-        try {
-            domain = request.getEnvironment().getDomain();
-            content = findContent(path, domain);
-            if (content instanceof ContentSection) {
-                findDocuments((ContentSection) content,
-                              sorting,
-                              offset,
-                              count,
-                              results);
-            } else {
-                LOG.error("failed to find section: " + path);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-        }
-        return results;
+        return context.findDocuments(path, sorting, offset, count);
     }
 
     /**
@@ -441,23 +246,7 @@ public class LiquidSiteBean {
      *         an empty section if not found
      */
     public SectionBean findSection(String path) {
-        Domain   domain;
-        Content  content;
-
-        try {
-            domain = request.getEnvironment().getDomain();
-            content = findContent(path, domain);
-            if (content instanceof ContentSection) {
-                return new SectionBean(this, (ContentSection) content);
-            } else {
-                LOG.error("failed to find section: " + path);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-        }
-        return new SectionBean();
+        return context.findSection(path);
     }
 
     /**
@@ -469,294 +258,6 @@ public class LiquidSiteBean {
      *         an empty user if not found
      */
     public UserBean findUser(String name) {
-        Domain   domain;
-        User     user = null;
-
-        if (!users.containsKey(name)) {
-            try {
-                domain = request.getEnvironment().getDomain();
-                user = manager.getUser(domain, name);
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-            }
-            users.put(name, new UserBean(user));
-        }
-        return (UserBean) users.get(name);
-    }
-
-    /**
-     * Finds a specified content section or document.
-     *
-     * @param path           the content path
-     * @param parent         the parent domain or section
-     *
-     * @return the section or document found, or
-     *         null if not found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the content couldn't be
-     *             read by the current user
-     */
-    private Content findContent(String path, Object parent)
-        throws ContentException, ContentSecurityException {
-
-        String  name;
-        int     pos;
-
-        // Check for empty path or null parent
-        if (path == null || path.equals("") || parent == null) {
-            if (parent instanceof ContentSection
-             || parent instanceof ContentDocument) {
-
-                return (Content) parent;
-            } else {
-                return null;
-            }
-        }
-
-        // Find child name
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        pos = path.indexOf("/");
-        if (pos > 0) {
-            name = path.substring(0, pos);
-            path = path.substring(pos + 1);
-        } else {
-            name = path;
-            path = "";
-        }
-
-        // Find child content
-        return findContent(path, findChild(parent, name));
-    }
-
-    /**
-     * Finds a named child object. The parent may be either a domain
-     * or a content section. The child returned can be either a
-     * content section or some content object present directly in the
-     * section.
-     *
-     * @param parent         the parent domain or section
-     * @param name           the child name
-     *
-     * @return the child content object found, or
-     *         null if not found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the section couldn't be
-     *             read by the current user
-     */
-    private Content findChild(Object parent, String name)
-        throws ContentException, ContentSecurityException {
-
-        Content[]  children;
-
-        if (manager == null) {
-            return null;
-        } else if (parent instanceof Domain) {
-            children = manager.getContentChildren(request.getUser(),
-                                                  (Domain) parent,
-                                                  Content.SECTION_CATEGORY);
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].getName().equals(name)) {
-                    return children[i];
-                }
-            }
-        } else {
-            return manager.getContentChild(request.getUser(),
-                                           (Content) parent,
-                                           name);
-        }
-        return null;
-    }
-
-    /**
-     * Finds all documents in the specified section and subsection.
-     * The documents will be added (as document beans) to the
-     * specified list.
-     *
-     * @param section        the content section
-     * @param sorting        the sorting information
-     * @param offset         the number of documents to skip
-     * @param count          the maximum number of documents
-     * @param results        the list with results
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    void findDocuments(ContentSection section,
-                       String sorting,
-                       int offset,
-                       int count,
-                       ArrayList results)
-        throws ContentException {
-
-        ContentSelector   selector;
-        ContentSection[]  sections;
-        Content[]         children;
-        DocumentBean      doc;
-
-        selector = new ContentSelector(section.getDomain());
-        sections = findSections(section);
-        for (int i = 0; i < sections.length; i++) {
-            selector.requireParent(sections[i]);
-        }
-        selector.requireCategory(Content.DOCUMENT_CATEGORY);
-        setSelectorSorting(selector, sorting.trim());
-        selector.limitResults(offset, count);
-        children = manager.getContentObjects(request.getUser(), selector);
-        for (int i = 0; i < children.length; i++) {
-            doc = new DocumentBean((ContentDocument) children[i],
-                                   section,
-                                   getSitePath());
-            results.add(doc);
-        }
-    }
-
-    /**
-     * Finds all subsections to a specified section. The specified
-     * section will be included in the result.
-     *
-     * @param section        the content section
-     *
-     * @return the array of sections found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private ContentSection[] findSections(ContentSection section)
-        throws ContentException {
-
-        ArrayList         list = new ArrayList();
-        ContentSection[]  res;
-
-        findSubSections(section, list);
-        res = new ContentSection[list.size()];
-        list.toArray(res);
-        return res;
-    }
-
-    /**
-     * Finds all subsections to a specified section. The specified
-     * section will be included in the result.
-     *
-     * @param section        the content section
-     * @param result         the list to add the sections to
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private void findSubSections(ContentSection section, ArrayList result)
-        throws ContentException {
-
-        Content[]  children;
-
-        result.add(section);
-        children = manager.getContentChildren(request.getUser(),
-                                              section,
-                                              Content.SECTION_CATEGORY);
-        for (int i = 0; i < children.length; i++) {
-            findSubSections((ContentSection) children[i], result);
-        }
-    }
-
-    /**
-     * Counts the number of content objects matching a content selector.
-     *
-     * @param selector       the content selector
-     *
-     * @return the number of matching content objects
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    int countContent(ContentSelector selector)
-        throws ContentException {
-
-        return manager.getContentCount(selector);
-    }
-
-    /**
-     * Selects a content object with the specified content id.
-     *
-     * @param id             the content identifier
-     *
-     * @return the content object found, or
-     *         null for none
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    Content selectContent(int id)
-        throws ContentException, ContentSecurityException {
-
-        return manager.getContent(request.getUser(), id);
-    }
-
-    /**
-     * Selects a set of content objects with a content selector.
-     *
-     * @param selector       the content selector
-     *
-     * @return the array of content objects found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the object couldn't be
-     *             read by the current user
-     */
-    Content[] selectContent(ContentSelector selector)
-        throws ContentException {
-
-        return manager.getContentObjects(request.getUser(), selector);
-    }
-
-    /**
-     * Sets the selector sorting from the specified sorting
-     * information.
-     *
-     * @param selector       the content selector
-     * @param sorting        the sorting information
-     */
-    private void setSelectorSorting(ContentSelector selector,
-                                    String sorting) {
-
-        String   str;
-        boolean  ascending;
-        int      pos;
-
-        while (sorting.length() > 0) {
-            pos = sorting.indexOf(",");
-            if (pos > 0) {
-                str = sorting.substring(0, pos).trim();
-                sorting = sorting.substring(pos + 1).trim();
-            } else {
-                str = sorting;
-                sorting = "";
-            }
-            ascending = true;
-            if (str.startsWith("+") || str.startsWith("-")) {
-                ascending = str.startsWith("+");
-                str = str.substring(1);
-            }
-            if (str.equals("name")) {
-                selector.sortByName(ascending);
-            } else if (str.equals("meta.id")) {
-                selector.sortById(ascending);
-            } else if (str.equals("meta.revision")) {
-                selector.sortByRevision(ascending);
-            } else if (str.equals("meta.online")) {
-                selector.sortByOnline(ascending);
-            } else if (str.equals("meta.date")) {
-                selector.sortByModified(ascending);
-            } else if (str.equals("meta.user")) {
-                selector.sortByAuthor(ascending);
-            } else {
-                selector.sortByDocumentProperty(str, ascending);
-            }
-        }
+        return context.findUser(name);
     }
 }

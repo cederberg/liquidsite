@@ -26,6 +26,7 @@ import java.util.Date;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentSection;
 
 /**
  * A document meta-data bean.
@@ -41,6 +42,11 @@ public class DocumentMetaDataBean {
     private static final Log LOG = new Log(DocumentMetaDataBean.class);
 
     /**
+     * The bean context.
+     */
+    private BeanContext context;
+
+    /**
      * The document being encapsulated.
      */
     private ContentDocument document;
@@ -48,9 +54,11 @@ public class DocumentMetaDataBean {
    /**
      * Creates a new meta-data bean.
      *
+     * @param context        the bean context
      * @param document       the content document
      */
-    DocumentMetaDataBean(ContentDocument document) {
+    DocumentMetaDataBean(BeanContext context, ContentDocument document) {
+        this.context = context;
         this.document = document;
     }
 
@@ -66,6 +74,23 @@ public class DocumentMetaDataBean {
         } else {
             return document.getId();
         }
+    }
+
+    /**
+     * Returns the document parent, i.e. the section.
+     *
+     * @return the document parent
+     */
+    public SectionBean getParent() {
+        if (document != null) {
+            try {
+                return new SectionBean(context,
+                                       (ContentSection) document.getParent());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return new SectionBean();
     }
 
     /**

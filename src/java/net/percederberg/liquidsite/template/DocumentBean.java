@@ -53,6 +53,11 @@ public class DocumentBean implements TemplateHashModel {
     private static final Log LOG = new Log(DocumentBean.class);
 
     /**
+     * The bean context.
+     */
+    private BeanContext context;
+
+    /**
      * The document being encapsulated.
      */
     private ContentDocument document;
@@ -71,41 +76,38 @@ public class DocumentBean implements TemplateHashModel {
     private TemplateModel metadata = null;
 
     /**
-     * The request site path.
-     */
-    private String sitePath;
-
-    /**
      * Creates a new empty document template bean.
      */
     DocumentBean() {
-        this(null, "");
+        this(null, null, null);
     }
 
     /**
-     * Creates a new document template bean.
+     * Creates a new document template bean from the request
+     * environment document.
      *
-     * @param document       the content document, or null
-     * @param sitePath       the request site path
+     * @param context        the bean context
      */
-    DocumentBean(ContentDocument document, String sitePath) {
-        this(document, null, sitePath);
+    DocumentBean(BeanContext context) {
+        this(context,
+             context.getRequest().getEnvironment().getDocument(),
+             null);
     }
 
     /**
      * Creates a new document template bean.
      *
+     * @param context        the bean context
      * @param document       the content document, or null
      * @param baseSection    the base section for the document
-     * @param sitePath       the request site path
      */
-    DocumentBean(ContentDocument document,
-                 ContentSection baseSection,
-                 String sitePath) {
+    DocumentBean(BeanContext context,
+                 ContentDocument document,
+                 ContentSection baseSection) {
 
+        this.context = context;
         this.document = document;
         this.baseSection = baseSection;
-        this.sitePath = sitePath;
     }
 
     /**
@@ -137,7 +139,7 @@ public class DocumentBean implements TemplateHashModel {
 
         if (id.equals("meta")) {
             if (metadata == null) {
-                obj = new DocumentMetaDataBean(document);
+                obj = new DocumentMetaDataBean(context, document);
                 metadata = ObjectWrapper.BEANS_WRAPPER.wrap(obj);
             }
             return metadata;
@@ -525,13 +527,13 @@ public class DocumentBean implements TemplateHashModel {
         if (path.indexOf(":") >= 0) {
             return path;
         } else if (path.startsWith("/")) {
-            return sitePath + path.substring(1);
+            return context.getSitePath() + path.substring(1);
         } else if (baseSection == null) {
             return path;
         } else {
             // TODO: use translator path if possible
-            return sitePath + "liquidsite.obj/" + document.getId() +
-                   "/" + path;
+            return context.getSitePath() + "liquidsite.obj/" + 
+                   document.getId() + "/" + path;
         }
     }
 }

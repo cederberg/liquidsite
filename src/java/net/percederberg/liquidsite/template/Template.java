@@ -80,8 +80,10 @@ public class Template {
 
         Map          data = request.getAllAttributes();
         Environment  env;
+        BeanContext  context;
 
-        data.put("liquidsite", new LiquidSiteBean(request, manager));
+        context = new BeanContext(request, manager);
+        data.put("liquidsite", new LiquidSiteBean(context));
         try {
             env = template.createProcessingEnvironment(data, out);
             if (request.getUser() != null) {

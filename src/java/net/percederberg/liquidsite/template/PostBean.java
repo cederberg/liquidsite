@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSelector;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.text.PlainFormatter;
 
 /**
@@ -46,9 +47,9 @@ public class PostBean {
     private static final Log LOG = new Log(PostBean.class);
 
     /**
-     * The base template bean.
+     * The bean context.
      */
-    private LiquidSiteBean baseBean;
+    private BeanContext context;
 
     /**
      * The post being encapsulated.
@@ -65,11 +66,11 @@ public class PostBean {
     /**
      * Creates a new post template bean.
      *
-     * @param baseBean       the base template bean
+     * @param context        the bean context
      * @param post           the content post, or null
      */
-    PostBean(LiquidSiteBean baseBean, ContentPost post) {
-        this.baseBean = baseBean;
+    PostBean(BeanContext context, ContentPost post) {
+        this.context = context;
         this.post = post;
     }
 
@@ -83,6 +84,23 @@ public class PostBean {
             return post.getId();
         }
         return 0;
+    }
+
+    /**
+     * Returns the post parent, i.e. the topic.
+     *
+     * @return the post parent
+     */
+    public TopicBean getParent() {
+        if (post != null) {
+            try {
+                return new TopicBean(context,
+                                     (ContentTopic) post.getParent());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return new TopicBean();
     }
 
     /**
@@ -152,7 +170,7 @@ public class PostBean {
      */
     public UserBean getUser() {
         if (post != null) {
-            return baseBean.findUser(post.getAuthorName());
+            return context.findUser(post.getAuthorName());
         }
         return new UserBean(null);
     }

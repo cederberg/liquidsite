@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
@@ -47,9 +48,9 @@ public class TopicBean {
     private static final Log LOG = new Log(TopicBean.class);
 
     /**
-     * The base template bean.
+     * The bean context.
      */
-    private LiquidSiteBean baseBean;
+    private BeanContext context;
 
     /**
      * The topic being encapsulated.
@@ -76,13 +77,23 @@ public class TopicBean {
     }
 
     /**
+     * Creates a new topic template bean based on the request
+     * environment topic.
+     *
+     * @param context        the bean context
+     */
+    TopicBean(BeanContext context) {
+        this(context, context.getRequest().getEnvironment().getTopic());
+    }
+
+    /**
      * Creates a new topic template bean.
      *
-     * @param baseBean       the base template bean
+     * @param context        the bean context
      * @param topic          the content topic, or null
      */
-    TopicBean(LiquidSiteBean baseBean, ContentTopic topic) {
-        this.baseBean = baseBean;
+    TopicBean(BeanContext context, ContentTopic topic) {
+        this.context = context;
         this.topic = topic;
     }
 
@@ -108,6 +119,23 @@ public class TopicBean {
             return topic.getName();
         }
         return "";
+    }
+
+    /**
+     * Returns the topic parent, i.e. the forum.
+     *
+     * @return the topic parent
+     */
+    public ForumBean getParent() {
+        if (topic != null) {
+            try {
+                return new ForumBean(context,
+                                     (ContentForum) topic.getParent());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return new ForumBean();
     }
 
     /**
@@ -208,7 +236,7 @@ public class TopicBean {
     public int getPostCount() {
         if (topic != null) {
             try {
-                return baseBean.countContent(createPostSelector());
+                return context.countContent(createPostSelector());
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -230,9 +258,9 @@ public class TopicBean {
 
         if (topic != null) {
             try {
-                content = baseBean.selectContent(id);
+                content = context.findContent(id);
                 if (content != null) {
-                    return new PostBean(baseBean, (ContentPost) content);
+                    return new PostBean(context, (ContentPost) content);
                 }
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
@@ -263,9 +291,9 @@ public class TopicBean {
                 selector = createPostSelector();
                 selector.sortById(true);
                 selector.limitResults(offset, count);
-                content = baseBean.selectContent(selector);
+                content = context.findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new PostBean(baseBean,
+                    results.add(new PostBean(context,
                                              (ContentPost) content[i]));
                 }
             } catch (ContentException e) {
@@ -307,9 +335,9 @@ public class TopicBean {
 
         Content[]  content;
 
-        content = baseBean.selectContent(selector);
+        content = context.findContent(selector);
         if (content.length > 0) {
-            return new PostBean(baseBean, (ContentPost) content[0]);
+            return new PostBean(context, (ContentPost) content[0]);
         } else {
             return null;
         }

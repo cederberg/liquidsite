@@ -47,10 +47,10 @@ public class RequestBean {
     /**
      * Creates a new request bean.
      *
-     * @param request        the request
+     * @param context        the bean context
      */
-    RequestBean(Request request) {
-        this.request = request;
+    RequestBean(BeanContext context) {
+        this.request = context.getRequest();
     }
 
     /**
