@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentTemplate;
 
 /**
  * A controller for requests to the administration site(s).
@@ -127,6 +128,8 @@ public class AdminController extends Controller {
             processLoadSite(request);
         } else if (path.equals("opensite.js")) {
             processOpenSite(request);
+        } else if (path.equals("opentemplate.js")) {
+            processOpenTemplate(request);
         } else {
             processWorkflow(request, path);
         }
@@ -277,6 +280,37 @@ public class AdminController extends Controller {
         try {
             obj = view.getRequestReference(request);
             view.scriptOpenSite(request, obj);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
+     * Processes a JavaScript open template request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processOpenTemplate(Request request) throws RequestException {
+        int      id;
+        Content  content;
+
+        try {
+            id = Integer.parseInt(request.getParameter("id", "0"));
+            content = getContentManager().getContent(request.getUser(), id);
+            if (content instanceof ContentTemplate) {
+                view.scriptOpenTemplate(request, 
+                                        (ContentTemplate) content);
+            } else {
+                view.scriptOpenTemplate(request, null);
+            }
+        } catch (NumberFormatException e) {
+            throw RequestException.FORBIDDEN;
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;

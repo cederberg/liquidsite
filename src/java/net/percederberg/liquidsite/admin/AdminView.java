@@ -627,6 +627,26 @@ class AdminView {
     }
 
     /**
+     * Shows the open template JavaScript code.
+     * 
+     * @param request        the request object
+     * @param template       the content template, or null
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void scriptOpenTemplate(Request request,
+                                   ContentTemplate template)
+        throws ContentException {
+
+        String   buffer;
+
+        // TODO: show work revision elements
+        buffer = script.getTemplateElements(template);
+        request.sendData("text/javascript", buffer);
+    }
+
+    /**
      * Returns the JavaScript code for displaying child content 
      * objects. This method may create a nested tree view with all 
      * parent objects up to the domain if the recursive flag is set.

@@ -9,9 +9,18 @@
         templateInitialize("elementedit");
 <#list locals.keySet() as elem>
         templateAddLocal('${elem}', ${locals[elem]});
-</#list>        
+</#list>
         templateDisplay();
+        openTemplate(${parent});
         document.getElementsByName("name").item(0).focus();
+    }
+
+    function openTemplate(id) {
+        var script = document.createElement('script');
+
+        script.type = "text/javascript";
+        script.src = "opentemplate.js?type=template&id=" + id;
+        document.getElementsByTagName("head")[0].appendChild(script);
     }
 
     function previous() {

@@ -23,12 +23,14 @@ package net.percederberg.liquidsite.admin;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
@@ -673,6 +675,40 @@ class AdminScript {
         } else {
             return getString(lock.getUserName());
         }
+    }
+
+    /**
+     * Returns the JavaScript for setting all the inherited template 
+     * page elements.
+     * 
+     * @param template       the content template, or null
+     * 
+     * @return the JavaScript for setting the page elements
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public String getTemplateElements(ContentTemplate template) 
+        throws ContentException {
+
+        StringBuffer    buffer = new StringBuffer();
+        Iterator        iter = null;
+        String          name;
+
+        buffer.append("templateRemoveAllInherited();\n");
+        if (template != null) {
+            iter = template.getAllElementNames().iterator();
+        }
+        while (iter != null && iter.hasNext()) {
+            name = iter.next().toString();
+            buffer.append("templateAddInherited(");
+            buffer.append(getString(name));
+            buffer.append(", ");
+            buffer.append(getString(template.getElement(name)));
+            buffer.append(");\n");
+        }
+        buffer.append("templateDisplay();\n");
+        return buffer.toString();
     }
 
     /**
