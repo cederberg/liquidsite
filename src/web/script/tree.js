@@ -209,7 +209,8 @@ function treeInternalIsContainer(type) {
         || type == "site"
         || type == "folder"
         || type == "template"
-        || type == "section";
+        || type == "section"
+        || type == "document";
 }
 
 /**
