@@ -29,25 +29,10 @@
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
-
-    function ieDisableEnterSubmit() {
-        var  src;
-        var  name = "";
-
-        if (window.event) {
-            src = window.event.srcElement
-            if (src != undefined) {
-                name = src.tagName.toLowerCase();
-            }
-            if (window.event.keyCode == 13 && name == "input") {
-                window.event.keyCode = 0;
-            }
-        }
-    }
     </script>
 
     <form method="post" accept-charset="UTF-8"
-          onkeypress="ieDisableEnterSubmit()">
+          onkeypress="utilDisableEnterSubmitForIE()">
 <#if isadd>
       <input type="hidden" name="liquidsite.step" value="2" />
 <#else>
