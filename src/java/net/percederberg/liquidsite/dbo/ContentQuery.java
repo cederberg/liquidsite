@@ -22,6 +22,8 @@
 package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import net.percederberg.liquidsite.db.DatabaseQuery;
 
@@ -104,6 +106,13 @@ public class ContentQuery {
     private boolean online = false;
 
     /**
+     * The map of attribute values. The attribute names are used as
+     * keys in the map and the accepted values are stored in an array
+     * list.
+     */
+    private HashMap attributeValues = new HashMap();
+
+    /**
      * The list of attribute names to join to the query. The attribute
      * tables will be named "a0", "a1" and so on depending on the
      * position in this list.
@@ -180,6 +189,30 @@ public class ContentQuery {
     }
 
     /**
+     * Sets the attribute value requirement. By default any attribute
+     * values will be accepted. When an attribute value is required,
+     * only objects having the specified value will be returned. By
+     * calling this method several times with different values, a set
+     * of attribute values will be accepted.
+     *
+     * @param attribute      the attribute name
+     * @param value          the attribute value
+     */
+    public void requireAttribute(String attribute, String value) {
+        ArrayList  values;
+
+        if (!joins.contains(attribute)) {
+            joins.add(attribute);
+        }
+        values = (ArrayList) attributeValues.get(attribute);
+        if (values == null) {
+            values = new ArrayList();
+            attributeValues.put(attribute, values);
+        }
+        values.add(value);
+    }
+
+    /**
      * Adds a sort key column to the query. Several columns can be
      * added, giving priority to the first ones added.
      *
@@ -198,7 +231,9 @@ public class ContentQuery {
      * @param ascending      the ascending sort order flag
      */
     public void sortByAttribute(String attribute, boolean ascending) {
-        joins.add(attribute);
+        if (!joins.contains(attribute)) {
+            joins.add(attribute);
+        }
         sortColumns.add(new SortColumn(attribute, true, ascending));
     }
 
@@ -279,6 +314,10 @@ public class ContentQuery {
      * @param sql            the SQL statement
      */
     private void appendWhere(StringBuffer sql) {
+        Iterator   iter;
+        String     attribute;
+        ArrayList  values;
+
         sql.append(" WHERE c.DOMAIN = ");
         appendSql(sql, domain);
         if (parents.size() == 1) {
@@ -302,6 +341,21 @@ public class ContentQuery {
         if (online) {
             sql.append(" AND c.ONLINE > '1970-01-01' AND c.ONLINE < NOW()");
             sql.append(" AND (c.OFFLINE < '1970-01-02' OR c.OFFLINE > NOW())");
+        }
+        iter = attributeValues.keySet().iterator();
+        while (iter.hasNext()) {
+            attribute = (String) iter.next();
+            values = (ArrayList) attributeValues.get(attribute);
+            sql.append(" AND a");
+            sql.append(joins.indexOf(attribute));
+            sql.append(".DATA");
+            if (values.size() == 1) {
+                sql.append(" = ");
+                appendSql(sql, values.get(0).toString());
+            } else {
+                sql.append(" IN ");
+                appendSql(sql, values);
+            }
         }
     }
 
