@@ -21,6 +21,8 @@
 
 package org.liquidsite.core.data;
 
+import java.util.Date;
+
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -128,6 +130,25 @@ public class LockPeer extends AbstractPeer {
         DatabaseQuery  query = new DatabaseQuery("lock.delete.domain");
 
         query.addParameter(domain);
+        PEER.delete(src, query);
+    }
+
+    /**
+     * Deletes all lock objects that are outdated. The outdated locks
+     * are all the locks created more than 24 hours ago.
+     *
+     * @param src            the data source to use
+     *
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
+     */
+    public static void doDeleteOutdated(DataSource src)
+        throws DataObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("lock.delete.outdated");
+        long           time = System.currentTimeMillis();
+
+        query.addParameter(new Date(time - 24L * 60L * 60L * 1000L));
         PEER.delete(src, query);
     }
 

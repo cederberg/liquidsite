@@ -35,6 +35,9 @@ import org.liquidsite.app.install.InstallRequestProcessor;
 import org.liquidsite.app.template.TemplateException;
 import org.liquidsite.app.template.TemplateManager;
 import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.LockPeer;
 import org.liquidsite.core.web.MultiPartRequest;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.db.DatabaseConnectionException;
@@ -480,6 +483,13 @@ public class LiquidSiteServlet extends HttpServlet
         private static final int MAIL_ERROR_THRESHOLD = 60;
 
         /**
+         * The lock removal threshold. This is the number of loop
+         * iterations to skip in between calls to delete the outdated
+         * locks in the database.
+         */
+        private static final int LOCK_REMOVE_THRESHOLD = 3600;
+
+        /**
          * The alive flag. If this flag is set to false, the thread
          * is supposed to die.
          */
@@ -498,6 +508,13 @@ public class LiquidSiteServlet extends HttpServlet
          * process method should be called.
          */
         private int mailCounter = 0;
+
+        /**
+         * The lock removal counter. This counter is increased every
+         * once in a while and is used to determine when the lock
+         * remove method should be called.
+         */
+        private int lockCounter = 0;
 
         /**
          * Creates a new application monitor. This will also create
@@ -548,7 +565,6 @@ public class LiquidSiteServlet extends HttpServlet
                 try {
                     getDatabase().update();
                 } catch (DatabaseConnectionException e) {
-                    // TODO: restart() if repeated various times
                     LOG.error(e.getMessage());
                 }
             }
@@ -563,6 +579,17 @@ public class LiquidSiteServlet extends HttpServlet
                     LOG.error(e.getMessage());
                     mailCounter = MAIL_PROCESS_THRESHOLD -
                                   MAIL_ERROR_THRESHOLD;
+                }
+            }
+
+            // Remove outdated locks
+            lockCounter++;
+            if (lockCounter >= LOCK_REMOVE_THRESHOLD) {
+                lockCounter = 0;
+                try {
+                    LockPeer.doDeleteOutdated(new DataSource(getDatabase()));
+                } catch (DataObjectException e) {
+                    LOG.error(e.getMessage());
                 }
             }
         }
