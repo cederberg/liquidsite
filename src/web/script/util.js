@@ -32,6 +32,23 @@
 var UTIL_REMOVE_LIST = new Array();
 
 /**
+ * Opens a new dialog window.
+ *
+ * @param url                 the URL to visit
+ * @param width               the dialog width
+ * @param height              the dialog height
+ */
+function utilOpenDialog(url, width, height) {
+    var top = (screen.height - height) / 2;
+    var left = (screen.width - width) / 2;
+    var attr = "top=" + top + ",left=" + left + 
+               ",width=" + width + ",height=" + height + 
+               ",resizable=yes";
+
+    window.open(url, "", attr);
+}
+
+/**
  * Focuses a named HTML element. Note that the element must have a
  * name attribute with the specified name value. If several such 
  * elements exist, the first will be focused.

@@ -204,7 +204,7 @@ function objectAddEditButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddDeleteButton(url) {
-    var script = "objectInternalOpenDialog('" + url + "',580,310)";
+    var script = "utilOpenDialog('" + url + "',580,310)";
 
     objectInternalAddButton("Delete", "delete.png", script);
 }
@@ -215,7 +215,7 @@ function objectAddDeleteButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddPublishButton(url) {
-    var script = "objectInternalOpenDialog('" + url + "',580,330)";
+    var script = "utilOpenDialog('" + url + "',580,330)";
 
     objectInternalAddButton("Publish", "online.png", script);
 }
@@ -226,7 +226,7 @@ function objectAddPublishButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddUnpublishButton(url) {
-    var script = "objectInternalOpenDialog('" + url + "',580,300)";
+    var script = "utilOpenDialog('" + url + "',580,300)";
 
     objectInternalAddButton("Unpublish", "offline.png", script);
 }
@@ -237,7 +237,7 @@ function objectAddUnpublishButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddRevertButton(url) {
-    var script = "objectInternalOpenDialog('" + url + "',580,300)";
+    var script = "utilOpenDialog('" + url + "',580,300)";
 
     objectInternalAddButton("Revert", "revert.png", script);
 }
@@ -248,7 +248,7 @@ function objectAddRevertButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddUnlockButton(url) {
-    var script = "objectInternalOpenDialog('" + url + "',580,300)";
+    var script = "utilOpenDialog('" + url + "',580,300)";
 
     objectInternalAddButton("Unlock", "lock.png", script);
 }
@@ -511,21 +511,4 @@ function objectInternalGetHostTable() {
  */
 function objectInternalGetIcon(type) {
     return type + ".png";
-}
-
-/**
- * Opens a new dialog window.
- *
- * @param url                 the URL to visit
- * @param width               the dialog width
- * @param height              the dialog height
- */
-function objectInternalOpenDialog(url, width, height) {
-    var top = (screen.height - height) / 2;
-    var left = (screen.width - width) / 2;
-    var attr = "top=" + top + ",left=" + left + 
-               ",width=" + width + ",height=" + height + 
-               ",resizable=yes";
-
-    window.open(url, "", attr);
 }
