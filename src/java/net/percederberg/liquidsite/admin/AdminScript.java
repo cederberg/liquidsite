@@ -105,9 +105,9 @@ class AdminScript {
             buffer.append(domains[i].getName());
             buffer.append("', 'domain', '");
             buffer.append(domains[i].getName());
-            buffer.append("', '");
-            buffer.append(domains[i].getDescription());
-            buffer.append("', 1);\n");
+            buffer.append("', ");
+            buffer.append(getString(domains[i].getDescription()));
+            buffer.append(", 1);\n");
         }
         return buffer.toString();
     }
@@ -138,11 +138,11 @@ class AdminScript {
             buffer.append(children[i].getId());
             buffer.append(", '");
             buffer.append(getContentCategory(children[i]));
-            buffer.append("', '");
-            buffer.append(children[i].getName());
-            buffer.append("', '");
-            buffer.append(children[i].toString());
             buffer.append("', ");
+            buffer.append(getString(children[i].getName()));
+            buffer.append(", ");
+            buffer.append(getString(children[i].toString()));
+            buffer.append(", ");
             buffer.append(getContentStatus(children[i]));
             buffer.append(");\n");
         }
@@ -178,11 +178,11 @@ class AdminScript {
             buffer.append(children[i].getId());
             buffer.append(", '");
             buffer.append(getContentCategory(children[i]));
-            buffer.append("', '");
-            buffer.append(children[i].getName());
-            buffer.append("', '");
-            buffer.append(children[i].toString());
             buffer.append("', ");
+            buffer.append(getString(children[i].getName()));
+            buffer.append(", ");
+            buffer.append(getString(children[i].toString()));
+            buffer.append(", ");
             buffer.append(getContentStatus(children[i]));
             buffer.append(");\n");
         }
@@ -215,9 +215,9 @@ class AdminScript {
         buffer.append("', '");
         buffer.append(domain.getName());
         buffer.append("');\n");
-        buffer.append("objectAddProperty('Description', '");
-        buffer.append(domain.getDescription());
-        buffer.append("');\n");
+        buffer.append("objectAddProperty('Description', ");
+        buffer.append(getString(domain.getDescription()));
+        buffer.append(");\n");
         buffer.append(getButtons(user, domain));
         buffer.append(getHosts(domain));
         buffer.append(getPermissions(domain));
@@ -246,12 +246,12 @@ class AdminScript {
         buffer.append(getContentCategory(content));
         buffer.append("', ");
         buffer.append(content.getId());
-        buffer.append(", '");
-        buffer.append(content.getName());
-        buffer.append("');\n");
-        buffer.append("objectAddUrlProperty('");
-        buffer.append(getContentUrl(content));
-        buffer.append("');\n");
+        buffer.append(", ");
+        buffer.append(getString(content.getName()));
+        buffer.append(");\n");
+        buffer.append("objectAddUrlProperty(");
+        buffer.append(getString(getContentUrl(content)));
+        buffer.append(");\n");
         buffer.append("objectAddOnlineProperty(");
         buffer.append(getDate(content.getOnlineDate()));
         buffer.append(", ");
@@ -400,11 +400,11 @@ class AdminScript {
             buffer.append("objectAddHost('N/A', 'No hosts registered');\n");
         }
         for (int i = 0; i < hosts.length; i++) {
-            buffer.append("objectAddHost('");
-            buffer.append(hosts[i].getName());
-            buffer.append("', '");
-            buffer.append(hosts[i].getDescription());
-            buffer.append("');\n");
+            buffer.append("objectAddHost(");
+            buffer.append(getString(hosts[i].getName()));
+            buffer.append(", ");
+            buffer.append(getString(hosts[i].getDescription()));
+            buffer.append(");\n");
         }
         return buffer.toString();
     }
@@ -640,7 +640,7 @@ class AdminScript {
         if (lock == null) {
             return "null";
         } else {
-            return "'" + lock.getUserName() + "'";
+            return getString(lock.getUserName());
         }
     }
 
@@ -655,7 +655,7 @@ class AdminScript {
         if (date == null) {
             return "null";
         } else {
-            return "'" + DATE_FORMAT.format(date) + "'"; 
+            return getString(DATE_FORMAT.format(date)); 
         }
     }
 
