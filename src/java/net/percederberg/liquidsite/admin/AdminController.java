@@ -129,6 +129,8 @@ public class AdminController extends Controller {
             view.pageSystem(request);
         } else if (path.equals("logout.html")) {
             processLogout(request);
+        } else if (path.equals("edit-home.html")) {
+            processEditUser(request);
         } else if (path.equals("add-site.html")) {
             processAddObject(request);
         } else if (path.equals("edit-site.html")) {
@@ -182,6 +184,63 @@ public class AdminController extends Controller {
     private void processLogout(Request request) {
         request.setUser(null);
         request.sendRedirect("index.html");
+    }
+
+    /**
+     * Processes an edit user request.
+     * 
+     * @param request        the request object
+     */
+    private void processEditUser(Request request) {
+        try {
+            if (request.getParameter("prev") != null) {
+                request.sendRedirect("home.html");
+            } else if (request.getParameter("editpassword") != null) {
+                if (request.getParameter("step") == null) {
+                    view.pageEditPassword(request);
+                } else {
+                    processEditPassword(request);
+                }
+            } else {
+                request.sendRedirect("home.html");
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            view.pageError(request, e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            view.pageError(request, e);
+        }
+    }
+
+    /**
+     * Processes the edit password requests for the home view.
+     * 
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processEditPassword(Request request) 
+        throws ContentException, ContentSecurityException {
+        
+        User  user = request.getUser();
+        
+        try {
+            validator.validateEditPassword(request);
+            if (!user.verifyPassword(request.getParameter("password0"))) {
+                throw new FormException("password0",
+                                        "Current password was incorrect");
+            }
+            user.setPassword(request.getParameter("password1"));
+            user.save(user);
+            request.sendRedirect("home.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.pageEditPassword(request);
+        }
     }
 
     /**

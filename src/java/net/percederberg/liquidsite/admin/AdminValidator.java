@@ -58,6 +58,11 @@ public class AdminValidator {
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
+     * The edit password form validator.
+     */
+    private FormValidator editPassword = new FormValidator();
+
+    /**
      * The add domain form validator.
      */
     private FormValidator addDomain = new FormValidator();
@@ -96,6 +101,14 @@ public class AdminValidator {
         String  error;
         String  chars;
         
+        // Edit password validator
+        error = "Existing password not specified";
+        editPassword.addRequiredConstraint("password0", error);
+        error = "New password not specified";
+        editPassword.addRequiredConstraint("password1", error);
+        error = "Verification of new password not specified";
+        editPassword.addRequiredConstraint("password2", error);
+
         // Add domain validator
         addDomain.addRequiredConstraint("name", "No domain name specified");
         chars = UPPERCASE_CHARACTERS + NUMBER_CHARACTERS;
@@ -150,6 +163,24 @@ public class AdminValidator {
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
         publish.addDateConstraint("date", DATE_FORMAT, error); 
         publish.addRequiredConstraint("comment", "No comment specified");
+    }
+
+    /**
+     * Validates the parameters in an edit password request.
+     * 
+     * @param request        the edit password request
+     * 
+     * @throws FormException if the form validation failed
+     */
+    public void validateEditPassword(Request request) throws FormException {
+        String  pass1 = request.getParameter("password1");
+        String  pass2 = request.getParameter("password2");
+
+        editPassword.validate(request);
+        if (!pass1.equals(pass2)) {
+            pass1 = "The password verification doesn't match new password";
+            throw new FormException("password2", pass1);
+        }
     }
 
     /**

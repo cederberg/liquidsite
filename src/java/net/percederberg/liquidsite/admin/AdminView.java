@@ -366,6 +366,15 @@ class AdminView {
     }
     
     /**
+     * Shows the edit password page.
+     * 
+     * @param request        the request object
+     */
+    public void pageEditPassword(Request request) {
+        request.sendTemplate("admin/edit-password.ftl");
+    }
+
+    /**
      * Shows the add or edit site page.
      * 
      * @param request        the request object

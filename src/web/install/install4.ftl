@@ -50,7 +50,7 @@
           </th>
           <td class="field">
             <input type="password" name="password1" 
-                   value="${password}" size="12" />
+                   value="${password}" size="20" />
             <p>The password for the admin user above.</p>
           </td>
         </tr>

@@ -16,11 +16,15 @@
         </tr>
         <tr>
           <th>Name:</th>
-          <td><input type="text" name="liquidsite.login" value="" /></td>
+          <td>
+            <input type="text" name="liquidsite.login" size="20" />
+          </td>
         </tr>
         <tr>
           <th>Password:</th>
-          <td><input type="password" name="liquidsite.password" value="" /></td>
+          <td>
+            <input type="password" name="liquidsite.password" size="20" />
+          </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
