@@ -299,26 +299,43 @@ public abstract class PersistentObject {
         throws ContentException, ContentSecurityException {
 
         DatabaseConnection  con;
-        
-        // Save to database
+
         con = getDatabaseConnection(getContentManager());
         try {
-            if (!isPersistent()) {
-                SecurityManager.getInstance().checkInsert(user, this);
-                doInsert(user, con);
-                persistent = true;
-            } else {
-                SecurityManager.getInstance().checkUpdate(user, this);
-                doUpdate(user, con);
-            }
+            save(user, con);
         } finally {
             returnDatabaseConnection(getContentManager(), con);
+        }
+    }
+
+    /**
+     * Saves this object to the database.
+     *
+     * @param user           the user performing the operation
+     * @param con            the database connection to use
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public final void save(User user, DatabaseConnection con) 
+        throws ContentException, ContentSecurityException {
+
+        // Save to database
+        if (!isPersistent()) {
+            SecurityManager.getInstance().checkInsert(user, this);
+            doInsert(user, con);
+            persistent = true;
+        } else {
+            SecurityManager.getInstance().checkUpdate(user, this);
+            doUpdate(user, con);
         }
 
         // Remove from cache
         CacheManager.getInstance().remove(this);
     }
-    
+
     /**
      * Deletes this object from the database.
      * 
@@ -332,14 +349,35 @@ public abstract class PersistentObject {
     public final void delete(User user) 
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con = getDatabaseConnection(getContentManager());
+        DatabaseConnection  con;
 
-        // Delete from database
+        con = getDatabaseConnection(getContentManager());
         try {
-            SecurityManager.getInstance().checkDelete(user, this);
-            doDelete(user, con);
+            delete(user, con);
         } finally {
             returnDatabaseConnection(getContentManager(), con);
+        }
+    }
+
+    /**
+     * Deletes this object from the database.
+     *
+     * @param user           the user performing the operation
+     * @param con            the database connection to use
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public final void delete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
+
+        // Delete from database
+        if (isPersistent()) {
+            SecurityManager.getInstance().checkDelete(user, this);
+            doDelete(user, con);
+            persistent = false;
         }
 
         // Remove from cache

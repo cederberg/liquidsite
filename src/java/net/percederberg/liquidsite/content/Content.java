@@ -683,12 +683,15 @@ public abstract class Content extends PersistentObject {
         children = InternalContent.findByParent(getContentManager(), this);
         try {
             for (int i = 0; i < children.length; i++) {
-                children[i].doDelete(user, con);
+                children[i].delete(user, con);
             }
             ContentPeer.doDelete(data, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            throw new ContentException("couldn't delete child object", e);
         }
     }
 
