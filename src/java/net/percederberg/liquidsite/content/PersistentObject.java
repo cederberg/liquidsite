@@ -68,19 +68,6 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Returns the content security manager.
-     * 
-     * @return the content security manager
-     * 
-     * @throws ContentException if no content manager is available
-     */
-    protected static ContentSecurityManager getSecurityManager() 
-        throws ContentException {
-
-        return getContentManager().getSecurityManager();
-    }
-
-    /**
      * Returns the current application database connector.
      * 
      * @return the current application database connector
@@ -257,11 +244,11 @@ public abstract class PersistentObject {
         con = getDatabaseConnection();
         try {
             if (!isPersistent()) {
-                getSecurityManager().checkInsert(user, this);
+                SecurityManager.getInstance().checkInsert(user, this);
                 doInsert(user, con);
                 persistent = true;
             } else {
-                getSecurityManager().checkUpdate(user, this);
+                SecurityManager.getInstance().checkUpdate(user, this);
                 doUpdate(user, con);
             }
         } finally {
@@ -297,7 +284,7 @@ public abstract class PersistentObject {
 
         // Delete from database
         try {
-            getSecurityManager().checkDelete(user, this);
+            SecurityManager.getInstance().checkDelete(user, this);
             doDelete(user, con);
         } finally {
             returnDatabaseConnection(con);

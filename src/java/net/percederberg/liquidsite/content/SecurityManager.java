@@ -1,5 +1,5 @@
 /*
- * ContentSecurityManager.java
+ * SecurityManager.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -30,7 +30,7 @@ package net.percederberg.liquidsite.content;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ContentSecurityManager {
+class SecurityManager {
 
     /**
      * The read access level. 
@@ -53,9 +53,23 @@ public class ContentSecurityManager {
     private static final int ADMIN = 4;
 
     /**
+     * The one and only security manager instance.
+     */
+    private static final SecurityManager INSTANCE = new SecurityManager();
+
+    /**
+     * The security manager instance.
+     * 
+     * @return the security manager instance
+     */
+    public static SecurityManager getInstance() {
+        return INSTANCE;
+    }
+
+    /**
      * Creates a new content security manager.
      */
-    protected ContentSecurityManager() {
+    private SecurityManager() {
     }
 
     /**

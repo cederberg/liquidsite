@@ -836,7 +836,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasReadAccess(User user) throws ContentException {
-        return getSecurityManager().hasReadAccess(user, this);
+        return SecurityManager.getInstance().hasReadAccess(user, this);
     }
 
     /**
@@ -851,7 +851,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasWriteAccess(User user) throws ContentException {
-        return getSecurityManager().hasWriteAccess(user, this);
+        return SecurityManager.getInstance().hasWriteAccess(user, this);
     }
 
     /**
@@ -866,7 +866,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasPublishAccess(User user) throws ContentException {
-        return getSecurityManager().hasPublishAccess(user, this);
+        return SecurityManager.getInstance().hasPublishAccess(user, this);
     }
 
     /**
@@ -881,7 +881,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasAdminAccess(User user) throws ContentException {
-        return getSecurityManager().hasAdminAccess(user, this);
+        return SecurityManager.getInstance().hasAdminAccess(user, this);
     }
 
     /**
@@ -918,7 +918,7 @@ public abstract class Content extends PersistentObject implements Comparable {
 
         // Delete from database
         try {
-            getSecurityManager().checkDelete(user, this);
+            SecurityManager.getInstance().checkDelete(user, this);
             ContentPeer.doDeleteRevision(getId(), getRevisionNumber(), con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
