@@ -53,24 +53,29 @@ public abstract class Content extends PersistentObject {
     public static final int SITE_CATEGORY = 1;
 
     /**
+     * The translator content category.
+     */
+    public static final int TRANSLATOR_CATEGORY = 2;
+
+    /**
      * The folder content category.
      */
-    public static final int FOLDER_CATEGORY = 2;
+    public static final int FOLDER_CATEGORY = 3;
 
     /**
      * The page content category.
      */
-    public static final int PAGE_CATEGORY = 3;
+    public static final int PAGE_CATEGORY = 4;
 
     /**
      * The file content category.
      */
-    public static final int FILE_CATEGORY = 4;
+    public static final int FILE_CATEGORY = 5;
 
     /**
      * The template content category.
      */
-    public static final int TEMPLATE_CATEGORY = 5;
+    public static final int TEMPLATE_CATEGORY = 6;
 
     /**
      * The section content category.
