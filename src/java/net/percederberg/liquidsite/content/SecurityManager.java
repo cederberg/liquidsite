@@ -196,11 +196,9 @@ class SecurityManager {
                 return false;
             }
         } else if (obj instanceof User) {
-            // TODO: what permissions to use for users?
-            return true;
+            return hasAccess(user, (User) obj, access);
         } else if (obj instanceof Group) {
-            // TODO: what permissions to use for groups?
-            return true;
+            return hasAccess(user, (Group) obj, access);
         } else {
             return false;
         }
@@ -291,6 +289,63 @@ class SecurityManager {
     }
     
     /**
+     * Checks the user object access for a user. Any user can read a
+     * user object, but only domain administrators and the user
+     * itself can write a user object.
+     *
+     * @param user           the user, or null for none
+     * @param obj            the user object to check
+     * @param access         the access level to check for
+     * 
+     * @return true if the user has the specified access level, or
+     *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private boolean hasAccess(User user, User obj, int access)
+        throws ContentException {
+
+        if (access == READ) {
+            return true;
+        } else if (access == WRITE && user != null) {
+            return user.isSuperUser()
+                || user.equals(obj)
+                || hasAccess(user, obj.getDomain(), ADMIN);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks the group object access for a user. Any user can read a
+     * group object, but only domain administrators can write a group
+     * object.
+     *
+     * @param user           the user, or null for none
+     * @param obj            the group object to check
+     * @param access         the access level to check for
+     *
+     * @return true if the user has the specified access level, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private boolean hasAccess(User user, Group obj, int access)
+        throws ContentException {
+
+        if (access == READ) {
+            return true;
+        } else if (access == WRITE && user != null) {
+            return user.isSuperUser()
+                || hasAccess(user, obj.getDomain(), ADMIN);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Checks the access level for a user on a permission.
      * 
      * @param user           the user to check, or null for none
@@ -354,9 +409,9 @@ class SecurityManager {
         } else if (obj instanceof Lock) {
             checkWriteAccess(user, ((Lock) obj).getContent());
         } else if (obj instanceof User) {
-            // TODO: check permission for writing users?
+            checkWriteAccess(user, (User) obj);
         } else if (obj instanceof Group) {
-            // TODO: check permission for writing groups?
+            checkWriteAccess(user, (Group) obj);
         } else {
             throw new ContentSecurityException("persistent object " +
                                                "class unknown: " + 
@@ -398,9 +453,9 @@ class SecurityManager {
             throw new ContentSecurityException("content locks cannot " +
                                                "be updated");
         } else if (obj instanceof User) {
-            // TODO: check permission for writing users?
+            checkWriteAccess(user, (User) obj);
         } else if (obj instanceof Group) {
-            // TODO: check permission for writing groups?
+            checkWriteAccess(user, (Group) obj);
         } else {
             throw new ContentSecurityException("persistent object " +
                                                "class unknown: " + 
@@ -437,9 +492,9 @@ class SecurityManager {
         } else if (obj instanceof Lock) {
             checkWriteAccess(user, ((Lock) obj).getContent());
         } else if (obj instanceof User) {
-            // TODO: check permission for deleting users?
+            checkWriteAccess(user, (User) obj);
         } else if (obj instanceof Group) {
-            // TODO: check permission for deleting groups?
+            checkWriteAccess(user, (Group) obj);
         } else {
             throw new ContentSecurityException("persistent object " +
                                                "class unknown: " + 
@@ -481,6 +536,44 @@ class SecurityManager {
 
         if (!hasWriteAccess(user, content)) {
             throw new ContentSecurityException(user, "write", content);
+        }
+    }
+
+    /**
+     * Verifies that a user has write access on a user object.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the user object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkWriteAccess(User user, User obj)
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user, obj)) {
+            throw new ContentSecurityException(user, "write", obj);
+        }
+    }
+
+    /**
+     * Verifies that a user has write access on a group object.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the group object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkWriteAccess(User user, Group obj)
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user, obj)) {
+            throw new ContentSecurityException(user, "write", obj);
         }
     }
 

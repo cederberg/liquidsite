@@ -69,6 +69,30 @@ public class ContentSecurityException extends Exception {
     }
 
     /**
+     * Creates a new content security exception.
+     * 
+     * @param user           the user attempting the operation
+     * @param op             the operation name
+     * @param obj            the object accessed
+     */
+    public ContentSecurityException(User user, String op, User obj) {
+        super("cannot " + op + " user " + obj.getName());
+        this.user = user;
+    }
+
+    /**
+     * Creates a new content security exception.
+     * 
+     * @param user           the user attempting the operation
+     * @param op             the operation name
+     * @param obj            the object accessed
+     */
+    public ContentSecurityException(User user, String op, Group obj) {
+        super("cannot " + op + " group " + obj.getName());
+        this.user = user;
+    }
+
+    /**
      * Returns the detailed error message.
      * 
      * @return the detailed error message
