@@ -7,6 +7,7 @@
     <script type="text/javascript">
     function initialize() {
         utilFocusElement("name");
+        utilSessionKeepAlive();
     }
 
     function previous() {

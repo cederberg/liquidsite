@@ -136,6 +136,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             processOpenContent(request);
         } else if (path.equals("opentemplate.js")) {
             processOpenTemplate(request);
+        } else if (path.equals("sessionping.js")) {
+            processSessionPing(request);
         } else if (path.startsWith("preview/")) {
             processPreview(request, path.substring(8));
         } else {
@@ -372,6 +374,16 @@ public class AdminRequestProcessor extends RequestProcessor {
             LOG.warning(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
+    }
+
+    /**
+     * Processes a sesssion keep-alive ping request.
+     * 
+     * @param request        the request object
+     */
+    private void processSessionPing(Request request) {
+        request.sendData("text/javascript",
+                         "/* Pong, session active. */");
     }
 
     /**

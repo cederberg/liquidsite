@@ -144,3 +144,19 @@ function utilDisableEnterSubmitForIE() {
         }
     }
 }
+
+/**
+ * A session keep-alive function. This function only needs to be
+ * called once upon loading the page to maintain the session open
+ * until the user leaves the page. It does this by calling itself
+ * every ten minutes.
+ */
+function utilSessionKeepAlive() {
+    var  script
+
+    script = document.createElement('script');
+    script.type = "text/javascript";
+    script.src = "sessionping.js";
+    document.getElementsByTagName("head")[0].appendChild(script);
+	setTimeout("utilSessionKeepAlive();", 600000);
+}

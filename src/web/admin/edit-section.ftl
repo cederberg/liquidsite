@@ -15,6 +15,7 @@
 </#list>
         propertyDisplay();
         utilFocusElement("name");
+        utilSessionKeepAlive();
     }
 
     function previous() {

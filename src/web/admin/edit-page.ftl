@@ -2,6 +2,7 @@
 <#assign onload = "initialize()">
 <#include "header.ftl">
 
+    <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript" src="script/template.js"></script>
 
     <script type="text/javascript">
@@ -12,7 +13,8 @@
 </#list>
         templateDisplay();
         openTemplate(${template});
-        document.getElementsByName("name").item(0).focus();
+        utilFocusElement("name");
+        utilSessionKeepAlive();
     }
 
     function openTemplate(id) {
