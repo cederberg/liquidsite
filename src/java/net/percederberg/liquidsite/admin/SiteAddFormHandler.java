@@ -325,7 +325,6 @@ class SiteAddFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
-        User            user = request.getUser();
         FileParameter   param;
         ContentFile     file;
 
@@ -334,7 +333,7 @@ class SiteAddFormHandler extends AdminFormHandler {
             file = new ContentFile(manager, parent, param.getName());
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
-            file.save(user);
+            file.save(request.getUser());
             param.write(file.getFile());
             AdminView.SITE.setSiteTreeFocus(request, file);
         } catch (IOException e) {

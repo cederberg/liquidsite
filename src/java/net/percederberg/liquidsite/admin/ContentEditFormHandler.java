@@ -366,15 +366,26 @@ public class ContentEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         FileParameter  param;
+        String         name;
 
         try {
             file.setRevisionNumber(0);
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
-            param = request.getFileParameter("content");
+
+            param = request.getFileParameter("upload");
             if (param != null && param.getSize() > 0) {
                 file.setFileName(param.getName());
                 param.write(file.getFile());
+            } else if (request.getParameter("content") != null) {
+                name = file.getFileName();
+                name = name.substring(name.indexOf(".") + 1);
+                if (name.indexOf(".") <= 0) {
+                    file.setFileName(file.getFileName());
+                } else {
+                    file.setFileName(name);
+                }
+                file.setTextContent(request.getParameter("content"));
             }
             file.save(request.getUser());
         } catch (IOException e) {

@@ -354,6 +354,7 @@ public class ContentView extends AdminView {
 
         ContentFile  file;
         String       name;
+        String       content = null;
         String       comment;
 
         // Find default values
@@ -361,6 +362,7 @@ public class ContentView extends AdminView {
         if (reference instanceof ContentFile) {
             file = (ContentFile) reference;
             name = file.getName();
+            content = file.getTextContent();
             if (file.getRevisionNumber() == 0) {
                 comment = file.getComment();
             } else {
@@ -374,11 +376,17 @@ public class ContentView extends AdminView {
         // Adjust for incoming request
         if (request.getParameter("name") != null) {
             name = request.getParameter("name", "");
+            if (request.getParameter("content") != null) {
+                content = request.getParameter("content");
+            }
             comment = request.getParameter("comment", "");
         }
 
         // Set request parameters
         request.setAttribute("name", name);
+        if (content != null) {
+            request.setAttribute("content", content);
+        }
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-file.ftl");
     }
