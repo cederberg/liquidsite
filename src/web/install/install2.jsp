@@ -13,6 +13,8 @@ java.util.ArrayList dbsInfo =
     (java.util.ArrayList) request.getAttribute("dbsInfo");
 java.util.Hashtable dbInfo;
 String db;
+int noTables;
+String type;
 
 boolean error = 
     ((Boolean) request.getAttribute("error")).booleanValue();
@@ -57,15 +59,29 @@ boolean errorConnection =
 <% for (int i=0; i<dbsInfo.size(); i++) {
        dbInfo = (java.util.Hashtable) dbsInfo.get(i);
        db = (String) dbInfo.get("name");
+       noTables = ((Integer) dbInfo.get("noTables")).intValue();
+       type = (String) dbInfo.get("type");
        if (dbsel.equals(db)) {
 %>
           <input checked type="radio" name="dbsel" 
-            value="<%= db %>" /> <%= db %> <br />
+            value="<%= db %>" /> <%= db %>
 <%     } else { %>
           <input type="radio" name="dbsel" 
-            value="<%= db %>" /> <%= db %> <br />
+            value="<%= db %>" /> <%= db %>
 <%     } 
-   }
+       if (type.equals("conflict")) {
+%>
+          <span style="color: red">(<%= noTables %> tables found) 
+          CONFLICT IN TABLES</span>
+<%     } else if (type.equals("noaccess")) { %>
+          <span style="color: gray">NOT ACCESSIBLE</span>
+<%     } else if (type.equals("normal")) { %>
+          (<%= noTables %> tables found)
+<%     } else { %>
+          (<%= noTables %> tables found) LIQUID SITE <%= type %>
+<%     } %>
+          <br />
+<% }
    if (dbsel.equals("")) { 
 %>
           <input checked type="radio" name="dbsel" value="" />
