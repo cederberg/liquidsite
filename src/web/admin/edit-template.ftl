@@ -116,16 +116,6 @@
 </#if>
         <tr>
           <th>
-            Comment:
-          </th>
-          <td class="field">
-            <input type="text" tabindex="3" size="40"
-                   name="comment" value="${comment}" />
-            <p>The revision comment.</p>
-          </td>
-        </tr>
-        <tr>
-          <th>
             Elements:
           </th>
           <td class="field">
@@ -141,16 +131,26 @@
           </td>
         </tr>
         <tr>
+          <th>
+            Comment:
+          </th>
+          <td class="field">
+            <input type="text" tabindex="100" size="40"
+                   name="comment" value="${comment}" />
+            <p>The revision comment.</p>
+          </td>
+        </tr>
+        <tr>
           <td class="buttons" colspan="2">
             <button type="submit" style="display: none;" 
                     onclick="return false;">
               Mozilla Disable Enter Submit
             </button>
-            <button type="button" tabindex="101" onclick="previous()">
+            <button type="button" tabindex="102" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" tabindex="100">
+            <button type="submit" tabindex="101">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>
