@@ -2,15 +2,21 @@
 
     <script type="text/javascript">
     function refresh() {
+        document.getElementsByName("page").item(0).value = "1";
+        document.forms.item(0).submit();
+    }
+    
+    function changePage(page) {
+        document.getElementsByName("page").item(0).value = page;
+        document.getElementsByName("filter").item(0).value = "${filter}";
         document.forms.item(0).submit();
     }
     </script>
 
 
-  <div style="padding-left: 4em;">
-
-    <form method="get" accept-charset="UTF-8">
-      <table class="compact">
+    <form method="post" accept-charset="UTF-8" 
+          onsubmit="refresh(); return false;">
+      <table class="form">
         <tr>
           <th>
             Type:<br/>
@@ -40,7 +46,7 @@
 </#if>
           <th>
             Filter:<br/>
-            <input name="filter" value="${filter}" />
+            <input name="filter" value="${filter?xml}" />
           </th>
           <th>
             <button type="submit">
@@ -50,92 +56,89 @@
           </th>
         </tr>
       </table>
+      <input type="hidden" name="page" value="${page}" />
     </form>
 
-<#assign pageurl = "users.html?type=user&filter=" + filter>
-<#if domain?exists>
-  <#assign pageurl = pageurl + "&domain=" + domain>
-</#if>
-<#assign pageurl = pageurl + "&page=">
-    <p><strong>Page:</strong>
+    <div style="margin-left: 10%">
+      <p><strong>Page:</strong>
 <#if (page != 1) && (pages > 1)>
-    <a href="${pageurl + (page-1)}">&lt;&lt;</a>
+      <a href="#" onclick="changePage(${page-1}); return false;">&lt;&lt;</a>
 <#else>
-    &lt;&lt;
+      &lt;&lt;
 </#if>
 <#list 1..pages as item>
   <#if item = page>
-    <strong>${item}</strong>
+      <strong>${item}</strong>
   <#else>
-    <a href="${pageurl + item}">${item}</a>
+      <a href="#" onclick="changePage(${item}); return false;">${item}</a>
   </#if>
 </#list>
 <#if (page != pages) && (pages > 1)>
-    <a href="${pageurl + (page+1)}">&gt;&gt;</a>
+      <a href="#" onclick="changePage(${page+1}); return false;">&gt;&gt;</a>
 <#else>
-    &gt;&gt;
+      &gt;&gt;
 </#if>
-    </p>
+      </p>
 
 
-    <table class="border">
+      <table class="border">
 <#if users?exists>
-      <tr>
-        <th>User</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Comment</th>
-        <th>&nbsp;</th>
-      </tr>
+        <tr>
+          <th>User</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Comment</th>
+          <th>&nbsp;</th>
+        </tr>
   <#if users?size = 0>
-      <tr>
-        <td colspan="5">No users found</td>
-      </tr>
+        <tr>
+          <td colspan="5">No users found</td>
+        </tr>
   </#if>
   <#list users as user>
-      <tr>
-        <td>${user.name}</td>
-        <td>${user.realName}</td>
-        <td>${user.email}</td>
-        <td>${user.comment}</td>
-        <td>
-          <img src="images/icons/24x24/delete.png"  alt="Delete" />
-        </td>
-      </tr>
+        <tr>
+          <td>${user.name?xml}</td>
+          <td>${user.realName?xml}</td>
+          <td>${user.email?xml}</td>
+          <td>${user.comment?xml}</td>
+          <td>
+            <img src="images/icons/24x24/delete.png"  alt="Delete" />
+          </td>
+        </tr>
   </#list>
 <#else>
-      <tr>
-        <th>Group</th>
-        <th>Description</th>
-        <th>Comment</th>
-        <th>&nbsp;</th>
-      </tr>
+        <tr>
+          <th>Group</th>
+          <th>Description</th>
+          <th>Comment</th>
+          <th>&nbsp;</th>
+        </tr>
   <#if groups?size = 0>
-      <tr>
-        <td colspan="5">No groups found</td>
-      </tr>
+        <tr>
+          <td colspan="4">No groups found</td>
+        </tr>
   </#if>
   <#list groups as group>
-      <tr>
-        <td>${group.name}</td>
-        <td>${group.description}</td>
-        <td>${group.comment}</td>
-        <td>
-          <img src="images/icons/24x24/delete.png"  alt="Delete" />
-        </td>
-      </tr>
+        <tr>
+          <td>${group.name?xml}</td>
+          <td>${group.description?xml}</td>
+          <td>${group.comment?xml}</td>
+          <td>
+            <img src="images/icons/24x24/delete.png"  alt="Delete" />
+          </td>
+        </tr>
   </#list>
 </#if>
-    </table>
+      </table>
 
 
-    <p>
-      <button type="button">
-        <img src="images/icons/24x24/add.png" />
-        Add New
-      </button>
-    </p>
+      <p>
+        <button type="button">
+          <img src="images/icons/24x24/add.png" />
+          Add New
+        </button>
+      </p>
 
-  </div>
+    </div>
 
 <#include "footer.ftl">
