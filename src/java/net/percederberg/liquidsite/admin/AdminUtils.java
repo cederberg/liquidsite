@@ -300,6 +300,35 @@ public class AdminUtils {
     }
 
     /**
+     * Returns the XML representation of a string. This method will
+     * escape any XML reserved characters.
+     *
+     * @param str            the string to transform
+     *
+     * @return an XML representation of the string
+     */
+    public static String getXmlString(String str) {
+        StringBuffer  buffer = new StringBuffer();
+
+        if (str == null) {
+            return "";
+        } else {
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) == '<') {
+                    buffer.append("&lt;");
+                } else if (str.charAt(i) == '>') {
+                    buffer.append("&gt;");
+                } else if (str.charAt(i) == '&') {
+                    buffer.append("&amp;");
+                } else {
+                    buffer.append(str.charAt(i));
+                }
+            }
+            return buffer.toString();
+        }
+    }
+
+    /**
      * Returns an object category name. The category name is used in
      * various places to identify incoming or outgoing objects.
      *
