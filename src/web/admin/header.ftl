@@ -10,7 +10,11 @@
     <meta http-equiv="Content-Language" content="en" />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="stylesheet" href="${liquidsite.linkTo('/style.css')}" type="text/css" />
+<#if title?has_content>
+    <title>${title}</title>
+<#else>
     <title>Liquid Site Administration</title>
+</#if>
   </head>
 
 <#if onload?has_content>
@@ -25,7 +29,11 @@
           <img src="${liquidsite.linkTo('/images/liquidsite.jpeg')}" alt="Liquid Site" />
         </td>
         <td class="title" colspan="12">
+<#if title?has_content>
+          <h1>${title}</h1>
+<#else>
           <h1>Liquid Site Administration</h1>
+</#if>
         </td>
         <td class="end" rowspan="2">
           Version&nbsp;${liquidsite.version}<br />
@@ -65,7 +73,9 @@
         </td>
   </#if>
 </#macro>
-<#if liquidsite.user.login?has_content>
+<#if hideadmin?exists>
+  <#-- Print nothing -->
+<#elseif liquidsite.user.login?has_content>
   <@menutab name="Home" page="home.html" isindex=true />
   <@menutab name="Site" page="site.html" />
   <@menutab name="Content" page="content.html" />
