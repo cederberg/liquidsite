@@ -41,14 +41,15 @@
       <tr>
         <td class="space">&nbsp;</td>
 <#macro menutab name page isindex=false>
+  <#local url = liquidsite.page.path>
         <td class="space">&nbsp;</td>
-  <#if liquidsite.page.path?ends_with(page)>
+  <#if url?ends_with(page)>
         <td class="active"
             onmouseover="this.className='hoover'"
             onmouseout="this.className='active'">
           <strong>${name}</strong>
         </td>
-  <#elseif isindex && liquidsite.page.path?ends_with("/")>
+  <#elseif isindex && (url?ends_with("/") || url?ends_with("index.html"))>
         <td class="active"
             onclick="window.location='${page}'"
             onmouseover="this.className='hoover'"
