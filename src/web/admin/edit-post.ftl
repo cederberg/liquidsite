@@ -76,7 +76,7 @@
           </th>
           <td class="field">
             <textarea tabindex="2" rows="20" cols="60"
-                      name="text">${text?xml}</textarea>
+                      name="text">${text?html}</textarea>
             <p>The post text.</p>
           </td>
         </tr>

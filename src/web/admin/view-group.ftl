@@ -55,10 +55,10 @@
 <#list users as user>
   <#assign params = "type=user&domain=" + domain + "&name=" + user.name>
         <tr>
-          <td><a href="edit-users.html?${params}">${user.name?xml}</a></td>
-          <td>${user.realName?xml}</td>
-          <td>${user.email?xml}</td>
-          <td>${user.comment?xml}</td>
+          <td><a href="edit-users.html?${params}">${user.name?html}</a></td>
+          <td>${user.realName?html}</td>
+          <td>${user.email?html}</td>
+          <td>${user.comment?html}</td>
         </tr>
 </#list>
       </table>

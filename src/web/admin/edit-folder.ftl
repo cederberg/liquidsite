@@ -81,9 +81,9 @@
             <select tabindex="2" name="parent">
   <#list folders as item>
     <#if parent == item.id>
-              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+              <option value="${item.id}" selected="selected">${item.name?html}</option>
     <#else>
-              <option value="${item.id}">${item.name?xml}</option>
+              <option value="${item.id}">${item.name?html}</option>
     </#if>
   </#list>
             </select>

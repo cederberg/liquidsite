@@ -78,7 +78,7 @@
           </th>
           <td class="field">
             <textarea tabindex="2" rows="20" cols="60"
-                      name="post">${post?xml}</textarea>
+                      name="post">${post?html}</textarea>
             <p>The text of the first post to add to the topic.</p>
           </td>
         </tr>
@@ -91,9 +91,9 @@
             <select tabindex="3" name="forum">
   <#list forums as item>
     <#if forum == item.id>
-              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+              <option value="${item.id}" selected="selected">${item.name?html}</option>
     <#else>
-              <option value="${item.id}">${item.name?xml}</option>
+              <option value="${item.id}">${item.name?html}</option>
     </#if>
   </#list>
             </select>

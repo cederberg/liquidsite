@@ -4,7 +4,7 @@
 
     <h2>Section Description</h2>
 
-    <p>${description?xml}</p>
+    <p>${description?html}</p>
 
 
     <h2>Section Properties</h2>

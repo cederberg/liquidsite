@@ -52,7 +52,7 @@
           </th>
           <th>
             Filter:<br/>
-            <input name="filter" value="${filter?xml}" />
+            <input name="filter" value="${filter?html}" />
           </th>
           <th>
             <button type="submit">
@@ -104,10 +104,10 @@
   <#list users as user>
     <#assign params = "type=user&domain=" + domain + "&name=" + user.name>
         <tr>
-          <td><a href="edit-users.html?${params}">${user.name?xml}</a></td>
-          <td>${user.realName?xml}</td>
-          <td>${user.email?xml}</td>
-          <td>${user.comment?xml}</td>
+          <td><a href="edit-users.html?${params}">${user.name?html}</a></td>
+          <td>${user.realName?html}</td>
+          <td>${user.email?html}</td>
+          <td>${user.comment?html}</td>
           <td>
             <a href="#" title="Delete"
                onclick="return doDelete('${params}');"
@@ -131,9 +131,9 @@
   <#list groups as group>
     <#assign params = "type=group&domain=" + domain + "&name=" + group.name>
         <tr>
-          <td><a href="edit-users.html?${params}">${group.name?xml}</a></td>
-          <td>${group.description?xml}</td>
-          <td>${group.comment?xml}</td>
+          <td><a href="edit-users.html?${params}">${group.name?html}</a></td>
+          <td>${group.description?html}</td>
+          <td>${group.comment?html}</td>
           <td><a href="view-users.html?${params}">${group.members} user(s)
               of ${userCount}</a></td>
           <td>

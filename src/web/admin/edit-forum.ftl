@@ -84,9 +84,9 @@
             <select tabindex="2" name="section">
   <#list sections as item>
     <#if section == item.id>
-              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+              <option value="${item.id}" selected="selected">${item.name?html}</option>
     <#else>
-              <option value="${item.id}">${item.name?xml}</option>
+              <option value="${item.id}">${item.name?html}</option>
     </#if>
   </#list>
             </select>
@@ -113,7 +113,7 @@
           </th>
           <td class="field">
             <textarea tabindex="4" rows="6" cols="60"
-                      name="description">${description?xml}</textarea>
+                      name="description">${description?html}</textarea>
             <p>The forum description contains a longer text describing
             the topics discussed in the forum.</p>
           </td>
@@ -127,9 +127,9 @@
               <option value="">&lt; None &gt;</option>
 <#list moderators as item>
   <#if moderator == item.name>
-              <option value="${item.name}" selected="selected">${item.name?xml}</option>
+              <option value="${item.name}" selected="selected">${item.name?html}</option>
   <#else>
-              <option value="${item.name}">${item.name?xml}</option>
+              <option value="${item.name}">${item.name?html}</option>
   </#if>
 </#list>
             </select>

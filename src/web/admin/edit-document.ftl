@@ -101,9 +101,9 @@
             <select tabindex="2" name="section">
   <#list sections as item>
     <#if section == item.id>
-              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+              <option value="${item.id}" selected="selected">${item.name?html}</option>
     <#else>
-              <option value="${item.id}">${item.name?xml}</option>
+              <option value="${item.id}">${item.name?html}</option>
     </#if>
   </#list>
             </select>
@@ -123,13 +123,13 @@
   <#if prop.type == 1>
             ${prop.description}<br/><br/>
             <textarea tabindex="10" rows="6" cols="60"
-                      name="property.${prop.id}">${data[prop.id]?xml}</textarea>
+                      name="property.${prop.id}">${data[prop.id]?html}</textarea>
   <#elseif prop.type == 2>
             ${prop.description}<br/><br/>
             <div id="property.${prop.id}.toolbar"></div>
             <textarea id="property.${prop.id}.editor"
                       tabindex="10" rows="25" cols="60"
-                      name="property.${prop.id}">${data[prop.id]?xml}</textarea>
+                      name="property.${prop.id}">${data[prop.id]?html}</textarea>
             <script type="text/javascript">
             tagEditInitialize('property.${prop.id}');
             </script>

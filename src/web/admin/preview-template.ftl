@@ -9,7 +9,7 @@
           ${elem}:
         </th>
         <td>
-          <pre>${locals[elem]?xml}</pre>
+          <pre>${locals[elem]?html}</pre>
         </td>
       </tr>
 </#list>
@@ -19,7 +19,7 @@
           ${elem}:
         </th>
         <td>
-          <pre>${inherited[elem]?xml}</pre>
+          <pre>${inherited[elem]?html}</pre>
         </td>
       </tr>
 </#list>
