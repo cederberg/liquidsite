@@ -320,6 +320,16 @@ public class Request {
     }
 
     /**
+     * Sets a request attribute value.
+     *
+     * @param name           the attribute name
+     * @param value          the attribute value
+     */
+    public void setAttribute(String name, int value) {
+        setAttribute(name, new Integer(value));
+    }
+
+    /**
      * Returns a map with all the request parameter names and values.
      * 
      * @return the map with request parameter names and values
