@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
 
+import org.liquidsite.app.servlet.Application;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;

@@ -28,11 +28,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.ConfigurationException;
-import net.percederberg.liquidsite.RequestProcessor;
-
+import org.liquidsite.app.servlet.Application;
+import org.liquidsite.app.servlet.Configuration;
+import org.liquidsite.app.servlet.ConfigurationException;
+import org.liquidsite.app.servlet.RequestProcessor;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentSecurityException;

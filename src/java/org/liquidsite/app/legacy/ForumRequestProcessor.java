@@ -19,12 +19,13 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package org.liquidsite.app.legacy;
 
 import java.util.Date;
 
-import org.liquidsite.util.log.Log;
-
+import org.liquidsite.app.servlet.Application;
+import org.liquidsite.app.servlet.RequestException;
+import org.liquidsite.app.servlet.RequestProcessor;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentForum;
 import org.liquidsite.core.content.ContentException;
@@ -35,6 +36,7 @@ import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.text.PlainFormatter;
 import org.liquidsite.core.web.Request;
+import org.liquidsite.util.log.Log;
 
 /**
  * The forum request processor for forum posts and previews.

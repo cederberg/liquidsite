@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package org.liquidsite.app.servlet;
 
 /**
  * A configuration exception. This exception is thrown when the

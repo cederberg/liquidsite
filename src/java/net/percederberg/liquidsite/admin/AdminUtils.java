@@ -27,9 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.Configuration;
-
+import org.liquidsite.app.servlet.Application;
+import org.liquidsite.app.servlet.Configuration;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
