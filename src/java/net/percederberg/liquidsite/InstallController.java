@@ -49,8 +49,103 @@ public class InstallController extends Controller {
     /**
      * The MySQL database connector.
      */
-     private MySQLDatabaseConnector con = null;
+    private MySQLDatabaseConnector con = null;
      
+    /**
+     * The database host name.
+     */
+    private String host;
+    
+    /**
+     * The database user name.
+     */
+    private String rootUsername;
+    
+    /**
+     * The database password.
+     */
+    private String rootPassword;
+    
+    /**
+     * The database choice specification.
+     */
+    private String dbchoice;
+    
+    /**
+     * The selected database.
+     */
+    private String dbsel;
+    
+    /**
+     * The entered database.
+     */
+    private String database;
+    
+    /**
+     * The liquid site user choice specification.
+     */
+    private String userchoice;
+    
+    /**
+     * The selected liquid site user name.
+     */
+    private String usersel;
+    
+    /**
+     * The entered liquid site user name.
+     */
+    private String username;
+    
+    /**
+     * The liquid site password.
+     */
+    private String password;
+    
+    /**
+     * The liquid site password verification.
+     */
+    private String verify;
+
+    /**
+     * Any error.
+     */
+    private boolean error;
+    
+    /**
+     * Error in the host name.
+     */
+    private boolean errorHost;
+    
+    /**
+     * Error in the root username.
+     */
+    private boolean errorUsername;
+    
+    /**
+     * Error in the root password.
+     */
+    private boolean errorPassword;
+    
+    /**
+     * The database to create already exists.
+     */
+    private boolean errorDbExists;
+
+    /**
+     * Password verification failed for liquid site user.
+     */
+    private boolean errorVerify;
+    
+    /**
+     * The liquid site user to create already exists.
+     */
+    private boolean errorUserExists;
+
+    /**
+     * Error in attempting to connect to the database.
+     */
+    private boolean errorConnection;
+
     /**
      * Creates a new install controller. 
      *
@@ -73,34 +168,25 @@ public class InstallController extends Controller {
      * this parameter doesn't exist, it forwards to the start
      * installation page.
      *
-     * @param request          the request object to process
+     * @param request        the request object to process
      */
     public void process(Request request) {
-
-        // get requested path
-        String path = request.getPath();
-
-        // process the request
+        String path;
+        
+        // process the requested path
+        path = request.getPath();
         if (path.equals("/liquidsite/install.html")) {
-
-            // get current step
+            // installation
             String step = request.getParameter("step");
-            if (step == null) {
-                step = "1";
-            }
-
-            // process step
-            if (step.equals("0")) {
-                start(request);
-            } else if (step.equals("1")) {
+            if (step != null && step.equals("1")) {
                 install(request);
-            } else if (step.equals("2")) {
+            } else if (step != null && step.equals("2")) {
                 install2(request);
-            } else if (step.equals("3")) {
+            } else if (step != null && step.equals("3")) {
                 install3(request);
-            } else if (step.equals("4")) {
+            } else if (step != null && step.equals("4")) {
                 install4(request);
-            } else if (step.equals("5")) {
+            } else if (step != null && step.equals("5")) {
                 install5(request);
             } else {
                 start(request);
@@ -127,39 +213,17 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install(Request request) {
-        // info
-        String host;
-        String rootUsername;
-        String rootPassword;
-        String dbchoice;
-        String dbsel;
-        String database;
-        String userchoice;
-        String usersel;
-        String username;
-        String password;
-        String verify;
 
-        // errors
-        boolean error;
-        boolean errorHost;
-        boolean errorUsername;
-        boolean errorPassword;
-        boolean errorConnection;
+        // initialize errors
+        error = false;
+        errorHost = false;
+        errorUsername = false;
+        errorPassword = false;
+        errorConnection = false;
 
         // get info
-        host = request.getParameter("host");
-        rootUsername = request.getParameter("rootUsername");
-        rootPassword = request.getParameter("rootPassword");
-        dbchoice = request.getParameter("dbchoice");
-        dbsel = request.getParameter("dbsel");
-        database = request.getParameter("database");
-        userchoice = request.getParameter("userchoice");
-        usersel = request.getParameter("usersel");
-        username = request.getParameter("username");
-        password = request.getParameter("password");
-        verify = request.getParameter("verify");
-
+        getParameters(request);
+        
         // set default info
         if (host == null) {
             host = "localhost";
@@ -195,30 +259,8 @@ public class InstallController extends Controller {
             verify = "";
         }
 
-        // set error variables
-        error = false;
-        errorHost = false;
-        errorUsername = false;
-        errorPassword = false;
-        errorConnection = false;
-
         // set attributes in request
-        request.setAttribute("host", host);
-        request.setAttribute("rootUsername", rootUsername);
-        request.setAttribute("rootPassword", rootPassword);
-        request.setAttribute("dbchoice", dbchoice);
-        request.setAttribute("dbsel", dbsel);
-        request.setAttribute("database", database);
-        request.setAttribute("userchoice", userchoice);
-        request.setAttribute("usersel", usersel);
-        request.setAttribute("username", username);
-        request.setAttribute("password", password);
-        request.setAttribute("verify", verify);
-        request.setAttribute("error", error);
-        request.setAttribute("errorHost", errorHost);
-        request.setAttribute("errorUsername", errorUsername);
-        request.setAttribute("errorPassword", errorPassword);
-        request.setAttribute("errorConnection", errorConnection);
+        setAttributes(request);
 
         // forward to install page
         request.forward("/install/install.jsp");
@@ -232,43 +274,6 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install2(Request request) {
-        // info
-        String host;
-        String rootUsername;
-        String rootPassword;
-        String dbchoice;
-        String dbsel;
-        String database;
-        String userchoice;
-        String usersel;
-        String username;
-        String password;
-        String verify;
-
-        // errors
-        boolean error;
-        boolean errorHost;
-        boolean errorUsername;
-        boolean errorPassword;
-        boolean errorDbExists;
-        boolean errorConnection;
-
-        // database results
-        ArrayList databases = null;
-        ArrayList lsdatabases = null;
-
-        // get info
-        host = (request.getParameter("host")).trim();
-        rootUsername = (request.getParameter("rootUsername")).trim();
-        rootPassword = (request.getParameter("rootPassword")).trim();
-        dbchoice = request.getParameter("dbchoice");
-        dbsel = request.getParameter("dbsel");
-        database = request.getParameter("database");
-        userchoice = request.getParameter("userchoice");
-        usersel = request.getParameter("usersel");
-        username = request.getParameter("username");
-        password = request.getParameter("password");
-        verify = request.getParameter("verify");
 
         // initialize errors
         error = false;
@@ -277,6 +282,13 @@ public class InstallController extends Controller {
         errorPassword = false;
         errorDbExists = false;
         errorConnection = false;
+
+        // database results
+        ArrayList databases = null;
+        ArrayList lsdatabases = null;
+
+        // get info
+        getParameters(request);
 
         // check info for errors
         if (host.equals("")) {
@@ -331,36 +343,15 @@ public class InstallController extends Controller {
         }
 
         // set attributes in request
-        request.setAttribute("host", host);
-        request.setAttribute("rootUsername", rootUsername);
-        request.setAttribute("rootPassword", rootPassword);
-        request.setAttribute("dbchoice", dbchoice);
-        request.setAttribute("dbsel", dbsel);
-        request.setAttribute("database", database);
-        request.setAttribute("userchoice", userchoice);
-        request.setAttribute("usersel", usersel);
-        request.setAttribute("username", username);
-        request.setAttribute("password", password);
-        request.setAttribute("verify", verify);
-        request.setAttribute("error", error);
-        request.setAttribute("errorConnection", errorConnection);
+        setAttributes(request);
 
         // check if error happened
         if (error) {
-
-            // set attributes in request
-            request.setAttribute("errorHost", errorHost);
-            request.setAttribute("errorUsername", errorUsername);
-            request.setAttribute("errorPassword", errorPassword);
 
             // forward to same page
             request.forward("/install/install.jsp");
 
         } else {
-
-            // set attributes in request
-            request.setAttribute("databases", databases);
-            request.setAttribute("errorDbExists", errorDbExists);
 
             // forward to next page
             request.forward("/install/install2.jsp");
@@ -375,45 +366,7 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install3(Request request) {
-        // info
-        String host;
-        String rootUsername;
-        String rootPassword;
-        String dbchoice;
-        String dbsel;
-        String database;
-        String userchoice;
-        String usersel;
-        String username;
-        String password;
-        String verify;
-
-        // errors
-        boolean error;
-        boolean errorDbExists;
-        boolean errorVerify;
-        boolean errorUserExists;
-        boolean errorConnection;
-
-        // database results
-        ArrayList databases = null;
-        ArrayList users = null;
-        ArrayList lsusers = null;
-
-        // get info
-        host = request.getParameter("host");
-        rootUsername = request.getParameter("rootUsername");
-        rootPassword = request.getParameter("rootPassword");
-        dbchoice = request.getParameter("dbchoice");
-        dbsel = request.getParameter("dbsel");
-        database = (request.getParameter("database")).trim();
-        userchoice = request.getParameter("userchoice");
-        usersel = request.getParameter("usersel");
-        username = request.getParameter("username");
-        password = request.getParameter("password");
-        verify = request.getParameter("verify");
-        dbsel = request.getParameter("dbsel");
-
+        
         // initialize errors
         error = false;
         errorDbExists = false;
@@ -421,6 +374,14 @@ public class InstallController extends Controller {
         errorUserExists = false;
         errorConnection = false;
 
+        // database results
+        ArrayList databases = null;
+        ArrayList users = null;
+        ArrayList lsusers = null;
+
+        // get info
+        getParameters(request);
+        
         // get list of databases
         try {
             databases = 
@@ -458,26 +419,13 @@ public class InstallController extends Controller {
         }
 
         // set attributes in request
-        request.setAttribute("host", host);
-        request.setAttribute("rootUsername", rootUsername);
-        request.setAttribute("rootPassword", rootPassword);
-        request.setAttribute("dbchoice", dbchoice);
-        request.setAttribute("dbsel", dbsel);
-        request.setAttribute("database", database);
-        request.setAttribute("userchoice", userchoice);
-        request.setAttribute("username", username);
-        request.setAttribute("password", password);
-        request.setAttribute("verify", verify);
-        request.setAttribute("error", error);
-        request.setAttribute("errorConnection", errorConnection);
+        setAttributes(request);
 
         // check if error happened
         if (error) {
 
             // set attributes in request
-            request.setAttribute("usersel", usersel);
             request.setAttribute("databases", databases);
-            request.setAttribute("errorDbExists", errorDbExists);
 
             // forward to same page
             request.forward("/install/install2.jsp");
@@ -509,8 +457,6 @@ public class InstallController extends Controller {
             // set attributes in request
             request.setAttribute("usersel", usersel);
             request.setAttribute("users", users);
-            request.setAttribute("errorVerify", errorVerify);
-            request.setAttribute("errorUserExists", errorUserExists);
 
             // forward to next page
             request.forward("/install/install3.jsp");
@@ -525,40 +471,6 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install4(Request request) {
-        // info
-        String host;
-        String rootUsername;
-        String rootPassword;
-        String dbchoice;
-        String dbsel;
-        String database;
-        String userchoice;
-        String usersel;
-        String username;
-        String password;
-        String verify;
-
-        // errors
-        boolean error;
-        boolean errorVerify;
-        boolean errorUserExists;
-        boolean errorConnection;
-
-        // database results
-        ArrayList users = null;
-
-        // get info
-        host = request.getParameter("host");
-        rootUsername = request.getParameter("rootUsername");
-        rootPassword = request.getParameter("rootPassword");
-        dbchoice = request.getParameter("dbchoice");
-        dbsel = request.getParameter("dbsel");
-        database = request.getParameter("database");
-        userchoice = request.getParameter("userchoice");
-        usersel = request.getParameter("usersel");
-        username = (request.getParameter("username")).trim();
-        password = (request.getParameter("password")).trim();
-        verify = (request.getParameter("verify")).trim();
 
         // initialize errors
         error = false;
@@ -566,6 +478,12 @@ public class InstallController extends Controller {
         errorUserExists = false;
         errorConnection = false;
 
+        // database results
+        ArrayList users = null;
+
+        // get info
+        getParameters(request);
+        
         // get list of users
         try {
             users = con.listUsers();
@@ -603,27 +521,13 @@ public class InstallController extends Controller {
         }
 
         // set attributes in request
-        request.setAttribute("host", host);
-        request.setAttribute("rootUsername", rootUsername);
-        request.setAttribute("rootPassword", rootPassword);
-        request.setAttribute("dbchoice", dbchoice);
-        request.setAttribute("dbsel", dbsel);
-        request.setAttribute("database", database);
-        request.setAttribute("userchoice", userchoice);
-        request.setAttribute("usersel", usersel);
-        request.setAttribute("username", username);
-        request.setAttribute("password", password);
-        request.setAttribute("verify", verify);
-        request.setAttribute("error", error);
-        request.setAttribute("errorConnection", errorConnection);
+        setAttributes(request);
 
         // check if error happened
         if (error) {
 
             // set attributes in request
             request.setAttribute("users", users);
-            request.setAttribute("errorVerify", errorVerify);
-            request.setAttribute("errorUserExists", errorUserExists);
 
             // forward to same page
             request.forward("/install/install3.jsp");
@@ -641,33 +545,13 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install5(Request request) {
-        // info
-        String host;
-        String rootUsername;
-        String rootPassword;
-        String dbchoice;
-        String dbsel;
-        String database;
-        String userchoice;
-        String usersel;
-        String username;
-        String password;
         String db;
         String user;
         String passwd = "";
 
         // get info from request
-        host = request.getParameter("host");
-        rootUsername = request.getParameter("rootUsername");
-        rootPassword = request.getParameter("rootPassword");
-        dbchoice = request.getParameter("dbchoice");
-        dbsel = request.getParameter("dbsel");
-        database = request.getParameter("database");
-        userchoice = request.getParameter("userchoice");
-        usersel = request.getParameter("usersel");
-        username = request.getParameter("username");
-        password = request.getParameter("password");
-
+        getParameters(request);
+        
         try {
 
             // get selected database and user
@@ -720,6 +604,54 @@ public class InstallController extends Controller {
         // forward to next page
         request.forward("/install/install5.jsp");
     }
+
+    /**
+     * Gets the installation information from the request parameters.
+     *
+     * @param request        the request object from which to 
+     *                       get the information
+     */
+    private void getParameters(Request request) {
+        host = request.getParameter("host");
+        rootUsername = request.getParameter("rootUsername");
+        rootPassword = request.getParameter("rootPassword");
+        dbchoice = request.getParameter("dbchoice");
+        dbsel = request.getParameter("dbsel");
+        database = request.getParameter("database");
+        userchoice = request.getParameter("userchoice");
+        usersel = request.getParameter("usersel");
+        username = request.getParameter("username");
+        password = request.getParameter("password");
+        verify = request.getParameter("verify");
+    }
+    
+    /**
+     * Sets the installation information as request attributes.
+     *
+     * @param request        the request object where to set
+     *                       the information
+     */
+     private void setAttributes(Request request) {
+        request.setAttribute("host", host);
+        request.setAttribute("rootUsername", rootUsername);
+        request.setAttribute("rootPassword", rootPassword);
+        request.setAttribute("dbchoice", dbchoice);
+        request.setAttribute("dbsel", dbsel);
+        request.setAttribute("database", database);
+        request.setAttribute("userchoice", userchoice);
+        request.setAttribute("usersel", usersel);
+        request.setAttribute("username", username);
+        request.setAttribute("password", password);
+        request.setAttribute("verify", verify);         
+        request.setAttribute("error", error);
+        request.setAttribute("errorHost", errorHost);
+        request.setAttribute("errorUsername", errorUsername);
+        request.setAttribute("errorPassword", errorPassword);
+        request.setAttribute("errorDbExists", errorDbExists);
+        request.setAttribute("errorVerify", errorVerify);
+        request.setAttribute("errorUserExists", errorUserExists);
+        request.setAttribute("errorConnection", errorConnection);
+     }
 
     /**
      * Returns a list with all database names.
@@ -926,3 +858,4 @@ public class InstallController extends Controller {
         config.println("PASSWORD=" + password);
     }
 }
+
