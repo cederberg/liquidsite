@@ -158,13 +158,22 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void processAddObject(Request request) throws RequestException {
+        String  step = request.getParameter("step", "");
         String  category = request.getParameter("category", "");
         
         // TODO: add support for sites
         if (request.getParameter("prev") != null) {
-            request.sendRedirect("site.html");
+            if (step.equals("1")) {
+                request.sendRedirect("site.html");
+            } else {
+                displayAddObject(request);
+            }
         } else if (category.equals("domain")) {
-            processAddDomain(request);
+            if (step.equals("1")) {
+                displayAddDomain(request);
+            } else {
+                processAddDomain(request);
+            }
         } else {
             displayAddObject(request);
         }
@@ -179,19 +188,15 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void processAddDomain(Request request) throws RequestException {
-        String  step = request.getParameter("step", "");
         String  name = request.getParameter("name", "");
         String  description = request.getParameter("description", "");
         String  hostname = request.getParameter("host", "");
         Domain  domain;
         Host    host;
+        String  error;
         
         // TODO: check for existing domains and hosts, and invalid input
-        if (request.getParameter("prev") != null) {
-            displayAddObject(request);
-        } else if (!step.equals("2")) {
-            displayAddDomain(request);
-        } else if (name.equals("")) {
+        if (name.equals("")) {
             request.setAttribute("error", "No domain name specified");
             displayAddDomain(request);
         } else if (hostname.equals("")) {
@@ -210,9 +215,9 @@ public class AdminController extends Controller {
                 request.sendRedirect("site.html");
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
-                step = "Failed to save to database. Detailed message: " +
-                       e.getMessage();
-                request.setAttribute("error", step);
+                error = "Failed to save to database. Detailed message: " +
+                         e.getMessage();
+                request.setAttribute("error", error);
                 displayAddDomain(request);
             } catch (ContentSecurityException e) {
                 LOG.warning(e.getMessage());
