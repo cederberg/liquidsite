@@ -269,7 +269,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasReadAccess(User user) throws ContentException {
-        return getSecurityManager().canRead(user, this);
+        return getSecurityManager().hasReadAccess(user, this);
     }
 
     /**
@@ -284,7 +284,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasWriteAccess(User user) throws ContentException {
-        return getSecurityManager().canWrite(user, this);
+        return getSecurityManager().hasWriteAccess(user, this);
     }
 
     /**
@@ -299,7 +299,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasPublishAccess(User user) throws ContentException {
-        return getSecurityManager().canPublish(user, this);
+        return getSecurityManager().hasPublishAccess(user, this);
     }
 
     /**
@@ -314,7 +314,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasAdminAccess(User user) throws ContentException {
-        return getSecurityManager().canAdmin(user, this);
+        return getSecurityManager().hasAdminAccess(user, this);
     }
 
     /**

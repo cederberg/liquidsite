@@ -70,10 +70,28 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean canRead(User user, Domain domain) 
+    public boolean hasReadAccess(User user, Domain domain) 
         throws ContentException {
 
-        return checkAccess(user, domain, READ);
+        return hasAccess(user, domain, READ);
+    }
+    
+    /**
+     * Checks the read access for a user on a content object.
+     *
+     * @param user           the user to check, or null for none
+     * @param content        the content object
+     * 
+     * @return true if the user has read access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasReadAccess(User user, Content content) 
+        throws ContentException {
+
+        return hasAccess(user, content, READ);
     }
     
     /**
@@ -88,10 +106,28 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean canWrite(User user, Domain domain) 
+    public boolean hasWriteAccess(User user, Domain domain) 
         throws ContentException {
 
-        return checkAccess(user, domain, WRITE);
+        return hasAccess(user, domain, WRITE);
+    }
+
+    /**
+     * Checks the write access for a user on a content object.
+     *
+     * @param user           the user to check, or null for none
+     * @param content        the content object
+     * 
+     * @return true if the user has write access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasWriteAccess(User user, Content content) 
+        throws ContentException {
+
+        return hasAccess(user, content, WRITE);
     }
 
     /**
@@ -106,64 +142,10 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean canPublish(User user, Domain domain) 
+    public boolean hasPublishAccess(User user, Domain domain) 
         throws ContentException {
 
-        return checkAccess(user, domain, PUBLISH);
-    }
-
-    /**
-     * Checks the admin access for a user on a domain object.
-     *
-     * @param user           the user to check, or null for none
-     * @param domain         the domain object
-     * 
-     * @return true if the user has admin access, or
-     *         false otherwise
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public boolean canAdmin(User user, Domain domain) 
-        throws ContentException {
-
-        return checkAccess(user, domain, ADMIN);
-    }
-
-    /**
-     * Checks the read access for a user on a content object.
-     *
-     * @param user           the user to check, or null for none
-     * @param content        the content object
-     * 
-     * @return true if the user has read access, or
-     *         false otherwise
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public boolean canRead(User user, Content content) 
-        throws ContentException {
-
-        return checkAccess(user, content, READ);
-    }
-    
-    /**
-     * Checks the write access for a user on a content object.
-     *
-     * @param user           the user to check, or null for none
-     * @param content        the content object
-     * 
-     * @return true if the user has write access, or
-     *         false otherwise
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public boolean canWrite(User user, Content content) 
-        throws ContentException {
-
-        return checkAccess(user, content, WRITE);
+        return hasAccess(user, domain, PUBLISH);
     }
 
     /**
@@ -178,10 +160,28 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean canPublish(User user, Content content) 
+    public boolean hasPublishAccess(User user, Content content) 
         throws ContentException {
 
-        return checkAccess(user, content, PUBLISH);
+        return hasAccess(user, content, PUBLISH);
+    }
+
+    /**
+     * Checks the admin access for a user on a domain object.
+     *
+     * @param user           the user to check, or null for none
+     * @param domain         the domain object
+     * 
+     * @return true if the user has admin access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasAdminAccess(User user, Domain domain) 
+        throws ContentException {
+
+        return hasAccess(user, domain, ADMIN);
     }
 
     /**
@@ -196,10 +196,10 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean canAdmin(User user, Content content) 
+    public boolean hasAdminAccess(User user, Content content) 
         throws ContentException {
 
-        return checkAccess(user, content, ADMIN);
+        return hasAccess(user, content, ADMIN);
     }
 
     /**
@@ -216,7 +216,7 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private boolean checkAccess(User user, Domain domain, int access)
+    private boolean hasAccess(User user, Domain domain, int access)
         throws ContentException {
 
         Permission[]  perms = domain.getPermissions();
@@ -234,7 +234,7 @@ public class ContentSecurityManager {
             groups = user.getGroups();
         }
         for (int i = 0; i < perms.length; i++) {
-            if (checkAccess(user, groups, perms[i], access)) {
+            if (hasAccess(user, groups, perms[i], access)) {
                 return true;
             }
         }
@@ -258,7 +258,7 @@ public class ContentSecurityManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private boolean checkAccess(User user, Content content, int access) 
+    private boolean hasAccess(User user, Content content, int access) 
         throws ContentException {
 
         Permission[]  perms = content.getPermissions();
@@ -268,9 +268,9 @@ public class ContentSecurityManager {
         if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0 && content.getParentId() <= 0) {
-            return checkAccess(user, content.getDomain(), access);
+            return hasAccess(user, content.getDomain(), access);
         } else if (perms.length == 0) {
-            return checkAccess(user, content.getParent(), access); 
+            return hasAccess(user, content.getParent(), access); 
         }
 
         // Check content permissions
@@ -278,7 +278,7 @@ public class ContentSecurityManager {
             groups = user.getGroups();
         }
         for (int i = 0; i < perms.length; i++) {
-            if (checkAccess(user, groups, perms[i], access)) {
+            if (hasAccess(user, groups, perms[i], access)) {
                 return true;
             }
         }
@@ -297,10 +297,10 @@ public class ContentSecurityManager {
      * @return true if the user has the specified access level, or
      *         false otherwise
      */
-    private boolean checkAccess(User user, 
-                                Group[] groups, 
-                                Permission perm, 
-                                int access) {
+    private boolean hasAccess(User user, 
+                              Group[] groups, 
+                              Permission perm, 
+                              int access) {
 
         if (!perm.isMatch(user, groups)) {
             return false;
