@@ -92,7 +92,7 @@ function templateDisplay() {
     input.tabIndex = "10";
     input.name = "template.new";
     script = "templateInternalAddLocal('template.new');";
-    utilAddLinkElement(td, "Add", "add.png", script);
+    utilAddLinkElement(td, "Add", "add.png", "Add", script);
 }
 
 /**
@@ -182,7 +182,7 @@ function templateInternalDisplayInherited(name) {
     utilAddElement(td, "br");
     script = "templateAddLocal('" + name + "', TEMPLATE_INHERITED." + 
              name + "); templateDisplay();";
-    utilAddLinkElement(td, "Edit", "edit.png", script);
+    utilAddLinkElement(td, "Edit", "edit.png", "Edit", script);
     td = utilAddElement(tr, "td");
     templateInternalAddEditor(td, name, TEMPLATE_INHERITED[name], false);
 }
@@ -206,7 +206,7 @@ function templateInternalDisplayLocal(name) {
     utilAddElement(td, "br");
     utilAddElement(td, "br");
     script = "templateRemoveLocal('" + name + "'); templateDisplay();";
-    utilAddLinkElement(td, "Delete", "delete.png", script);
+    utilAddLinkElement(td, "Delete", "delete.png", "Delete", script);
     td = utilAddElement(tr, "td");
     templateInternalAddEditor(td, name, TEMPLATE_LOCAL[name], true);
 }

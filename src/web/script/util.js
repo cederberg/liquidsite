@@ -111,21 +111,24 @@ function utilAddTextElement(parent, text) {
  * @param parent             the parent HTML node
  * @param text               the link text
  * @param image              the link icon image
+ * @param alt                the link alternative/caption text
  * @param script             the script to execute on click
  *
  * @return the HTML element created
  */
-function utilAddLinkElement(parent, text, image, script) {
+function utilAddLinkElement(parent, text, image, alt, script) {
     var  a = utilAddElement(parent, "a");
 
     a.href = "#";
-    a.title = text;
+    a.title = alt;
     a.tabIndex = "10";
     a.onclick = new Function(script + " return false;");
     img = utilAddElement(a, "img");
     img.src = UTIL_ICON_PATH + image;
-    img.alt = text;
-    utilAddTextElement(a, " " + text);
+    img.alt = alt;
+    if (text != "") {
+        utilAddTextElement(a, " " + text);
+    }
     return a;
 }
 
