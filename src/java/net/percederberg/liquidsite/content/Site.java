@@ -200,55 +200,50 @@ public class Site {
     }
 
     /**
-     * Checks if a set of request parameters matches this site.
+     * Matches a set of request parameters to this site. This method
+     * returns a numeric value that is higher for better matches. If
+     * the request parameters didn't match at all, zero (0) is always
+     * returned. The matching algorithm gives priority to exact 
+     * matches for host and port, and longer matches for URI:s. An 
+     * exact match for host or port is also always preferred over a
+     * longer URI match. 
      * 
      * @param host           the request host name (server name)
      * @param port           the request (server) port
      * @param uri            the request uri
      * 
-     * @return true if all the parameters matches this site, or
-     *         false otherwise
+     * @return the match value (higher is better), or
+     *         zero (0) for no match
      */
-    public boolean matches(String host, int port, String uri) {
-        return matchesHost(host) 
-            && matchesPort(port)
-            && matchesDirectory(uri);
-    }
+    public int match(String host, int port, String uri) {
+        int  result = 0;
+        
+        // Check host match
+        if (this.host.equals("*")) {
+            // Do nothing
+        } else if (this.host.equals(host)) {
+            result += 10000;
+        } else {
+            return 0;
+        }
 
-    /**
-     * Checks if a host (or server) name matches this site.
-     * 
-     * @param host           the request host name (server name)
-     * 
-     * @return true if the host name matches this site, or
-     *         false otherwise
-     */
-    public boolean matchesHost(String host) {
-        return this.host.equals("*") || this.host.equals(host);
-    }
-    
-    /**
-     * Checks if a (server) port number matches this site.
-     * 
-     * @param port           the request (server) port
-     * 
-     * @return true if the port number matches this site, or
-     *         false otherwise
-     */
-    public boolean matchesPort(int port) {
-        return this.port == 0 || this.port == port;
-    }
-    
-    /**
-     * Checks if a request URI matches this site.
-     * 
-     * @param uri            the request uri
-     * 
-     * @return true if the URI matches this site, or
-     *         false otherwise
-     */
-    public boolean matchesDirectory(String uri) {
-        return uri.startsWith(directory);
+        // Check port match        
+        if (this.port == 0) {
+            // Do nothing
+        } else if (this.port == port) {
+            result += 1000;
+        } else {
+            return 0;
+        }
+        
+        // Check directory match
+        if (uri.startsWith(directory)) {
+            result += directory.length();
+        } else {
+            return 0;
+        }
+
+        return result;
     }
 
     /**

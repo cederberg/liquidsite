@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
@@ -138,7 +139,7 @@ public class LiquidSiteServlet extends HttpServlet
         String  user;
         String  password;
         int     size;
-        
+
         // Initialize configuration
         configDir = new File(getBaseDir(), "WEB-INF");
         config = new Configuration(new File(configDir, "config.properties"));
@@ -183,7 +184,12 @@ public class LiquidSiteServlet extends HttpServlet
         }
 
         // Initialize content manager
-        contentManager = new ContentManager(this);
+        try {
+            contentManager = new ContentManager(this);
+        } catch (ContentException e) {
+            errors++;
+            LOG.error(e.getMessage());
+        }
 
         // Initialize controllers
         controllers = new ArrayList();

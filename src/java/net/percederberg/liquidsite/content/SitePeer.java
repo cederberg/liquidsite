@@ -69,7 +69,8 @@ public class SitePeer extends Peer {
     }
 
     /**
-     * Inserts a new site into the database.
+     * Inserts a new site into the database. This method also updates 
+     * the content manager site cache.
      * 
      * @param site           the site to insert
      * 
@@ -89,10 +90,12 @@ public class SitePeer extends Peer {
         params.add(site.getDirectory());
         execute("site.insert", params, "inserting site");
         site.setId(id);
+        ContentManager.getInstance().addSite(site);
     }
     
     /**
-     * Updates a site in the database.
+     * Updates a site in the database. This method also updates the
+     * content manager site cache.
      * 
      * @param site           the site to update
      * 
@@ -110,10 +113,12 @@ public class SitePeer extends Peer {
         params.add(site.getDirectory());
         params.add(new Integer(site.getId()));
         execute("site.update", params, "updating site");
+        ContentManager.getInstance().addSite(site);
     }
     
     /**
-     * Deletes a site from the database.
+     * Deletes a site from the database. This method also updates the 
+     * content manager site cache.
      * 
      * @param site           the site to delete
      * 
@@ -127,6 +132,7 @@ public class SitePeer extends Peer {
 
         params.add(new Integer(site.getId()));
         execute("site.delete", params, "deleting site");
+        ContentManager.getInstance().removeSite(site);
     }
     
     /**
