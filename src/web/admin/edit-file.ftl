@@ -136,7 +136,7 @@
       <#assign rows = rows + 1>
     </#if>
   </#list>
-            <textarea tabindex="4" cols="70" rows="${rows}"
+            <textarea tabindex="4" cols="70" rows="#{rows}"
                       name="content">${content}</textarea>
             <p>The file content. The file data can either be edited
             here or being uploaded.</p>
