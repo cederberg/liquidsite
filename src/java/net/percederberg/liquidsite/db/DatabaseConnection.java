@@ -21,6 +21,11 @@
 
 package net.percederberg.liquidsite.db;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -314,6 +319,48 @@ public class DatabaseConnection {
         }
 
         return extractResults(set);
+    }
+
+    /**
+     * Executes a set of SQL statements from a file. Each SQL 
+     * statement must be terminated by a ';' character. 
+     * 
+     * @param file           the file with SQL statements
+     * 
+     * @throws FileNotFoundException if the file couldn't be found
+     * @throws IOException if the file couldn't be read properly
+     * @throws DatabaseException if some statement couldn't be 
+     *             executed correctly
+     */
+    public void executeSql(File file) 
+        throws FileNotFoundException, IOException, DatabaseException {
+
+        BufferedReader  input;
+        StringBuffer    sql = new StringBuffer();
+        String          line;
+        
+        input = new BufferedReader(new FileReader(file));
+        try {
+            while ((line = input.readLine()) != null) {
+                line = line.trim();
+                if (line.equals("") || line.startsWith("--")) {
+                    // Do nothing
+                } else if (line.endsWith(";")) {
+                    sql.append(line.substring(line.length() - 1));
+                    executeSql(sql.toString());
+                    sql.setLength(0);
+                } else {
+                    sql.append(line);
+                    sql.append(" ");
+                }
+            }
+        } finally {
+            try { 
+                input.close();
+            } catch (IOException ignore) {
+                // Do nothing
+            }
+        }
     }
 
     /**

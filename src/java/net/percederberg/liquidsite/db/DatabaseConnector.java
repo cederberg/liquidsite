@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.db;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -318,9 +319,12 @@ public class DatabaseConnector {
      * 
      * @param file           the file containing the functions
      * 
+     * @throws FileNotFoundException if the file couldn't be found
      * @throws IOException if the file couldn't be read properly
      */
-    public void loadFunctions(File file) throws IOException {
+    public void loadFunctions(File file) 
+        throws FileNotFoundException, IOException {
+
         Properties       props = new Properties();
         FileInputStream  input;
         
@@ -422,5 +426,32 @@ public class DatabaseConnector {
         }
 
         return res;
+    }
+
+    /**
+     * Executes a set of SQL statements from a file. Each SQL 
+     * statement must be terminated by a ';' character. 
+     * 
+     * @param file           the file with SQL statements
+     * 
+     * @throws FileNotFoundException if the file couldn't be found
+     * @throws IOException if the file couldn't be read properly
+     * @throws DatabaseConnectionException if a database connection 
+     *             couldn't be established
+     * @throws DatabaseException if some statement couldn't be 
+     *             executed correctly
+     */
+    public void executeSql(File file) 
+        throws FileNotFoundException, IOException, 
+               DatabaseConnectionException, DatabaseException {
+
+        DatabaseConnection  con;
+        
+        con = getConnection();
+        try {
+            con.executeSql(file);
+        } finally {
+            returnConnection(con);
+        }
     }
 }
