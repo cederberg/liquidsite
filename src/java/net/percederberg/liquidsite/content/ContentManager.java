@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.content;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.Application;
@@ -91,16 +90,16 @@ public class ContentManager {
      *             initialized properly
      */
     public ContentManager(Application app) throws ContentException {
-        ArrayList  list;
-        Host[]     hosts;
+        Domain[]  domains;
+        Host[]    hosts;
 
         instance = this;
         this.app = app;
         if (app.isInstalled()) {
             LOG.trace("initializing content manager cache...");
-            list = DomainPeer.doSelectAll();
-            for (int i = 0; i < list.size(); i++) {
-                addDomain((Domain) list.get(i));
+            domains = Domain.findAll();
+            for (int i = 0; i < domains.length; i++) {
+                addDomain(domains[i]);
             }
             hosts = Host.findAll();
             for (int i = 0; i < hosts.length; i++) {

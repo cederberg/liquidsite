@@ -46,7 +46,7 @@ public class Host extends PersistentObject {
      * The host options. These options are read from and stored to
      * the data object upon reading and writing. 
      */
-    private HashMap options = new HashMap();
+    private HashMap options;
     
     /**
      * Returns an array of all hosts in the database.
@@ -118,7 +118,6 @@ public class Host extends PersistentObject {
      *             properly
      */
     public static Host findByName(String name) throws ContentException {
-
         DatabaseConnection  con = getDatabaseConnection();
         HostData            data;
 
@@ -147,6 +146,7 @@ public class Host extends PersistentObject {
         this.data = new HostData();
         this.data.setString(HostData.DOMAIN, domain.getName());
         this.data.setString(HostData.NAME, name);
+        this.options = new HashMap();
     }
 
     /**

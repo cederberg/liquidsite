@@ -21,10 +21,13 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+import net.percederberg.liquidsite.dbo.DomainData;
+import net.percederberg.liquidsite.dbo.DomainPeer;
 
 /**
  * A resource and user domain.
@@ -32,27 +35,96 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Domain extends DataObject {
+public class Domain extends PersistentObject {
 
     /**
-     * The domain name.
+     * The domain data object.
      */
-    private String name = "";
+    private DomainData data;
     
     /**
-     * The domain description.
+     * The domain options. These options are read from and stored to
+     * the data object upon reading and writing.
      */
-    private String description = "";
+    private HashMap options;
     
     /**
-     * The domain options.
+     * Returns an array of all domains in the database.
+     * 
+     * @return an array of all domains in the database
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    private HashMap options = new HashMap();
-    
+    public static Domain[] findAll() throws ContentException {
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Domain[]            res;
+
+        try {
+            list = DomainPeer.doSelectAll(con);
+            res = new Domain[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new Domain((DomainData) list.get(i));
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
+     * Returns a domain with a specified name.
+     * 
+     * @param name           the domain name
+     * 
+     * @return the domain found, or
+     *         null if no matching domain existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Domain findByName(String name) throws ContentException {
+        DatabaseConnection  con = getDatabaseConnection();
+        DomainData          data;
+
+        try {
+            data = DomainPeer.doSelectByName(name, con);
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        if (data == null) {
+            return null;
+        } else {
+            return new Domain(data);
+        }
+    }
+
     /**
      * Creates a new domain with default values.
+     * 
+     * @param name           the domain name
      */
-    public Domain() {
+    public Domain(String name) {
+        super(false);
+        this.data = new DomainData();
+        this.data.setString(DomainData.NAME, name);
+        this.options = new HashMap();
+    }
+
+    /**
+     * Creates a new domain from a data object.
+     * 
+     * @param data           the domain data object
+     */
+    private Domain(DomainData data) {
+        super(true);
+        this.data = data;
+        this.options = decodeMap(data.getString(DomainData.OPTIONS));
     }
 
     /**
@@ -67,7 +139,7 @@ public class Domain extends DataObject {
      */
     public boolean equals(Object obj) {
         if (obj instanceof Domain) {
-            return name.equals(((Domain) obj).name);
+            return getName().equals(((Domain) obj).getName());
         } else {
             return false;
         }
@@ -82,10 +154,10 @@ public class Domain extends DataObject {
         StringBuffer  buffer = new StringBuffer();
         
         buffer.append("Domain: ");
-        if (description.equals("")) {
-            buffer.append(name);
+        if (getDescription().equals("")) {
+            buffer.append(getName());
         } else {
-            buffer.append(description);
+            buffer.append(getDescription());
         }
         return buffer.toString();
     }
@@ -96,17 +168,7 @@ public class Domain extends DataObject {
      * @return the unique domain name
      */
     public String getName() {
-        return name;
-    }
-    
-    /**
-     * Sets the domain name.
-     * 
-     * @param name           the new domain name
-     */
-    public void setName(String name) {
-        this.name = name;
-        setModified(true);
+        return data.getString(DomainData.NAME);
     }
     
     /**
@@ -115,7 +177,7 @@ public class Domain extends DataObject {
      * @return the domain description
      */
     public String getDescription() {
-        return description;
+        return data.getString(DomainData.DESCRIPTION);
     }
     
     /**
@@ -124,70 +186,9 @@ public class Domain extends DataObject {
      * @param description    the new description
      */
     public void setDescription(String description) {
-        this.description = description;
-        setModified(true);
+        data.setString(DomainData.DESCRIPTION, description);
     }
     
-    /**
-     * Returns the encoded options.
-     * 
-     * @return the encoded options
-     */
-    String getOptions() {
-        StringBuffer  buffer = new StringBuffer();
-        Iterator      iter = options.keySet().iterator();
-        String        name;
-        Object        value;
-
-        while (iter.hasNext()) {
-            name = (String) iter.next();
-            value = options.get(name);
-            if (buffer.length() > 0) {
-                buffer.append(":");
-            }
-            buffer.append(name);
-            if (value != null) {
-                buffer.append("=");
-                buffer.append(value);
-            }
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Sets the encoded options.
-     * 
-     * @param options        the new options
-     */
-    void setOptions(String options) {
-        String  name;
-        String  value;
-        String  str;
-        int     pos;
-
-        this.options.clear();
-        while (options.length() > 0) {
-            pos = options.indexOf(":");
-            if (pos > 0) {
-                str = options.substring(0, pos);
-                options = options.substring(pos + 1);
-            } else {
-                str = options;
-                options = "";
-            }
-            pos = str.indexOf("=");
-            if (pos > 0) {
-                name = str.substring(0, pos);
-                value = str.substring(pos + 1);
-            } else {
-                name = str;
-                value = null;
-            }
-            this.options.put(name, value);
-        }
-        setModified(true);
-    }
-
     /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
@@ -195,32 +196,57 @@ public class Domain extends DataObject {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        Domain  domain = ContentManager.getInstance().getDomain(name);
+        Domain  domain = getContentManager().getDomain(getName());
 
-        if (name.equals("")) {
+        if (getName().equals("")) {
             throw new ContentException("no name set for domain object");
-        } else if (isPersistent() && domain == null) {
-            throw new ContentException("domain '" + name + 
-                                       "' does not exist");
         } else if (!isPersistent() && domain != null) {
-            throw new ContentException("domain '" + name + 
+            throw new ContentException("domain '" + getName() + 
                                        "' already exists");
         }
     }
 
     /**
-     * Saves this domain to the database.
+     * Inserts the object data into the database.
      * 
      * @param con            the database connection to use
      * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
      */
-    public void save(DatabaseConnection con) throws ContentException {
-        if (!isPersistent()) {
-            DomainPeer.doInsert(this, con);
-        } else if (isModified()) {
-            DomainPeer.doUpdate(this, con);
-        }
+    protected void doInsert(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        data.setString(DomainData.OPTIONS, encodeMap(options));
+        DomainPeer.doInsert(data, con);
+    }
+
+    /**
+     * Updates the object data in the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doUpdate(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        data.setString(DomainData.OPTIONS, encodeMap(options));
+        DomainPeer.doUpdate(data, con);
+    }
+
+    /**
+     * Deletes the object data from the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doDelete(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DomainPeer.doDelete(data, con);
     }
 }
