@@ -123,6 +123,8 @@ public class AdminController extends Controller {
             displayOpenSite(request);
         } else if (path.equals("add-site.html")) {
             processAddObject(request);
+        } else if (path.equals("delete-site.html")) {
+            processDeleteObject(request);
         }
     }
 
@@ -140,7 +142,7 @@ public class AdminController extends Controller {
             request.sendFile(getFile(path));
         } else if (path.endsWith(".js")) {
             request.sendData("text/javascript", 
-                             "window.location.reload();\n");
+                             "window.location.reload(1);\n");
         } else {
             if (request.getUser() != null) {
                 request.setAttribute("error", 
@@ -278,6 +280,53 @@ public class AdminController extends Controller {
             error = "You don't have permission for adding sites";
             request.setAttribute("error", error);
             displayAddSite(request);
+        }
+    }
+
+    /**
+     * Processes the delete object requests for the site view.
+     * 
+     * @param request        the request object
+     */
+    private void processDeleteObject(Request request) {
+        Object  type = request.getSessionAttribute("site.view.type");
+
+        if (type.equals("domain")) {
+            if (request.getParameter("confirmed") == null) {
+                displayDialogDeleteDomain(request);
+            } else {
+                processDeleteDomain(request);
+            }
+        }
+    }
+
+    /**
+     * Processes the confirmed delete domain requests for the site 
+     * view.
+     * 
+     * @param request        the request object
+     */
+    private void processDeleteDomain(Request request) {
+        Domain  domain;
+        String  error;
+        
+        try {
+            // TODO: check for request domain!
+            domain = getActiveDomain(request);
+            domain.delete(request.getUser());
+            request.setSessionAttribute("site.view.type", null);
+            request.setSessionAttribute("site.view.id", null);
+            displayDialogClose(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            error = "Failed to save to database, " + e.getMessage();
+            request.setAttribute("error", error);
+            displayDialogError(request);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            error = "You don't have permission for adding sites";
+            request.setAttribute("error", error);
+            displayDialogError(request);
         }
     }
 
@@ -521,6 +570,33 @@ public class AdminController extends Controller {
         request.sendTemplate("admin/add-site.ftl");
     }
     
+    /**
+     * Displays the delete domain confirmation dialog.
+     * 
+     * @param request        the request object
+     */
+    private void displayDialogDeleteDomain(Request request) {
+        request.sendTemplate("admin/dialog-delete-domain.ftl");
+    }
+
+    /**
+     * Displays the automatic close dialog.
+     * 
+     * @param request        the request object
+     */
+    private void displayDialogClose(Request request) {
+        request.sendTemplate("admin/dialog-close.ftl");
+    }
+
+    /**
+     * Displays the error message dialog.
+     * 
+     * @param request        the request object
+     */
+    private void displayDialogError(Request request) {
+        request.sendTemplate("admin/dialog-error.ftl");
+    }
+
     /**
      * Returns the active domain object. The active object is the 
      * one present in the session attributes "site.view.type" and

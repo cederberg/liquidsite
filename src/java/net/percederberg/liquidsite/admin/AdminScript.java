@@ -267,6 +267,9 @@ class AdminScript {
         if (domain.hasWriteAccess(user)) {
             buffer.append("objectAddNewButton('add-site.html');\n");
         }
+        if (user.isSuperUser()) {
+            buffer.append("objectAddDeleteButton('delete-site.html');\n");
+        }
         return buffer.toString();
     }
 
