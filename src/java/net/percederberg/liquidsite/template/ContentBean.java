@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentTopic;
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A content template bean. This class is used as the base class for
@@ -285,5 +286,40 @@ public abstract class ContentBean {
             }
         }
         return new LockBean();
+    }
+
+    /**
+     * Checks if the current user has a specified access permission.
+     * The permission names accepted are "read", "write", "publish"
+     * and "admin". Any other names will default to false.
+     *
+     * @param permission     the permission name to check for
+     *
+     * @return true if the user has the specified permission, or
+     *         false otherwise
+     */
+    public boolean hasAccess(String permission) {
+        User  user;
+
+        if (content != null) {
+            try {
+                user = context.getRequest().getUser();
+                if (permission.equals("read")) {
+                    return content.hasReadAccess(user);
+                } else if (permission.equals("write")) {
+                    return content.hasWriteAccess(user);
+                } else if (permission.equals("publish")) {
+                    return content.hasPublishAccess(user);
+                } else if (permission.equals("admin")) {
+                    return content.hasAdminAccess(user);
+                } else {
+                    LOG.warning("unrecognized permission name: " +
+                                permission);
+                }
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return false;
     }
 }
