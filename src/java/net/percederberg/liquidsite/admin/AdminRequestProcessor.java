@@ -129,6 +129,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             processViewContent(request);
         } else if (path.equals("users.html")) {
             processViewUsers(request);
+        } else if (path.equals("view-users.html")) {
+            processViewUserDetails(request);
         } else if (path.equals("system.html")) {
             AdminView.SYSTEM.viewSystem(request);
         } else if (path.equals("logout.html")) {
@@ -277,6 +279,28 @@ public class AdminRequestProcessor extends RequestProcessor {
 
         try {
             AdminView.USER.viewUsers(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
+        }
+    }
+
+    /**
+     * Processes a view user or group detail request.
+     *
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processViewUserDetails(Request request)
+        throws RequestException {
+
+        try {
+            AdminView.USER.viewGroup(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             AdminView.BASE.viewError(request, e.getMessage(), "index.html");

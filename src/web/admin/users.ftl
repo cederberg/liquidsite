@@ -25,6 +25,19 @@
       <table class="form">
         <tr>
           <th>
+            Domain:<br/>
+            <select name="domain" onchange="refresh()">
+              <option>&lt;None&gt;</option>
+<#list domains as item>
+  <#if domain = item>
+              <option selected="selected">${item}</option>
+  <#else>
+              <option>${item}</option>
+  </#if>
+</#list>
+            </select>
+          </th>
+          <th>
             Type:<br/>
             <select name="type" onchange="refresh()">
               <option value="user">Users</option>
@@ -35,21 +48,6 @@
 </#if>
             </select>
           </th>
-<#if enableDomains>
-          <th>
-            Domain:<br/>
-            <select name="domain" onchange="refresh()">
-              <option>&lt;None&gt;</option>
-  <#list domains as item>
-    <#if domain = item>
-              <option selected="selected">${item}</option>
-    <#else>
-              <option>${item}</option>
-    </#if>
-  </#list>
-            </select>
-          </th>
-</#if>
           <th>
             Filter:<br/>
             <input name="filter" value="${filter?xml}" />
@@ -134,7 +132,8 @@
           <td><a href="edit-users.html?${params}">${group.name?xml}</a></td>
           <td>${group.description?xml}</td>
           <td>${group.comment?xml}</td>
-          <td>${group.members} user(s) of ${userCount}</td>
+          <td><a href="view-users.html?${params}">${group.members} user(s)
+              of ${userCount}</a></td>
           <td>
             <a href="#" title="Delete" 
                onclick="return openDeleteDialog('delete-user.html?${params}')"

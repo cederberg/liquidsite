@@ -104,10 +104,13 @@ public class UserGroupPeer extends AbstractPeer {
     }
 
     /**
-     * Returns a list of all user groups for a certain group.
-     * 
+     * Returns a list of all user groups for a certain group. Only a 
+     * limited interval of the matching user groups will be returned.
+     *
      * @param domain         the domain name
      * @param group          the group name
+     * @param startPos       the list interval start position
+     * @param maxLength      the list interval maximum length 
      * @param con            the database connection to use
      * 
      * @return a list of all user groups for the group
@@ -116,14 +119,18 @@ public class UserGroupPeer extends AbstractPeer {
      *             accessed properly
      */
     public static ArrayList doSelectByGroup(String domain, 
-                                            String group, 
+                                            String group,
+                                            int startPos,
+                                            int maxLength, 
                                             DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("usergroup.select.group");
-        
+
         query.addParameter(domain);
         query.addParameter(group);
+        query.addParameter(startPos);
+        query.addParameter(maxLength);
         return PEER.selectList(query, con);
     }
 

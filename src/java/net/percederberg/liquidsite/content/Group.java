@@ -324,14 +324,24 @@ public class Group extends PersistentObject {
     /**
      * Returns the users that belong to this group. This method will
      * only return the users registered to this group in the database.
+     * Also, only a limited interval of the matching users will be 
+     * returned.
+     *
+     * @param startPos       the list interval start position
+     * @param maxLength      the list interval maximum length
      * 
      * @return an array of users belonging to this group
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public User[] getUsers() throws ContentException {
-        return User.findByGroup(getContentManager(), this);
+    public User[] getUsers(int startPos, int maxLength) 
+        throws ContentException {
+
+        return User.findByGroup(getContentManager(),
+                                this,
+                                startPos,
+                                maxLength);
     }
 
     /**

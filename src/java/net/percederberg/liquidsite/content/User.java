@@ -223,17 +223,23 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Returns an array of all users in a certain group.
+     * Returns an array of all users in a certain group. Only a 
+     * limited interval of the matching users will be returned.
      * 
      * @param manager        the content manager to use
      * @param group          the group
+     * @param startPos       the list interval start position
+     * @param maxLength      the list interval maximum length 
      * 
      * @return an array of all users in the group
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    static User[] findByGroup(ContentManager manager, Group group) 
+    static User[] findByGroup(ContentManager manager,
+                              Group group,
+                              int startPos,
+                              int maxLength) 
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
@@ -245,7 +251,9 @@ public class User extends PersistentObject {
 
         try {
             list = UserGroupPeer.doSelectByGroup(group.getDomainName(),
-                                                 group.getName(), 
+                                                 group.getName(),
+                                                 startPos,
+                                                 maxLength, 
                                                  con);
             res = new User[list.size()];
             for (int i = 0; i < list.size(); i++) {

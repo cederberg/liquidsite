@@ -107,7 +107,6 @@ public class UserView extends AdminView {
         }
 
         // Set request parameters
-        request.setAttribute("enableDomains", user.isSuperUser());
         if (domain == null) {
             request.setAttribute("domain", "");
         } else {
@@ -127,6 +126,58 @@ public class UserView extends AdminView {
         }
         request.setAttribute("userCount", count);
         request.sendTemplate("admin/users.ftl");
+    }
+
+    /**
+     * Shows the view group detail page.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    public void viewGroup(Request request)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        Domain          domain = null;
+        Group           group;
+        ArrayList       users = null;
+        int             page;
+        int             count;
+        String          str;
+
+        // Find users or groups
+        str = request.getParameter("domain", "");
+        if (!str.equals("")) {
+            domain = manager.getDomain(request.getUser(), str);
+        }
+        str = request.getParameter("page", "1");
+        try {
+            page = Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+        group = manager.getGroup(domain, request.getParameter("name"));
+        users = findUsers(group, page);
+        count = group.getUserCount();
+
+        // Set request parameters
+        request.setAttribute("domain", group.getDomainName());
+        request.setAttribute("name", group.getName());        
+        request.setAttribute("users", users);        
+        request.setAttribute("page", page);
+        if (count == 0) {
+            request.setAttribute("pages", 1);
+        } else if (count % PAGE_SIZE == 0) {
+            request.setAttribute("pages", count / PAGE_SIZE);
+        } else {
+            request.setAttribute("pages", count / PAGE_SIZE + 1);
+        }
+        request.setAttribute("userCount", count);
+        request.sendTemplate("admin/view-group.ftl");
     }
 
     /**
@@ -274,7 +325,7 @@ public class UserView extends AdminView {
      * added directly to the result list, but rather a simplified
      * hash map containing only certain properties will be added.
      *
-     * @param user           the user
+     * @param user           the user performing the operation
      * @param domain         the domain
      * @param filter         the search filter (empty for all)
      * @param page           the page to return (>= 1)
@@ -311,11 +362,47 @@ public class UserView extends AdminView {
     }
 
     /**
+     * Finds the users in a group. The users will not be added 
+     * directly to the result list, but rather a simplified hash map 
+     * containing only certain properties will be added.
+     *
+     * @param group          the group
+     * @param page           the page to return (>= 1)
+     *
+     * @return the list of users found (in maps)
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user isn't allowed to
+     *             list users in the domain
+     */
+    private ArrayList findUsers(Group group, 
+                                int page)
+        throws ContentException, ContentSecurityException {
+
+        ArrayList  result = new ArrayList();
+        User[]     users;
+        HashMap    map;
+        int        start = (page - 1) * PAGE_SIZE;
+
+        users = group.getUsers(start, PAGE_SIZE);
+        for (int i = 0; i < users.length; i++) {
+            map = new HashMap(5);
+            map.put("name", users[i].getName());
+            map.put("realName", users[i].getRealName());
+            map.put("email", users[i].getEmail());
+            map.put("comment", users[i].getComment());
+            result.add(map);
+        }
+        return result;
+    }
+
+    /**
      * Finds the matching groups in a domain. The groups will not be
      * added directly to the result list, but rather a simplified
      * hash map containing only certain properties will be added.
      *
-     * @param user           the user
+     * @param user           the user performing the operation
      * @param domain         the domain
      * @param filter         the search filter (empty for all)
      *
