@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite;
 
+import net.percederberg.liquidsite.admin.AdminController;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
