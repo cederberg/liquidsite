@@ -491,9 +491,12 @@ public class Request {
     void commit(ServletContext context) 
         throws IOException, ServletException {
 
-        // TODO: make cache control more dynamic!
-        response.setHeader("Cache-Control", "no-cache");
-        response.setHeader("Expires", "-1");
+        if (responseType == FILE_RESPONSE) {
+            response.setHeader("Cache-Control", "private");
+        } else {
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Expires", "-1");
+        }
         switch (responseType) {
         case DATA_RESPONSE:
             commitData();
