@@ -17,7 +17,11 @@
         </tr>
         <tr>
           <td class="buttons">
+<#if page?has_content>
             <button type="button" onclick="window.location='${page}'">
+<#else>
+            <button type="button" onclick="window.close()">
+</#if>
               <img src="images/icons/24x24/ok.png" />
               OK
             </button>
