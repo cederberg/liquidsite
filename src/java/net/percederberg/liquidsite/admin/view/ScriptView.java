@@ -378,7 +378,7 @@ public class ScriptView {
                     buffer.append("unpublish.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
-                } else {
+                } else if (isOnline(content.getParent())) {
                     buffer.append("objectAddPublishButton('");
                     buffer.append("publish.html");
                     buffer.append(getLinkParameters(content));
@@ -684,12 +684,36 @@ public class ScriptView {
     private int getContentStatus(Content content) 
         throws ContentException {
 
-        if (!content.isOnline()) {
+        if (!isOnline(content)) {
             return 0;
         } else if (content.getRevisionNumber() == 0) {
             return 2;
         } else {
             return 1;
+        }
+    }
+
+    /**
+     * Checks is a specified content object is online. This method 
+     * will check that all parent content objects are also online.
+     * 
+     * @param content        the content object
+     * 
+     * @return true if the object and all parents are online, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private boolean isOnline(Content content)
+        throws ContentException {
+
+        if (content == null) {
+            return true;
+        } else if (!content.isOnline()) {
+            return false;
+        } else {
+            return isOnline(content.getParent());
         }
     }
 
