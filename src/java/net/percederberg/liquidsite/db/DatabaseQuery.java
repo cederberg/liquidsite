@@ -151,7 +151,8 @@ public class DatabaseQuery {
     }
 
     /**
-     * Adds a query parameter.
+     * Adds a query parameter. Note that this method DOES NOT support
+     * adding arrays are parameters.
      * 
      * @param obj            the query parameter
      */
