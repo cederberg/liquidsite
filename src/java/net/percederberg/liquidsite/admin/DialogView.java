@@ -36,7 +36,7 @@ import net.percederberg.liquidsite.content.Domain;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DialogView extends AdminView {
+class DialogView extends AdminView {
 
     /**
      * Creates a new dialog view helper.

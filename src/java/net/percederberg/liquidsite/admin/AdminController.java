@@ -55,6 +55,11 @@ public class AdminController extends Controller {
     private AdminView view = new AdminView();
 
     /**
+     * The home view helper.
+     */
+    private HomeView homeView = new HomeView();
+
+    /**
      * The admin form handlers (workflows).
      */
     private ArrayList workflows = new ArrayList();
@@ -111,9 +116,9 @@ public class AdminController extends Controller {
         } else if (path.startsWith("script/")) {
             request.sendFile(getFile(path));
         } else if (path.equals("") || path.equals("index.html")) {
-            view.pageHome(request);
+            homeView.viewHome(request);
         } else if (path.equals("home.html")) {
-            view.pageHome(request);
+            homeView.viewHome(request);
         } else if (path.equals("site.html")) {
             processViewSite(request);
         } else if (path.equals("content.html")) {
@@ -206,10 +211,10 @@ public class AdminController extends Controller {
             view.pageSite(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            view.pageError(request, e.getMessage(), "site.html");
+            view.viewError(request, e.getMessage(), "site.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            view.pageError(request, e.getMessage(), "site.html");
+            view.viewError(request, e.getMessage(), "site.html");
         }
     }
 
@@ -234,7 +239,7 @@ public class AdminController extends Controller {
             if (content instanceof ContentFile) {
                 request.sendFile(((ContentFile) content).getFile());
             } else {
-                view.pageError(request, 
+                view.viewError(request, 
                                "Cannot preview this object", 
                                "site.html");
             }

@@ -61,6 +61,11 @@ abstract class AdminFormHandler extends FormHandler {
     protected static final DialogView DIALOG_VIEW = new DialogView();
 
     /**
+     * The home view helper.
+     */
+    protected static final HomeView HOME_VIEW = new HomeView();
+
+    /**
      * The site view helper.
      */
     protected static final AdminView SITE_VIEW = new AdminView();
@@ -190,7 +195,7 @@ abstract class AdminFormHandler extends FormHandler {
      * @param message        the error message
      */
     protected void displayError(Request request, String message) {
-        SITE_VIEW.pageError(request, message, startPage);
+        SITE_VIEW.viewError(request, message, startPage);
     }
     
     /**

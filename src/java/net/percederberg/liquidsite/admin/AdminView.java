@@ -75,19 +75,10 @@ class AdminView {
      * @param message        the error message
      * @param page           the redirect page
      */
-    public void pageError(Request request, String message, String page) {
+    public void viewError(Request request, String message, String page) {
         request.setAttribute("error", message);
         request.setAttribute("page", page);
         request.sendTemplate("admin/error.ftl");
-    }
-
-    /**
-     * Shows the home page.
-     *
-     * @param request        the request object
-     */
-    public void pageHome(Request request) {
-        request.sendTemplate("admin/home.ftl");
     }
 
     /**
@@ -157,31 +148,6 @@ class AdminView {
      */
     public void pageSystem(Request request) {
         request.sendTemplate("admin/system.ftl");
-    }
-
-    /**
-     * Shows the edit user page.
-     * 
-     * @param request        the request object
-     */
-    public void pageEditUser(Request request) {
-        User    user = request.getUser();
-        String  str;
-
-        str = request.getParameter("name", user.getRealName());
-        request.setAttribute("name", str);
-        str = request.getParameter("email", user.getEmail());
-        request.setAttribute("email", str);
-        request.sendTemplate("admin/edit-user.ftl");
-    }
-
-    /**
-     * Shows the edit password page.
-     * 
-     * @param request        the request object
-     */
-    public void pageEditPassword(Request request) {
-        request.sendTemplate("admin/edit-password.ftl");
     }
 
     /**
