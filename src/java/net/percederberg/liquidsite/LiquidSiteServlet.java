@@ -36,6 +36,8 @@ import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.install.InstallRequestProcessor;
+import net.percederberg.liquidsite.mail.MailException;
+import net.percederberg.liquidsite.mail.MailQueue;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 import net.percederberg.liquidsite.web.MultiPartRequest;
@@ -191,6 +193,9 @@ public class LiquidSiteServlet extends HttpServlet
             errors++;
             LOG.error(e.getMessage());
         }
+
+        // Initialize mail queue
+        MailQueue.getInstance().configure(config);
 
         // Initialize content and template managers
         contentManager = new ContentManager(this, false);
@@ -393,6 +398,13 @@ public class LiquidSiteServlet extends HttpServlet
         private static final int DATABASE_UPDATE_THRESHOLD = 600;
 
         /**
+         * The mail processing threshold. This is the number of loop
+         * iterations to skip in between calls to process() in the
+         * mail queue.
+         */
+        private static final int MAIL_PROCESS_THRESHOLD = 10;
+
+        /**
          * The alive flag. If this flag is set to false, the thread
          * is supposed to die.
          */
@@ -400,10 +412,17 @@ public class LiquidSiteServlet extends HttpServlet
 
         /**
          * The database update counter. This counter is increased
-         * every second and is used to determine when the database
-         * update method should be called.
+         * every once in a while and is used to determine when the
+         * database update method should be called.
          */
         private int databaseCounter = 0;
+
+        /**
+         * The mail process counter. This counter is increased every
+         * once in a while and is used to determine when the mail
+         * process method should be called.
+         */
+        private int mailCounter = 0;
 
         /**
          * Creates a new application monitor. This will also create
@@ -422,26 +441,13 @@ public class LiquidSiteServlet extends HttpServlet
          */
         public synchronized void run() {
             while (alive) {
-
-                // Update database
-                databaseCounter++;
-                if (databaseCounter >= DATABASE_UPDATE_THRESHOLD) {
-                    databaseCounter = 0;
-                    try {
-                        if (config == null || !config.isInitialized()) {
-                            // Do nothing
-                        } else if (!isOnline()) {
-                            restart();
-                        } else {
-                            getDatabase().update();
-                        }
-                    } catch (DatabaseConnectionException e) {
-                        // TODO: restart() if repeated various times
-                        LOG.error(e.getMessage());
-                    }
+                if (config == null || !config.isInitialized()) {
+                    // Do nothing
+                } else if (!isOnline()) {
+                    restart();
+                } else {
+                    runMonitorPass();
                 }
-
-                // Delay execution
                 try {
                     wait(LOOP_DELAY);
                 } catch (InterruptedException ignore) {
@@ -449,6 +455,39 @@ public class LiquidSiteServlet extends HttpServlet
                 }
             }
             notifyAll();
+        }
+
+        /**
+         * Runs a single pass in the monitoring loop. Most of the
+         * time, this will only result in updated counters. Once the
+         * respective thresholds have been exceeded however, the
+         * corresponding update method will be called. This method
+         * will not be called if the system hasn't been configured and
+         * properly initialized.
+         */
+        private void runMonitorPass() {
+            // Update database
+            databaseCounter++;
+            if (databaseCounter >= DATABASE_UPDATE_THRESHOLD) {
+                databaseCounter = 0;
+                try {
+                    getDatabase().update();
+                } catch (DatabaseConnectionException e) {
+                    // TODO: restart() if repeated various times
+                    LOG.error(e.getMessage());
+                }
+            }
+
+            // Process mail
+            mailCounter++;
+            if (mailCounter >= MAIL_PROCESS_THRESHOLD) {
+                mailCounter = 0;
+                try {
+                    MailQueue.getInstance().process();
+                } catch (MailException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
         }
 
         /**

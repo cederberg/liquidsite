@@ -198,6 +198,21 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Sends an email to the specified receiver. The email will not be
+     * sent immediately, but rather queued in the outgoing mail queue.
+     *
+     * @param receiver       the message recipient address
+     * @param subject        the message subject line
+     * @param text           the message text
+     *
+     * @return true if the mail could be queued correctly, or
+     *         false otherwise
+     */
+    public boolean mailTo(String receiver, String subject, String text) {
+        return context.sendMail(receiver, subject, text);
+    }
+
+    /**
      * Returns the number of documents in the specified section and
      * any subsections.
      *

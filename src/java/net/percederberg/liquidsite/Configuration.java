@@ -93,6 +93,36 @@ public class Configuration {
         "liquidsite.db.pool.size";
 
     /**
+     * The mail server host name key.
+     */
+    public static final String MAIL_HOST =
+        "liquidsite.mail.host";
+
+    /**
+     * The mail user name key.
+     */
+    public static final String MAIL_USER =
+        "liquidsite.mail.user";
+
+    /**
+     * The mail from address key.
+     */
+    public static final String MAIL_FROM =
+        "liquidsite.mail.from";
+
+    /**
+     * The mail header text key.
+     */
+    public static final String MAIL_HEADER =
+        "liquidsite.mail.header";
+
+    /**
+     * The mail footer text key.
+     */
+    public static final String MAIL_FOOTER =
+        "liquidsite.mail.footer";
+
+    /**
      * The file data directory key.
      */
     public static final String FILE_DIRECTORY =

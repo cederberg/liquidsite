@@ -38,6 +38,9 @@ import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.mail.MailException;
+import net.percederberg.liquidsite.mail.MailMessage;
+import net.percederberg.liquidsite.mail.MailQueue;
 import net.percederberg.liquidsite.web.Request;
 
 /**
@@ -610,6 +613,34 @@ class BeanContext {
             usersCache.put(name, new UserBean(user));
         }
         return (UserBean) usersCache.get(name);
+    }
+
+    /**
+     * Sends an email to the specified receiver. The email will not be
+     * sent immediately, but rather queued in the outgoing mail queue.
+     *
+     * @param receiver       the message recipient address
+     * @param subject        the message subject line
+     * @param text           the message text
+     *
+     * @return true if the mail could be queued correctly, or
+     *         false otherwise
+     */
+    public boolean sendMail(String receiver, String subject, String text) {
+        MailMessage  msg = new MailMessage();
+
+        try {
+            msg.setRecipients(receiver);
+            msg.setSubject(subject);
+            msg.setText(text);
+            msg.setAttribute("URL", request.getUrl() );
+            msg.setAttribute("IP", request.getRemoteAddr());
+            MailQueue.getInstance().add(msg);
+            return true;
+        } catch (MailException e) {
+            LOG.warning("couldn't send mail", e);
+            return false;
+        }
     }
 
     /**

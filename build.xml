@@ -71,6 +71,9 @@ build.date=${build.printdate}
         <include name="commons-fileupload*.jar" />
         <include name="freemarker*.jar" />
         <include name="mysql*.jar" />
+        <include name="activation.jar" />
+        <include name="mailapi.jar" />
+        <include name="smtp.jar" />
       </lib>
       <webinf dir="${build.dir}">
         <include name="sql/*" />
