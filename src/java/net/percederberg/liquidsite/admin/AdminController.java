@@ -576,7 +576,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displayDialogDeleteDomain(Request request) {
-        request.sendTemplate("admin/dialog-delete-domain.ftl");
+        request.sendTemplate("admin/dialog/delete-domain.ftl");
     }
 
     /**
@@ -585,7 +585,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displayDialogClose(Request request) {
-        request.sendTemplate("admin/dialog-close.ftl");
+        request.sendTemplate("admin/dialog/close.ftl");
     }
 
     /**
@@ -594,7 +594,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displayDialogError(Request request) {
-        request.sendTemplate("admin/dialog-error.ftl");
+        request.sendTemplate("admin/dialog/error.ftl");
     }
 
     /**

@@ -1,5 +1,5 @@
 <#assign title = "Delete Domain">
-<#include "dialog-header.ftl">
+<#include "header.ftl">
 
     <form method="post">
       <input type="hidden" name="confirmed" value="true" />
@@ -39,4 +39,4 @@
       </table>
     </form>
 
-<#include "dialog-footer.ftl">
+<#include "footer.ftl">
