@@ -111,10 +111,8 @@ public class AttributePeer extends AbstractPeer {
         query.addParameter(data.getString(AttributeData.DOMAIN));
         query.addParameter(data.getInt(AttributeData.CONTENT));
         query.addParameter(data.getInt(AttributeData.REVISION));
-        query.addParameter(data.getInt(AttributeData.CATEGORY));
         query.addParameter(data.getString(AttributeData.NAME));
         query.addParameter(data.getString(AttributeData.DATA));
-        query.addParameter(data.getBoolean(AttributeData.SEARCHABLE));
         PEER.insert(query, con);
     }
     
@@ -133,7 +131,6 @@ public class AttributePeer extends AbstractPeer {
         DatabaseQuery  query = new DatabaseQuery("attribute.update");
 
         query.addParameter(data.getString(AttributeData.DATA));
-        query.addParameter(data.getBoolean(AttributeData.SEARCHABLE));
         query.addParameter(data.getInt(AttributeData.CONTENT));
         query.addParameter(data.getInt(AttributeData.REVISION));
         query.addParameter(data.getString(AttributeData.NAME));

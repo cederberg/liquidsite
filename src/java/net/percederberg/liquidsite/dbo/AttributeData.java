@@ -49,12 +49,6 @@ public class AttributeData extends AbstractData {
         new IntegerParameter(AttributeData.class, "REVISION", 0);
 
     /**
-     * The category parameter.
-     */
-    public static final Parameter CATEGORY = 
-        new IntegerParameter(AttributeData.class, "CATEGORY", 0);
-
-    /**
      * The name parameter.
      */
     public static final Parameter NAME = 
@@ -65,12 +59,6 @@ public class AttributeData extends AbstractData {
      */
     public static final Parameter DATA = 
         new StringParameter(AttributeData.class, "DATA", "");
-    
-    /**
-     * The searchable parameter.
-     */
-    public static final Parameter SEARCHABLE = 
-        new BooleanParameter(AttributeData.class, "SEARCHABLE", false);
     
     /**
      * Creates a new attribute data object with default values.

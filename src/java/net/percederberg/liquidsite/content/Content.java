@@ -518,28 +518,12 @@ public abstract class Content extends PersistentObject implements Comparable {
     
     /**
      * Sets a content attribute value. If the attribute does not 
-     * exist it will be created. This method will set the attribute
-     * searchable flag to false.
+     * exist it will be created.
      * 
      * @param name           the content attribute name
      * @param value          the content attribute value
      */
     protected void setAttribute(String name, String value) {
-        setAttribute(name, value, false);
-    }
-
-    /**
-     * Sets a content attribute value. If the attribute does not 
-     * exist it will be created.
-     * 
-     * @param name           the content attribute name
-     * @param value          the content attribute value
-     * @param searchable     the content attribute searchable flag
-     */
-    protected void setAttribute(String name, 
-                                String value, 
-                                boolean searchable) {
-
         AttributeData  attr;
         
         attr = (AttributeData) attributes.get(name);
@@ -554,13 +538,11 @@ public abstract class Content extends PersistentObject implements Comparable {
                 attr.setString(AttributeData.DOMAIN, getDomainName());
                 attr.setInt(AttributeData.CONTENT, getId());
                 attr.setInt(AttributeData.REVISION, getRevisionNumber());
-                attr.setInt(AttributeData.CATEGORY, getCategory());
                 attr.setString(AttributeData.NAME, name);
                 attributes.put(name, attr);
                 attributesAdded.add(name);
             }
             attr.setString(AttributeData.DATA, value);
-            attr.setBoolean(AttributeData.SEARCHABLE, searchable);
         }
     }
 
