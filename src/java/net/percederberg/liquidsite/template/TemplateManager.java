@@ -69,6 +69,7 @@ public class TemplateManager {
         fileConfig.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
         fileConfig.clearTemplateCache();
         fileConfig.setStrictSyntaxMode(true);
+        fileConfig.setDefaultEncoding("UTF-8");
         // TODO: fileConfig.setTemplateUpdateDelay(600);
         try {
             fileConfig.setDirectoryForTemplateLoading(app.getBaseDir());

@@ -251,12 +251,19 @@ class FormValidator {
          * @throws FormException if the form validation failed
          */
         protected void validate(String value) throws FormException {
+            char c;
+
             if (value == null) {
                 return;
             }
             for (int i = 0; i < value.length(); i++) {
                 if (chars.indexOf(value.charAt(i)) < 0) {
-                    error("'" + value.charAt(i) + "'");
+                    c = value.charAt(i);
+                    if (c < 128) {
+                        error("'" + c + "'");
+                    } else {
+                        error("'" + value.substring(i, i + 2) + "'");
+                    }
                 }
             }
         }
