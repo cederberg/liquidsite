@@ -283,4 +283,21 @@ public class AdminUtils {
                                  String.valueOf(content.getId()));
         }
     }
+
+    /**
+     * Cleans an HTML string from unneeded markup.
+     *
+     * @param html           the HTML markup to clean
+     *
+     * @return the processed HTML markup
+     */
+    public static String cleanHtml(String html) {
+        while (html.endsWith("<br>")) {
+            html = html.substring(0, html.length() - 4);
+        }
+        while (html.endsWith("<BR>")) {
+            html = html.substring(0, html.length() - 4);
+        }
+        return html;
+    }
 }

@@ -251,8 +251,6 @@ public class ContentAddFormHandler extends AdminFormHandler {
             str = iter.next().toString();
             if (str.startsWith("property.")) {
                 id = str.substring(9);
-                str = request.getParameter("property." + id);
-                doc.setProperty(id, str);
                 try {
                     str = request.getParameter("propertytype." + id);
                     type = Integer.parseInt(str);
@@ -260,6 +258,11 @@ public class ContentAddFormHandler extends AdminFormHandler {
                     type = DocumentProperty.STRING_TYPE;
                 }
                 doc.setPropertyType(id, type);
+                str = request.getParameter("property." + id);
+                if (type == DocumentProperty.HTML_TYPE) {
+                    str = AdminUtils.cleanHtml(str);
+                }
+                doc.setProperty(id, str);
             }
         }
         doc.save(request.getUser());
