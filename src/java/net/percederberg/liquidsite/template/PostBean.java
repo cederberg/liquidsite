@@ -22,7 +22,8 @@
 package net.percederberg.liquidsite.template;
 
 import net.percederberg.liquidsite.content.ContentPost;
-import net.percederberg.liquidsite.text.PlainFormatter;
+
+import org.liquidsite.core.text.PlainFormatter;
 
 /**
  * A post template bean. This class is used to access posts from the

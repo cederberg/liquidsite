@@ -29,8 +29,8 @@ import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentTopic;
-import net.percederberg.liquidsite.text.PlainFormatter;
 
+import org.liquidsite.core.text.PlainFormatter;
 import org.liquidsite.util.log.Log;
 
 /**

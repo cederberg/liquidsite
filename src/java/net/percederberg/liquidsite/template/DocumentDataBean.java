@@ -27,10 +27,10 @@ import freemarker.template.TemplateModel;
 
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.DocumentProperty;
-import net.percederberg.liquidsite.text.HtmlFormatter;
-import net.percederberg.liquidsite.text.PlainFormatter;
-import net.percederberg.liquidsite.text.TaggedFormatter;
 
+import org.liquidsite.core.text.HtmlFormatter;
+import org.liquidsite.core.text.PlainFormatter;
+import org.liquidsite.core.text.TaggedFormatter;
 import org.liquidsite.util.log.Log;
 
 /**

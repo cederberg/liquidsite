@@ -25,9 +25,9 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.text.FormattingContext;
 import net.percederberg.liquidsite.web.RequestEnvironment;
 
+import org.liquidsite.core.text.FormattingContext;
 import org.liquidsite.util.log.Log;
 
 /**

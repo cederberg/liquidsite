@@ -28,8 +28,8 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSelector;
-import net.percederberg.liquidsite.text.PlainFormatter;
 
+import org.liquidsite.core.text.PlainFormatter;
 import org.liquidsite.util.log.Log;
 
 /**

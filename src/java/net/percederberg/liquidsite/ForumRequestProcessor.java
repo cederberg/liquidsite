@@ -33,8 +33,9 @@ import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.text.PlainFormatter;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.core.text.PlainFormatter;
 
 /**
  * The forum request processor for forum posts and previews.

@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.text;
+package org.liquidsite.core.text;
 
 import java.util.ArrayList;
 import java.util.HashMap;

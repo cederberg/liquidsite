@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.text;
+package org.liquidsite.core.text;
 
 /**
  * A plain text formatter. This class contains static methods for
