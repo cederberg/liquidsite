@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -234,6 +235,10 @@ class SiteAddFormHandler extends AdminFormHandler {
         site.setDirectory(request.getParameter("dir"));
         site.setAdmin(request.getParameter("admin", "").equals("true"));
         site.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            site.setRevisionNumber(1);
+            site.setOnlineDate(new Date());
+        }
         site.save(user);
         AdminView.SITE.setSiteTreeFocus(request, site);
     }
@@ -259,6 +264,10 @@ class SiteAddFormHandler extends AdminFormHandler {
         folder = new ContentFolder(manager, parent);
         folder.setName(request.getParameter("name"));
         folder.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            folder.setRevisionNumber(1);
+            folder.setOnlineDate(new Date());
+        }
         folder.save(user);
         AdminView.SITE.setSiteTreeFocus(request, folder);
     }
@@ -307,6 +316,10 @@ class SiteAddFormHandler extends AdminFormHandler {
                 page.setElement(name.substring(8), value);
             }
         }
+        if (request.getParameter("action", "").equals("publish")) {
+            page.setRevisionNumber(1);
+            page.setOnlineDate(new Date());
+        }
         page.save(request.getUser());
         AdminView.SITE.setSiteTreeFocus(request, page);
     }
@@ -334,6 +347,10 @@ class SiteAddFormHandler extends AdminFormHandler {
             file = new ContentFile(manager, parent, param.getName());
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
+            if (request.getParameter("action", "").equals("publish")) {
+                file.setRevisionNumber(1);
+                file.setOnlineDate(new Date());
+            }
             file.save(request.getUser());
             param.write(file.getFile());
             AdminView.SITE.setSiteTreeFocus(request, file);
@@ -376,6 +393,10 @@ class SiteAddFormHandler extends AdminFormHandler {
                 value = params.get(name).toString();
                 template.setElement(name.substring(8), value);
             }
+        }
+        if (request.getParameter("action", "").equals("publish")) {
+            template.setRevisionNumber(1);
+            template.setOnlineDate(new Date());
         }
         template.save(request.getUser());
         AdminView.SITE.setSiteTreeFocus(request, template);

@@ -14,6 +14,16 @@
         utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
+
+    function doSave() {
+        utilGetElement("action").value = "save";
+        return true;
+    }
+
+    function doPublish() {
+        utilGetElement("action").value = "publish";
+        return true;
+    }
     </script>
 
     <form method="post" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -23,6 +33,7 @@
       <input type="hidden" name="liquidsite.step" value="1" />
 </#if>
       <input type="hidden" name="liquidsite.prev" value="" />
+      <input type="hidden" name="action" value="save" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="category" value="file" />
@@ -128,14 +139,20 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="7" onclick="doPrevious()">
+            <button type="button" tabindex="103" onclick="doPrevious()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" tabindex="6">
+            <button type="submit" tabindex="102" onclick="doSave()">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>
+<#if publish = "true">
+            <button type="submit" tabindex="101" onclick="doPublish()">
+              <img src="images/icons/24x24/online.png" />
+              Publish
+            </button>
+</#if>
           </td>
         </tr>
       </table>

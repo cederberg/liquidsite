@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -309,6 +310,11 @@ class SiteEditFormHandler extends AdminFormHandler {
         site.setPort(Integer.parseInt(request.getParameter("port")));
         site.setDirectory(request.getParameter("dir"));
         site.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            site.setRevisionNumber(site.getMaxRevisionNumber() + 1);
+            site.setOnlineDate(new Date());
+            site.setOfflineDate(null);
+        }
         site.save(request.getUser());
     }
 
@@ -337,6 +343,11 @@ class SiteEditFormHandler extends AdminFormHandler {
             // This is ignored
         }
         folder.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            folder.setRevisionNumber(folder.getMaxRevisionNumber() + 1);
+            folder.setOnlineDate(new Date());
+            folder.setOfflineDate(null);
+        }
         folder.save(request.getUser());
     }
 
@@ -396,6 +407,11 @@ class SiteEditFormHandler extends AdminFormHandler {
                 page.setElement(name, null);
             }
         }
+        if (request.getParameter("action", "").equals("publish")) {
+            page.setRevisionNumber(page.getMaxRevisionNumber() + 1);
+            page.setOnlineDate(new Date());
+            page.setOfflineDate(null);
+        }
         page.save(request.getUser());
     }
 
@@ -440,6 +456,11 @@ class SiteEditFormHandler extends AdminFormHandler {
                     file.setFileName(name);
                 }
                 file.setTextContent(request.getParameter("content"));
+            }
+            if (request.getParameter("action", "").equals("publish")) {
+                file.setRevisionNumber(file.getMaxRevisionNumber() + 1);
+                file.setOnlineDate(new Date());
+                file.setOfflineDate(null);
             }
             file.save(request.getUser());
         } catch (IOException e) {
@@ -490,6 +511,11 @@ class SiteEditFormHandler extends AdminFormHandler {
             if (!params.containsKey("element." + name)) {
                 template.setElement(name, null);
             }
+        }
+        if (request.getParameter("action", "").equals("publish")) {
+            template.setRevisionNumber(template.getMaxRevisionNumber() + 1);
+            template.setOnlineDate(new Date());
+            template.setOfflineDate(null);
         }
         template.save(request.getUser());
     }

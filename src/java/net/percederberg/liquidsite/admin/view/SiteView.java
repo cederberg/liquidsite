@@ -182,6 +182,7 @@ public class SiteView extends AdminView {
         String       defaultPort;
         String       defaultDir;
         String       defaultComment;
+        boolean      publish;
         String       str;
 
         if (reference instanceof Domain) {
@@ -206,6 +207,7 @@ public class SiteView extends AdminView {
                 defaultComment = "";
             }
         }
+        publish = reference.hasPublishAccess(request.getUser());
         hosts = domain.getHosts();
         for (int i = 0; i < hosts.length; i++) {
             list.add(hosts[i].getName());
@@ -224,6 +226,7 @@ public class SiteView extends AdminView {
         request.setAttribute("dir", str);
         str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-site.ftl");
     }
 
@@ -253,6 +256,7 @@ public class SiteView extends AdminView {
         int          section;
         ArrayList    sections;
         String       comment;
+        boolean      publish;
         HashMap      locals = new HashMap();
         Iterator     iter;
         String       value;
@@ -281,6 +285,8 @@ public class SiteView extends AdminView {
                 value = page.getElement(user, str);
                 locals.put(str, AdminUtils.getScriptString(value));
             }
+            publish = page.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(page.getParent());
         } else {
             name = "";
             parent = 0;
@@ -289,6 +295,8 @@ public class SiteView extends AdminView {
             section = 0;
             sections = findSections(user, reference.getDomain(), null);
             comment = "Created";
+            publish = reference.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(reference);
         }
 
         // Adjust for incoming request
@@ -330,6 +338,7 @@ public class SiteView extends AdminView {
         request.setAttribute("sections", sections);
         request.setAttribute("comment", comment);
         request.setAttribute("locals", locals);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-page.ftl");
     }
 
@@ -352,6 +361,7 @@ public class SiteView extends AdminView {
         ArrayList    folders = null;
         String       content = null;
         String       comment;
+        boolean      publish;
         String       str;
 
         // Find default values
@@ -368,10 +378,14 @@ public class SiteView extends AdminView {
             } else {
                 comment = "";
             }
+            publish = file.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(file.getParent());
         } else {
             name = "";
             parent = 0;
             comment = "Created";
+            publish = reference.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(reference);
         }
 
         // Adjust for incoming request
@@ -397,6 +411,7 @@ public class SiteView extends AdminView {
             request.setAttribute("content", content);
         }
         request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-file.ftl");
     }
 
@@ -421,6 +436,7 @@ public class SiteView extends AdminView {
         int          parentId;
         ArrayList    folders = null;
         String       comment;
+        boolean      publish;
         String       str;
 
         // Find default values
@@ -429,6 +445,8 @@ public class SiteView extends AdminView {
             name = "";
             parentId = 0;
             comment = "Created";
+            publish = parent.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(parent);
         } else {
             AdminUtils.setReference(request, folder);
             name = folder.getName();
@@ -440,6 +458,8 @@ public class SiteView extends AdminView {
             } else {
                 comment = "";
             }
+            publish = folder.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(folder.getParent());
         }
 
         // Adjust for incoming request
@@ -459,6 +479,7 @@ public class SiteView extends AdminView {
         request.setAttribute("parent", String.valueOf(parentId));
         request.setAttribute("folders", folders);
         request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-folder.ftl");
     }
 
@@ -483,6 +504,7 @@ public class SiteView extends AdminView {
         HashMap    locals = new HashMap();
         int        inherited;
         ArrayList  templates = null;
+        boolean    publish;
         Iterator   iter;
         String     value;
         String     str;
@@ -498,6 +520,8 @@ public class SiteView extends AdminView {
                 inherited = ((Content) parent).getId();
             }
             comment = "Created";
+            publish = parent.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(parent);
         } else {
             AdminUtils.setReference(request, template);
             name = template.getName();
@@ -516,6 +540,8 @@ public class SiteView extends AdminView {
                 value = template.getElement(str);
                 locals.put(str, AdminUtils.getScriptString(value));
             }
+            publish = template.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(template.getParent());
         }
 
         // Adjust for incoming request
@@ -548,6 +574,7 @@ public class SiteView extends AdminView {
         request.setAttribute("locals", locals);
         request.setAttribute("parent", String.valueOf(inherited));
         request.setAttribute("templates", templates);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-template.ftl");
     }
 
