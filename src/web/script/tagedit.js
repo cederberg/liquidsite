@@ -173,6 +173,7 @@ function tagEditInternalStyleSelect(editor, select) {
     var  area = TAGEDIT_TEXTAREAS[editor];
     var  selection;
     var  tag;
+    var  endTag;
     var  text;
 
     if (select.selectedIndex > 0) {
@@ -186,10 +187,12 @@ function tagEditInternalStyleSelect(editor, select) {
             text = null;
         }
         if (tagEditInternalIsBlockTag(text)) {
-            tagEditInternalRemove(editor, text, "</" + text.substring(1));
+            endTag = "</" + text.substring(1);
+            tagEditInternalRemove(editor, selection, text, endTag);
         }
         if (tag != "") {
-            tagEditInternalInsert(editor, tag, "</" + tag.substring(1));
+            endTag = "</" + tag.substring(1);
+            tagEditInternalInsert(editor, selection, tag, endTag);
         }
         tagEditInternalStoreUndo(editor);
         select.selectedIndex = 0;
@@ -213,9 +216,9 @@ function tagEditInternalFormat(editor, start, end) {
     selection = tagEditInternalGetSelection(editor);
     pos = selection.start
     if (area.value.substring(pos, pos + start.length) == start) {
-        tagEditInternalRemove(editor, start, end);
+        tagEditInternalRemove(editor, selection, start, end);
     } else {
-        tagEditInternalInsert(editor, start, end);
+        tagEditInternalInsert(editor, selection, start, end);
     }
     tagEditInternalStoreUndo(editor);
 }
@@ -302,6 +305,7 @@ function tagEditInternalAddLink(editor) {
  */
 function tagEditInternalInsertLink(editor, url, type) {
     var  tag;
+    var  selection;
 
     if (type == "new") {
         tag = "<link url=" + url + " window=new>";
@@ -311,7 +315,8 @@ function tagEditInternalInsertLink(editor, url, type) {
         tag = "<link url=" + url + ">";
     }
     if (url != "") {
-        tagEditInternalInsert(editor, tag, "</link>");
+        selection = tagEditInternalGetSelection(editor);
+        tagEditInternalInsert(editor, selection, tag, "</link>");
         tagEditInternalStoreUndo(editor);
     }
 }
@@ -373,13 +378,15 @@ function tagEditInternalAddImage(editor) {
  */
 function tagEditInternalInsertImage(editor, url, layout) {
     var  tag;
+    var  selection;
 
     if (layout != "") {
         tag = "<image url=" + url + " layout=" + layout + ">";
     } else {
         tag = "<image url=" + url + ">";
     }
-    tagEditInternalInsert(editor, tag, null);
+    selection = tagEditInternalGetSelection(editor);
+    tagEditInternalInsert(editor, selection, tag, null);
     tagEditInternalStoreUndo(editor);
 }
 
@@ -504,15 +511,14 @@ function tagEditInternalAdjustSelection(editor, paragraph) {
  * Inserts text into an editor.
  *
  * @param editor             the editor number
+ * @param selection          the editor selection to use
  * @param start              the starting text
  * @param end                the ending text, or null
  */
-function tagEditInternalInsert(editor, start, end) {
+function tagEditInternalInsert(editor, selection, start, end) {
     var  area = TAGEDIT_TEXTAREAS[editor];
     var  value = area.value;
-    var  selection;
 
-    selection = tagEditInternalGetSelection(editor);
     if (end == null) {
         area.value = value.substring(0, selection.start) + start +
                      value.substring(selection.start);
@@ -530,12 +536,12 @@ function tagEditInternalInsert(editor, start, end) {
  * Removes text from an editor.
  *
  * @param editor             the editor number
+ * @param selection          the editor selection to use
  * @param start              the starting text
  * @param end                the ending text
  */
-function tagEditInternalRemove(editor, start, end) {
+function tagEditInternalRemove(editor, selection, start, end) {
     var  area = TAGEDIT_TEXTAREAS[editor];
-    var  selection = tagEditInternalGetSelection(editor);
     var  value = area.value;
     var  text = value.substring(selection.start, selection.end);
 
@@ -654,6 +660,7 @@ function tagEditInternalGetSelection(editor) {
 
     if (document.selection) {
         // IE selection handling
+        area.focus();
         range = document.selection.createRange().duplicate();
         text = range.text;
         range.text = "#~^"  + text;
