@@ -164,7 +164,9 @@ class SystemRequestProcessor {
                                     "system.html");
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
+            AdminView.BASE.viewError(request,
+                                     "Failed to restart: " + e.getMessage(),
+                                     "system.html");
         }
     }
 
@@ -199,10 +201,14 @@ class SystemRequestProcessor {
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
+            AdminView.BASE.viewError(request,
+                                     "Failed to backup: " + e.getMessage(),
+                                     "system.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            throw RequestException.FORBIDDEN;
+            AdminView.BASE.viewError(request,
+                                     "Access denied for the current user.",
+                                     "system.html");
         }
     }
 
@@ -236,17 +242,25 @@ class SystemRequestProcessor {
                 } else {
                     mode = 0;
                 }
-                restore(file, domain, mode, request.getUser());
-                AdminView.BASE.viewInfo(request,
-                                        "Successfully restored backup",
-                                        "system.html");
+                if (restore(file, domain, mode, request.getUser())) {
+                    str = "Successfully restored backup";
+                } else {
+                    str = "Successfully restored backup, but some " +
+                          "elements were omitted. Check logs " +
+                          "for details.";
+                }
+                AdminView.BASE.viewInfo(request, str, "system.html");
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
+            AdminView.BASE.viewError(request,
+                                     "Restore failed: " + e.getMessage(),
+                                     "system.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            throw RequestException.FORBIDDEN;
+            AdminView.BASE.viewError(request,
+                                     "Access denied for the current user.",
+                                     "system.html");
         }
     }
 
@@ -659,17 +673,22 @@ class SystemRequestProcessor {
     }
 
     /**
-     * Restores a complete backup to the specified domain.
+     * Restores a complete backup to the specified domain. In case of
+     * failure this method attempts to not leave any partial data
+     * behind.
      *
      * @param file           the backup file
      * @param domain         the name of the domain to create
      * @param mode           the content revision policy 
      * @param user           the user performing the operation
      *
+     * @return true if the restore was complete, or 
+     *         false otherwise
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private void restore(File file, String domain, int mode, User user)
+    private boolean restore(File file, String domain, int mode, User user)
         throws ContentException {
 
         ZipFile            zip = null;
@@ -699,6 +718,7 @@ class SystemRequestProcessor {
                 entry = zip.getEntry(name);
                 restoreFile(zip, entry, (File) files.get(name));
             }
+            return handler.isCompleteRestore();
         } catch (IOException e) {
             message = "IO error while reading " + file;
             LOG.error(message, e);
@@ -708,6 +728,7 @@ class SystemRequestProcessor {
             LOG.error(message, e);
             throw new ContentException(message, e);
         } catch (SAXException e) {
+            restoreUndo(domain, user);
             if (e.getException() == null) {
                 message = "XML parser error while reading " + file;
                 LOG.error(message, e);
@@ -768,6 +789,31 @@ class SystemRequestProcessor {
             } catch (IOException ignore) {
                 // Do nothing
             }
+        }
+    }
+
+    /**
+     * Attempts to undo a restore operation. This method will remove
+     * the domain specified if it exists and the specified user has
+     * permission to remove it.
+     *
+     * @param domainName     the name of the domain
+     * @param user           the user
+     */
+    private void restoreUndo(String domainName, User user) {
+        ContentManager  manager;
+        Domain          domain;
+        
+        try {
+            manager = AdminUtils.getContentManager();
+            domain = manager.getDomain(user, domainName);
+            if (domain != null) {
+                domain.delete(user);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
         }
     }
 }

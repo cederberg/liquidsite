@@ -30,6 +30,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -50,6 +51,11 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 class XmlRestoreHandler extends DefaultHandler {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(XmlRestoreHandler.class);
 
     /**
      * The content manager to use.
@@ -127,6 +133,14 @@ class XmlRestoreHandler extends DefaultHandler {
     private ArrayList currentPermissions = null;
 
     /**
+     * The complete restore flag. This flag is set to false if some
+     * element of the backup was skipped, due to conflicting data
+     * already in the database. An example would be if an identical
+     * hostname was already defined for another domain.
+     */
+    private boolean complete = true;
+
+    /**
      * Creates a new XML backup restore handler.
      *
      * @param domainName     the new domain to create
@@ -143,6 +157,20 @@ class XmlRestoreHandler extends DefaultHandler {
         this.managerUser = user;
         this.mode = mode;
         this.currentDomain = new Domain(manager, domainName);
+    }
+
+    /**
+     * Checks if a complete restore operation was made. This flag is
+     * set to false if some element of the backup was skipped, due to
+     * conflicting data already in the database. An example would be
+     * if an identical hostname was already defined for another
+     * domain.
+     *
+     * @return true if the restore was complete, or
+     *         false otherwise
+     */
+    public boolean isCompleteRestore() {
+        return complete;
     }
 
     /**
@@ -208,7 +236,12 @@ class XmlRestoreHandler extends DefaultHandler {
                 str = attrs.getValue("name");
                 host = new Host(manager, currentDomain, str);
                 host.setDescription(attrs.getValue("description"));
-                host.restore(managerUser);
+                try {
+                    host.restore(managerUser);
+                } catch (ContentException e) {
+                    LOG.error("skipping restore", e);
+                    complete = false;
+                }
             } else if (qName.equals("content")) {
                 if (currentPermissions != null) {
                     createPermissions();
@@ -262,9 +295,11 @@ class XmlRestoreHandler extends DefaultHandler {
                 currentPermissions.add(perm);
             }
         } catch (ContentException e) {
-            new SAXException("content error", e);
+            LOG.error("restore error", e);
+            throw new SAXException("restore error", e);
         } catch (ContentSecurityException e) {
-            new SAXException("content security error", e);
+            LOG.error("restore security error", e);
+            throw new SAXException("restore security error", e);
         }
     }
 
@@ -336,9 +371,11 @@ class XmlRestoreHandler extends DefaultHandler {
                 currentValue.setLength(0);
             }
         } catch (ContentException e) {
-            new SAXException("content error", e);
+            LOG.error("restore error", e);
+            throw new SAXException("restore error", e);
         } catch (ContentSecurityException e) {
-            new SAXException("content security error", e);
+            LOG.error("restore security error", e);
+            throw new SAXException("restore security error", e);
         }
     }
 
