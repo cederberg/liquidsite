@@ -18,7 +18,7 @@
         <tr>
           <td class="buttons">
 <#if page?has_content>
-            <button type="button" onclick="window.location='${page}'">
+            <button type="button" onclick="location='${page}'">
 <#else>
             <button type="button" onclick="window.close()">
 </#if>
