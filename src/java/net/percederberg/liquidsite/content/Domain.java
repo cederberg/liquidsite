@@ -112,7 +112,7 @@ public class Domain extends PersistentObject {
      * @param name           the domain name
      */
     public Domain(String name) {
-        super(false);
+        super(false, true);
         this.data = new DomainData();
         this.data.setString(DomainData.NAME, name);
         this.options = new HashMap();
@@ -124,7 +124,7 @@ public class Domain extends PersistentObject {
      * @param data           the domain data object
      */
     private Domain(DomainData data) {
-        super(true);
+        super(true, true);
         this.data = data;
         this.options = decodeMap(data.getString(DomainData.OPTIONS));
     }

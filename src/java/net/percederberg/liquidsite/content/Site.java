@@ -89,7 +89,7 @@ public class Site extends Content {
                                                   con);
             res = new Site[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Site((ContentData) list.get(i), con);
+                res[i] = new Site((ContentData) list.get(i), true, con);
             }
         } catch (DatabaseObjectException e) {
             throw new ContentException(e);
@@ -117,15 +117,16 @@ public class Site extends Content {
      * Creates a new site.
      * 
      * @param data           the content data object
+     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    protected Site(ContentData data, DatabaseConnection con) 
+    protected Site(ContentData data, boolean latest, DatabaseConnection con) 
         throws DatabaseObjectException {
 
-        super(data, con);
+        super(data, latest, con);
     }
 
     /**

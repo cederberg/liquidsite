@@ -187,7 +187,7 @@ public class User extends PersistentObject {
      * @param name           the user name
      */
     public User(Domain domain, String name) {
-        super(false);
+        super(false, true);
         this.data = new UserData();
         if (domain == null) {
             this.data.setString(UserData.DOMAIN, "");
@@ -203,7 +203,7 @@ public class User extends PersistentObject {
      * @param data           the user data object
      */
     private User(UserData data) {
-        super(true);
+        super(true, true);
         this.data = data;
     }
 

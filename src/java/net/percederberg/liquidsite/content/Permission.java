@@ -164,7 +164,7 @@ public class Permission extends PersistentObject {
      * @param group          the gruop, or null for any group
      */
     public Permission(Domain domain, User user, Group group) {
-        super(false);
+        super(false, true);
         this.data = new PermissionData();
         this.data.setString(PermissionData.DOMAIN, domain.getName());
         this.data.setInt(PermissionData.CONTENT, 0);
@@ -184,7 +184,7 @@ public class Permission extends PersistentObject {
      * @param group          the gruop, or null for any group
      */
     public Permission(Content content, User user, Group group) {
-        super(false);
+        super(false, true);
         this.data = new PermissionData();
         this.data.setString(PermissionData.DOMAIN, content.getDomainName());
         this.data.setInt(PermissionData.CONTENT, content.getId());
@@ -202,7 +202,7 @@ public class Permission extends PersistentObject {
      * @param data           the permission data object
      */
     private Permission(PermissionData data) {
-        super(true);
+        super(true, true);
         this.data = data;
     }
 

@@ -164,7 +164,7 @@ public class Group extends PersistentObject {
      * @param name           the group name
      */
     public Group(Domain domain, String name) {
-        super(false);
+        super(false, true);
         this.data = new GroupData();
         this.data.setString(GroupData.DOMAIN, domain.getName());
         this.data.setString(GroupData.NAME, name);
@@ -176,7 +176,7 @@ public class Group extends PersistentObject {
      * @param data           the group data object
      */
     private Group(GroupData data) {
-        super(true);
+        super(true, true);
         this.data = data;
     }
 

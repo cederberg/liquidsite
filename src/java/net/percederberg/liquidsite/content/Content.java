@@ -81,7 +81,7 @@ public abstract class Content extends PersistentObject {
         try {
             data = ContentPeer.doSelectByMaxRevision(id, con);
             if (data != null) {
-                return createContent(data, con);
+                return createContent(data, true, con);
             } else {
                 return null;
             }
@@ -114,7 +114,7 @@ public abstract class Content extends PersistentObject {
         try {
             data = ContentPeer.doSelectByRevision(id, revision, con);
             if (data != null) {
-                return createContent(data, con);
+                return createContent(data, false, con);
             } else {
                 return null;
             }
@@ -148,7 +148,7 @@ public abstract class Content extends PersistentObject {
             list = ContentPeer.doSelectByParent(parent.getId(), con);
             res = new Content[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = createContent((ContentData) list.get(i), con);
+                res[i] = createContent((ContentData) list.get(i), true, con);
             }
         } catch (DatabaseObjectException e) {
             throw new ContentException(e);
@@ -162,6 +162,7 @@ public abstract class Content extends PersistentObject {
      * Creates a content subclass depending on the content category.
      * 
      * @param data           the content object data
+     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @return the new content object, or
@@ -170,13 +171,14 @@ public abstract class Content extends PersistentObject {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    private static Content createContent(ContentData data, 
+    private static Content createContent(ContentData data,
+                                         boolean latest, 
                                          DatabaseConnection con)
         throws DatabaseObjectException {
 
         switch (data.getInt(ContentData.CATEGORY)) {
         case SITE_CATEGORY:
-            return new Site(data, con);
+            return new Site(data, latest, con);
         default:
             return null;
         }
@@ -190,7 +192,7 @@ public abstract class Content extends PersistentObject {
      * @param category       the category
      */
     protected Content(Domain domain, int revision, int category) {
-        super(false);
+        super(false, false);
         this.data = new ContentData();
         this.data.setString(ContentData.DOMAIN, domain.getName());
         this.data.setInt(ContentData.REVISION, revision);
@@ -207,7 +209,7 @@ public abstract class Content extends PersistentObject {
      * @param category       the category
      */
     protected Content(Domain domain, int id, int revision, int category) {
-        super(false);
+        super(false, false);
         this.data = new ContentData();
         this.data.setString(ContentData.DOMAIN, domain.getName());
         this.data.setInt(ContentData.ID, id);
@@ -221,15 +223,18 @@ public abstract class Content extends PersistentObject {
      * all content attributes from the database.
      * 
      * @param data           the content data object
+     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    protected Content(ContentData data, DatabaseConnection con) 
+    protected Content(ContentData data, 
+                      boolean latest, 
+                      DatabaseConnection con) 
         throws DatabaseObjectException {
 
-        super(true);
+        super(true, latest);
         this.data = data;
         doReadAttributes(con);
     }

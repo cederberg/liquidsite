@@ -50,6 +50,12 @@ public abstract class PersistentObject {
     private boolean persistent = false;
 
     /**
+     * The cacheable flag. This flag should be set when the object 
+     * supports being cached in the content manager. 
+     */
+    private boolean cacheable = false;
+
+    /**
      * Returns the current content manager.
      * 
      * @return the current content manager
@@ -191,9 +197,11 @@ public abstract class PersistentObject {
      * Creates a new persistent object.
      * 
      * @param persistent     the persistent flag
+     * @param cacheable      the cacheable flag
      */
-    protected PersistentObject(boolean persistent) {
+    protected PersistentObject(boolean persistent, boolean cacheable) {
         this.persistent = persistent;
+        this.cacheable = cacheable;
     }
 
     /**
@@ -205,6 +213,17 @@ public abstract class PersistentObject {
      */
     public boolean isPersistent() {
         return persistent;
+    }
+
+    /**
+     * Checks if this object is cacheable. I.e. if it can be cached
+     * in the content manager.
+     * 
+     * @return true if the object is cacheable, or
+     *         false otherwise
+     */
+    public boolean isCacheable() {
+        return cacheable;
     }
 
     /**
@@ -253,7 +272,11 @@ public abstract class PersistentObject {
 
         // Save to cache
         try {
-            getContentManager().cacheAdd(this);
+            if (cacheable) {
+                getContentManager().cacheAdd(this);
+            } else {
+                getContentManager().cacheRemove(this);
+            }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
         }
