@@ -497,23 +497,33 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns an iterator for all the attribute names.
+     * Returns an iterator for all the attribute names. This method
+     * should NOT BE CALLED unless you know what you are doing. It
+     * provides direct access to the content attributes that should
+     * normally be accessed through the various helper methods in
+     * each subclass. This method is only public to simplify the
+     * backup and restore operations.
      *
      * @return an iterator for all the attribute names
      */
-    protected Iterator getAttributeNames() {
+    public Iterator getAttributeNames() {
         return attributes.keySet().iterator();
     }
 
     /**
-     * Returns a content attribute value.
+     * Returns a content attribute value. This method should NOT BE
+     * CALLED unless you know what you are doing. It provides direct
+     * access to the content attributes that should normally be
+     * accessed through the various helper methods in each subclass.
+     * This method is only public to simplify the backup and restore
+     * operations.
      *
      * @param name           the content attribute name
      *
      * @return the content attribute value, or
      *         null if not found
      */
-    protected String getAttribute(String name) {
+    public String getAttribute(String name) {
         AttributeData  attr;
 
         attr = (AttributeData) attributes.get(name);
@@ -526,12 +536,17 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Sets a content attribute value. If the attribute does not
-     * exist it will be created.
+     * exist it will be created. This method should NOT BE CALLED
+     * unless you know what you are doing. It provides direct access
+     * to the content attributes that should normally be accessed
+     * through the various helper methods in each subclass. This
+     * method is only public to simplify the backup and restore
+     * operations.
      *
      * @param name           the content attribute name
      * @param value          the content attribute value
      */
-    protected void setAttribute(String name, String value) {
+    public void setAttribute(String name, String value) {
         AttributeData  attr;
 
         attr = (AttributeData) attributes.get(name);
