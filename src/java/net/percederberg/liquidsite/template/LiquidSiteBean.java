@@ -393,7 +393,7 @@ public class LiquidSiteBean {
         int     pos;
 
         // Check for empty path or null parent
-        if (path == null || path.equals("")) {
+        if (path == null || path.equals("") || parent == null) {
             if (parent instanceof ContentSection
              || parent instanceof ContentDocument) {
 
