@@ -241,6 +241,7 @@ public class SiteView extends AdminView {
     public void viewEditPage(Request request, Object reference) 
         throws ContentException, ContentSecurityException {
 
+        User         user = request.getUser();
         ContentPage  page;
         Content      content;
         ContentSite  site;
@@ -248,6 +249,7 @@ public class SiteView extends AdminView {
         int          parent;
         ArrayList    folders = null;
         String       template;
+        ArrayList    templates;
         int          section;
         ArrayList    sections;
         String       comment;
@@ -260,14 +262,14 @@ public class SiteView extends AdminView {
         AdminUtils.setReference(request, reference);
         if (reference instanceof ContentPage) {
             page = (ContentPage) reference;
-            setRequestTemplates(request, page.getDomain(), 0);
             name = page.getName();
             parent = page.getParentId();
             site = findSite(page);
-            folders = findFolders(request.getUser(), site, null);
+            folders = findFolders(user, site, null);
             template = String.valueOf(page.getTemplateId());
+            templates = findTemplates(user, page.getDomain(), null);
             section = page.getSectionId();
-            sections = findSections(request.getUser(), page.getDomain(), null); 
+            sections = findSections(user, page.getDomain(), null); 
             if (page.getRevisionNumber() == 0) {
                 comment = page.getComment();
             } else {
@@ -276,21 +278,17 @@ public class SiteView extends AdminView {
             iter = page.getLocalElementNames().iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
-                value = page.getElement(request.getUser(), str);
+                value = page.getElement(user, str);
                 locals.put(str, AdminUtils.getScriptString(value));
             }
         } else {
             content = (Content) reference;
-            setRequestTemplates(request, 
-                                content.getDomain(), 
-                                0);
             name = "";
             parent = 0;
             template = "0";
+            templates = findTemplates(user, content.getDomain(), null);
             section = 0;
-            sections = findSections(request.getUser(),
-                                    content.getDomain(),
-                                    null); 
+            sections = findSections(user, content.getDomain(), null); 
             comment = "Created";
         }
 
@@ -328,6 +326,7 @@ public class SiteView extends AdminView {
         request.setAttribute("parent", String.valueOf(parent));
         request.setAttribute("folders", folders);
         request.setAttribute("template", template);
+        request.setAttribute("templates", templates);
         request.setAttribute("section", String.valueOf(section));
         request.setAttribute("sections", sections);
         request.setAttribute("comment", comment);
@@ -476,6 +475,7 @@ public class SiteView extends AdminView {
         String     comment;
         HashMap    locals = new HashMap();
         int        inherited;
+        ArrayList  templates = null;
         Iterator   iter;
         String     value;
         String     str;
@@ -484,19 +484,20 @@ public class SiteView extends AdminView {
         if (parent != null) {
             AdminUtils.setReference(request, parent);
             name = "";
-            comment = "Created";
             if (parent instanceof Domain) {
                 locals.put("root", AdminUtils.getScriptString(""));
                 inherited = 0;
             } else {
                 inherited = ((Content) parent).getId();
             }
+            comment = "Created";
         } else {
             AdminUtils.setReference(request, template);
-            setRequestTemplates(request, 
-                                template.getDomain(), 
-                                template.getId());
             name = template.getName();
+            inherited = template.getParentId();
+            templates = findTemplates(request.getUser(), 
+                                      template.getDomain(), 
+                                      template);
             if (template.getRevisionNumber() == 0) {
                 comment = template.getComment();
             } else {
@@ -508,7 +509,6 @@ public class SiteView extends AdminView {
                 value = template.getElement(str);
                 locals.put(str, AdminUtils.getScriptString(value));
             }
-            inherited = template.getParentId();
         }
 
         // Adjust for incoming request
@@ -540,6 +540,7 @@ public class SiteView extends AdminView {
         request.setAttribute("comment", comment);
         request.setAttribute("locals", locals);
         request.setAttribute("parent", String.valueOf(inherited));
+        request.setAttribute("templates", templates);
         request.sendTemplate("admin/edit-template.ftl");
     }
     
@@ -711,89 +712,6 @@ public class SiteView extends AdminView {
         }
     }
     
-    /**
-     * Sets template id and name attributes in a request. This method
-     * will retrieve all templates in the domain, excluding the 
-     * specified content id.
-     * 
-     * @param request        the request
-     * @param domain         the domain object
-     * @param excludeId      the content id to exclude
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private void setRequestTemplates(Request request, 
-                                     Domain domain,
-                                     int excludeId)
-        throws ContentException {
-
-        ContentManager  manager = AdminUtils.getContentManager();
-        User            user = request.getUser();
-        ArrayList       templateIds = new ArrayList();
-        HashMap         templateNames = new HashMap();
-        Content[]       children;
-    
-        children = manager.getContentChildren(user,
-                                              domain,
-                                              Content.TEMPLATE_CATEGORY);
-        addTemplates(user, 
-                     "", 
-                     children, 
-                     excludeId, 
-                     templateIds, 
-                     templateNames);
-        request.setAttribute("templateIds", templateIds);
-        request.setAttribute("templateNames", templateNames);
-    }
-
-    /**
-     * Adds all content templates to lists of template ids and names.
-     * This method will retrieve all child templates as well, 
-     * excluding only a specified content id.
-     * 
-     * @param user           the user
-     * @param baseName       the base template name
-     * @param content        the array of content objects
-     * @param excludeId      the content id to exclude
-     * @param ids            the list of template ids to add to
-     * @param names          the map of template names to add to
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private void addTemplates(User user, 
-                              String baseName,
-                              Content[] content,
-                              int excludeId,
-                              ArrayList ids,
-                              HashMap names)
-        throws ContentException {
-
-        ContentManager  manager = AdminUtils.getContentManager();
-        Content[]       children;
-        String          id;
-        String          name;
-
-        for (int i = 0; i < content.length; i++) {
-            if (content[i].getId() != excludeId) {
-                id = String.valueOf(content[i].getId());
-                name = baseName + content[i].getName();
-                ids.add(id);
-                names.put(id, name);
-                children = manager.getContentChildren(user,
-                                                      content[i],
-                                                      Content.TEMPLATE_CATEGORY);
-                addTemplates(user, 
-                             name + " / ", 
-                             children, 
-                             excludeId, 
-                             ids, 
-                             names);
-            }
-        }
-    }
-
     /**
      * Returns the site tree focus object. The focus object is either 
      * a domain or a content object, and is stored in the session. It 

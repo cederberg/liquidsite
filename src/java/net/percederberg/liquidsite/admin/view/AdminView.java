@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
 
@@ -182,6 +183,84 @@ public class AdminView {
     }
 
     /**
+     * Finds all content templates in a domain. The templates will
+     * not be added directly to the result list, but rather a
+     * simplified hash map containing only the id and name of each
+     * template will be added.  
+     *
+     * @param user           the user
+     * @param domain         the domain
+     * @param exclude        the template to exclude, or null
+     *
+     * @return the list of templates found (in maps)
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected ArrayList findTemplates(User user,
+                                      Domain domain, 
+                                      ContentTemplate exclude)
+        throws ContentException {
+
+        ArrayList  result = new ArrayList();
+        
+        findTemplates(user, "", domain, exclude, result);
+        return result;
+    }
+
+    /**
+     * Finds all content templates in a domain. The templates will
+     * not be added directly to the result list, but rather a
+     * simplified hash map containing only the id and name of each
+     * template will be added.  
+     * 
+     * @param user           the user
+     * @param baseName       the base name
+     * @param parent         the parent domain or content object
+     * @param exclude        the template to exclude, or null
+     * @param result         the list of templates found (in maps)
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void findTemplates(User user, 
+                               String baseName,
+                               Object parent,
+                               ContentTemplate exclude,
+                               ArrayList result)
+        throws ContentException {
+
+        ContentManager   manager = AdminUtils.getContentManager();
+        Content[]        children;
+        ContentTemplate  template;
+        HashMap          values;
+
+        if (parent instanceof Domain) {
+            children = manager.getContentChildren(user,
+                                                  (Domain) parent,
+                                                  Content.TEMPLATE_CATEGORY);
+        } else if (parent instanceof ContentTemplate) {
+            template = (ContentTemplate) parent;
+            baseName += template.getName();
+            values = new HashMap(2);
+            values.put("id", String.valueOf(template.getId()));
+            values.put("name", baseName);
+            result.add(values);
+            baseName += "/";
+            children = manager.getContentChildren(user,
+                                                  template,
+                                                  Content.TEMPLATE_CATEGORY);
+        } else {
+            return;
+        }
+        for (int i = 0; i < children.length; i++) {
+            if (!children[i].equals(exclude)) {
+                findTemplates(user, baseName, children[i], exclude, result);
+            }
+        }
+    }
+
+    /**
      * Finds all content sections in a domain. The sections will not
      * be added directly to the result list, but rather a simplified
      * hash map containing only the id and name of each section will 
@@ -231,27 +310,30 @@ public class AdminView {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children;
+        ContentSection  section;
         HashMap         values;
-        String          name;
 
         if (parent instanceof Domain) {
             children = manager.getContentChildren(user,
                                                   (Domain) parent,
                                                   Content.SECTION_CATEGORY);
-        } else {
+        } else if (parent instanceof ContentSection) {
+            section = (ContentSection) parent;
+            baseName += section.getName();
+            values = new HashMap(2);
+            values.put("id", String.valueOf(section.getId()));
+            values.put("name", baseName);
+            result.add(values);
+            baseName += "/";
             children = manager.getContentChildren(user,
-                                                  (Content) parent,
+                                                  section,
                                                   Content.SECTION_CATEGORY);
+        } else {
+            return;
         }
         for (int i = 0; i < children.length; i++) {
             if (!children[i].equals(exclude)) {
-                values = new HashMap(2);
-                values.put("id", String.valueOf(children[i].getId()));
-                name = baseName + children[i].getName();
-                values.put("name", name);
-                result.add(values);
-                name += "/";
-                findSections(user, name, children[i], exclude, result);
+                findSections(user, baseName, children[i], exclude, result);
             }
         }
     }

@@ -108,11 +108,11 @@
             <select tabindex="3" onchange="openTemplate(this.value)"
                     name="template">
               <option value="0">&lt; None &gt;</option>
-<#list templateIds as id>
-  <#if template == id>
-              <option value="${id}" selected="selected">${templateNames[id]?xml}</option>
+<#list templates as item>
+  <#if template == item.id>
+              <option value="${item.id}" selected="selected">${item.name?xml}</option>
   <#else>
-              <option value="${id}">${templateNames[id]?xml}</option>
+              <option value="${item.id}">${item.name?xml}</option>
   </#if>
 </#list>
             </select>
