@@ -97,6 +97,60 @@ public class AdminUtils {
     }
         
     /**
+     * Returns the JavaScript representation of a date.
+     * 
+     * @param date           the date to present, or null
+     * 
+     * @return a JavaScript representation of the date
+     */
+    public static String getScriptDate(Date date) {
+        if (date == null) {
+            return "null";
+        } else {
+            return getScriptString(formatDate(date)); 
+        }
+    }
+
+    /**
+     * Returns the JavaScript representation of a string. This method
+     * will take care of required character escapes. 
+     * 
+     * @param str            the string to present, or null
+     * 
+     * @return a JavaScript representation of the string
+     */
+    public static String getScriptString(String str) {
+        StringBuffer  buffer = new StringBuffer();
+
+        if (str == null) {
+            return "null";
+        } else {
+            buffer.append("'");
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) == '\\') {
+                    buffer.append("\\\\");
+                } else if (str.charAt(i) == '\n') {
+                    buffer.append("\\n");
+                } else if (str.charAt(i) == '\r') {
+                    buffer.append("\\r");
+                } else if (str.charAt(i) == '\'') {
+                    buffer.append("\\'");
+                } else if (str.charAt(i) == '"') {
+                    buffer.append("\\\"");
+                } else if (str.charAt(i) == '<') {
+                    buffer.append("\\<");
+                } else if (str.charAt(i) == '>') {
+                    buffer.append("\\>");
+                } else {
+                    buffer.append(str.charAt(i));
+                }
+            }
+            buffer.append("'");
+            return buffer.toString();
+        }
+    }
+
+    /**
      * Returns an object category name. The category name is used in
      * various places to identify incoming or outgoing objects. 
      * 

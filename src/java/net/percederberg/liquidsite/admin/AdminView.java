@@ -319,7 +319,7 @@ public class AdminView {
             while (iter.hasNext()) {
                 str = iter.next().toString();
                 value = page.getElement(str);
-                locals.put(str, script.getString(value));
+                locals.put(str, AdminUtils.getScriptString(value));
             }
         } else {
             setRequestTemplates(request, 
@@ -341,7 +341,8 @@ public class AdminView {
                 str = iter.next().toString();
                 if (str.startsWith("element.")) {
                     value = request.getParameter(str);
-                    locals.put(str.substring(8), script.getString(value));
+                    locals.put(str.substring(8), 
+                               AdminUtils.getScriptString(value));
                 }
             }
         }
@@ -438,7 +439,7 @@ public class AdminView {
             name = "";
             comment = "Created";
             if (parent instanceof Domain) {
-                locals.put("root", script.getString(""));
+                locals.put("root", AdminUtils.getScriptString(""));
                 inherited = 0;
             } else {
                 inherited = ((Content) parent).getId();
@@ -454,7 +455,7 @@ public class AdminView {
             while (iter.hasNext()) {
                 str = iter.next().toString();
                 value = template.getElement(str);
-                locals.put(str, script.getString(value));
+                locals.put(str, AdminUtils.getScriptString(value));
             }
             inherited = template.getParentId();
         }
@@ -477,7 +478,8 @@ public class AdminView {
                 str = iter.next().toString();
                 if (str.startsWith("element.")) {
                     value = request.getParameter(str);
-                    locals.put(str.substring(8), script.getString(value));
+                    locals.put(str.substring(8), 
+                               AdminUtils.getScriptString(value));
                 }
             }
         }

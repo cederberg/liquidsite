@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.util.Date;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.content.Content;
@@ -96,6 +95,7 @@ class AdminScript {
     public String getTreeView(Domain[] domains) {
 
         StringBuffer  buffer = new StringBuffer();
+        String        str;
         
         for (int i = 0; i < domains.length; i++) {
             buffer.append("treeAddItem(0, '");
@@ -103,7 +103,8 @@ class AdminScript {
             buffer.append("', 'domain', '");
             buffer.append(domains[i].getName());
             buffer.append("', ");
-            buffer.append(getString(domains[i].getDescription()));
+            str = domains[i].getDescription();
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(", 1);\n");
         }
         return buffer.toString();
@@ -124,6 +125,7 @@ class AdminScript {
         throws ContentException {
 
         StringBuffer    buffer = new StringBuffer();
+        String          str;
 
         buffer.append("treeAddContainer('");
         buffer.append(domain.getName());
@@ -136,9 +138,11 @@ class AdminScript {
             buffer.append(", '");
             buffer.append(AdminUtils.getCategory(children[i]));
             buffer.append("', ");
-            buffer.append(getString(children[i].getName()));
+            str = children[i].getName();
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(", ");
-            buffer.append(getString(children[i].toString()));
+            str = children[i].toString();
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(", ");
             buffer.append(getContentStatus(children[i]));
             buffer.append(");\n");
@@ -164,6 +168,7 @@ class AdminScript {
         throws ContentException {
 
         StringBuffer    buffer = new StringBuffer();
+        String          str;
 
         buffer.append("treeAddContainer(");
         buffer.append(parent.getId());
@@ -176,9 +181,11 @@ class AdminScript {
             buffer.append(", '");
             buffer.append(AdminUtils.getCategory(children[i]));
             buffer.append("', ");
-            buffer.append(getString(children[i].getName()));
+            str = children[i].getName();
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(", ");
-            buffer.append(getString(children[i].toString()));
+            str = children[i].toString();
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(", ");
             buffer.append(getContentStatus(children[i]));
             buffer.append(");\n");
@@ -206,6 +213,7 @@ class AdminScript {
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
+        String        str;
 
         buffer.append("objectShow('domain', '");
         buffer.append(domain.getName());
@@ -213,7 +221,8 @@ class AdminScript {
         buffer.append(domain.getName());
         buffer.append("');\n");
         buffer.append("objectAddProperty('Description', ");
-        buffer.append(getString(domain.getDescription()));
+        str = domain.getDescription();
+        buffer.append(AdminUtils.getScriptString(str));
         buffer.append(");\n");
         buffer.append(getButtons(user, domain));
         buffer.append(getHosts(domain));
@@ -244,15 +253,15 @@ class AdminScript {
         buffer.append("', ");
         buffer.append(content.getId());
         buffer.append(", ");
-        buffer.append(getString(content.getName()));
+        buffer.append(AdminUtils.getScriptString(content.getName()));
         buffer.append(");\n");
         buffer.append("objectAddUrlProperty(");
-        buffer.append(getString(getContentUrl(content)));
+        buffer.append(AdminUtils.getScriptString(getContentUrl(content)));
         buffer.append(");\n");
         buffer.append("objectAddOnlineProperty(");
-        buffer.append(getDate(content.getOnlineDate()));
+        buffer.append(AdminUtils.getScriptDate(content.getOnlineDate()));
         buffer.append(", ");
-        buffer.append(getDate(content.getOfflineDate()));
+        buffer.append(AdminUtils.getScriptDate(content.getOfflineDate()));
         buffer.append(");\n");
         buffer.append("objectAddStatusProperty(");
         buffer.append(status);
@@ -401,6 +410,7 @@ class AdminScript {
 
         StringBuffer  buffer = new StringBuffer();
         Host[]        hosts;
+        String        str;
         
         hosts = domain.getHosts();
         if (hosts.length == 0) {
@@ -408,9 +418,10 @@ class AdminScript {
         }
         for (int i = 0; i < hosts.length; i++) {
             buffer.append("objectAddHost(");
-            buffer.append(getString(hosts[i].getName()));
+            buffer.append(AdminUtils.getScriptString(hosts[i].getName()));
             buffer.append(", ");
-            buffer.append(getString(hosts[i].getDescription()));
+            str = hosts[i].getDescription();
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(");\n");
         }
         return buffer.toString();
@@ -467,11 +478,11 @@ class AdminScript {
             buffer.append(revision.getRevisionNumber());
         }
         buffer.append(", ");
-        buffer.append(getDate(revision.getModifiedDate()));
+        buffer.append(AdminUtils.getScriptDate(revision.getModifiedDate()));
         buffer.append(", ");
-        buffer.append(getString(revision.getAuthorName()));
+        buffer.append(AdminUtils.getScriptString(revision.getAuthorName()));
         buffer.append(", ");
-        buffer.append(getString(revision.getComment()));
+        buffer.append(AdminUtils.getScriptString(revision.getComment()));
         buffer.append(", ");
         if (revision instanceof ContentFile) {
             buffer.append("'view.html");
@@ -562,6 +573,7 @@ class AdminScript {
      */
     private String getPermission(Permission perm, boolean inherited) {
         StringBuffer  buffer = new StringBuffer();
+        String        str;
         
         buffer.append("objectAddPermission(");
         if (perm == null) {
@@ -570,13 +582,15 @@ class AdminScript {
             if (perm.getUserName().equals("")) {
                 buffer.append("null");
             } else {
-                buffer.append(getString(perm.getUserName()));
+                str = perm.getUserName();
+                buffer.append(AdminUtils.getScriptString(str));
             }
             buffer.append(", ");
             if (perm.getGroupName().equals("")) {
                 buffer.append("null");
             } else {
-                buffer.append(getString(perm.getGroupName()));
+                str = perm.getGroupName();
+                buffer.append(AdminUtils.getScriptString(str));
             }
             buffer.append(", ");
             buffer.append(perm.getRead());
@@ -654,7 +668,7 @@ class AdminScript {
         if (lock == null) {
             return "null";
         } else {
-            return getString(lock.getUserName());
+            return AdminUtils.getScriptString(lock.getUserName());
         }
     }
 
@@ -672,9 +686,10 @@ class AdminScript {
     public String getTemplateElements(ContentTemplate template) 
         throws ContentException {
 
-        StringBuffer    buffer = new StringBuffer();
-        Iterator        iter = null;
-        String          name;
+        StringBuffer  buffer = new StringBuffer();
+        Iterator      iter = null;
+        String        name;
+        String        str;
 
         buffer.append("templateRemoveAllInherited();\n");
         if (template != null) {
@@ -683,67 +698,14 @@ class AdminScript {
         while (iter != null && iter.hasNext()) {
             name = iter.next().toString();
             buffer.append("templateAddInherited(");
-            buffer.append(getString(name));
+            buffer.append(AdminUtils.getScriptString(name));
             buffer.append(", ");
-            buffer.append(getString(template.getElement(name)));
+            str = template.getElement(name);
+            buffer.append(AdminUtils.getScriptString(str));
             buffer.append(");\n");
         }
         buffer.append("templateDisplay();\n");
         return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript representation of a date.
-     * 
-     * @param date           the date to present, or null
-     * 
-     * @return a JavaScript representation of the date
-     */
-    private String getDate(Date date) {
-        if (date == null) {
-            return "null";
-        } else {
-            return getString(AdminUtils.formatDate(date)); 
-        }
-    }
-
-    /**
-     * Returns the JavaScript representation of a string. This method
-     * will take care of required character escapes. 
-     * 
-     * @param str            the string to present, or null
-     * 
-     * @return a JavaScript representation of the string
-     */
-    public String getString(String str) {
-        StringBuffer  buffer = new StringBuffer();
-
-        if (str == null) {
-            return "null";
-        } else {
-            buffer.append("'");
-            for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) == '\\') {
-                    buffer.append("\\\\");
-                } else if (str.charAt(i) == '\n') {
-                    buffer.append("\\n");
-                } else if (str.charAt(i) == '\r') {
-                    buffer.append("\\r");
-                } else if (str.charAt(i) == '\'') {
-                    buffer.append("\\'");
-                } else if (str.charAt(i) == '"') {
-                    buffer.append("\\\"");
-                } else if (str.charAt(i) == '<') {
-                    buffer.append("\\<");
-                } else if (str.charAt(i) == '>') {
-                    buffer.append("\\>");
-                } else {
-                    buffer.append(str.charAt(i));
-                }
-            }
-            buffer.append("'");
-            return buffer.toString();
-        }
     }
 
     /**
