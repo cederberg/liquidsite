@@ -39,6 +39,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.web.Request;
@@ -320,7 +321,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      */
     private void processLoadSite(Request request) throws RequestException {
-        Object  obj;
+        PersistentObject  obj;
 
         try {
             obj = AdminUtils.getReference(request);
@@ -342,7 +343,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      */
     private void processLoadContent(Request request) throws RequestException {
-        Object  obj;
+        PersistentObject  obj;
 
         try {
             obj = AdminUtils.getReference(request);
@@ -364,7 +365,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      */
     private void processOpenSite(Request request) throws RequestException {
-        Object  obj;
+        PersistentObject  obj;
 
         try {
             obj = AdminUtils.getReference(request);
@@ -386,7 +387,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      */
     private void processOpenContent(Request request) throws RequestException {
-        Object  obj;
+        PersistentObject  obj;
 
         try {
             obj = AdminUtils.getReference(request);

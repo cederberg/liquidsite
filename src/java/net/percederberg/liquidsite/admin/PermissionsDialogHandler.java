@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.PermissionList;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.web.FormValidationException;
@@ -68,7 +69,7 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object  obj = AdminUtils.getReference(request);
+        PersistentObject  obj = AdminUtils.getReference(request);
 
         AdminView.DIALOG.viewPermissions(request, obj);
     }

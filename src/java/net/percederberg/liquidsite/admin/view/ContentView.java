@@ -35,6 +35,7 @@ import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
@@ -105,30 +106,25 @@ public class ContentView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewAddObject(Request request, Object parent)
+    public void viewAddObject(Request request, PersistentObject parent)
         throws ContentException {
 
-        User     user = request.getUser();
-        Domain   domain;
-        Content  content;
+        User  user = request.getUser();
 
         AdminUtils.setReference(request, parent);
         if (parent instanceof Domain) {
-            domain = (Domain) parent;
-            if (domain.hasWriteAccess(user)) {
+            if (parent.hasWriteAccess(user)) {
                 request.setAttribute("enableSection", true);
             }
         }
         if (parent instanceof ContentSection) {
-            content = (Content) parent;
-            if (content.hasWriteAccess(user)) {
+            if (parent.hasWriteAccess(user)) {
                 request.setAttribute("enableSection", true);
                 request.setAttribute("enableDocument", true);
             }
         }
         if (parent instanceof ContentDocument) {
-            content = (Content) parent;
-            if (content.hasWriteAccess(user)) {
+            if (parent.hasWriteAccess(user)) {
                 request.setAttribute("enableFile", true);
             }
         }
@@ -147,7 +143,7 @@ public class ContentView extends AdminView {
      *             properly
      */
     public void viewEditSection(Request request,
-                                Object parent,
+                                PersistentObject parent,
                                 ContentSection section)
         throws ContentException {
 
@@ -349,7 +345,7 @@ public class ContentView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditFile(Request request, Object reference)
+    public void viewEditFile(Request request, PersistentObject reference)
         throws ContentException {
 
         ContentFile  file;
@@ -433,7 +429,7 @@ public class ContentView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewLoadContentScript(Request request, Object obj)
+    public void viewLoadContentScript(Request request, PersistentObject obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -458,7 +454,7 @@ public class ContentView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewOpenContentScript(Request request, Object obj)
+    public void viewOpenContentScript(Request request, PersistentObject obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -558,7 +554,7 @@ public class ContentView extends AdminView {
      * @return true if the object should be shown, or
      *         false otherwise
      */
-    private boolean isViewable(Object obj) {
+    private boolean isViewable(PersistentObject obj) {
         return obj instanceof Domain
             || obj instanceof ContentSection;
     }

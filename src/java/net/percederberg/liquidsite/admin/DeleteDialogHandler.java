@@ -26,6 +26,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.web.Request;
 
 /**
@@ -59,7 +60,7 @@ class DeleteDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object  ref = AdminUtils.getReference(request);
+        PersistentObject  ref = AdminUtils.getReference(request);
 
         AdminView.DIALOG.viewDelete(request, ref);
     }

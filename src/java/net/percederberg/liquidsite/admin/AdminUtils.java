@@ -33,6 +33,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
@@ -272,10 +273,11 @@ public class AdminUtils {
     }
 
     /**
-     * Checks is a specified content object is online. This method
-     * will check that all parent content objects are also online.
+     * Checks is a specified object is online. This method will check
+     * that all parent content objects are also online. For domain
+     * objects or null, this method always returns true.
      *
-     * @param content        the content object
+     * @param obj             the domain or content object
      *
      * @return true if the object and all parents are online, or
      *         false otherwise
@@ -283,15 +285,16 @@ public class AdminUtils {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public static boolean isOnline(Content content)
+    public static boolean isOnline(Object obj)
         throws ContentException {
 
-        if (content == null) {
-            return true;
-        } else if (!content.isOnline()) {
-            return false;
+        Content  content;
+
+        if (obj instanceof Content) {
+            content = (Content) obj;
+            return content.isOnline() && isOnline(content.getParent());
         } else {
-            return isOnline(content.getParent());
+            return true;
         }
     }
 
@@ -310,7 +313,7 @@ public class AdminUtils {
      * @throws ContentSecurityException if the user didn't have the
      *             required permissions
      */
-    public static Object getReference(Request request)
+    public static PersistentObject getReference(Request request)
         throws ContentException, ContentSecurityException {
 
         User     user = request.getUser();
@@ -340,7 +343,7 @@ public class AdminUtils {
      * @param request        the request
      * @param obj            the domain or content object
      */
-    public static void setReference(Request request, Object obj) {
+    public static void setReference(Request request, PersistentObject obj) {
         Content  content;
 
         if (obj instanceof Domain) {
@@ -362,6 +365,7 @@ public class AdminUtils {
      * @return the processed HTML markup
      */
     public static String cleanHtml(String html) {
+        // TODO: move to separate validation class
         while (html.endsWith("<br>")) {
             html = html.substring(0, html.length() - 4);
         }

@@ -37,6 +37,7 @@ import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.Request;
@@ -73,8 +74,8 @@ class SiteAddFormHandler extends AdminFormHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        String  category = request.getParameter("category", "");
-        Object  parent = AdminUtils.getReference(request);
+        String            category = request.getParameter("category", "");
+        PersistentObject  parent = AdminUtils.getReference(request);
 
         if (step == 1) {
             AdminView.SITE.viewAddObject(request, parent);
@@ -85,9 +86,9 @@ class SiteAddFormHandler extends AdminFormHandler {
         } else if (category.equals("folder")) {
             AdminView.SITE.viewEditFolder(request, parent, null);
         } else if (category.equals("page")) {
-            AdminView.SITE.viewEditPage(request, parent);
+            AdminView.SITE.viewEditPage(request, (Content) parent);
         } else if (category.equals("file")) {
-            AdminView.SITE.viewEditFile(request, parent);
+            AdminView.SITE.viewEditFile(request, (Content) parent);
         } else if (category.equals("template")) {
             AdminView.SITE.viewEditTemplate(request, parent, null);
         } else {

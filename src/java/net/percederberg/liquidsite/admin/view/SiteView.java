@@ -37,6 +37,7 @@ import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
@@ -107,7 +108,7 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewAddObject(Request request, Object parent)
+    public void viewAddObject(Request request, PersistentObject parent)
         throws ContentException {
 
         User     user = request.getUser();
@@ -148,9 +149,9 @@ public class SiteView extends AdminView {
      * Shows the add domain page.
      *
      * @param request        the request object
-     * @param parent         the parent object
+     * @param parent         the "parent" object, used on cancel
      */
-    public void viewAddDomain(Request request, Object parent) {
+    public void viewAddDomain(Request request, PersistentObject parent) {
         AdminUtils.setReference(request, parent);
         request.setAttribute("name", request.getParameter("name", ""));
         request.setAttribute("description",
@@ -168,7 +169,7 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditSite(Request request, Object reference)
+    public void viewEditSite(Request request, PersistentObject reference)
         throws ContentException {
 
         Domain       domain;
@@ -238,12 +239,11 @@ public class SiteView extends AdminView {
      * @throws ContentSecurityException if the user didn't have read
      *             access to the template
      */
-    public void viewEditPage(Request request, Object reference)
+    public void viewEditPage(Request request, Content reference)
         throws ContentException, ContentSecurityException {
 
         User         user = request.getUser();
         ContentPage  page;
-        Content      content;
         ContentSite  site;
         String       name;
         int          parent;
@@ -282,13 +282,12 @@ public class SiteView extends AdminView {
                 locals.put(str, AdminUtils.getScriptString(value));
             }
         } else {
-            content = (Content) reference;
             name = "";
             parent = 0;
             template = "0";
-            templates = findTemplates(user, content.getDomain(), null);
+            templates = findTemplates(user, reference.getDomain(), null);
             section = 0;
-            sections = findSections(user, content.getDomain(), null);
+            sections = findSections(user, reference.getDomain(), null);
             comment = "Created";
         }
 
@@ -343,7 +342,7 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditFile(Request request, Object reference)
+    public void viewEditFile(Request request, Content reference)
         throws ContentException {
 
         ContentFile  file;
@@ -413,7 +412,7 @@ public class SiteView extends AdminView {
      *             properly
      */
     public void viewEditFolder(Request request,
-                               Object parent,
+                               PersistentObject parent,
                                ContentFolder folder)
         throws ContentException {
 
@@ -475,7 +474,7 @@ public class SiteView extends AdminView {
      *             properly
      */
     public void viewEditTemplate(Request request,
-                                 Object parent,
+                                 PersistentObject parent,
                                  ContentTemplate template)
         throws ContentException {
 
@@ -596,7 +595,7 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewLoadSiteScript(Request request, Object obj)
+    public void viewLoadSiteScript(Request request, PersistentObject obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -621,7 +620,7 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewOpenSiteScript(Request request, Object obj)
+    public void viewOpenSiteScript(Request request, PersistentObject obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -754,7 +753,7 @@ public class SiteView extends AdminView {
      * @return true if the object should be shown, or
      *         false otherwise
      */
-    private boolean isViewable(Object obj) {
+    private boolean isViewable(PersistentObject obj) {
         return obj instanceof Domain
             || obj instanceof ContentSite
             || obj instanceof ContentFolder

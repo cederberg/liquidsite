@@ -36,6 +36,7 @@ import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.Request;
 import net.percederberg.liquidsite.web.Request.FileParameter;
@@ -71,8 +72,8 @@ public class ContentAddFormHandler extends AdminFormHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        String  category = request.getParameter("category", "");
-        Object  parent = AdminUtils.getReference(request);
+        String            category = request.getParameter("category", "");
+        PersistentObject  parent = AdminUtils.getReference(request);
 
         if (step == 1) {
             AdminView.CONTENT.viewAddObject(request, parent);

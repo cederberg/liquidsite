@@ -33,6 +33,7 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.PermissionList;
+import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
@@ -97,7 +98,7 @@ public class DialogView extends AdminView {
      * @param request        the request object
      * @param obj            the object to delete
      */
-    public void viewDelete(Request request, Object obj) {
+    public void viewDelete(Request request, PersistentObject obj) {
         String  name;
 
         AdminUtils.setReference(request, obj);
@@ -226,7 +227,7 @@ public class DialogView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewPermissions(Request request, Object obj)
+    public void viewPermissions(Request request, PersistentObject obj)
         throws ContentException {
 
         Domain     domain;
