@@ -1,4 +1,4 @@
-<#assign isadd = liquidsite.page.path?ends_with("add-site.html")>
+<#assign isadd = liquidsite.request.path?ends_with("add-site.html")>
 <#assign onload = "initialize()">
 <#include "header.ftl">
 

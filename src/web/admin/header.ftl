@@ -9,7 +9,7 @@
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <meta http-equiv="Content-Language" content="en" />
     <meta name="robots" content="noindex,nofollow" />
-    <link rel="stylesheet" href="style.css" type="text/css" />
+    <link rel="stylesheet" href="${liquidsite.linkTo('/style.css')}" type="text/css" />
     <title>Liquid Site Administration</title>
   </head>
 
@@ -22,7 +22,7 @@
     <table class="menu">
       <tr>
         <td class="logo" rowspan="2">
-          <img src="images/liquidsite.jpeg" alt="Liquid Site" />
+          <img src="${liquidsite.linkTo('/images/liquidsite.jpeg')}" alt="Liquid Site" />
         </td>
         <td class="title" colspan="12">
           <h1>Liquid Site Administration</h1>
@@ -41,7 +41,7 @@
       <tr>
         <td class="space">&nbsp;</td>
 <#macro menutab name page isindex=false>
-  <#local url = liquidsite.page.path>
+  <#local url = liquidsite.request.path>
         <td class="space">&nbsp;</td>
   <#if url?ends_with(page)>
         <td class="active"
@@ -76,7 +76,7 @@
     <@menutab name="System" page="system.html" />
   </#if>
 <#else>
-  <@menutab name="Login" page=liquidsite.page.path />
+  <@menutab name="Login" page=liquidsite.request.path />
 </#if>
         <td class="filler">&nbsp;</td>
       </tr>

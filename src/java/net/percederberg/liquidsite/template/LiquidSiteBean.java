@@ -23,12 +23,16 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 
 /**
@@ -41,6 +45,11 @@ import net.percederberg.liquidsite.content.Domain;
 public class LiquidSiteBean {
 
     /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(LiquidSiteBean.class);
+
+    /**
      * The request being processed. 
      */
     private Request request;
@@ -51,24 +60,36 @@ public class LiquidSiteBean {
     private ContentManager manager;
 
     /**
-     * The site bean.
+     * The request bean.
      */
-    private SiteBean site = null;
-
-    /**
-     * The page bean.
-     */
-    private PageBean page = null;
+    private RequestBean requestBean = null;
 
     /**
      * The document bean.
      */
-    private DocumentBean doc = null;
+    private DocumentBean docBean = null;
 
     /**
      * The user bean.
      */
-    private UserBean user = null;
+    private UserBean userBean = null;
+
+    /**
+     * The relative path to the site root directory. The path is
+     * relative to the request URL and may be empty if the request
+     * refers to an object in the site root directory. Otherwise the
+     * path ends with an "/" character. 
+     */
+    private String sitePath = null;
+    
+    /**
+     * The relative path to the page directory. The path is relative
+     * to the request URL and may be empty if the request refers to
+     * an object in the page directory. Otherwise the path ends with
+     * an "/" character. Note that the page path is NOT always an
+     * empty string (consider dynamic pages linked to sections).
+     */
+    private String pagePath = null;
 
     /**
      * Creates a new LiquidSite template bean.
@@ -100,51 +121,155 @@ public class LiquidSiteBean {
     }
 
     /**
-     * Returns the site bean for the current site. 
+     * Returns the request bean. 
      *
-     * @return the site bean for the current site
+     * @return the request bean
      */
-    public SiteBean getSite() {
-        if (site == null) {
-            site = new SiteBean(request);
+    public RequestBean getRequest() {
+        if (requestBean == null) {
+            requestBean = new RequestBean(request);
         }
-        return site;
+        return requestBean;
     }
 
     /**
-     * Returns the page bean for the current page. 
+     * Returns the document bean. 
      *
-     * @return the page bean for the current page
-     */
-    public PageBean getPage() {
-        if (page == null) {
-            page = new PageBean(request);
-        }
-        return page;
-    }
-
-    /**
-     * Returns the page bean for the current page. 
-     *
-     * @return the page bean for the current page
+     * @return the document bean
      */
     public DocumentBean getDoc() {
-        if (doc == null) {
-            doc = new DocumentBean(request.getEnvironment().getDocument());
+        if (docBean == null) {
+            docBean = new DocumentBean(request.getEnvironment().getDocument());
         }
-        return doc;
+        return docBean;
     }
 
     /**
-     * Returns the user bean for the currently logged in user. 
+     * Returns the user bean for the current user. 
      *
-     * @return the user bean for the currently logged in user
+     * @return the user bean for the current user
      */
     public UserBean getUser() {
-        if (user == null) {
-            user = new UserBean(request.getUser());
+        if (userBean == null) {
+            userBean = new UserBean(request.getUser());
         }
-        return user;
+        return userBean;
+    }
+
+    /**
+     * Returns the relative path to the site root directory. The path
+     * is relative to the request URL and may be empty if the request
+     * refers to an object in the site root directory. Otherwise the
+     * path ends with an "/" character. The result of this method
+     * will be stored in an instance variable to avoid calculations
+     * on further requests.
+     * 
+     * @return the relative path to the site root directory
+     */
+    private String getSitePath() {
+        ContentSite   site;
+
+        if (sitePath == null) {
+            site = request.getEnvironment().getSite();
+            sitePath = getRelativePath(site.getDirectory());
+        }
+        return sitePath;
+    }
+    
+    /**
+     * Returns the relative path to the page directory. The path is
+     * relative to the request URL and may be empty if the request
+     * refers directly to an object in the page directory. Otherwise
+     * the path ends with an "/" character. Note that the page path 
+     * is NOT always an empty string (consider dynamic pages linked
+     * to sections).
+     * 
+     * @return the relative path to the page directory
+     */
+    private String getPagePath() {
+        ContentPage   page;
+
+        if (pagePath == null) {
+            page = request.getEnvironment().getPage();
+            if (page == null) {
+                pagePath = getSitePath();
+            } else {
+                try {
+                    pagePath = getRelativePath(getContentPath(page));
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                    pagePath = "";
+                }
+            }
+        }
+        return pagePath;
+    }
+
+    /**
+     * Returns the absolute path to a content object.
+     *
+     * @param content        the content object
+     *
+     * @return the absolute path to a content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getContentPath(Content content) throws ContentException {
+        if (content instanceof ContentSite) {
+            return request.getEnvironment().getSite().getDirectory();
+        } else if (content instanceof ContentFolder) {
+            return getContentPath(content.getParent()) +
+                   content.getName() + "/";
+        } else if (content != null) {
+            return getContentPath(content.getParent());
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the relative path to a specified base path. The
+     * specified path is assumed to be a part of the complete request
+     * path. This method will return an empty string if the request 
+     * refers to a object in the specified directory.  
+     *
+     * @param basePath       the absolute base path
+     *
+     * @return the relative path to the base path for the request
+     */
+    private String getRelativePath(String basePath) {
+        StringBuffer  buffer = new StringBuffer();
+        String        path;
+        int           pos;
+
+        path = request.getPath();
+        path = path.substring(basePath.length() + 1);
+        while ((pos = path.indexOf('/')) >= 0) {
+            buffer.append("../");
+            path = path.substring(pos + 1);
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns a relative link to an object in the same site. If the
+     * specified path starts with '/' it is assumed to be relative to
+     * the site root directory, otherwise it is assumed to be
+     * relative to the page directory. Note that the page directory 
+     * is NOT always an empty string (consider dynamic pages linked
+     * to sections).
+     *
+     * @param path           the site- or page-relative link path
+     *
+     * @return the path relative to the request path
+     */
+    public String linkTo(String path) {
+        if (path.startsWith("/")) {
+            return getSitePath() + path.substring(1);
+        } else {
+            return getPagePath() + path;
+        }
     }
 
     /**
@@ -161,17 +286,16 @@ public class LiquidSiteBean {
 
         // TODO: add sorting (and remove the one that exists)
         // TODO: add filtering
-        // TODO: add content publish checks (online)
         try {
             domain = request.getEnvironment().getDomain();
             section = findSection(path, domain);
             if (section == null) {
-                // TODO: log this
+                LOG.error("failed to find section: " + path);
             } else {
                 findDocuments(section, result);
             }
         } catch (ContentException e) {
-            // TODO: log this!
+            LOG.error(e.getMessage());
         }
         return result;
     }

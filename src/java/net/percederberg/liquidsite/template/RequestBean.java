@@ -1,5 +1,5 @@
 /*
- * PageBean.java
+ * RequestBean.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,13 +24,13 @@ package net.percederberg.liquidsite.template;
 import net.percederberg.liquidsite.Request;
 
 /**
- * A page template bean. This class is used to insert the page object
- * in the into the template data model.
+ * A request bean. This class is used to access the request object
+ * from the templates.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class PageBean {
+public class RequestBean {
 
     /**
      * The request being processed. 
@@ -38,20 +38,40 @@ public class PageBean {
     private Request request;
 
     /**
-     * Creates a new page template bean.
-     * 
-     * @param request        the request object
+     * Creates a new request bean.
+     *
+     * @param request        the request
      */
-    PageBean(Request request) {
+    RequestBean(Request request) {
         this.request = request;
     }
-    
+
     /**
-     * Returns the full page URL path.
-     * 
-     * @return the full page URL path
+     * Returns the request path.
+     *
+     * @return the request path
      */
     public String getPath() {
         return request.getPath();
+    }
+
+    /**
+     * Returns the complete request URL. The URL will NOT include
+     * request parameters or similar.
+     *
+     * @return the complete request URL
+     */
+    public String getUrl() {
+        StringBuffer  buffer = new StringBuffer();
+
+        buffer.append(request.getProtocol());
+        buffer.append("://");
+        buffer.append(request.getHost());
+        if (request.getPort() != 80) {
+            buffer.append(":");
+            buffer.append(request.getPort());
+        }
+        buffer.append(request.getPath());
+        return buffer.toString();
     }
 }
