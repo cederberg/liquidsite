@@ -208,8 +208,8 @@ public class Site extends Content {
     }
 
     /**
-     * Returns the base directory. The base directory always ends 
-     * with a '/' character.
+     * Returns the base directory. The base directory always starts
+     * and ends with a '/' character.
      * 
      * @return the base directory
      */
@@ -225,7 +225,11 @@ public class Site extends Content {
     public void setDirectory(String directory) {
         if (directory == null) {
             directory = "/";
-        } else if (!directory.endsWith("/")) {
+        }
+        if (!directory.startsWith("/")) {
+            directory = "/" + directory;
+        }
+        if (!directory.endsWith("/")) {
             directory += "/";
         }
         setAttribute(DIRECTORY_ATTRIBUTE, directory);
