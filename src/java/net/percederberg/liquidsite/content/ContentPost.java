@@ -1,0 +1,213 @@
+/*
+ * ContentPost.java
+ *
+ * This work is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * This work is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA
+ *
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ */
+
+package net.percederberg.liquidsite.content;
+
+import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.ContentData;
+
+/**
+ * A discussion forum post.
+ *
+ * @author   Per Cederberg, <per at percederberg dot net>
+ * @version  1.0
+ */
+public class ContentPost extends Content {
+
+    /**
+     * The subject content attribute.
+     */
+    private static final String SUBJECT_ATTRIBUTE = "SUBJECT";
+
+    /**
+     * The text content attribute.
+     */
+    private static final String TEXT_ATTRIBUTE = "TEXT";
+
+    /**
+     * The text type content attribute.
+     */
+    private static final String TEXT_TYPE_ATTRIBUTE = "TEXTTYPE";
+
+    /**
+     * The plain text type constant. This text type is used for text
+     * without other formatting than linebreaks. All text will appear
+     * just as typed and may be escaped depending on output media.
+     */
+    public static final int PLAIN_TEXT_TYPE = 1;
+
+    /**
+     * The tagged text type constant. This text type is used for text
+     * with simplified tag formatting, similar to the tagged text used
+     * document properties.
+     */
+    public static final int TAGGED_TEXT_TYPE = 2;
+
+    /**
+     * Creates a new post with default values.
+     *
+     * @param manager        the content manager to use
+     * @param parent         the parent content thread
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public ContentPost(ContentManager manager, ContentThread parent)
+        throws ContentException {
+
+        super(manager, parent.getDomain(), Content.POST_CATEGORY);
+        setParent(parent);
+        setAttribute(SUBJECT_ATTRIBUTE, "");
+        setAttribute(TEXT_ATTRIBUTE, "");
+        setAttribute(TEXT_TYPE_ATTRIBUTE, String.valueOf(PLAIN_TEXT_TYPE));
+    }
+
+    /**
+     * Creates a new post.
+     *
+     * @param manager        the content manager to use
+     * @param data           the content data object
+     * @param con            the database connection to use
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected ContentPost(ContentManager manager,
+                          ContentData data,
+                          DatabaseConnection con)
+        throws ContentException {
+
+        super(manager, data, con);
+    }
+
+    /**
+     * This method does nothing. It has be overridded to prohibit
+     * setting the post object name. The name is set automatically
+     * upon insertion.
+     *
+     * @param name           the new name
+     */
+    public void setName(String name) {
+        // Do nothing
+    }
+
+    /**
+     * Returns the post subject.
+     *
+     * @return the post subject
+     */
+    public String getSubject() {
+        return getAttribute(SUBJECT_ATTRIBUTE);
+    }
+
+    /**
+     * Sets the post subject.
+     *
+     * @param subject        the new post subject
+     */
+    public void setSubject(String subject) {
+        setAttribute(SUBJECT_ATTRIBUTE, subject);
+    }
+
+    /**
+     * Returns the post text.
+     *
+     * @return the post text
+     */
+    public String getText() {
+        return getAttribute(TEXT_ATTRIBUTE);
+    }
+
+    /**
+     * Sets the post text.
+     *
+     * @param text           the new post text
+     */
+    public void setText(String text) {
+        setAttribute(TEXT_ATTRIBUTE, text);
+    }
+
+    /**
+     * Returns the post text type.
+     *
+     * @return the post text type
+     *
+     * @see #PLAIN_TEXT_TYPE
+     * @see #TAGGED_TEXT_TYPE
+     */
+    public int getTextType() {
+        return Integer.parseInt(getAttribute(TEXT_TYPE_ATTRIBUTE));
+    }
+
+    /**
+     * Sets the post text type.
+     *
+     * @param type           the new post text type
+     *
+     * @see #PLAIN_TEXT_TYPE
+     * @see #TAGGED_TEXT_TYPE
+     */
+    public void setTextType(int type) {
+        setAttribute(TEXT_TYPE_ATTRIBUTE, String.valueOf(type));
+    }
+
+    /**
+     * Validates this data object. This method checks that all
+     * required fields have been filled with suitable values.
+     *
+     * @throws ContentException if the data object contained errors
+     */
+    public void validate() throws ContentException {
+        super.validate();
+        if (getParent() == null) {
+            throw new ContentException("no parent set for forum");
+        }
+        if (getName().equals("")) {
+            super.setName(createName());
+        }
+    }
+
+    /**
+     * Creates a new name for the post. The name will be the next
+     * available number among the parent thread posts.
+     *
+     * @return the new name
+     */
+    private String createName() throws ContentException {
+        ContentSelector  selector;
+        Content[]        children;
+        int              value;
+
+        selector = new ContentSelector(getDomainName());
+        selector.requireParent(getParent());
+        selector.requireCategory(getCategory());
+        selector.sortById(false);
+        selector.limitResults(0, 1);
+        children = InternalContent.findBySelector(getContentManager(),
+                                                  selector);
+        if (children.length == 0) {
+            return "1";
+        } else {
+            value = Integer.parseInt(children[0].getName());
+            return String.valueOf(value + 1);
+        }
+    }
+}

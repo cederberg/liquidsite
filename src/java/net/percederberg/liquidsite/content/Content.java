@@ -88,6 +88,21 @@ public abstract class Content extends PersistentObject {
     public static final int DOCUMENT_CATEGORY = 12;
 
     /**
+     * The forum content category.
+     */
+    public static final int FORUM_CATEGORY = 13;
+
+    /**
+     * The thread content category.
+     */
+    public static final int THREAD_CATEGORY = 14;
+
+    /**
+     * The post content category.
+     */
+    public static final int POST_CATEGORY = 15;
+
+    /**
      * The content data object.
      */
     private ContentData data;
