@@ -56,7 +56,12 @@ abstract class AdminFormHandler extends FormHandler {
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
-     * The administration site view helper.
+     * The dialog view helper.
+     */
+    protected static final DialogView DIALOG_VIEW = new DialogView();
+
+    /**
+     * The site view helper.
      */
     protected static final AdminView SITE_VIEW = new AdminView();
 

@@ -57,7 +57,7 @@ class UnlockDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        SITE_VIEW.dialogUnlock(request, (Content) getReference(request));
+        DIALOG_VIEW.viewUnlock(request, (Content) getReference(request));
     }
 
     /**

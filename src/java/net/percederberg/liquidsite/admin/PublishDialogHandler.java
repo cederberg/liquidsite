@@ -64,7 +64,7 @@ class PublishDialogHandler extends AdminDialogHandler {
 
         Content  content = (Content) getReference(request);
 
-        SITE_VIEW.dialogPublish(request, content);
+        DIALOG_VIEW.viewPublish(request, content);
     }
 
     /**

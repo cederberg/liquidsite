@@ -55,7 +55,7 @@ abstract class AdminDialogHandler extends AdminFormHandler {
      * @param request        the request object
      */
     protected void displayDone(Request request) {
-        SITE_VIEW.dialogClose(request);
+        DIALOG_VIEW.viewClose(request);
     }
 
     /**
@@ -67,6 +67,6 @@ abstract class AdminDialogHandler extends AdminFormHandler {
      * @param message        the error message
      */
     protected void displayError(Request request, String message) {
-        SITE_VIEW.dialogError(request, message);
+        DIALOG_VIEW.viewError(request, message);
     }
 }

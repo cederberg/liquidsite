@@ -31,8 +31,10 @@ import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A controller for requests to the administration site(s).
@@ -224,7 +226,7 @@ public class AdminController extends Controller {
         String   revision;
 
         try {
-            content = (Content) view.getRequestReference(request);
+            content = (Content) getRequestReference(request);
             revision = request.getParameter("revision");
             if (revision != null) {
                 content = content.getRevision(Integer.parseInt(revision));
@@ -256,7 +258,7 @@ public class AdminController extends Controller {
         Object  obj;
 
         try {
-            obj = view.getRequestReference(request);
+            obj = getRequestReference(request);
             view.scriptLoadSite(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -278,7 +280,7 @@ public class AdminController extends Controller {
         Object  obj;
 
         try {
-            obj = view.getRequestReference(request);
+            obj = getRequestReference(request);
             view.scriptOpenSite(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -316,6 +318,36 @@ public class AdminController extends Controller {
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
+     * Returns the domain or content referenced by in a request.
+     * 
+     * @param request        the request
+     * 
+     * @return the domain or content object referenced, or
+     *         null if not found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private Object getRequestReference(Request request) 
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        String          type = request.getParameter("type");
+        String          id = request.getParameter("id");
+
+        if (type == null || id == null) {
+            return null;
+        } else if (type.equals("domain")) {
+            return manager.getDomain(user, id);
+        } else {
+            return manager.getContent(user, Integer.parseInt(id));
         }
     }
 }

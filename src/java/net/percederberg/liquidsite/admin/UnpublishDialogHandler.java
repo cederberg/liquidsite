@@ -63,7 +63,7 @@ class UnpublishDialogHandler extends AdminDialogHandler {
 
         Content  content = (Content) getReference(request);
 
-        SITE_VIEW.dialogUnpublish(request, content);
+        DIALOG_VIEW.viewUnpublish(request, content);
     }
 
     /**

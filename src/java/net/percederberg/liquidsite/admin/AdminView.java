@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.admin;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -53,7 +52,7 @@ class AdminView {
     /**
      * The date format used by this class.
      */
-    private static final SimpleDateFormat DATE_FORMAT = 
+    public static final SimpleDateFormat DATE_FORMAT = 
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
@@ -65,142 +64,6 @@ class AdminView {
      * Creates a new admin view helper.
      */
     public AdminView() {
-    }
-
-    /**
-     * Shows the automatic close dialog.
-     * 
-     * @param request        the request object
-     */
-    public void dialogClose(Request request) {
-        request.sendTemplate("admin/dialog/close.ftl");
-    }
-
-    /**
-     * Shows the error message dialog.
-     * 
-     * @param request        the request object
-     * @param message        the error message
-     */
-    public void dialogError(Request request, String message) {
-        request.setAttribute("error", message);
-        request.sendTemplate("admin/dialog/error.ftl");
-    }
-
-    /**
-     * Shows the error message dialog.
-     * 
-     * @param request        the request object
-     * @param e              the content database error
-     */
-    public void dialogError(Request request, ContentException e) {
-        dialogError(request, "Database access error, " + e.getMessage());
-    }
-
-    /**
-     * Shows the error message dialog.
-     * 
-     * @param request        the request object
-     * @param e              the content security error
-     */
-    public void dialogError(Request request, ContentSecurityException e) {
-        dialogError(request, "Security violation, " + e.getMessage());
-    }
-
-    /**
-     * Shows the delete object confirmation dialog.
-     * 
-     * @param request        the request object
-     * @param obj            the domain or content object to delete
-     */
-    public void dialogDelete(Request request, Object obj) {
-        String  name;
-
-        setRequestReference(request, obj);
-        if (obj instanceof Domain) {
-            name = ((Domain) obj).getName();
-        } else {
-            name = ((Content) obj).getName();
-        }
-        request.setAttribute("name", name);
-        request.sendTemplate("admin/dialog/delete-object.ftl");
-    }
-
-    /**
-     * Shows the content publish dialog.
-     * 
-     * @param request        the request object
-     * @param content        the content object to publish
-     */
-    public void dialogPublish(Request request, Content content) {
-        String dateStr = request.getParameter("date");
-        String comment = request.getParameter("comment");
-
-        if (dateStr == null) {
-            dateStr = formatDate(new Date());
-        }
-        if (comment == null) {
-            comment = content.getComment();
-        }
-        setRequestReference(request, content);
-        request.setAttribute("date", dateStr);
-        request.setAttribute("comment", comment);
-        request.sendTemplate("admin/dialog/publish-object.ftl");
-    }
-
-    /**
-     * Shows the content unpublish dialog.
-     * 
-     * @param request        the request object
-     * @param content        the content object to unpublish
-     */
-    public void dialogUnpublish(Request request, Content content) {
-        String dateStr = request.getParameter("date");
-        String comment = request.getParameter("comment");
-
-        if (dateStr == null) {
-            dateStr = formatDate(content.getOfflineDate());
-        }
-        if (dateStr.equals("")) {
-            dateStr = formatDate(new Date());
-        }
-        if (comment == null) {
-            comment = "Unpublished";
-        }
-        setRequestReference(request, content);
-        request.setAttribute("date", dateStr);
-        request.setAttribute("comment", comment);
-        request.sendTemplate("admin/dialog/unpublish-object.ftl");
-    }
-
-    /**
-     * Shows the content revert dialog.
-     * 
-     * @param request        the request object
-     * @param content        the content object to revert
-     */
-    public void dialogRevert(Request request, Content content) {
-        String  str;
-
-        setRequestReference(request, content);
-        if (content.getRevisionNumber() == 0) {
-            str = "Work";
-        } else {
-            str = String.valueOf(content.getRevisionNumber());
-        }
-        request.setAttribute("revision", str);
-        request.sendTemplate("admin/dialog/revert-object.ftl");
-    }
-
-    /**
-     * Shows the content unlock dialog.
-     * 
-     * @param request        the request object
-     * @param content        the content object to unlock
-     */
-    public void dialogUnlock(Request request, Content content) {
-        setRequestReference(request, content);
-        request.sendTemplate("admin/dialog/unlock-object.ftl");
     }
 
     /**
@@ -337,7 +200,7 @@ class AdminView {
         Domain   domain;
         Content  content;
 
-        setRequestReference(request, parent);
+        setReference(request, parent);
         if (parent instanceof Domain) {
             domain = (Domain) parent;
             if (user.isSuperUser()) {
@@ -374,7 +237,7 @@ class AdminView {
      * @param parent         the parent object
      */
     public void pageAddDomain(Request request, Object parent) {
-        setRequestReference(request, parent);
+        setReference(request, parent);
         request.setAttribute("name", request.getParameter("name", ""));
         request.setAttribute("description", 
                              request.getParameter("description", ""));
@@ -428,7 +291,7 @@ class AdminView {
         for (int i = 0; i < hosts.length; i++) {
             list.add(hosts[i].getName());
         }
-        setRequestReference(request, reference);
+        setReference(request, reference);
         request.setAttribute("hostnames", list);
         str = request.getParameter("name", defaultName);
         request.setAttribute("name", str);
@@ -469,7 +332,7 @@ class AdminView {
         String     str;
 
         // Find default values
-        setRequestReference(request, reference);
+        setReference(request, reference);
         if (reference instanceof ContentPage) {
             page = (ContentPage) reference;
             setRequestTemplates(request, page.getDomain(), 0);
@@ -525,7 +388,7 @@ class AdminView {
         String  name;
         String  comment;
 
-        setRequestReference(request, reference);
+        setReference(request, reference);
         if (reference instanceof ContentFile) {
             name = ((ContentFile) reference).getName();
             comment = "";
@@ -555,11 +418,11 @@ class AdminView {
         String  comment;
 
         if (parent != null) {
-            setRequestReference(request, parent);
+            setReference(request, parent);
             name = "";
             comment = "Created";
         } else {
-            setRequestReference(request, folder);
+            setReference(request, folder);
             name = folder.getName();
             comment = "";
         }
@@ -595,7 +458,7 @@ class AdminView {
 
         // Find default values
         if (parent != null) {
-            setRequestReference(request, parent);
+            setReference(request, parent);
             name = "";
             comment = "Created";
             if (parent instanceof Domain) {
@@ -605,7 +468,7 @@ class AdminView {
                 inherited = ((Content) parent).getId();
             }
         } else {
-            setRequestReference(request, template);
+            setReference(request, template);
             setRequestTemplates(request, 
                                 template.getDomain(), 
                                 template.getId());
@@ -792,42 +655,12 @@ class AdminView {
     }
     
     /**
-     * Returns the domain or content referenced by in a request.
-     * 
-     * @param request        the request
-     * 
-     * @return the domain or content object referenced, or
-     *         null if not found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    public Object getRequestReference(Request request) 
-        throws ContentException, ContentSecurityException {
-
-        ContentManager  manager = getContentManager();
-        User            user = request.getUser();
-        String          type = request.getParameter("type");
-        String          id = request.getParameter("id");
-        
-        if (type == null || id == null) {
-            return null;
-        } else if (type.equals("domain")) {
-            return manager.getDomain(user, id);
-        } else {
-            return manager.getContent(user, Integer.parseInt(id));
-        }
-    }
-
-    /**
      * Sets the domain or content reference attributes in a request.
      * 
      * @param request        the request
      * @param obj            the domain or content object
      */
-    private void setRequestReference(Request request, Object obj) {
+    protected void setReference(Request request, Object obj) {
         Content  content;
 
         if (obj instanceof Domain) {
@@ -919,21 +752,6 @@ class AdminView {
                              ids, 
                              names);
             }
-        }
-    }
-
-    /**
-     * Formats a date for form input.
-     * 
-     * @param date           the date to format
-     * 
-     * @return a formatted date string
-     */
-    private String formatDate(Date date) {
-        if (date == null) {
-            return "";
-        } else {
-            return DATE_FORMAT.format(date);
         }
     }
 
