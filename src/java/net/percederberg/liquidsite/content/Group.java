@@ -288,6 +288,19 @@ public class Group extends PersistentObject {
     }
     
     /**
+     * Returns the users that belongs to this group. This method will
+     * only return the users registered to this group in the database.
+     * 
+     * @return an array of users belonging to this group
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public User[] getUsers() throws ContentException {
+        return User.findByGroup(this);
+    }
+
+    /**
      * Adds the specified user to this  group. This action will not 
      * take effect until this object is saved.
      * 
