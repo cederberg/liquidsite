@@ -675,7 +675,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         topic.setRevisionNumber(0);
         topic.setSubject(request.getParameter("subject"));
-        topic.setLocked(request.getParameter("action", "").equals("true"));
+        topic.setLocked(request.getParameter("locked", "").equals("true"));
         topic.setComment(request.getParameter("comment"));
         try {
             forum = Integer.parseInt(request.getParameter("forum"));

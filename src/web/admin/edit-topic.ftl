@@ -114,8 +114,8 @@
             <input type="checkbox" tabindex="4"
                    name="locked" value="true" />
 </#if>
-            <p>The topic locked flag. If this flag is set it may not
-            be possible for ordinary users to post to this topic.</p>
+            <p>The topic locked flag. If this flag is set it isn't
+            possible for ordinary users to post to this topic.</p>
           </td>
         </tr>
         <tr>
