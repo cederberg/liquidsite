@@ -91,12 +91,36 @@
             character, but the English alphabet is recommended.</p>
           </td>
         </tr>
+<#if !isadd>
+        <tr>
+          <th>
+            Base&nbsp;Template:
+          </th>
+          <td class="field">
+            <select tabindex="2" onchange="openTemplate(this.value)"
+                    name="parent">
+              <option value="0">&lt; None &gt;</option>
+  <#list templateIds as id>
+    <#if parent == id>
+              <option value="${id}" selected="selected">${templateNames[id]?xml}</option>
+    <#else>
+              <option value="${id}">${templateNames[id]?xml}</option>
+    </#if>
+  </#list>
+            </select>
+            <p>The base template provides a set of inherited page 
+            elements. Note that changing base template will change
+            the inherited page elements, something that can cause 
+            problems for templates or pages using this template.</p>
+          </td>
+        </tr>
+</#if>
         <tr>
           <th>
             Comment:
           </th>
           <td class="field">
-            <input type="text" tabindex="2" size="40"
+            <input type="text" tabindex="3" size="40"
                    name="comment" value="${comment}" />
             <p>The revision comment.</p>
           </td>

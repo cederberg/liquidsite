@@ -513,13 +513,13 @@ class AdminView {
                                  ContentTemplate template) 
         throws ContentException {
 
-        String    name;
-        String    comment;
-        HashMap   locals = new HashMap();
-        int       inherited;
-        Iterator  iter;
-        String    value;
-        String    str;
+        String     name;
+        String     comment;
+        HashMap    locals = new HashMap();
+        int        inherited;
+        Iterator   iter;
+        String     value;
+        String     str;
 
         // Find default values
         if (parent != null) {
@@ -534,6 +534,9 @@ class AdminView {
             }
         } else {
             setRequestReference(request, template);
+            setRequestTemplates(request, 
+                                template.getDomain(), 
+                                template.getId());
             name = template.getName();
             comment = "";
             iter = template.getLocalElementNames().iterator();
@@ -548,6 +551,14 @@ class AdminView {
         // Adjust for incoming request
         if (request.getParameter("name") != null) {
             name = request.getParameter("name", "");
+            if (request.getParameter("parent") != null) {
+                str = request.getParameter("parent", "0");
+                try {
+                    inherited = Integer.parseInt(str);
+                } catch (NumberFormatException e) {
+                    inherited = 0;
+                }
+            }
             comment = request.getParameter("comment", "");
             locals.clear();
             iter = request.getAllParameters().keySet().iterator();
@@ -564,7 +575,7 @@ class AdminView {
         request.setAttribute("name", name);
         request.setAttribute("comment", comment);
         request.setAttribute("locals", locals);
-        request.setAttribute("parent", inherited);
+        request.setAttribute("parent", String.valueOf(inherited));
         request.sendTemplate("admin/edit-template.ftl");
     }
     
@@ -759,6 +770,54 @@ class AdminView {
         }
     }
     
+    private void setRequestTemplates(Request request, 
+                                     Domain domain,
+                                     int excludeId)
+        throws ContentException {
+
+        User       user = request.getUser();
+        ArrayList  templateIds = new ArrayList();
+        HashMap    templateNames = new HashMap();
+        Content[]  children;
+    
+        children = getContentManager().getContentChildren(user, domain);
+        addTemplates(user, 
+                     "", 
+                     children, 
+                     excludeId, 
+                     templateIds, 
+                     templateNames);
+        request.setAttribute("templateIds", templateIds);
+        request.setAttribute("templateNames", templateNames);
+    }
+
+    private void addTemplates(User user, 
+                              String baseName,
+                              Content[] content,
+                              int excludeId,
+                              ArrayList ids,
+                              HashMap names)
+        throws ContentException {
+
+        ContentManager  cm = getContentManager();
+        Content[]       children;
+        String          id;
+        String          name;
+
+        for (int i = 0; i < content.length; i++) {
+            if (content[i] instanceof ContentTemplate 
+             && content[i].getId() != excludeId) {
+
+                id = String.valueOf(content[i].getId());
+                name = baseName + content[i].getName();
+                ids.add(id);
+                names.put(id, name);
+                children = cm.getContentChildren(user, content[i]);
+                addTemplates(user, name + " / ", children, excludeId, ids, names);
+            }
+        }
+    }
+
     /**
      * Formats a date for form input.
      * 

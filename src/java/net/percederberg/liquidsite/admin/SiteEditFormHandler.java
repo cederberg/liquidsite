@@ -253,10 +253,17 @@ class SiteEditFormHandler extends AdminFormHandler {
         Iterator         iter = params.keySet().iterator();
         String           name;
         String           value;
+        int              parent;
 
         template.setRevisionNumber(0);
         template.setName(request.getParameter("name"));
         template.setComment(request.getParameter("comment"));
+        try {
+            parent = Integer.parseInt(request.getParameter("parent"));
+            template.setParentId(parent);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
         while (iter.hasNext()) {
             name = iter.next().toString();
             if (name.startsWith("element.")) {
