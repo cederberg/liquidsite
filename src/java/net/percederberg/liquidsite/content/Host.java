@@ -56,7 +56,7 @@ public class Host extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Host[] findAll() throws ContentException {
+    protected static Host[] findAll() throws ContentException {
         DatabaseConnection  con = getDatabaseConnection();
         ArrayList           list;
         Host[]              res;
@@ -85,7 +85,7 @@ public class Host extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Host[] findByDomain(Domain domain)
+    protected static Host[] findByDomain(Domain domain)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
@@ -117,7 +117,7 @@ public class Host extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Host findByName(String name) throws ContentException {
+    protected static Host findByName(String name) throws ContentException {
         DatabaseConnection  con = getDatabaseConnection();
         HostData            data;
 

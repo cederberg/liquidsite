@@ -63,7 +63,7 @@ public class Group extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Group[] findByDomain(Domain domain)
+    protected static Group[] findByDomain(Domain domain)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
@@ -96,7 +96,7 @@ public class Group extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Group findByName(Domain domain, String name)
+    protected static Group findByName(Domain domain, String name)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
@@ -126,7 +126,7 @@ public class Group extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Group[] findByUser(User user)
+    protected static Group[] findByUser(User user)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();

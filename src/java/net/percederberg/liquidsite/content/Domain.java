@@ -56,7 +56,7 @@ public class Domain extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Domain[] findAll() throws ContentException {
+    protected static Domain[] findAll() throws ContentException {
         DatabaseConnection  con = getDatabaseConnection();
         ArrayList           list;
         Domain[]            res;
@@ -86,7 +86,9 @@ public class Domain extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Domain findByName(String name) throws ContentException {
+    protected static Domain findByName(String name) 
+        throws ContentException {
+
         DatabaseConnection  con = getDatabaseConnection();
         DomainData          data;
 

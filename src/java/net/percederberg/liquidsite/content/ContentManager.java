@@ -64,6 +64,13 @@ public class ContentManager {
     private HashMap hosts = new HashMap();
 
     /**
+     * The site cache. This is a map of site arrays, recently queried
+     * though this interface. The site arrays are indexed by their
+     * domain name.
+     */
+    private HashMap sites = new HashMap();
+
+    /**
      * Returns the content manager currently in use.
      * 
      * @return the content manager currently in use
@@ -145,6 +152,103 @@ public class ContentManager {
     }
 
     /**
+     * Returns all sites in a domain. This method will retrieve the
+     * sites from the cache if possible, otherwise the sites will be
+     * read from the database and added to the cache.
+     * 
+     * @param domain         the domain
+     * 
+     * @return the array of sites in the domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Site[] getSites(Domain domain) throws ContentException {
+        Site[]  res;
+        
+        if (sites.containsKey(domain.getName())) {
+            return (Site[]) sites.get(domain.getName());
+        } else {
+            res = Site.findByDomain(domain);
+            sites.put(domain.getName(), res);
+            return res;
+        }
+    }
+
+    /**
+     * Returns the content object with the specified identifier and 
+     * highest revision. This method may return a content object from
+     * the cache.
+     * 
+     * @param id             the content identifier
+     * 
+     * @return the content object found, or
+     *         null if no matching content existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Content getContent(int id) throws ContentException {
+        return Content.findById(id);
+    }
+    
+    /**
+     * Returns the content object with the specified identifier and 
+     * revision. This method may return a content object from the 
+     * cache.
+     * 
+     * @param id             the content identifier
+     * @param revision       the content revision
+     * 
+     * @return the content object found, or
+     *         null if no matching content existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Content getContent(int id, int revision) 
+        throws ContentException {
+
+        return Content.findByRevision(id, revision);
+    }
+
+    /**
+     * Returns a user with a specified name.
+     * 
+     * @param domain         the domain
+     * @param name           the user name
+     * 
+     * @return the user found, or
+     *         null if no matching user existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public User getUser(Domain domain, String name) 
+        throws ContentException {
+
+        return User.findByName(domain, name);
+    }
+
+    /**
+     * Returns a group with a specified name.
+     * 
+     * @param domain         the domain
+     * @param name           the group name
+     * 
+     * @return the group found, or
+     *         null if no matching group existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Group getGroup(Domain domain, String name) 
+        throws ContentException {
+
+        return Group.findByName(domain, name);
+    }
+
+    /**
      * Adds a persistent object to the cache.
      * 
      * @param obj            the object to add
@@ -155,6 +259,8 @@ public class ContentManager {
             domains.put(((Domain) obj).getName(), obj);
         } else if (obj instanceof Host) {
             hosts.put(((Host) obj).getName(), obj);
+        } else if (obj instanceof Site) {
+            sites.remove(((Site) obj).getDomainName());
         }
     }
     
@@ -168,6 +274,8 @@ public class ContentManager {
             domains.remove(((Domain) obj).getName());
         } else if (obj instanceof Host) {
             hosts.remove(((Host) obj).getName());
+        } else if (obj instanceof Site) {
+            sites.remove(((Site) obj).getDomainName());
         }
     }
 
@@ -181,6 +289,8 @@ public class ContentManager {
         domains = null;
         hosts.clear();
         hosts = null;
+        sites.clear();
+        sites = null;
         if (instance == this) {
             instance = null;
         }

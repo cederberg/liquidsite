@@ -54,7 +54,7 @@ public class Permission extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Permission[] findByContent(Content content) 
+    protected static Permission[] findByContent(Content content) 
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
@@ -89,9 +89,9 @@ public class Permission extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Permission findByUser(Content content,
-                                        User user,
-                                        Group group)
+    protected static Permission findByUser(Content content,
+                                           User user,
+                                           Group group)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
@@ -244,6 +244,18 @@ public class Permission extends PersistentObject {
     }
     
     /**
+     * Returns the content object.
+     * 
+     * @return the content object
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Content getContent() throws ContentException {
+        return getContentManager().getContent(getContentId());
+    }
+
+    /**
      * Returns the content identifier.
      * 
      * @return the content identifier
@@ -253,12 +265,50 @@ public class Permission extends PersistentObject {
     }
 
     /**
+     * Returns the permission user.
+     * 
+     * @return the permission user, or
+     *         null if any user matches this permission
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public User getUser() throws ContentException {
+        String  name = getUserName();
+
+        if (name.equals("")) {
+            return null;
+        } else {
+            return getContentManager().getUser(getDomain(), name);
+        }
+    }
+
+    /**
      * Returns the permission user name.
      * 
      * @return the permission user name
      */
     public String getUserName() {
         return data.getString(PermissionData.USER);
+    }
+
+    /**
+     * Returns the permission group.
+     * 
+     * @return the permission group, or
+     *         null if any group matches this permission
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Group getGroup() throws ContentException {
+        String  name = getGroupName();
+
+        if (name.equals("")) {
+            return null;
+        } else {
+            return getContentManager().getGroup(getDomain(), name);
+        }
     }
 
     /**

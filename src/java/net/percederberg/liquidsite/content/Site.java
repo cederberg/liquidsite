@@ -66,7 +66,7 @@ public class Site extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Site[] findByDomain(Domain domain) 
+    protected static Site[] findByDomain(Domain domain) 
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();

@@ -74,7 +74,7 @@ public abstract class Content extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Content findById(int id) throws ContentException {
+    protected static Content findById(int id) throws ContentException {
         DatabaseConnection  con = getDatabaseConnection();
         ContentData         data;
 
@@ -105,7 +105,7 @@ public abstract class Content extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static Content findByRevision(int id, int revision) 
+    protected static Content findByRevision(int id, int revision) 
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
@@ -318,8 +318,13 @@ public abstract class Content extends PersistentObject {
      *             properly
      */
     public Content getParent() throws ContentException {
-        // TODO: implement this
-        throw new ContentException("not implemented yet");
+        int  parent = getParentId();
+        
+        if (parent <= 0) {
+            return null;
+        } else {
+            return getContentManager().getContent(parent);
+        }
     }
 
     /**
@@ -413,8 +418,7 @@ public abstract class Content extends PersistentObject {
      *             properly
      */
     public User getAuthor() throws ContentException {
-        // TODO: implement this
-        throw new ContentException("not implemented yet");
+        return getContentManager().getUser(getDomain(), getAuthorName());
     }
 
     /**
