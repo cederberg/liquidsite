@@ -98,7 +98,9 @@
           </th>
           <td class="field">
             The document properties define the fields available in
-            the documents in this section.
+            the documents in this section. If no properties are 
+            specified here, the parent section properties will be
+            inherited.
           </td>
         </tr>
         <tr>
