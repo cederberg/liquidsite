@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.admin.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
@@ -68,7 +69,7 @@ public class UserView extends AdminView {
 
         ContentManager  manager = AdminUtils.getContentManager();
         User            user = request.getUser();
-        Domain          domain = user.getDomain();
+        Domain          domain = null;
         String          filter;
         ArrayList       users = null;
         ArrayList       groups = null;
@@ -131,6 +132,7 @@ public class UserView extends AdminView {
      * Shows the add or edit user page.
      *
      * @param request        the request object
+     * @param domain         the user domain
      * @param user           the user to edit, or null to add new
      *
      * @throws ContentException if the database couldn't be accessed
@@ -138,14 +140,18 @@ public class UserView extends AdminView {
      * @throws ContentSecurityException if the user didn't have the 
      *             required permissions 
      */
-    public void viewEditUser(Request request, User user) 
+    public void viewEditUser(Request request, Domain domain, User user) 
         throws ContentException, ContentSecurityException {
 
-        String  defaultName;
-        String  defaultRealName;
-        String  defaultEmail;
-        String  defaultComment;
-        String  str;
+        String     defaultName;
+        String     defaultRealName;
+        String     defaultEmail;
+        String     defaultComment;
+        Group[]    groups;
+        HashMap    memberships = new HashMap();
+        ArrayList  list;
+        Iterator   iter;
+        String     str;
 
         // Find default values
         if (user != null) {
@@ -161,8 +167,7 @@ public class UserView extends AdminView {
         }
 
         // Set request parameters
-        str = request.getParameter("domain", ""); 
-        request.setAttribute("domain", str);
+        request.setAttribute("domain", domain.getName());
         str = request.getParameter("name", defaultName); 
         request.setAttribute("name", str);
         str = request.getParameter("password", ""); 
@@ -173,6 +178,25 @@ public class UserView extends AdminView {
         request.setAttribute("email", str);
         str = request.getParameter("comment", defaultComment); 
         request.setAttribute("comment", str);
+        list = findGroups(request.getUser(), domain, "");
+        request.setAttribute("groups", list);
+        if (request.getParameter("comment") == null) {
+            if (user != null) {
+                groups = user.getGroups();
+                for (int i = 0; i < groups.length; i++) {
+                    memberships.put(groups[i].getName(), "true");
+                }
+            }
+        } else {
+            iter = request.getAllParameters().keySet().iterator();
+            while (iter.hasNext()) {
+                str = iter.next().toString();
+                if (str.startsWith("member")) {
+                    memberships.put(request.getParameter(str), "true");
+                }
+            }
+        }
+        request.setAttribute("memberships", memberships);
         request.sendTemplate("admin/edit-user.ftl");
     }
 

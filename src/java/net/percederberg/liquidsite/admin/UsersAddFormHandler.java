@@ -65,7 +65,7 @@ public class UsersAddFormHandler extends AdminFormHandler {
         String  type = request.getParameter("type", "");
 
         if (type.equals("user")) {
-            AdminView.USER.viewEditUser(request, null);
+            AdminView.USER.viewEditUser(request, getDomain(request), null);
         } else if (type.equals("group")) {
             AdminView.USER.viewEditGroup(request, null);
         } else {
@@ -152,14 +152,16 @@ public class UsersAddFormHandler extends AdminFormHandler {
     private void handleAddUser(Request request, Domain domain) 
         throws ContentException, ContentSecurityException {
 
-        ContentManager   manager = AdminUtils.getContentManager();
-        User             user;
+        ContentManager        manager = AdminUtils.getContentManager();
+        UsersEditFormHandler  edit = UsersEditFormHandler.getInstance(); 
+        User                  user;
 
         user = new User(manager, domain, request.getParameter("name"));
         user.setPassword(request.getParameter("password"));
         user.setRealName(request.getParameter("realname", ""));
         user.setEmail(request.getParameter("email", ""));
         user.setComment(request.getParameter("comment", ""));
+        edit.setUserGroups(request, user);
         user.save(request.getUser());
     }
 

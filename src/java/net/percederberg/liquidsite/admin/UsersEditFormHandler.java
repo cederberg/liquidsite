@@ -21,6 +21,9 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
@@ -117,9 +120,11 @@ public class UsersEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         Object  ref = getReference(request);
+        User    user;
 
         if (ref instanceof User) {
-            AdminView.USER.viewEditUser(request, (User) ref);
+            user = (User) ref;
+            AdminView.USER.viewEditUser(request, user.getDomain(), user);
         } else if (ref instanceof Group) {
             AdminView.USER.viewEditGroup(request, (Group) ref);
         } else {
@@ -212,6 +217,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
         user.setRealName(request.getParameter("realname", ""));
         user.setEmail(request.getParameter("email", ""));
         user.setComment(request.getParameter("comment", ""));
+        setUserGroups(request, user);
         user.save(request.getUser());
     }
 
@@ -268,6 +274,52 @@ public class UsersEditFormHandler extends AdminFormHandler {
             return manager.getGroup(domain, name);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Sets the user groups from the request.
+     *
+     * @param request        the request
+     * @param user           the user to add or remove groups for
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected void setUserGroups(Request request, User user)
+        throws ContentException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ArrayList       remove = new ArrayList();
+        Group           group;
+        Group[]         groups;
+        Iterator        iter;
+        String          param;
+
+        // Initialize remove list
+        groups = user.getGroups();
+        for (int i = 0; i < groups.length; i++) {
+            remove.add(groups[i]);
+        }
+
+        // Add groups from request
+        iter = request.getAllParameters().keySet().iterator();
+        while (iter.hasNext()) {
+            param = iter.next().toString();
+            if (param.startsWith("member")) {
+                group = manager.getGroup(user.getDomain(), 
+                                         request.getParameter(param));
+                if (remove.contains(group)) {
+                    remove.remove(group);
+                } else {
+                    user.addToGroup(group);
+                }
+            }
+        }
+
+        // Remove groups not in request
+        for (int i = 0; i < remove.size(); i++) {
+            user.removeFromGroup((Group) remove.get(i));
         }
     }
 }

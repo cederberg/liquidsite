@@ -114,6 +114,27 @@
           </td>
         </tr>
         <tr>
+          <th>
+            Groups:
+          </th>
+          <td class="field">
+<#list groups as group>
+  <#if memberships.containsKey(group.name)>
+            <input type="checkbox" tabindex="6" checked="checked"
+                   name="member${group_index}" value="${group.name}" />
+  <#else>
+            <input type="checkbox" tabindex="6"
+                   name="member${group_index}" value="${group.name}" />
+  </#if>
+            <strong>${group.name}</strong>
+  <#if group.description?has_content>
+            &ndash; ${group.description}<br />
+  </#if>
+</#list>
+            <p>The user group memberships.</p>
+          </td>
+        </tr>
+        <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="9" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
