@@ -31,6 +31,7 @@ import java.util.HashMap;
 import org.liquidsite.app.servlet.Application;
 import org.liquidsite.app.servlet.Configuration;
 import org.liquidsite.app.servlet.ConfigurationException;
+import org.liquidsite.app.servlet.RequestException;
 import org.liquidsite.app.servlet.RequestProcessor;
 import org.liquidsite.app.template.TemplateException;
 import org.liquidsite.core.content.ContentException;
@@ -173,17 +174,29 @@ public class InstallRequestProcessor extends RequestProcessor {
      * Processes a request.
      *
      * @param request        the request object to process
+     *
+     * @throws RequestException if the request couldn't be processed
      */
-    public void process(Request request) {
-        String  path = request.getPath();
-        String  step = request.getParameter("step", "");
+    public void process(Request request) throws RequestException {
+        String       path = request.getPath();
+        String       step = request.getParameter("step", "");
+        Domain       domain;
+        ContentSite  site;
 
+        // Fake request environment
         path = path.substring(request.getServletPath().length());
+        domain = new Domain(getContentManager(), "ROOT");
+        request.getEnvironment().setDomain(domain);
+        site = new ContentSite(getContentManager(), domain);
+        site.setDirectory(request.getServletPath());
+        request.getEnvironment().setSite(site);
+
+        // Process request
         lastError = null;
-        if (path.equals("/style.css") || path.startsWith("/images")) {
-            request.sendFile(getFile(path), false);
+        if (path.startsWith("/liquidsite/")) {
+            processLiquidSite(request, path.substring(12));
         } else if (!path.equals("/") && !path.equals("/install.html")) {
-            // Do nothing for unrecognized pages
+            throw RequestException.RESOURCE_NOT_FOUND;
         } else if (request.getParameter("prev", "").equals("true")) {
             processPrevious(request, step);
         } else if (step.equals("1")) {

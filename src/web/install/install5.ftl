@@ -16,7 +16,8 @@
       <table class="form">
         <tr>
           <td class="decoration" rowspan="7">
-            <img src="images/icons/48x48/install.png" alt="Install" />
+            <img src="liquidsite/system/images/icons/48x48/install.png"
+                 alt="Install" />
           </td>
           <td colspan="2">
             <h2>Verify Information (Step 5 of 5)</h2>
@@ -87,11 +88,11 @@
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="2" onclick="previous()">
-              <img src="images/icons/24x24/left_arrow.png" />
+              <img src="liquidsite/system/images/icons/24x24/left_arrow.png" />
               Previous
             </button>
             <button type="submit" tabindex="1">
-              <img src="images/icons/24x24/save.png" />
+              <img src="liquidsite/system/images/icons/24x24/save.png" />
               Install
             </button>
           </td>
@@ -99,4 +100,4 @@
       </table>
     </form>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">

@@ -16,7 +16,8 @@
       <table class="form">
         <tr>
           <td class="decoration" rowspan="3">
-            <img src="images/icons/48x48/install.png" alt="Install" />
+            <img src="liquidsite/system/images/icons/48x48/install.png"
+                 alt="Install" />
           </td>
           <td>
             <h2>Select Database (Step 2 of 5)</h2>
@@ -100,16 +101,16 @@
         <tr>
           <td class="buttons">
             <button type="button" tabindex="4" onclick="previous()">
-              <img src="images/icons/24x24/left_arrow.png" />
+              <img src="liquidsite/system/images/icons/24x24/left_arrow.png" />
               Previous
             </button>
             <button type="submit" tabindex="3" ${options}>
               Next
-              <img src="images/icons/24x24/right_arrow.png" />
+              <img src="liquidsite/system/images/icons/24x24/right_arrow.png" />
             </button>
           </td>
         </tr>
       </table>
     </form>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">
