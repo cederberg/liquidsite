@@ -35,12 +35,14 @@ import net.percederberg.liquidsite.dbo.ContentPeer;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
- * The base class for all content objects.
+ * The base class for all content objects. This class should NOT be
+ * instantiated directly unless in a backup/restore scenario.
+ * Otherwise the proper subclass should ALWAYS be created.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public abstract class Content extends PersistentObject {
+public class Content extends PersistentObject {
 
     /**
      * The class logger.
@@ -134,12 +136,17 @@ public abstract class Content extends PersistentObject {
      * Creates a new content object with default values. The content
      * identifier will be set to the next available one after storing
      * to the database, and the content revision is set to zero (0).
+     * <p>
+     * This constructor should NOT BE CALLED directly unless you know
+     * what you are doing. It is supposed to be called by the
+     * constructors in the subclasses and is public only to simplify
+     * the backup and restore operations.
      *
      * @param manager        the content manager to use
      * @param domain         the domain
      * @param category       the category
      */
-    protected Content(ContentManager manager, Domain domain, int category) {
+    public Content(ContentManager manager, Domain domain, int category) {
         super(manager, false);
         this.data = new ContentData();
         this.data.setString(ContentData.DOMAIN, domain.getName());
@@ -291,6 +298,20 @@ public abstract class Content extends PersistentObject {
      */
     public int getId() {
         return data.getInt(ContentData.ID);
+    }
+
+    /**
+     * Sets the content identifier (RESTORE ONLY). This method should
+     * NOT BE CALLED unless you know what you are doing. Changing the
+     * content identifier may cause irrepairable harm to the content
+     * database which is why content identfiers are normally assigned
+     * automatically. This method only exists to simplify the backup
+     * and restore operations.
+     *
+     * @param id             the new content identifier
+     */
+    public void setId(int id) {
+        data.setInt(ContentData.ID, id);
     }
 
     /**
@@ -456,6 +477,19 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Sets the content last modification date (RESTORE ONLY). This
+     * method should NOT BE CALLED unless you know what you are
+     * doing. The date set here will always be overwritten by the
+     * save method. This method only exists to simplify the backup
+     * and restore operations.
+     *
+     * @param modified       the new last modification date
+     */
+    public void setModifiedDate(Date modified) {
+        data.setDate(ContentData.MODIFIED, modified);
+    }
+
+    /**
      * Returns the content last modification author. The author name
      * is set automatically by the save method.
      *
@@ -479,6 +513,19 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Sets the content last modification author (RESTORE ONLY). This
+     * method should NOT BE CALLED unless you know what you are
+     * doing. The author name set here will always be overwritten by
+     * the save method. This method only exists to simplify the
+     * backup and restore operations.
+     *
+     * @param author         the content last modification author
+     */
+    public void setAuthorName(String author) {
+        data.setString(ContentData.AUTHOR, author);
+    }
+
+    /**
      * Returns the content revision comment.
      *
      * @return the content revision comment
@@ -497,12 +544,12 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns an iterator for all the attribute names. This method
-     * should NOT BE CALLED unless you know what you are doing. It
-     * provides direct access to the content attributes that should
-     * normally be accessed through the various helper methods in
-     * each subclass. This method is only public to simplify the
-     * backup and restore operations.
+     * Returns an iterator for all the attribute names (BACKUP ONLY).
+     * This method should NOT BE CALLED unless you know what you are
+     * doing. It provides direct access to the content attributes
+     * that should normally be accessed through the various helper
+     * methods in each subclass. This method is only public to
+     * simplify the backup and restore operations.
      *
      * @return an iterator for all the attribute names
      */
@@ -511,12 +558,12 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns a content attribute value. This method should NOT BE
-     * CALLED unless you know what you are doing. It provides direct
-     * access to the content attributes that should normally be
-     * accessed through the various helper methods in each subclass.
-     * This method is only public to simplify the backup and restore
-     * operations.
+     * Returns a content attribute value (BACKUP ONLY). This method
+     * should NOT BE CALLED unless you know what you are doing. It
+     * provides direct access to the content attributes that should
+     * normally be accessed through the various helper methods in
+     * each subclass. This method is only public to simplify the
+     * backup and restore operations.
      *
      * @param name           the content attribute name
      *
@@ -535,13 +582,13 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Sets a content attribute value. If the attribute does not
-     * exist it will be created. This method should NOT BE CALLED
-     * unless you know what you are doing. It provides direct access
-     * to the content attributes that should normally be accessed
-     * through the various helper methods in each subclass. This
-     * method is only public to simplify the backup and restore
-     * operations.
+     * Sets a content attribute value (RESTORE ONLY). If the
+     * attribute does not exist it will be created. This method
+     * should NOT BE CALLED unless you know what you are doing. It
+     * provides direct access to the content attributes that should
+     * normally be accessed through the various helper methods in
+     * each subclass. This method is only public to simplify the
+     * backup and restore operations.
      *
      * @param name           the content attribute name
      * @param value          the content attribute value
@@ -698,19 +745,26 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Inserts the object data into the database.
+     * Inserts the object data into the database. If the restore flag
+     * is set, no automatic changes should be made to the data before
+     * writing to the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
+     * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user, DatabaseConnection con)
+    protected void doInsert(User user,
+                            DatabaseConnection con,
+                            boolean restore)
         throws ContentException {
 
-        data.setString(ContentData.AUTHOR, user.getName());
-        data.setDate(ContentData.MODIFIED, new Date());
+        if (!restore) {
+            data.setString(ContentData.AUTHOR, user.getName());
+            data.setDate(ContentData.MODIFIED, new Date());
+        }
         try {
             ContentPeer.doInsert(data, con);
             doWriteAttributes(con, true);

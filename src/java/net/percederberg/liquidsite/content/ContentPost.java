@@ -195,22 +195,29 @@ public class ContentPost extends Content {
     }
 
     /**
-     * Inserts the object data into the database.
+     * Inserts the object data into the database. If the restore flag
+     * is set, no automatic changes should be made to the data before
+     * writing to the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
+     * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user, DatabaseConnection con)
+    protected void doInsert(User user,
+                            DatabaseConnection con,
+                            boolean restore)
         throws ContentException {
 
         ContentTopic  parent;
 
-        super.doInsert(user, con);
-        parent = (ContentTopic) getParent();
-        parent.doUpdate(user, con);
+        super.doInsert(user, con, restore);
+        if (!restore) {
+            parent = (ContentTopic) getParent();
+            parent.doUpdate(user, con);
+        }
     }
 
     /**

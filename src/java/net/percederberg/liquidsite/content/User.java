@@ -405,8 +405,18 @@ public class User extends PersistentObject {
      * @param password       the new user password
      */
     public void setPassword(String password) {
-        data.setString(UserData.PASSWORD,
-                       createHash(getName() + password));
+        setPasswordEncoded(createHash(getName() + password));
+    }
+
+    /**
+     * Sets the encoded user password. This method assumes that the
+     * specified password has already been hashed and encoded and
+     * should only be used when restoring user passwords from backups. 
+     *
+     * @param password       the new encoded user password
+     */
+    public void setPasswordEncoded(String password) {
+        data.setString(UserData.PASSWORD, password);
     }
 
     /**
@@ -579,15 +589,20 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Inserts the object data into the database.
+     * Inserts the object data into the database. If the restore flag
+     * is set, no automatic changes should be made to the data before
+     * writing to the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
+     * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user, DatabaseConnection con)
+    protected void doInsert(User user,
+                            DatabaseConnection con,
+                            boolean restore)
         throws ContentException {
 
         try {

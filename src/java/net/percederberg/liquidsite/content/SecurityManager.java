@@ -501,6 +501,33 @@ class SecurityManager {
     }
 
     /**
+     * Verifies that a user has access to restore a persistent object.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the persistent object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    public void checkRestore(User user, PersistentObject obj)
+        throws ContentException, ContentSecurityException {
+
+        if (obj instanceof Domain) {
+            checkSuperUserAccess(user, (Domain) obj);
+        } else if (obj instanceof Content) {
+            checkSuperUserAccess(user, (Content) obj);
+        } else if (obj instanceof User) {
+            checkSuperUserAccess(user, (User) obj);
+        } else if (obj instanceof Group) {
+            checkSuperUserAccess(user, (Group) obj);
+        } else {
+            checkInsert(user, obj);
+        }
+    }
+
+    /**
      * Verifies that a user has access to delete a persistent object.
      *
      * @param user           the user to check, or null for none
@@ -553,7 +580,61 @@ class SecurityManager {
         throws ContentSecurityException {
 
         if (!user.isSuperUser()) {
-            throw new ContentSecurityException(user, "modify", domain);
+            throw new ContentSecurityException(user, "write", domain);
+        }
+    }
+
+    /**
+     * Verifies that a user has superuser access. The content being
+     * modified must also be specified.
+     *
+     * @param user           the user to check, or null for none
+     * @param content        the content object
+     *
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkSuperUserAccess(User user, Content content)
+        throws ContentSecurityException {
+
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "write", content);
+        }
+    }
+
+    /**
+     * Verifies that a user has superuser access. The user being
+     * modified must also be specified.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the user object
+     *
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkSuperUserAccess(User user, User obj)
+        throws ContentSecurityException {
+
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "write", obj);
+        }
+    }
+
+    /**
+     * Verifies that a user has superuser access. The group being
+     * modified must also be specified.
+     *
+     * @param user           the user to check, or null for none
+     * @param group          the group object
+     *
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkSuperUserAccess(User user, Group obj)
+        throws ContentSecurityException {
+
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "write", obj);
         }
     }
 

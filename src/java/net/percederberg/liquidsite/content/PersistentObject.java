@@ -326,13 +326,63 @@ public abstract class PersistentObject {
         if (!isPersistent()) {
             SecurityManager.getInstance().checkInsert(user, this);
             doValidate();
-            doInsert(user, con);
+            doInsert(user, con, false);
             persistent = true;
         } else {
             SecurityManager.getInstance().checkUpdate(user, this);
             doValidate();
             doUpdate(user, con);
         }
+
+        // Remove from cache
+        CacheManager.getInstance().remove(this);
+    }
+
+    /**
+     * Restores this object to the database. This method is only used
+     * when restoring objects from a backup. Superuser permissions
+     * are normally required for this operation.
+     *
+     * @param user           the user performing the operation
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public final void restore(User user)
+        throws ContentException, ContentSecurityException {
+
+        DatabaseConnection  con = getDatabaseConnection(getContentManager());
+
+        try {
+            restore(user, con);
+        } finally {
+            returnDatabaseConnection(getContentManager(), con);
+        }
+    }            
+
+    /**
+     * Restores this object to the database. This method is only used
+     * when restoring objects from a backup. Superuser permissions
+     * are normally required for this operation.
+     *
+     * @param user           the user performing the operation
+     * @param con            the database connection to use
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public final void restore(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
+
+        // Store to database
+        SecurityManager.getInstance().checkRestore(user, this);
+        doValidate();
+        doInsert(user, con, true);
+        persistent = true;
 
         // Remove from cache
         CacheManager.getInstance().remove(this);
@@ -394,15 +444,20 @@ public abstract class PersistentObject {
     protected abstract void doValidate() throws ContentException;
 
     /**
-     * Inserts the object data into the database.
+     * Inserts the object data into the database. If the restore flag
+     * is set, no automatic changes should be made to the data before
+     * writing to the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
+     * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected abstract void doInsert(User user, DatabaseConnection con)
+    protected abstract void doInsert(User user,
+                                     DatabaseConnection con,
+                                     boolean restore)
         throws ContentException;
 
     /**

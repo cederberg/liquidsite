@@ -328,15 +328,20 @@ public class PermissionList extends PersistentObject {
     }
 
     /**
-     * Inserts the object data into the database.
+     * Inserts the object data into the database. If the restore flag
+     * is set, no automatic changes should be made to the data before
+     * writing to the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
+     * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user, DatabaseConnection con)
+    protected void doInsert(User user,
+                            DatabaseConnection con,
+                            boolean restore)
         throws ContentException {
 
         Permission      perm;
@@ -368,7 +373,7 @@ public class PermissionList extends PersistentObject {
 
         try {
             PermissionPeer.doDelete(domain, content, con);
-            doInsert(user, con);
+            doInsert(user, con, false);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
