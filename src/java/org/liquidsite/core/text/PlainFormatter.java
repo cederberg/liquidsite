@@ -43,11 +43,7 @@ public class PlainFormatter {
 
         for (int i = 0; i < text.length(); i++) {
             c = text.charAt(i);
-            switch (c) {
-            case '\r':
-                // Discard
-                break;
-            default:
+            if (c != '\r') {
                 buffer.append(c);
             }
         }

@@ -40,6 +40,9 @@ import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.DocumentProperty;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.PersistentObject;
+import org.liquidsite.core.text.HtmlFormatter;
+import org.liquidsite.core.text.PlainFormatter;
+import org.liquidsite.core.text.TaggedFormatter;
 import org.liquidsite.core.web.FormHandlingException;
 import org.liquidsite.core.web.FormValidationException;
 import org.liquidsite.core.web.Request;
@@ -348,8 +351,12 @@ public class ContentAddFormHandler extends AdminFormHandler {
                 }
                 doc.setPropertyType(id, type);
                 str = request.getParameter("property." + id);
-                if (type == DocumentProperty.HTML_TYPE) {
-                    str = AdminUtils.cleanHtml(str);
+                if (type == DocumentProperty.STRING_TYPE) {
+                    str = PlainFormatter.clean(str);
+                } else if (type == DocumentProperty.TAGGED_TYPE) {
+                    str = TaggedFormatter.clean(str);
+                } else if (type == DocumentProperty.HTML_TYPE) {
+                    str = HtmlFormatter.clean(str);
                 }
                 doc.setProperty(id, str);
             }

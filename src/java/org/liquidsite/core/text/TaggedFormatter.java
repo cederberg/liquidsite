@@ -34,6 +34,31 @@ import java.util.HashMap;
 public class TaggedFormatter {
 
     /**
+     * Cleans and validates a tagged text string. Unneeded line feeds
+     * and space characters will be removed. All tags will be
+     * validated for possible errors.
+     *
+     * @param text           the tagged text string
+     *
+     * @return the adjusted tagged text string
+     */
+    public static String clean(String text) {
+        StringBuffer  buffer = new StringBuffer();
+        char          c;
+
+        for (int i = 0; i < text.length(); i++) {
+            c = text.charAt(i);
+            if (c != '\r') {
+                buffer.append(c);
+            }
+        }
+        // TODO: validate tags and attributes
+        // TODO: remove excessive line feeds (except inside <pre>)
+        // TODO: reformat lists and list items
+        return buffer.toString().trim();
+    }
+
+    /**
      * Formats a tagged text string in HTML. This method will resolve
      * any links in the tagged text and convert the tags to valid HTML
      * tags.
@@ -47,16 +72,9 @@ public class TaggedFormatter {
         ArrayList     paragraphs = new ArrayList();
         StringBuffer  buffer = new StringBuffer();
         String        str;
-        char          c;
 
         // Trim and remove carriage return characters
-        for (int i = 0; i < text.length(); i++) {
-            c = text.charAt(i);
-            if (c != '\r') {
-                buffer.append(c);
-            }
-        }
-        text = buffer.toString().trim();
+        text = clean(text);
 
         // Split into paragraphs
         while (text.indexOf("\n\n") >= 0) {

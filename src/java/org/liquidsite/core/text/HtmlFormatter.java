@@ -31,6 +31,26 @@ package org.liquidsite.core.text;
 public class HtmlFormatter {
 
     /**
+     * Cleans and validates an HTML text string. Unneeded line feeds
+     * and space characters at the end will be removed.
+     *
+     * @param text           the tagged text string
+     *
+     * @return the cleaned HTML text string
+     */
+    public static String clean(String text) {
+        // TODO: convert all tags to lower-case
+        text = text.trim();
+        while (text.endsWith("<br>")) {
+            text = text.substring(0, text.length() - 4);
+        }
+        while (text.endsWith("<BR>")) {
+            text = text.substring(0, text.length() - 4);
+        }
+        return text;
+    }
+
+    /**
      * Formats an HTML text string in HTML. This method will resolve
      * any links in the HTML, but otherwise leave the HTML code
      * unmodified.

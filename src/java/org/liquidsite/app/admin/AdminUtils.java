@@ -467,24 +467,6 @@ public class AdminUtils {
     }
 
     /**
-     * Cleans an HTML string from unneeded markup.
-     *
-     * @param html           the HTML markup to clean
-     *
-     * @return the processed HTML markup
-     */
-    public static String cleanHtml(String html) {
-        // TODO: move to separate validation class
-        while (html.endsWith("<br>")) {
-            html = html.substring(0, html.length() - 4);
-        }
-        while (html.endsWith("<BR>")) {
-            html = html.substring(0, html.length() - 4);
-        }
-        return html;
-    }
-
-    /**
      * Processes a request to a template file. The template file name
      * is relative to the web context directory, and the output MIME
      * type will always be set to "text/html".
