@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -81,6 +80,8 @@ public class AdminController extends Controller {
         super(app);
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
+        workflows.add(new PublishDialogHandler());
+        workflows.add(new UnpublishDialogHandler());
         workflows.add(new DeleteDialogHandler());
     }
 
@@ -134,10 +135,6 @@ public class AdminController extends Controller {
             processLogout(request);
         } else if (path.equals("edit-home.html")) {
             processEditUser(request);
-        } else if (path.equals("publish-site.html")) {
-            processPublishObject(request);
-        } else if (path.equals("unpublish-site.html")) {
-            processUnpublishObject(request);
         } else if (path.equals("revert-site.html")) {
             processRevertObject(request);
         } else if (path.equals("unlock-site.html")) {
@@ -315,157 +312,6 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
             view.pageError(request, e);
-        }
-    }
-
-    /**
-     * Processes the publish object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processPublishObject(Request request) 
-        throws RequestException {
-
-        Content  content;
-        Content  revision;
-        
-        try {
-            content = (Content) view.getRequestReference(request);
-            if (request.getParameter("cancel") != null) {
-                removeLock(content, request.getUser(), false);
-                view.dialogClose(request);
-            } else if (request.getParameter("date") == null) {
-                checkLock(content, request.getUser(), true);
-                revision = content.getRevision(0);
-                if (revision != null) {
-                    content = revision;
-                }
-                view.dialogPublish(request, content);
-            } else {
-                processPublishContent(request, content);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.dialogError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.dialogError(request, e);
-        }
-    }
-
-    /**
-     * Processes the confirmed publish requests for the site view.
-     * 
-     * @param request        the request object
-     * @param content        the content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processPublishContent(Request request, Content content) 
-        throws ContentException, ContentSecurityException {
-
-        String   date = request.getParameter("date");
-        String   comment = request.getParameter("comment");
-        Content  work = content.getRevision(0);
-
-        try {
-            checkLock(content, request.getUser(), false);
-            validator.validatePublish(request);
-            if (work != null) {
-                work.setRevisionNumber(content.getRevisionNumber() + 1);
-                work.setOfflineDate(content.getOfflineDate());
-                content = work;
-            } else {
-                content.setRevisionNumber(content.getRevisionNumber() + 1);
-            }
-            content.setOnlineDate(DATE_FORMAT.parse(date));
-            content.setOfflineDate(null);
-            content.setComment(comment);
-            content.save(request.getUser());
-            removeLock(content, request.getUser(), false);
-            view.dialogClose(request);
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.dialogPublish(request, content);
-        } catch (ParseException e) {
-            comment = "Date format error, " + e.getMessage();
-            request.setAttribute("error", comment);
-            view.dialogPublish(request, content);
-        }
-    }
-
-    /**
-     * Processes the unpublish object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processUnpublishObject(Request request) 
-        throws RequestException {
-
-        Content  content;
-        
-        try {
-            content = (Content) view.getRequestReference(request);
-            if (request.getParameter("cancel") != null) {
-                removeLock(content, request.getUser(), false);
-                view.dialogClose(request);
-            } else if (request.getParameter("date") == null) {
-                checkLock(content, request.getUser(), true);
-                view.dialogUnpublish(request, content);
-            } else {
-                processUnpublishContent(request, content);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.dialogError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.dialogError(request, e);
-        }
-    }
-
-    /**
-     * Processes the confirmed unpublish requests for the site view.
-     * 
-     * @param request        the request object
-     * @param content        the content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processUnpublishContent(Request request, Content content) 
-        throws ContentException, ContentSecurityException {
-
-        String   date = request.getParameter("date");
-        String   comment = request.getParameter("comment");
-
-        try {
-            checkLock(content, request.getUser(), false);
-            validator.validatePublish(request);
-            content.setRevisionNumber(content.getRevisionNumber() + 1);
-            content.setOfflineDate(DATE_FORMAT.parse(date));
-            content.setComment(comment);
-            content.save(request.getUser());
-            removeLock(content, request.getUser(), false);
-            view.dialogClose(request);
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.dialogPublish(request, content);
-        } catch (ParseException e) {
-            comment = "Date format error, " + e.getMessage();
-            request.setAttribute("error", comment);
-            view.dialogPublish(request, content);
         }
     }
 

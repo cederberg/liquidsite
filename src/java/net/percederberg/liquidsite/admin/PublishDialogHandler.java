@@ -1,5 +1,5 @@
 /*
- * DeleteDialogHandler.java
+ * PublishDialogHandler.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -21,26 +21,30 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
- * The delete request handler. This class handles the delete dialog 
- * workflow for domain and content objects.
+ * The publish request handler. This class handles the publish dialog 
+ * workflow for content objects.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class DeleteDialogHandler extends AdminDialogHandler {
+class PublishDialogHandler extends AdminDialogHandler {
 
     /**
-     * Creates a new delete request handler.
+     * Creates a new publish request handler.
      */
-    public DeleteDialogHandler() {
-        super("index.html", "delete.html", true);
+    public PublishDialogHandler() {
+        super("index.html", "publish.html", true);
     }
 
     /**
@@ -60,10 +64,13 @@ class DeleteDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
+        Content  content;
+
         if (step == 0) {
             SITE_VIEW.dialogClose(request);
         } else {
-            SITE_VIEW.dialogDelete(request, getReference(request));
+            content = (Content) getReference(request);
+            SITE_VIEW.dialogPublish(request, content);
         }
     }
 
@@ -75,8 +82,14 @@ class DeleteDialogHandler extends AdminDialogHandler {
      * 
      * @param request        the request object
      * @param step           the workflow step
+     *
+     * @throws FormValidationException if the form request data 
+     *             validation failed
      */
-    protected void validateStep(Request request, int step) {
+    protected void validateStep(Request request, int step) 
+        throws FormValidationException {
+
+        VALIDATOR.validatePublish(request);
     }
 
     /**
@@ -104,34 +117,27 @@ class DeleteDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object   ref = getReference(request);
-        Domain   domain;
-        Content  content;
-        Content  parent;
-        
-        if (ref instanceof Domain) {
-            domain = (Domain) ref;
-            if (domain.equals(request.getSite().getDomain())) {
-                throw new ContentSecurityException(
-                    "cannot remove the domain containing the site " +
-                    "currently being used");
-            }
-            domain.delete(request.getUser());
-            SITE_VIEW.setSiteTreeFocus(request, null);
-        } else if (ref instanceof Content) {
-            content = (Content) ref;
-            if (content.equals(request.getSite())) {
-                throw new ContentSecurityException(
-                    "cannot remove the site currently being used");
-            }
-            content.delete(request.getUser());
-            parent = content.getParent();
-            if (parent == null) {
-                SITE_VIEW.setSiteTreeFocus(request, content.getDomain());
-            } else {
-                SITE_VIEW.setSiteTreeFocus(request, parent);
-            }
+        User     user = request.getUser();
+        Content  content = (Content) getReference(request);
+        Content  max;
+        String   date;
+
+        if (content.getRevisionNumber() == 0) {
+            max = getContentManager().getContent(user, content.getId());
+            content.setRevisionNumber(max.getRevisionNumber() + 1);
+            content.setOfflineDate(max.getOfflineDate());
+        } else {
+            content.setRevisionNumber(content.getRevisionNumber() + 1);
         }
+        try {
+            date = request.getParameter("date");
+            content.setOnlineDate(DATE_FORMAT.parse(date));
+        } catch (ParseException e) {
+            content.setOnlineDate(new Date());
+        }
+        content.setOfflineDate(null);
+        content.setComment(request.getParameter("comment"));
+        content.save(user);
         return 0;
     }
 }

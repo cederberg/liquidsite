@@ -6,9 +6,16 @@
     function initialize() {
         document.getElementsByName("date").item(0).focus();
     }
+
+    function previous() {
+        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        document.forms.item(0).submit();
+    }
     </script>
 
     <form method="post" accept-charset="UTF-8">
+      <input type="hidden" name="liquidsite.step" value="1" />
+      <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <table class="dialog">
@@ -43,9 +50,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-<#assign cancel>publish-site.html?type=${type}&id=${id}&cancel=true</#assign>
-            <button type="button" tabindex="4" 
-                    onclick="window.location='${cancel}'">
+            <button type="button" tabindex="4" onclick="previous();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
