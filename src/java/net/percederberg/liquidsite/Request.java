@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +33,11 @@ import javax.servlet.http.HttpServletResponse;
  * @version  1.0
  */
 public class Request {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(Request.class);
 
     /**
      * The HTTP request. 
@@ -67,20 +74,6 @@ public class Request {
     }
     
     /**
-     * Checks if this is a document request. A document request is
-     * one that requests either a directory (URI ending with '/'), or
-     * an HTML file (URI ending with '.html'). 
-     * 
-     * @return true if this is a document request, or
-     *         false otherwise
-     */
-    public boolean isDocumentRequest() {
-        String  uri = request.getRequestURI();
-        
-        return uri.endsWith("/") || uri.endsWith(".html");
-    }
-    
-    /**
      * Checks if this request has been processed. A request is 
      * considered processed when the response object has been 
      * modified.
@@ -113,7 +106,7 @@ public class Request {
     }
 
     /**
-     * Forwards this request to another resource.
+     * Forwards this request within the same servlet context.
      * 
      * @param path           the path to the resource
      */
@@ -121,6 +114,24 @@ public class Request {
         forwardPath = path; 
     }
     
+    /**
+     * Redirects this request by sending a temporary redirection URL
+     * to the browser. The location specified may be either an 
+     * absolute or a relative URL.
+     * 
+     * @param location       the destination location
+     */
+    public void redirect(String location) {
+        processed = true;
+        try {
+            response.sendRedirect(location);
+        } catch (IllegalStateException e) {
+            LOG.warning("couldn't redirect request, already processed", e);
+        } catch (IOException e) {
+            LOG.warning("couldn't redirect request", e);
+        }
+    }
+
     /**
      * Returns the request path with file name.
      * 
@@ -139,7 +150,23 @@ public class Request {
      *         null if no such attribute was found
      */
     public Object getAttribute(String name) {
-        return request.getAttribute(name);
+        return getAttribute(name, null);
+    }
+
+    /**
+     * Returns the value of a request attribute. If the specified
+     * attribute does not exist, a default value will be returned.
+     * 
+     * @param name           the attribute name
+     * @param defVal         the default attribute value 
+     *
+     * @return the attribute value, or
+     *         the default value if no such attribute was found
+     */
+    public Object getAttribute(String name, Object defVal) {
+        Object  value = request.getAttribute(name);
+        
+        return (value == null) ? defVal : value;
     }
 
     /**
@@ -149,7 +176,7 @@ public class Request {
      * @param value          the attribute value
      */
     public void setAttribute(String name, Object value) {
-        setAttribute(name, value, null);
+        request.setAttribute(name, value);
     }
 
     /**
@@ -159,24 +186,7 @@ public class Request {
      * @param value          the attribute value
      */
     public void setAttribute(String name, boolean value) {
-        setAttribute(name, new Boolean(value), null);
-    }
-
-    /**
-     * Sets a request attribute value. If the specified attribute
-     * value is null, the default attribute value will be used 
-     * instead.
-     *
-     * @param name           the attribute name
-     * @param value          the attribute value
-     * @param defVal         the default attribute value
-     */
-    public void setAttribute(String name, Object value, Object defVal) {
-        if (value == null) {
-            request.setAttribute(name, defVal);
-        } else {
-            request.setAttribute(name, value);
-        }
+        setAttribute(name, new Boolean(value));
     }
 
     /**
@@ -188,6 +198,22 @@ public class Request {
      *         null if no such parameter was found
      */
     public String getParameter(String name) {
-        return request.getParameter(name);
+        return getParameter(name, null);
+    }
+
+    /**
+     * Returns the value of a request parameter. If the specified
+     * parameter does not exits, a default value will be returned.
+     *
+     * @param name           the request parameter name
+     * @param defVal         the default parameter value
+     *
+     * @return the request parameter value, or
+     *         the default value if no such parameter was found
+     */
+    public String getParameter(String name, String defVal) {
+        String  value = request.getParameter(name);
+        
+        return (value == null) ? defVal : value;
     }
 }
