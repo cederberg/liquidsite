@@ -23,13 +23,12 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSelector;
-
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
+import org.liquidsite.core.content.ContentSection;
+import org.liquidsite.core.content.ContentSelector;
 import org.liquidsite.util.log.Log;
 
 /**

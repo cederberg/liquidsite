@@ -25,8 +25,7 @@ import java.io.File;
 
 import javax.servlet.ServletContext;
 
-import net.percederberg.liquidsite.content.ContentManager;
-
+import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.util.db.DatabaseConnector;
 
 /**

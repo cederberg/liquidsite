@@ -30,17 +30,16 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Group;
-import net.percederberg.liquidsite.content.Host;
-import net.percederberg.liquidsite.content.Permission;
-import net.percederberg.liquidsite.content.PermissionList;
-import net.percederberg.liquidsite.content.User;
-
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Group;
+import org.liquidsite.core.content.Host;
+import org.liquidsite.core.content.Permission;
+import org.liquidsite.core.content.PermissionList;
+import org.liquidsite.core.content.User;
 import org.liquidsite.util.log.Log;
 
 /**

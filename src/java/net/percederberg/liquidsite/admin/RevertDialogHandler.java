@@ -22,10 +22,11 @@
 package net.percederberg.liquidsite.admin;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentSecurityException;
 
 /**
  * The revert request handler. This class handles the revert dialog

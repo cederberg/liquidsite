@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.content;
+package org.liquidsite.core.content;
 
 import java.util.ArrayList;
 

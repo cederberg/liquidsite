@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import net.percederberg.liquidsite.content.User;
+import org.liquidsite.core.content.User;
 
 /**
  * An HTTP session.

@@ -25,9 +25,8 @@ import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.DocumentProperty;
-
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.DocumentProperty;
 import org.liquidsite.core.text.HtmlFormatter;
 import org.liquidsite.core.text.PlainFormatter;
 import org.liquidsite.core.text.TaggedFormatter;

@@ -1,5 +1,5 @@
 /*
- * ContentTemplate.java
+ * ContentPage.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.content;
+package org.liquidsite.core.content;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,12 +29,20 @@ import org.liquidsite.core.data.ContentData;
 import org.liquidsite.core.data.DataSource;
 
 /**
- * A web page template.
+ * A web page. A page has optional links to a template and a section.
+ * A template link means that the page elements in the templates are
+ * inherited by this page. A section link means that any documents in
+ * the section can be presented by this page.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ContentTemplate extends Content {
+public class ContentPage extends Content {
+
+    /**
+     * The template content attribute.
+     */
+    private static final String TEMPLATE_ATTRIBUTE = "TEMPLATE";
 
     /**
      * The page element content attribute prefix.
@@ -42,33 +50,23 @@ public class ContentTemplate extends Content {
     private static final String ELEMENT_PREFIX = "ELEMENT.";
 
     /**
-     * Creates a new template with default values.
+     * Creates a new page with default values.
      *
      * @param manager        the content manager to use
-     * @param domain         the template domain
-     */
-    public ContentTemplate(ContentManager manager, Domain domain) {
-        super(manager, domain, Content.TEMPLATE_CATEGORY);
-    }
-
-    /**
-     * Creates a new template with default values.
-     *
-     * @param manager        the content manager to use
-     * @param parent         the parent template
+     * @param parent         the parent content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public ContentTemplate(ContentManager manager, ContentTemplate parent)
+    public ContentPage(ContentManager manager, Content parent)
         throws ContentException {
 
-        this(manager, parent.getDomain());
+        super(manager, parent.getDomain(), Content.PAGE_CATEGORY);
         setParent(parent);
     }
 
     /**
-     * Creates a new template.
+     * Creates a new page.
      *
      * @param manager        the content manager to use
      * @param data           the content data object
@@ -77,33 +75,100 @@ public class ContentTemplate extends Content {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected ContentTemplate(ContentManager manager,
-                              ContentData data,
-                              DataSource src)
+    protected ContentPage(ContentManager manager,
+                          ContentData data,
+                          DataSource src)
         throws ContentException {
 
         super(manager, data, src);
     }
 
     /**
-     * Returns all page element names in this template and it's
-     * parents. The returned collection is guaranteed to not contain
-     * any duplicates.
+     * Returns the page template.
+     *
+     * @param user           the user performing the operation
+     *
+     * @return the page template, or null for none
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
+     */
+    public ContentTemplate getTemplate(User user)
+        throws ContentException, ContentSecurityException {
+
+        int  id = getTemplateId();
+
+        if (id <= 0) {
+            return null;
+        } else {
+            return (ContentTemplate) getContentManager().getContent(user, id);
+        }
+    }
+
+    /**
+     * Sets the page template.
+     *
+     * @param template       the new template, or null for none
+     */
+    public void setTemplate(ContentTemplate template) {
+        if (template == null) {
+            setTemplateId(0);
+        } else {
+            setTemplateId(template.getId());
+        }
+    }
+
+    /**
+     * Returns the tempate content identifier.
+     *
+     * @return the template content identifier
+     */
+    public int getTemplateId() {
+        String  value = getAttribute(TEMPLATE_ATTRIBUTE);
+
+        if (value == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(value);
+        }
+    }
+
+    /**
+     * Sets the template content identifier.
+     *
+     * @param template       the new template identifier
+     */
+    public void setTemplateId(int template) {
+        setAttribute(TEMPLATE_ATTRIBUTE, String.valueOf(template));
+    }
+
+    /**
+     * Returns all page element names in this page and it's template.
+     * The returned collection is guaranteed to not contain any
+     * duplicates.
+     *
+     * @param user           the user performing the operation
      *
      * @return a collection of page element names
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
      */
-    public Collection getAllElementNames() throws ContentException {
-        ContentTemplate  parent;
+    public Collection getAllElementNames(User user)
+        throws ContentException, ContentSecurityException {
+
+        ContentTemplate  template;
         Collection       res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
 
-        if (getParentId() > 0) {
-            parent = (ContentTemplate) getParent();
-            iter = parent.getAllElementNames().iterator();
+        template = getTemplate(user);
+        if (template != null) {
+            iter = template.getAllElementNames().iterator();
             while (iter.hasNext()) {
                 obj = iter.next();
                 if (!res.contains(obj)) {
@@ -115,10 +180,9 @@ public class ContentTemplate extends Content {
     }
 
     /**
-     * Returns all page element names in this template. If a page
-     * element is not present in this collection, it may still be
-     * present in a parent template and thus returned by
-     * getElement().
+     * Returns all page element names in this page. If a page element
+     * is not present in this collection, it may still be present in
+     * the template and thus returned by getElement().
      *
      * @return a collection of page element names
      */
@@ -138,10 +202,11 @@ public class ContentTemplate extends Content {
 
     /**
      * Returns a named page element. The element data will be
-     * retrieved from this template if possible, or from one of the
-     * parent templates. The templates will be searched in the
-     * inheritance order, starting from this template.
+     * retrieved from this page if possible, or from the template.
+     * The template parents will also be searched in the inheritance
+     * order, starting from the page template.
      *
+     * @param user           the user performing the operation
      * @param name           the page element name
      *
      * @return the page element data, or
@@ -149,23 +214,31 @@ public class ContentTemplate extends Content {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
      */
-    public String getElement(String name) throws ContentException {
-        ContentTemplate  parent;
+    public String getElement(User user, String name)
+        throws ContentException, ContentSecurityException {
+
+        ContentTemplate  template;
         String           data;
 
         data = getAttribute(ELEMENT_PREFIX + name.toLowerCase());
-        if (data == null && getParentId() > 0) {
-            parent = (ContentTemplate) getParent();
-            data = parent.getElement(name);
+        if (data == null && getTemplateId() > 0) {
+            template = getTemplate(user);
+            if (template == null) {
+                data = null;
+            } else {
+                data = template.getElement(name);
+            }
         }
         return data;
     }
 
     /**
      * Sets the data for a named page element. The element will be
-     * removed from this template if the data value is null. The page
-     * element values in the parent templates will NOT be modified.
+     * removed from this page if the data value is null. The page
+     * element values in the template will NOT be modified.
      *
      * @param name           the page element name
      * @param data           the page element data, or null
@@ -187,18 +260,17 @@ public class ContentTemplate extends Content {
 
         super.doValidate();
         if (getParent() == null) {
-            children = InternalContent.findByParent(getContentManager(),
-                                                    getDomain());
-        } else {
-            children = InternalContent.findByParent(getContentManager(),
-                                                    getParent());
+            throw new ContentException("no parent set for page");
         }
+        children = InternalContent.findByParent(getContentManager(),
+                                                getParent());
         for (int i = 0; i < children.length; i++) {
             if (children[i].getId() != getId()
              && children[i].getName().equals(getName())) {
 
                 throw new ContentException(
-                    "another object with the same name already exists");
+                    "another object with the same name is already " +
+                    "present in the same folder");
             }
         }
         while (iter.hasNext()) {

@@ -21,8 +21,7 @@
 
 package net.percederberg.liquidsite.template;
 
-import net.percederberg.liquidsite.content.ContentPost;
-
+import org.liquidsite.core.content.ContentPost;
 import org.liquidsite.core.text.PlainFormatter;
 
 /**

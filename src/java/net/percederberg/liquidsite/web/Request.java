@@ -36,11 +36,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 
+import org.liquidsite.core.content.User;
 import org.liquidsite.util.log.Log;
 
 /**

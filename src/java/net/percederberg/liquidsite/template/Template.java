@@ -28,9 +28,9 @@ import java.util.Map;
 import freemarker.core.Environment;
 import freemarker.template.TemplateExceptionHandler;
 
-import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.web.Request;
 
+import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.util.log.Log;
 
 /**

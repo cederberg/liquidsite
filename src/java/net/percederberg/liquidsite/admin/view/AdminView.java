@@ -25,20 +25,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.ContentForum;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSelector;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTemplate;
-import net.percederberg.liquidsite.content.ContentTranslator;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Group;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFolder;
+import org.liquidsite.core.content.ContentForum;
+import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentSection;
+import org.liquidsite.core.content.ContentSelector;
+import org.liquidsite.core.content.ContentSite;
+import org.liquidsite.core.content.ContentTemplate;
+import org.liquidsite.core.content.ContentTranslator;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Group;
+import org.liquidsite.core.content.User;
 
 /**
  * A helper class for creating the HTML and JavaScript output for the

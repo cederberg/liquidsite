@@ -25,15 +25,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Group;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.FormValidator;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Group;
+import org.liquidsite.core.content.User;
 
 /**
  * The users edit request handler. This class handles the various

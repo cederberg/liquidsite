@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.content;
+package org.liquidsite.core.content;
 
 /**
  * A content security manager. This class will be called to check all

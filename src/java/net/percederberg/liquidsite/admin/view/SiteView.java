@@ -27,22 +27,23 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentPage;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTemplate;
-import net.percederberg.liquidsite.content.ContentTranslator;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Host;
-import net.percederberg.liquidsite.content.PersistentObject;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 import net.percederberg.liquidsite.web.Request.FileParameter;
+
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
+import org.liquidsite.core.content.ContentFolder;
+import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentPage;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.ContentSite;
+import org.liquidsite.core.content.ContentTemplate;
+import org.liquidsite.core.content.ContentTranslator;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Host;
+import org.liquidsite.core.content.PersistentObject;
+import org.liquidsite.core.content.User;
 
 /**
  * A helper class for the site view. This class contains methods for

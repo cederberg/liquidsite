@@ -31,13 +31,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.install.InstallRequestProcessor;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 import net.percederberg.liquidsite.web.MultiPartRequest;
 import net.percederberg.liquidsite.web.Request;
 
+import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.util.db.DatabaseConnectionException;
 import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.db.MySQLDatabaseConnector;

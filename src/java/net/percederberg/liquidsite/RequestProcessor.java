@@ -24,24 +24,25 @@ package net.percederberg.liquidsite;
 import java.io.File;
 import java.io.StringWriter;
 
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.ContentForum;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentPage;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTopic;
-import net.percederberg.liquidsite.content.ContentTranslator;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
+import org.liquidsite.core.content.ContentFolder;
+import org.liquidsite.core.content.ContentForum;
+import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentPage;
+import org.liquidsite.core.content.ContentSection;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.ContentSite;
+import org.liquidsite.core.content.ContentTopic;
+import org.liquidsite.core.content.ContentTranslator;
+import org.liquidsite.core.content.User;
 
 /**
  * A request processor.

@@ -22,16 +22,16 @@
 package net.percederberg.liquidsite.admin;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Lock;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.FormHandler;
 import net.percederberg.liquidsite.web.FormHandlingException;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.Request;
 
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.Lock;
+import org.liquidsite.core.content.User;
 import org.liquidsite.util.log.Log;
 
 /**

@@ -26,24 +26,25 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.ContentForum;
-import net.percederberg.liquidsite.content.ContentPage;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTemplate;
-import net.percederberg.liquidsite.content.ContentTopic;
-import net.percederberg.liquidsite.content.ContentTranslator;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Host;
-import net.percederberg.liquidsite.content.Lock;
-import net.percederberg.liquidsite.content.Permission;
-import net.percederberg.liquidsite.content.PermissionList;
-import net.percederberg.liquidsite.content.User;
+
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
+import org.liquidsite.core.content.ContentFolder;
+import org.liquidsite.core.content.ContentForum;
+import org.liquidsite.core.content.ContentPage;
+import org.liquidsite.core.content.ContentSection;
+import org.liquidsite.core.content.ContentSite;
+import org.liquidsite.core.content.ContentTemplate;
+import org.liquidsite.core.content.ContentTopic;
+import org.liquidsite.core.content.ContentTranslator;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Host;
+import org.liquidsite.core.content.Lock;
+import org.liquidsite.core.content.Permission;
+import org.liquidsite.core.content.PermissionList;
+import org.liquidsite.core.content.User;
 
 /**
  * A helper class for creating JavaScript code to the administration

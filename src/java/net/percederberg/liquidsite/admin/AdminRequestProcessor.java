@@ -28,21 +28,21 @@ import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.RequestProcessor;
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTemplate;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.PersistentObject;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.web.Request;
 
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
+import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentSection;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.ContentSite;
+import org.liquidsite.core.content.ContentTemplate;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.PersistentObject;
+import org.liquidsite.core.content.User;
 import org.liquidsite.util.log.Log;
 
 /**

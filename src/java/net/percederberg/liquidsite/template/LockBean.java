@@ -23,7 +23,7 @@ package net.percederberg.liquidsite.template;
 
 import java.util.Date;
 
-import net.percederberg.liquidsite.content.Lock;
+import org.liquidsite.core.content.Lock;
 
 /**
  * A content lock bean.

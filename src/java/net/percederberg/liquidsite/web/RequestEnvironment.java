@@ -21,14 +21,14 @@
 
 package net.percederberg.liquidsite.web;
 
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentForum;
-import net.percederberg.liquidsite.content.ContentPage;
-import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.ContentSite;
-import net.percederberg.liquidsite.content.ContentTopic;
-import net.percederberg.liquidsite.content.ContentTranslator;
-import net.percederberg.liquidsite.content.Domain;
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.ContentForum;
+import org.liquidsite.core.content.ContentPage;
+import org.liquidsite.core.content.ContentSection;
+import org.liquidsite.core.content.ContentSite;
+import org.liquidsite.core.content.ContentTopic;
+import org.liquidsite.core.content.ContentTranslator;
+import org.liquidsite.core.content.Domain;
 
 /**
  * The request processing environment. This class is used to store

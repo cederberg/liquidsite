@@ -21,12 +21,12 @@
 
 package net.percederberg.liquidsite.template;
 
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentDocument;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.web.RequestEnvironment;
 
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentDocument;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentSection;
 import org.liquidsite.core.text.FormattingContext;
 import org.liquidsite.util.log.Log;
 

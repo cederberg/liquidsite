@@ -23,9 +23,8 @@ package net.percederberg.liquidsite.template;
 
 import javax.servlet.ServletContext;
 
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
 import org.liquidsite.util.log.Log;
 
 /**

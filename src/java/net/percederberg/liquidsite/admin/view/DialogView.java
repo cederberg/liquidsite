@@ -26,16 +26,17 @@ import java.util.Date;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.content.Content;
-import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Group;
-import net.percederberg.liquidsite.content.Permission;
-import net.percederberg.liquidsite.content.PermissionList;
-import net.percederberg.liquidsite.content.PersistentObject;
-import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.core.content.Content;
+import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Group;
+import org.liquidsite.core.content.Permission;
+import org.liquidsite.core.content.PermissionList;
+import org.liquidsite.core.content.PersistentObject;
+import org.liquidsite.core.content.User;
 
 /**
  * A helper class for the dialog views. This class contains methods
