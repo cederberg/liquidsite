@@ -504,10 +504,8 @@ function objectInternalGetIcon(type) {
         return "site.png";
     } else if (type == "folder") {
         return "folder.png";
-    } else if (type == "page") {
+    } else if (type == "page" || type == "template") {
         return "page.png";
-    } else if (type == "alias") {
-        return "alias.png";
     } else {
         return "file.png";
     }

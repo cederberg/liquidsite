@@ -207,7 +207,9 @@ function treeClose(type, id) {
 function treeInternalIsContainer(type) {
     return type == "domain" 
         || type == "site"
-        || type == "folder";
+        || type == "folder"
+        || type == "page"
+        || type == "template";
 }
 
 /**
@@ -231,10 +233,14 @@ function treeInternalGetIcon(type, open) {
         return "folder_open.png";
     } else if (type == "folder") {
         return "folder_closed.png";
+    } else if (type == "page" && open == true) {
+        return "page_open.png";
     } else if (type == "page") {
-        return "page.png";
-    } else if (type == "alias") {
-        return "alias.png";
+        return "page_closed.png";
+    } else if (type == "template" && open == true) {
+        return "page_open.png";
+    } else if (type == "template") {
+        return "page_closed.png";
     } else {
         return "file.png";
     }

@@ -671,7 +671,7 @@ class AdminView {
         Content[]       children; 
 
         if (content == null) {
-            children = manager.getSites(user, domain);
+            children = manager.getContentChildren(user, domain);
             return script.getTreeView(domain, children);
         } else if (recursive) {
             children = manager.getContentChildren(user, content);

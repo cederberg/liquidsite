@@ -611,6 +611,8 @@ class AdminScript {
             return "folder";
         case Content.FILE_CATEGORY:
             return "file";
+        case Content.TEMPLATE_CATEGORY:
+            return "template";
         default:
             return "";
         }

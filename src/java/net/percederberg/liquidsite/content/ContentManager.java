@@ -249,35 +249,6 @@ public class ContentManager {
     }
 
     /**
-     * Returns all user readable sites in a domain.
-     * 
-     * @param user           the user requesting the sites
-     * @param domain         the domain
-     * 
-     * @return the array of user readable sites in the domain
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    public ContentSite[] getSites(User user, Domain domain) 
-        throws ContentException {
-
-        ContentSite[]  sites = getSites(domain);
-        ArrayList      list = new ArrayList(sites.length);
-        ContentSite[]  res;
-        
-        for (int i = 0; i < sites.length; i++) {
-            if (sites[i].hasReadAccess(user)) {
-                list.add(sites[i]);
-            }
-        }
-        Collections.sort(list);
-        res = new ContentSite[list.size()];
-        list.toArray(res);
-        return res;
-    }
-
-    /**
      * Returns the content object with the specified identifier and 
      * highest revision.
      * 
@@ -336,6 +307,36 @@ public class ContentManager {
         throws ContentException {
 
         return Content.findByRevision(id, revision);
+    }
+
+    /**
+     * Returns the user readable domain root content objects. Only 
+     * the highest revision of each object will be returned.
+     * 
+     * @param user           the user requesting the content
+     * @param domain         the domain
+     * 
+     * @return the user readable domain root content objects
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content[] getContentChildren(User user, Domain domain) 
+        throws ContentException {
+
+        Content[]  children = Content.findByParent(domain);
+        ArrayList  list = new ArrayList(children.length);
+        Content[]  res;
+
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].hasReadAccess(user)) {
+                list.add(children[i]);
+            }
+        } 
+        Collections.sort(list);
+        res = new Content[list.size()];
+        list.toArray(res);
+        return res;                    
     }
 
     /**
