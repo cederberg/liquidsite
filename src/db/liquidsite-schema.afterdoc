@@ -62,7 +62,7 @@
           care must be taken to also remove all rows in referencing 
           tables.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
       </column>
       <column name="DESCRIPTION">
         <description>
@@ -105,7 +105,7 @@
         <description>
           The name of the domain that the user belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
       </column>
       <column name="NAME">
@@ -169,7 +169,7 @@
         <description>
           The name of the domain that the group belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
       </column>
       <column name="NAME">
@@ -215,7 +215,7 @@
         <description>
           The name of the domain that the user and group belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
         <ref table="LS_USER" column="DOMAIN" />
         <ref table="LS_GROUP" column="DOMAIN" />
@@ -272,7 +272,7 @@
         <description>
           The name of the domain the host belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
       </column>
       <column name="NAME">
@@ -320,7 +320,7 @@
         <description>
           The name of the domain the content object belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
       </column>
       <column name="ID">
@@ -461,7 +461,7 @@
         <description>
           The name of the domain the content object belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
         <ref table="LS_CONTENT" column="DOMAIN" />
       </column>
@@ -525,7 +525,7 @@
         <description>
           The name of the domain the content object belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
         <ref table="LS_CONTENT" column="DOMAIN" />
       </column>
@@ -618,7 +618,7 @@
         <description>
           The name of the domain the content object belongs to.
         </description>
-        <type name="VARCHAR" size="10" required="true" />
+        <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_DOMAIN" column="NAME" />
         <ref table="LS_CONTENT" column="DOMAIN" />
       </column>
