@@ -89,7 +89,7 @@ public class LiquidSiteBean {
      * @return the build version name
      */
     public String getVersion() {
-        return TemplateManager.getApplication().getBuildVersion();
+        return TemplateManager.getBuildVersion();
     }
 
     /**
@@ -98,7 +98,7 @@ public class LiquidSiteBean {
      * @return the build date
      */
     public String getDate() {
-        return TemplateManager.getApplication().getBuildDate();
+        return TemplateManager.getBuildDate();
     }
 
     /**

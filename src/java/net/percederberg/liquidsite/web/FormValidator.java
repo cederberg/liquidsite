@@ -26,8 +26,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import net.percederberg.liquidsite.web.Request;
-
 /**
  * A form field validator. This class contains methods for checking
  * request input parameters in various ways.

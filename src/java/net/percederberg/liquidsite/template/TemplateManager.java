@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite.template;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -28,8 +29,6 @@ import java.io.StringReader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
-
-import net.percederberg.liquidsite.Application;
 
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentPage;
@@ -52,9 +51,14 @@ public class TemplateManager {
     static final Log LOG = new Log(TemplateManager.class);
 
     /**
-     * The application object.
+     * The build version to return.
      */
-    private static Application application = null;
+    private static String buildVersion = null;
+
+    /**
+     * The build date to return.
+     */
+    private static String buildDate = null;
 
     /**
      * The file template configuration.
@@ -74,26 +78,30 @@ public class TemplateManager {
     /**
      * Initializes the template manager.
      *
-     * @param app            the application object
+     * @param baseDir        the application base directory
+     * @param version        the application version number
+     * @param date           the application version date
      *
      * @throws TemplateException if the template base directory
      *             couldn't be read properly
      */
-    public static void initialize(Application app)
+    public static void initialize(File baseDir,
+                                  String version,
+                                  String date)
         throws TemplateException {
 
-        application = app;
+        buildVersion = version;
+        buildDate = date;
         fileConfig = Configuration.getDefaultConfiguration();
         fileConfig.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
         fileConfig.clearTemplateCache();
         fileConfig.setStrictSyntaxMode(true);
         fileConfig.setDefaultEncoding("UTF-8");
         try {
-            fileConfig.setDirectoryForTemplateLoading(app.getBaseDir());
+            fileConfig.setDirectoryForTemplateLoading(baseDir);
         } catch (IOException e) {
             LOG.error(e.getMessage());
-            throw new TemplateException("couldn't read " +
-                                        app.getBaseDir());
+            throw new TemplateException("couldn't read " + baseDir);
         }
         pageConfig = new Configuration();
         pageConfig.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
@@ -104,12 +112,21 @@ public class TemplateManager {
     }
 
     /**
-     * Returns the current template manager application object.
+     * Returns the application build version.
      *
-     * @return the current template manager application object
+     * @return the application build version
      */
-    public static Application getApplication() {
-        return application;
+    public static String getBuildVersion() {
+        return buildVersion;
+    }
+
+    /**
+     * Returns the application build date.
+     *
+     * @return the application build date
+     */
+    public static String getBuildDate() {
+        return buildDate;
     }
 
     /**

@@ -38,8 +38,6 @@ import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
-import net.percederberg.liquidsite.Configuration;
-
 import org.liquidsite.util.log.Log;
 
 /**
@@ -81,7 +79,8 @@ public class MultiPartRequest extends Request {
      * @param context        the servlet context
      * @param request        the HTTP request
      * @param response       the HTTP response
-     * @param config         the configuration to use
+     * @param tempDir        the temporary upload directory
+     * @param maxSize        the maximum upload size (in bytes)
      *
      * @throws ServletException if the request couldn't be parsed
      *             correctly
@@ -89,12 +88,13 @@ public class MultiPartRequest extends Request {
     public MultiPartRequest(ServletContext context,
                             HttpServletRequest request,
                             HttpServletResponse response,
-                            Configuration config)
+                            String tempDir,
+                            int maxSize)
         throws ServletException {
 
         super(context, request, response);
-        uploadDir = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
-        uploadSize = config.getInt(Configuration.UPLOAD_MAX_SIZE, 10000000);
+        this.uploadDir = tempDir;
+        this.uploadSize = maxSize;
         try {
             parse(request);
         } catch (FileUploadException e) {

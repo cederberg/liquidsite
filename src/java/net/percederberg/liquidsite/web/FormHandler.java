@@ -21,8 +21,6 @@
 
 package net.percederberg.liquidsite.web;
 
-import net.percederberg.liquidsite.web.Request;
-
 /**
  * A form request handler. This class attempts to provide some
  * workflow support, by making initial request parameter analysis and

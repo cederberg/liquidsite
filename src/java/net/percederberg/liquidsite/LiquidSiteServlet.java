@@ -211,7 +211,9 @@ public class LiquidSiteServlet extends HttpServlet
         dir = (str == null) ? null : new File(str);
         contentManager = new ContentManager(database, dir, false);
         try {
-            TemplateManager.initialize(this);
+            TemplateManager.initialize(getBaseDir(),
+                                       getBuildVersion(),
+                                       getBuildDate());
         } catch (TemplateException e) {
             errors++;
             LOG.error(e.getMessage());
@@ -326,16 +328,21 @@ public class LiquidSiteServlet extends HttpServlet
                          boolean content)
         throws ServletException, IOException {
 
-        String   contentType = request.getContentType();
         Request  r;
+        int      size;
+        String   str;
 
         // Create request object
-        if (contentType != null && contentType.startsWith("multipart")) {
+        str = request.getContentType();
+        if (str != null && str.startsWith("multipart")) {
             try {
+                str = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
+                size = config.getInt(Configuration.UPLOAD_MAX_SIZE, 10000000);
                 r = new MultiPartRequest(getServletContext(),
                                          request,
                                          response,
-                                         getConfig());
+                                         str,
+                                         size);
             } catch (ServletException e) {
                 LOG.warning("parse error on multi-part request", e);
                 response.sendError(
