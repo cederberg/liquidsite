@@ -194,6 +194,40 @@ public abstract class Content extends PersistentObject implements Comparable {
     }
 
     /**
+     * Returns an array of root content objects in the specified 
+     * domain. Only the latest revision of each content object will 
+     * be returned.
+     * 
+     * @param domain         the domain
+     * 
+     * @return an array of content objects found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    protected static Content[] findByParent(Domain domain) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Content[]           res;
+
+        try {
+            list = ContentPeer.doSelectByParent(domain.getName(), 0, con);
+            res = new Content[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = createContent((ContentData) list.get(i), true, con);
+            }
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
      * Returns an array of content objects having the specified 
      * parent. Only the latest revision of each content object will 
      * be returned.
@@ -213,7 +247,9 @@ public abstract class Content extends PersistentObject implements Comparable {
         Content[]           res;
 
         try {
-            list = ContentPeer.doSelectByParent(parent.getId(), con);
+            list = ContentPeer.doSelectByParent(parent.getDomainName(),
+                                                parent.getId(), 
+                                                con);
             res = new Content[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = createContent((ContentData) list.get(i), true, con);

@@ -120,9 +120,11 @@ public class ContentPeer extends AbstractPeer {
 
     /**
      * Returns a list of content objects having the specified parent.
-     * Only the latest revision of each content object will be 
-     * returned.
+     * By setting the parent content id to zero (0), all the root
+     * content objects in a domain can be retrieved. Only the latest 
+     * revision of each content object will be returned.
      * 
+     * @param domain         the domain name
      * @param parent         the parent content id
      * @param con            the database connection to use
      * 
@@ -131,7 +133,8 @@ public class ContentPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static ArrayList doSelectByParent(int parent, 
+    public static ArrayList doSelectByParent(String domain,
+                                             int parent, 
                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
@@ -140,6 +143,7 @@ public class ContentPeer extends AbstractPeer {
         ArrayList        list = new ArrayList();
         ContentData      data;
         
+        query.addParameter(domain);
         query.addParameter(parent);
         res = PEER.execute("reading content list", query, con);
         try {
