@@ -366,6 +366,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
         forum.setName(request.getParameter("name"));
         forum.setRealName(request.getParameter("realname"));
         forum.setDescription(request.getParameter("description"));
+        forum.setModeratorName(request.getParameter("moderator"));
         forum.setComment(request.getParameter("comment"));
         if (request.getParameter("action", "").equals("publish")) {
             forum.setRevisionNumber(1);

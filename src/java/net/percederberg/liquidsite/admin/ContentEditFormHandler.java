@@ -496,6 +496,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         forum.setName(request.getParameter("name"));
         forum.setRealName(request.getParameter("realname"));
         forum.setDescription(request.getParameter("description"));
+        forum.setModeratorName(request.getParameter("moderator"));
         forum.setComment(request.getParameter("comment"));
         try {
             section = Integer.parseInt(request.getParameter("section"));

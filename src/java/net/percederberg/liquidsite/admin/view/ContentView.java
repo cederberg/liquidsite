@@ -455,11 +455,13 @@ public class ContentView extends AdminView {
 
         ContentForum  forum;
         String        name;
-        String        realName;
-        String        description;
-        String        comment;
         int           section;
         ArrayList     sections;
+        String        realName;
+        String        description;
+        String        moderator;
+        ArrayList     moderators;
+        String        comment;
         boolean       publish;
         String        str;
 
@@ -474,6 +476,8 @@ public class ContentView extends AdminView {
                                     null);
             realName = forum.getRealName();
             description = forum.getDescription();
+            moderator = forum.getModeratorName();
+            moderators = findGroups(forum.getDomain(), "");
             if (forum.getRevisionNumber() == 0) {
                 comment = forum.getComment();
             } else {
@@ -487,6 +491,8 @@ public class ContentView extends AdminView {
             sections = new ArrayList(0);
             realName = "";
             description = "";
+            moderator = "";
+            moderators = findGroups(reference.getDomain(), "");
             comment = "Created";
             publish = reference.hasPublishAccess(request.getUser()) &&
                       AdminUtils.isOnline(reference);
@@ -503,6 +509,7 @@ public class ContentView extends AdminView {
             }
             realName = request.getParameter("realname", "");
             description = request.getParameter("description", "");
+            moderator = request.getParameter("moderator", "");
             comment = request.getParameter("comment", "");
         }
 
@@ -512,6 +519,8 @@ public class ContentView extends AdminView {
         request.setAttribute("sections", sections);
         request.setAttribute("realname", realName);
         request.setAttribute("description", description);
+        request.setAttribute("moderator", moderator);
+        request.setAttribute("moderators", moderators);
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
         if (request.getParameter("liquidsite.startpage") != null) {

@@ -120,10 +120,29 @@
         </tr>
         <tr>
           <th>
+            Moderators:
+          </th>
+          <td class="field">
+            <select tabindex="5" name="moderator">
+              <option value="">&lt; None &gt;</option>
+<#list moderators as item>
+  <#if moderator == item.name>
+              <option value="${item.name}" selected="selected">${item.name?xml}</option>
+  <#else>
+              <option value="${item.name}">${item.name?xml}</option>
+  </#if>
+</#list>
+            </select>
+            <p>The moderator group has access to manipulating all
+            posts and threads in the forum via the form interface.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
             Comment:
           </th>
           <td class="field">
-            <input type="text" tabindex="5" size="40"
+            <input type="text" tabindex="6" size="40"
                    name="comment" value="${comment}" />
             <p>The revision comment.</p>
           </td>
