@@ -213,51 +213,14 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install(Request request) {
-
         // initialize errors
-        error = false;
-        errorHost = false;
-        errorUsername = false;
-        errorPassword = false;
-        errorConnection = false;
+        initializeErrors();
 
         // get info
         getParameters(request);
         
         // set default info
-        if (host == null) {
-            host = "localhost";
-        }
-        if (rootUsername == null) {
-            rootUsername = "root";
-        }
-        if (rootPassword == null) {
-            rootPassword = "";
-        }
-        if (dbchoice == null) {
-            dbchoice = "create";
-        }
-        if (dbsel == null) {
-            dbsel = "";
-        }
-        if (database == null) {
-            database = "liquidsite";
-        }
-        if (userchoice == null) {
-            userchoice = "create";
-        }
-        if (usersel == null) {
-            usersel = "";
-        }
-        if (username == null) {
-            username = "liquidsite";
-        }
-        if (password == null) {
-            password = "";
-        }
-        if (verify == null) {
-            verify = "";
-        }
+        setDefaultValues();
 
         // set attributes in request
         setAttributes(request);
@@ -274,18 +237,11 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install2(Request request) {
-
-        // initialize errors
-        error = false;
-        errorHost = false;
-        errorUsername = false;
-        errorPassword = false;
-        errorDbExists = false;
-        errorConnection = false;
-
-        // database results
         ArrayList databases = null;
         ArrayList lsdatabases = null;
+
+        // initialize errors
+        initializeErrors();
 
         // get info
         getParameters(request);
@@ -366,18 +322,12 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install3(Request request) {
-        
-        // initialize errors
-        error = false;
-        errorDbExists = false;
-        errorVerify = false;
-        errorUserExists = false;
-        errorConnection = false;
-
-        // database results
         ArrayList databases = null;
         ArrayList users = null;
         ArrayList lsusers = null;
+        
+        // initialize errors
+        initializeErrors();
 
         // get info
         getParameters(request);
@@ -471,15 +421,10 @@ public class InstallController extends Controller {
      * @param request           the request object
      */
     private void install4(Request request) {
+        ArrayList users = null;
 
         // initialize errors
-        error = false;
-        errorVerify = false;
-        errorUserExists = false;
-        errorConnection = false;
-
-        // database results
-        ArrayList users = null;
+        initializeErrors();
 
         // get info
         getParameters(request);
@@ -631,7 +576,7 @@ public class InstallController extends Controller {
      * @param request        the request object where to set
      *                       the information
      */
-     private void setAttributes(Request request) {
+    private void setAttributes(Request request) {
         request.setAttribute("host", host);
         request.setAttribute("rootUsername", rootUsername);
         request.setAttribute("rootPassword", rootPassword);
@@ -651,8 +596,62 @@ public class InstallController extends Controller {
         request.setAttribute("errorVerify", errorVerify);
         request.setAttribute("errorUserExists", errorUserExists);
         request.setAttribute("errorConnection", errorConnection);
-     }
+    }
 
+    /**
+     * Sets the default values for the installation process if no
+     * values were already set.
+     */
+    private void setDefaultValues() {
+        if (host == null) {
+            host = "localhost";
+        }
+        if (rootUsername == null) {
+            rootUsername = "root";
+        }
+        if (rootPassword == null) {
+            rootPassword = "";
+        }
+        if (dbchoice == null) {
+            dbchoice = "create";
+        }
+        if (dbsel == null) {
+            dbsel = "";
+        }
+        if (database == null) {
+            database = "liquidsite";
+        }
+        if (userchoice == null) {
+            userchoice = "create";
+        }
+        if (usersel == null) {
+            usersel = "";
+        }
+        if (username == null) {
+            username = "liquidsite";
+        }
+        if (password == null) {
+            password = "";
+        }
+        if (verify == null) {
+            verify = "";
+        }
+    }
+    
+    /**
+     * Sets the error variables to false.
+     */
+    private void initializeErrors() {
+        error = false;
+        errorHost = false;
+        errorUsername = false;
+        errorPassword = false;
+        errorDbExists = false;
+        errorVerify = false;
+        errorUserExists = false;
+        errorConnection = false;
+    }
+    
     /**
      * Returns a list with all database names.
      * 
