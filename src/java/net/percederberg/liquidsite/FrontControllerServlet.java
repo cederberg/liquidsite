@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite;
 
+import net.percederberg.liquidsite.db.*;
+
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -38,12 +40,24 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FrontControllerServlet extends HttpServlet {
 
+    private InstallController install;
+
     /**
      * Initializes this servlet.
      * 
      * @throws ServletException if the servlet failed to initialize
      */
     public void init() throws ServletException {
+
+        // load mysql driver
+        try {
+            MySQLDatabaseConnector.loadDriver();
+        } catch (DatabaseConnectionException e) {
+            // TODO send error page
+        }
+
+        // create installer
+	install = new InstallController(this);
     }
 
     /**
@@ -86,10 +100,6 @@ public class FrontControllerServlet extends HttpServlet {
     }
     
     private void process(Request request) {
-        if (request.isDocumentRequest()) {
-            request.forward("/bootstrap/start.jsp");
-        } else {
-            request.forward(request.getPath());
-        }
+	install.process(request);
     }
 }
