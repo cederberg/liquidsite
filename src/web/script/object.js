@@ -121,9 +121,10 @@ function objectAddOnlineProperty(online, offline) {
  * Adds the status property to the object view.
  *
  * @param status              the object status value
- * @param lock                the object lock user (or null)
+ * @param lockUser            the object lock user (or null)
+ * @param lockDate            the object lock date (or null)
  */
-function objectAddStatusProperty(status, lock) {
+function objectAddStatusProperty(status, lockUser, lockDate) {
     var text;
     var style;
 
@@ -137,8 +138,12 @@ function objectAddStatusProperty(status, lock) {
         text = "Offline";
         style = "offline";
     }   
-    if (lock != null) {
-        text = text + " (Locked by " + lock + ")";
+    if (lockUser != null) {
+        text = text + " (Locked ";
+        if (lockDate != null) {
+            text = text + lockDate + " ";
+        }
+        text = text + "by " + lockUser + ")";
     }
     objectAddProperty("Status", text, style);
 }

@@ -725,10 +725,14 @@ public class ScriptView {
      * @return the JavaScript representation of a lock object
      */
     private String getLock(Lock lock) {
+        String  str;
+
         if (lock == null) {
-            return "null";
+            return "null, null";
         } else {
-            return AdminUtils.getScriptString(lock.getUserName());
+            str = AdminUtils.formatDate(lock.getAcquiredDate());
+            return AdminUtils.getScriptString(lock.getUserName()) +
+                   ", " + AdminUtils.getScriptString(str);
         }
     }
 
