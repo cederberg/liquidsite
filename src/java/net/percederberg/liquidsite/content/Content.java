@@ -801,17 +801,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have insert permissions
      */
     protected void doInsert(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
-            throw new ContentSecurityException(user, "publish", this);
-        } else if (getRevisionNumber() <= 0 && !hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        }
         validate();
         data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
@@ -833,17 +826,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have update permissions
      */
     protected void doUpdate(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
-            throw new ContentSecurityException(user, "publish", this);
-        } else if (getRevisionNumber() <= 0 && !hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        }
         validate();
         data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
@@ -873,15 +859,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have delete permissions
      */
     protected void doDelete(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (!hasPublishAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
         try {
             ContentPeer.doDelete(data, con);
         } catch (DatabaseObjectException e) {

@@ -257,9 +257,11 @@ public abstract class PersistentObject {
         con = getDatabaseConnection();
         try {
             if (!isPersistent()) {
+                getSecurityManager().checkInsert(user, this);
                 doInsert(user, con);
                 persistent = true;
             } else {
+                getSecurityManager().checkUpdate(user, this);
                 doUpdate(user, con);
             }
         } finally {
@@ -295,6 +297,7 @@ public abstract class PersistentObject {
 
         // Delete from database
         try {
+            getSecurityManager().checkDelete(user, this);
             doDelete(user, con);
         } finally {
             returnDatabaseConnection(con);
@@ -316,11 +319,9 @@ public abstract class PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have insert permissions
      */
     protected abstract void doInsert(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException;
+        throws ContentException;
 
     /**
      * Updates the object data in the database.
@@ -330,11 +331,9 @@ public abstract class PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have update permissions
      */
     protected abstract void doUpdate(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException;
+        throws ContentException ;
 
     /**
      * Deletes the object data from the database.
@@ -344,9 +343,7 @@ public abstract class PersistentObject {
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have delete permissions
      */
     protected abstract void doDelete(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException;
+        throws ContentException;
 }

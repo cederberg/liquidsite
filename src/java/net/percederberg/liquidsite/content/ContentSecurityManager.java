@@ -316,4 +316,224 @@ public class ContentSecurityManager {
             return false;
         }
     }
+    
+    /**
+     * Verifies that a user has access to insert a persistent object.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the persistent object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    protected void checkInsert(User user, PersistentObject obj)
+        throws ContentException, ContentSecurityException {
+
+        if (obj instanceof Domain) {
+            checkSuperUserAccess(user, (Domain) obj);
+        } else if (obj instanceof Host) {
+            checkSuperUserAccess(user, ((Host) obj).getDomain());
+        } else if (obj instanceof Content) {
+            if (((Content) obj).getRevisionNumber() > 0) {
+                checkPublishAccess(user, (Content) obj);
+            } else {
+                checkWriteAccess(user, (Content) obj);
+            }
+        } else if (obj instanceof Permission) {
+            if (((Permission) obj).getContentId() > 0) {
+                checkAdminAccess(user, ((Permission) obj).getContent());
+            } else {
+                checkAdminAccess(user, ((Permission) obj).getDomain());
+            }
+        } else if (obj instanceof Lock) {
+            checkWriteAccess(user, ((Lock) obj).getContent());
+        } else if (obj instanceof User) {
+            // TODO: check permission for writing users?
+        } else if (obj instanceof Group) {
+            // TODO: check permission for writing groups?
+        } else {
+            throw new ContentSecurityException("persistent object " +
+                                               "class unknown: " + 
+                                               obj.getClass());
+        }
+    }
+
+    /**
+     * Verifies that a user has access to update a persistent object.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the persistent object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    protected void checkUpdate(User user, PersistentObject obj)
+        throws ContentException, ContentSecurityException {
+
+        if (obj instanceof Domain) {
+            checkSuperUserAccess(user, (Domain) obj);
+        } else if (obj instanceof Host) {
+            checkSuperUserAccess(user, ((Host) obj).getDomain());
+        } else if (obj instanceof Content) {
+            if (((Content) obj).getRevisionNumber() > 0) {
+                checkPublishAccess(user, (Content) obj);
+            } else {
+                checkWriteAccess(user, (Content) obj);
+            }
+        } else if (obj instanceof Permission) {
+            if (((Permission) obj).getContentId() > 0) {
+                checkAdminAccess(user, ((Permission) obj).getContent());
+            } else {
+                checkAdminAccess(user, ((Permission) obj).getDomain());
+            }
+        } else if (obj instanceof Lock) {
+            throw new ContentSecurityException("content locks cannot " +
+                                               "be updated");
+        } else if (obj instanceof User) {
+            // TODO: check permission for writing users?
+        } else if (obj instanceof Group) {
+            // TODO: check permission for writing groups?
+        } else {
+            throw new ContentSecurityException("persistent object " +
+                                               "class unknown: " + 
+                                               obj.getClass());
+        }
+    }
+
+    /**
+     * Verifies that a user has access to delete a persistent object.
+     *
+     * @param user           the user to check, or null for none
+     * @param obj            the persistent object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    protected void checkDelete(User user, PersistentObject obj) 
+        throws ContentException, ContentSecurityException {
+
+        if (obj instanceof Domain) {
+            checkSuperUserAccess(user, (Domain) obj);
+        } else if (obj instanceof Host) {
+            checkSuperUserAccess(user, ((Host) obj).getDomain());
+        } else if (obj instanceof Content) {
+            checkPublishAccess(user, (Content) obj);
+        } else if (obj instanceof Permission) {
+            if (((Permission) obj).getContentId() > 0) {
+                checkAdminAccess(user, ((Permission) obj).getContent());
+            } else {
+                checkAdminAccess(user, ((Permission) obj).getDomain());
+            }
+        } else if (obj instanceof Lock) {
+            checkWriteAccess(user, ((Lock) obj).getContent());
+        } else if (obj instanceof User) {
+            // TODO: check permission for deleting users?
+        } else if (obj instanceof Group) {
+            // TODO: check permission for deleting groups?
+        } else {
+            throw new ContentSecurityException("persistent object " +
+                                               "class unknown: " + 
+                                               obj.getClass());
+        }
+    }
+    
+    /**
+     * Verifies that a user has superuser access. The domain being
+     * modified must also be specified.
+     *
+     * @param user           the user to check, or null for none
+     * @param domain         the domain object
+     * 
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkSuperUserAccess(User user, Domain domain)
+        throws ContentSecurityException {
+
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "modify", domain);
+        }
+    }
+
+    /**
+     * Verifies that a user has write access on a content object.
+     *
+     * @param user           the user to check, or null for none
+     * @param content        the content object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkWriteAccess(User user, Content content)
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user, content)) {
+            throw new ContentSecurityException(user, "write", content);
+        }
+    }
+
+    /**
+     * Verifies that a user has publish access on a content object.
+     *
+     * @param user           the user to check, or null for none
+     * @param content        the content object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkPublishAccess(User user, Content content)
+        throws ContentException, ContentSecurityException {
+
+        if (!hasPublishAccess(user, content)) {
+            throw new ContentSecurityException(user, "publish", content);
+        }
+    }
+
+    /**
+     * Verifies that a user has admin access on a domain object.
+     *
+     * @param user           the user to check, or null for none
+     * @param domain         the domain object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkAdminAccess(User user, Domain domain)
+        throws ContentException, ContentSecurityException {
+
+        if (!hasAdminAccess(user, domain)) {
+            throw new ContentSecurityException(user, "admin", domain);
+        }
+    }
+
+    /**
+     * Verifies that a user has admin access on a content object.
+     *
+     * @param user           the user to check, or null for none
+     * @param content        the content object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             specified access
+     */
+    private void checkAdminAccess(User user, Content content)
+        throws ContentException, ContentSecurityException {
+
+        if (!hasAdminAccess(user, content)) {
+            throw new ContentSecurityException(user, "admin", content);
+        }
+    }
 }

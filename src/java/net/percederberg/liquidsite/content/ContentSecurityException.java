@@ -23,12 +23,21 @@ package net.percederberg.liquidsite.content;
 
 /**
  * A content security exception. This exception is thrown when the 
- * content object couldn't be read or written by the specified user.
+ * content object couldn't be read or written by a specific user.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
 public class ContentSecurityException extends Exception {
+
+    /**
+     * Creates a new content security exception.
+     * 
+     * @param message        the error message
+     */
+    public ContentSecurityException(String message) {
+        super(message);
+    }
 
     /**
      * Creates a new content security exception.
@@ -49,44 +58,8 @@ public class ContentSecurityException extends Exception {
      * @param op             the operation name
      * @param obj            the object accessed
      */
-    public ContentSecurityException(User user, String op, Host obj) {
-        super(user.getName() + " cannot " + op + " host " + 
-              obj.getName());
-    }
-
-    /**
-     * Creates a new content security exception.
-     * 
-     * @param user           the user attempting the operation
-     * @param op             the operation name
-     * @param obj            the object accessed
-     */
     public ContentSecurityException(User user, String op, Content obj) {
         super(user.getName() + " cannot " + op + " content " + 
               obj.getId());
-    }
-
-    /**
-     * Creates a new content security exception.
-     * 
-     * @param user           the user attempting the operation
-     * @param op             the operation name
-     * @param obj            the object accessed
-     */
-    public ContentSecurityException(User user, String op, Permission obj) {
-        super(user.getName() + " cannot " + op + 
-              " content permission for " +  obj.getContentId());
-    }
-
-    /**
-     * Creates a new content security exception.
-     * 
-     * @param user           the user attempting the operation
-     * @param op             the operation name
-     * @param obj            the object accessed
-     */
-    public ContentSecurityException(User user, String op, Lock obj) {
-        super(user.getName() + " cannot " + op + 
-              " content lock for " +  obj.getContentId());
     }
 }

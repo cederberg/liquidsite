@@ -458,13 +458,10 @@ public class User extends PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have insert permissions
      */
     protected void doInsert(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        // TODO: check permissions for user
         validate();
         try {
             UserPeer.doInsert(data, con);
@@ -484,13 +481,10 @@ public class User extends PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have update permissions
      */
     protected void doUpdate(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        // TODO: check permissions for user
         validate();
         try {
             UserPeer.doUpdate(data, con);
@@ -510,13 +504,10 @@ public class User extends PersistentObject {
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have delete permissions
      */
     protected void doDelete(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        // TODO: check permissions for user
         try {
             UserPeer.doDelete(data, con);
             groups = null;

@@ -518,17 +518,10 @@ public class Permission extends PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have insert permissions
      */
     protected void doInsert(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        } else if (getContentId() == 0 && !getDomain().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
         validate();
         try {
             PermissionPeer.doInsert(data, con);
@@ -546,17 +539,10 @@ public class Permission extends PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have update permissions
      */
     protected void doUpdate(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        } else if (getContentId() == 0 && !getDomain().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
         validate();
         try {
             PermissionPeer.doUpdate(data, con);
@@ -574,17 +560,10 @@ public class Permission extends PersistentObject {
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have delete permissions
      */
     protected void doDelete(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        } else if (getContentId() == 0 && !getDomain().hasAdminAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
         try {
             PermissionPeer.doDelete(data, con);
         } catch (DatabaseObjectException e) {

@@ -254,15 +254,10 @@ public class Lock extends PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have insert permissions
      */
     protected void doInsert(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (!getContent().hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        }
         validate();
         data.setDate(LockData.ACQUIRED, new Date());
         try {
@@ -281,13 +276,11 @@ public class Lock extends PersistentObject {
      * 
      * @throws ContentException if the object data didn't validate or 
      *             if the database couldn't be accessed properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have update permissions
      */
     protected void doUpdate(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        throw new ContentSecurityException(user, "update", this);
+        throw new ContentException("content locks cannot be updated");
     }
 
     /**
@@ -298,15 +291,10 @@ public class Lock extends PersistentObject {
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have delete permissions
      */
     protected void doDelete(User user, DatabaseConnection con)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        if (!getContent().hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
         try {
             LockPeer.doDelete(data, con);
         } catch (DatabaseObjectException e) {
