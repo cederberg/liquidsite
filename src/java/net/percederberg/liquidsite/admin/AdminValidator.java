@@ -55,6 +55,11 @@ public class AdminValidator {
     private FormValidator addDomain = new FormValidator();
 
     /**
+     * The add site form validator.
+     */
+    private FormValidator addSite = new FormValidator();
+
+    /**
      * Creates a new administration validator.
      */
     public AdminValidator() {
@@ -72,6 +77,25 @@ public class AdminValidator {
         chars = LOWERCASE_CHARACTERS + NUMBER_CHARACTERS + ".-_";
         error = "Host name must be lower-case, invalid character";
         addDomain.addCharacterConstraint("host", chars, error);
+
+        // Add site validator
+        addSite.addRequiredConstraint("name", "No site name specified");
+        addSite.addRequiredConstraint("protocol", "No protocol specified");
+        error = "Protocol must be either 'http' or 'https', " +
+                "invalid character";
+        addSite.addCharacterConstraint("protocol", "https", error);
+        addSite.addRequiredConstraint("host", "No host name specified");
+        chars = LOWERCASE_CHARACTERS + NUMBER_CHARACTERS + ".-_*";
+        error = "Host name must be lower-case, invalid character";
+        addSite.addCharacterConstraint("host", chars, error);
+        addSite.addRequiredConstraint("port", "No port number specified");
+        error = "Port number must be numeric, invalid character";
+        addSite.addCharacterConstraint("port", NUMBER_CHARACTERS, error);
+        addSite.addRequiredConstraint("dir", "No base directory specified");
+        chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
+                NUMBER_CHARACTERS + ".-_/";
+        error = "Base directory contains invalid character";
+        addSite.addCharacterConstraint("dir", chars, error);
     }
 
     /**
@@ -83,5 +107,16 @@ public class AdminValidator {
      */
     public void validateAddDomain(Request request) throws FormException {
         addDomain.validate(request);
+    }
+
+    /**
+     * Validates the parameters in an add site request.
+     * 
+     * @param request        the add site request
+     * 
+     * @throws FormException if the form validation failed
+     */
+    public void validateAddSite(Request request) throws FormException {
+        addSite.validate(request);
     }
 }

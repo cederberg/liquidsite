@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.util.ArrayList;
+
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
@@ -32,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
+import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -169,7 +172,6 @@ public class AdminController extends Controller {
         String  step = request.getParameter("step", "");
         String  category = request.getParameter("category", "");
         
-        // TODO: add support for sites
         if (request.getParameter("prev") != null) {
             if (step.equals("1")) {
                 request.sendRedirect("site.html");
@@ -181,6 +183,12 @@ public class AdminController extends Controller {
                 displayAddDomain(request);
             } else {
                 processAddDomain(request);
+            }
+        } else if (category.equals("site")) {
+            if (step.equals("1")) {
+                displayAddSite(request);
+            } else {
+                processAddSite(request);
             }
         } else {
             displayAddObject(request);
@@ -224,6 +232,52 @@ public class AdminController extends Controller {
             error = "You don't have permission for adding domains";
             request.setAttribute("error", error);
             displayAddDomain(request);
+        }
+    }
+
+    /**
+     * Processes the add site requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processAddSite(Request request) throws RequestException {
+        User    user = request.getUser();
+        Domain  domain;
+        Site    site;
+        String  error;
+        
+        try {
+            validator.validateAddSite(request);
+            domain = getActiveDomain(request);
+            site = new Site(domain);
+            site.setName(request.getParameter("name"));
+            site.setProtocol(request.getParameter("protocol"));
+            site.setHost(request.getParameter("host"));
+            site.setPort(Integer.parseInt(request.getParameter("port")));
+            site.setDirectory(request.getParameter("dir"));
+            site.setAdmin(request.getParameter("admin") != null);
+            site.setComment("Created");
+            site.save(user);
+            request.setSessionAttribute("site.view.type", "site");
+            request.setSessionAttribute("site.view.id", 
+                                        new Integer(site.getId()));
+            request.sendRedirect("site.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            displayAddSite(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            error = "Failed to save to database, " + e.getMessage();
+            request.setAttribute("error", error);
+            displayAddSite(request);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            error = "You don't have permission for adding sites";
+            request.setAttribute("error", error);
+            displayAddSite(request);
         }
     }
 
@@ -386,15 +440,13 @@ public class AdminController extends Controller {
     private void displayAddObject(Request request) 
         throws RequestException {
 
-        Object          type = request.getSessionAttribute("site.view.type");
-        Object          id = request.getSessionAttribute("site.view.id");
-        ContentManager  cm = getContentManager();
-        User            user = request.getUser();
-        Domain          domain;
+        Object  type = request.getSessionAttribute("site.view.type");
+        User    user = request.getUser();
+        Domain  domain;
 
         try {
             if (type.equals("domain")) {
-                domain = cm.getDomain(user, id.toString());
+                domain = getActiveDomain(request); 
                 if (user.getDomainName().equals("")) {
                     request.setAttribute("enableDomain", true);
                 }
@@ -402,6 +454,7 @@ public class AdminController extends Controller {
                     request.setAttribute("enableSite", true);
                 }
             } else {
+                // TODO: add support for other types!
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -425,6 +478,96 @@ public class AdminController extends Controller {
         request.sendTemplate("admin/add-domain.ftl");
     }
     
+    /**
+     * Displays the add site page.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void displayAddSite(Request request) throws RequestException {
+        Domain     domain;
+        Host[]     hosts;
+        ArrayList  list = new ArrayList();
+        String     defaultHost = "*";
+        
+        try {
+            domain = getActiveDomain(request);
+            hosts = domain.getHosts();
+            for (int i = 0; i < hosts.length; i++) {
+                if (i == 0) {
+                    defaultHost = hosts[i].getName();
+                }
+                list.add(hosts[i].getName());
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
+        }
+        request.setAttribute("hostnames", list);
+        request.setAttribute("name", 
+                             request.getParameter("name", ""));
+        request.setAttribute("protocol", 
+                             request.getParameter("protcol", ""));
+        request.setAttribute("host", 
+                             request.getParameter("host", defaultHost));
+        request.setAttribute("port", 
+                             request.getParameter("port", "80"));
+        request.setAttribute("dir", 
+                             request.getParameter("dir", "/"));
+        request.sendTemplate("admin/add-site.ftl");
+    }
+    
+    /**
+     * Returns the active domain object. The active object is the 
+     * one present in the session attributes "site.view.type" and
+     * "site.view.id". 
+     * 
+     * @param request        the request
+     * 
+     * @return the active domain
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have 
+     *             access to the active domain
+     */
+    private Domain getActiveDomain(Request request) 
+        throws ContentException, ContentSecurityException {
+
+        Object          id = request.getSessionAttribute("site.view.id");
+        ContentManager  cm = getContentManager();
+
+        return cm.getDomain(request.getUser(), id.toString());
+    }
+
+    /**
+     * Returns the active content object. The active object is the 
+     * one present in the session attributes "site.view.type" and
+     * "site.view.id". 
+     * 
+     * @param request        the request
+     * 
+     * @return the active content object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have 
+     *             access to the active domain
+     */
+    private Content getActiveContent(Request request) 
+        throws ContentException, ContentSecurityException {
+
+        Object          id = request.getSessionAttribute("site.view.id");
+        ContentManager  cm = getContentManager();
+
+        return cm.getContent(request.getUser(), 
+                             Integer.parseInt(id.toString()));
+    }
+
     /**
      * Returns the JavaScript code for displaying child content 
      * objects. This method may create a nested tree view with all 
