@@ -23,6 +23,8 @@ package net.percederberg.liquidsite.db;
 
 import java.util.Properties;
 
+import net.percederberg.liquidsite.Log;
+
 /**
  * A database connector. 
  *
@@ -30,6 +32,11 @@ import java.util.Properties;
  * @version  1.0
  */
 public class DatabaseConnector {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(DatabaseConnector.class);
 
     /**
      * The default minimum connection pool size (0).
@@ -80,6 +87,7 @@ public class DatabaseConnector {
             Class.forName(driver).newInstance();
         } catch (Exception e) {
             message = "couldn't find JDBC driver " + driver;
+            LOG.debug(message, e);
             throw new DatabaseConnectionException(message, e);
         }
     }
@@ -103,6 +111,7 @@ public class DatabaseConnector {
     public DatabaseConnector(String url, Properties properties) {
         this.url = url;
         this.properties = properties;
+        LOG.trace("created database connector for " + url);
     }
     
     /**
@@ -185,6 +194,7 @@ public class DatabaseConnector {
     public DatabaseConnection getConnection() 
         throws DatabaseConnectionException {
 
+        LOG.trace("database connection requested for " + url);
         if (pool == null) {
             return new DatabaseConnection(url, properties);
         } else {
@@ -202,6 +212,7 @@ public class DatabaseConnector {
      * @see #getConnection
      */
     public void returnConnection(DatabaseConnection con) {
+        LOG.trace("database connection returned for " + url);
         if (pool == null) {
             con.close();
         } else {

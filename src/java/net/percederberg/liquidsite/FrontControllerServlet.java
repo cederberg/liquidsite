@@ -22,9 +22,10 @@
 package net.percederberg.liquidsite;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.logging.LogManager;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -49,8 +50,7 @@ public class FrontControllerServlet extends HttpServlet
     /**
      * The class logger.
      */
-    private static final Logger LOG = 
-        Logger.getLogger(FrontControllerServlet.class.getName());
+    private static final Log LOG = new Log(FrontControllerServlet.class);
 
     /**
      * The application monitor thread.
@@ -101,6 +101,14 @@ public class FrontControllerServlet extends HttpServlet
         String  password;
         int     size;
         
+        // Initialize logging
+        file = new File(getBaseDir(), "WEB-INF/logging.properties");
+        try {
+            Log.initialize(file);
+        } catch (IOException e) {
+            LOG.error("logging configuration: " + e.getMessage());
+        }
+
         // Initialize configuration
         file = new File(getBaseDir(), "WEB-INF/config.properties");
         config = new Configuration(file);
@@ -109,7 +117,7 @@ public class FrontControllerServlet extends HttpServlet
         try {
             MySQLDatabaseConnector.loadDriver();
         } catch (DatabaseConnectionException e) {
-            LOG.severe(e.getMessage());
+            LOG.error(e.getMessage());
         }
         host = config.get(Configuration.DATABASE_HOSTNAME, "");
         name = config.get(Configuration.DATABASE_NAME, "");
@@ -124,7 +132,7 @@ public class FrontControllerServlet extends HttpServlet
             config.read(database);
         } catch (ConfigurationException e) {
             if (file.exists()) {
-                LOG.severe(e.getMessage());
+                LOG.error(e.getMessage());
             }
         }
 
@@ -320,7 +328,7 @@ public class FrontControllerServlet extends HttpServlet
                     try {
                         getDatabase().update();
                     } catch (DatabaseConnectionException e) {
-                        LOG.severe(e.getMessage());
+                        LOG.error(e.getMessage());
                     }
                 }
 
@@ -331,7 +339,9 @@ public class FrontControllerServlet extends HttpServlet
                     // Do nothing
                 }
             }
-            notifyAll();
+            synchronized (this) {
+                notifyAll();
+            }
         }
         
         /**

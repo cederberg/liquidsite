@@ -24,6 +24,8 @@ package net.percederberg.liquidsite.db;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import net.percederberg.liquidsite.Log;
+
 /**
  * A database connection pool. 
  *
@@ -31,6 +33,11 @@ import java.util.Properties;
  * @version  1.0
  */
 public class DatabaseConnectionPool {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(DatabaseConnectionPool.class);
 
     /**
      * The JDBC database URL. This URL is used to create new 
@@ -77,6 +84,7 @@ public class DatabaseConnectionPool {
     public DatabaseConnectionPool(String url, Properties properties) {
         this.url = url;
         this.properties = properties;
+        LOG.trace("created connection pool for " + url);
     }
     
     /**
@@ -113,6 +121,8 @@ public class DatabaseConnectionPool {
      * @see #update
      */
     public void setMinimumSize(int size) {
+        LOG.trace("new connection pool min size: " + size +
+                  ", was: " + this.minSize);
         this.minSize = size;
     }
     
@@ -139,6 +149,8 @@ public class DatabaseConnectionPool {
      * @see #update
      */
     public void setMaximumSize(int size) {
+        LOG.trace("new connection pool max size: " + size +
+                  ", was: " + this.maxSize);
         this.maxSize = size;
     }
 
@@ -165,6 +177,8 @@ public class DatabaseConnectionPool {
      * @see #update
      */
     public void setTimeout(long timeout) {
+        LOG.trace("new connection pool timeout: " + timeout +
+                  ", was: " + this.timeout);
         this.timeout = timeout;
     }
 
@@ -184,10 +198,16 @@ public class DatabaseConnectionPool {
 
         DatabaseConnection  con;
         
+        LOG.trace("getting pooled connection for " + url + "...");
         con = checkOut();
         if (con == null) {
-            con = create();
+            try {
+                con = create();
+            } finally {
+                LOG.debug("failed getting pooled connection for " + url);
+            }
         }
+        LOG.trace("got pooled connection");
         return con;
     }
     
@@ -200,7 +220,9 @@ public class DatabaseConnectionPool {
      * @see #getConnection
      */
     public void returnConnection(DatabaseConnection con) {
+        LOG.trace("returning pooled connection for " + url + "...");
         checkIn(con);
+        LOG.trace("returned pooled connection");
     }
     
     /**
@@ -223,6 +245,7 @@ public class DatabaseConnectionPool {
         int                 i;
         
         // Find invalid or old connections
+        LOG.trace("closing old connections in pool for " + url + "...");
         synchronized (this) {
             for (i = 0; i < connections.size(); i++) {
                 con = (DatabaseConnection) connections.get(i);
@@ -240,12 +263,20 @@ public class DatabaseConnectionPool {
             con = (DatabaseConnection) list.get(i);
             destroy(con);
         }
+        LOG.trace("closed old connections in pool, count: " + list.size());
         
         // Create minimum number of connections
-        while (getCurrentSize() < minSize) {
-            con = create();
+        LOG.trace("creating new connections in pool for " + url);
+        for (i = 0; getCurrentSize() < minSize; i++) {
+            try {
+                con = create();
+            } finally {
+                LOG.debug("failed creating new connections in pool for " + 
+                          url);
+            }
             checkIn(con);
         }
+        LOG.trace("created new connections in pool, count: " + i);
     }
     
     /**
@@ -268,6 +299,7 @@ public class DatabaseConnectionPool {
             msg = "cannot create new database connection, " +
                   "pool size maximum of " + maxSize + 
                   " already reached";
+            LOG.debug(msg);
             throw new DatabaseConnectionException(msg);
         }
         con = new DatabaseConnection(url, properties);
@@ -350,6 +382,8 @@ public class DatabaseConnectionPool {
     private synchronized void add(DatabaseConnection con) {
         if (!connections.contains(con)) {
             connections.add(con);
+            LOG.trace("added connection to pool for " + url + 
+                      ", new size: " + connections.size());
         }
     }
     
@@ -363,5 +397,7 @@ public class DatabaseConnectionPool {
      */
     private synchronized void remove(DatabaseConnection con) {
         connections.remove(con);
+        LOG.trace("removed connection from pool for " + url + 
+                  ", new size: " + connections.size());
     } 
 }

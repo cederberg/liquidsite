@@ -23,6 +23,8 @@ package net.percederberg.liquidsite.db;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
+
 /**
  * A MySQL database connector.
  *
@@ -30,6 +32,11 @@ import java.util.ArrayList;
  * @version  1.0
  */
 public class MySQLDatabaseConnector extends DatabaseConnector {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(MySQLDatabaseConnector.class);
 
     /**
      * Loads the MySQL database driver. This method must be called 
@@ -99,6 +106,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
             res = execute("SHOW GRANTS FOR " + getDatabaseUser());
             str = res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
+            LOG.debug("failed to read user privileges", e);
             throw new DatabaseException("cannot determine privileges", e);
         }
 
@@ -131,6 +139,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
             res = execute("SELECT USER()");
             return res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
+            LOG.debug("failed to read database user name", e);
             throw new DatabaseException("cannot determine user", e);
         }
     }
@@ -157,6 +166,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 list.add(res.getRow(i).getString(0));
             }
         } catch (DatabaseDataException e) {
+            LOG.debug("failed to read database list", e);
             throw new DatabaseException("cannot list databases", e);
         }
         return list;
@@ -188,6 +198,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 list.add(res.getRow(i).getString(0));
             }
         } catch (DatabaseDataException e) {
+            LOG.debug("failed to read table list", e);
             throw new DatabaseException("cannot list tables", e);
         }
         return list;
@@ -221,6 +232,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 }
             }
         } catch (DatabaseDataException e) {
+            LOG.debug("failed to read user list", e);
             throw new DatabaseException("cannot list users", e);
         }
         return list;

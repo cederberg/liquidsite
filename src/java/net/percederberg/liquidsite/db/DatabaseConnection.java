@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import net.percederberg.liquidsite.Log;
+
 /**
  * A database connection. This class encapsulates a JDBC database
  * connection and holds some additional information needed by the
@@ -43,10 +45,20 @@ import java.util.Properties;
 public class DatabaseConnection {
 
     /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(DatabaseConnection.class);
+
+    /**
      * The default query timeout in seconds. No queries are allowed
      * to run longer than this timout value.
      */
     public static final int DEFAULT_QUERY_TIMEOUT = 5;
+
+    /**
+     * The JDBC database URL.
+     */
+    private String url;
 
     /**
      * The JDBC database connection.
@@ -92,11 +104,15 @@ public class DatabaseConnection {
     DatabaseConnection(String url, Properties properties) 
         throws DatabaseConnectionException {
 
+        this.url = url;
         try {
+            LOG.trace("creating connection to " + url + "...");
             con = DriverManager.getConnection(url, properties);
             con.setAutoCommit(true);
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            LOG.trace("created connection to " + url);
         } catch (SQLException e) {
+            LOG.debug("failed to create connection to " + url, e);
             throw new DatabaseConnectionException(e);
         }
     }
@@ -175,22 +191,29 @@ public class DatabaseConnection {
 
         // Execute query
         try {
+            LOG.trace("executing SQL '" + sql + "'...");
             stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
                                        ResultSet.CONCUR_READ_ONLY,
                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
             stmt.setQueryTimeout(DEFAULT_QUERY_TIMEOUT);
             set = stmt.executeQuery(sql);
+            LOG.trace("executed SQL '" + sql);
         } catch (SQLException e) {
+            LOG.debug("failed to execute SQL '" + sql + "'", e);
             throw new DatabaseException(e);
         }
 
         // Extract results
         try {
+            LOG.trace("extracting results from SQL '" + sql + "'...");
             res = new DatabaseResults(set);
+            LOG.trace("extracted results from SQL '" + sql);
         } catch (SQLException e) {
+            LOG.debug("failed to extract results from SQL '" + sql, e);
             throw new DatabaseException(e);
         } finally {
             try {
+                LOG.trace("closing result set");
                 set.close();
             } catch (SQLException ignore) {
                 // Do nothing
@@ -204,6 +227,7 @@ public class DatabaseConnection {
      * Closes the connection.
      */
     public void close() {
+        LOG.trace("closing connection to " + url + "...");
         valid = false;
         try {
             if (!con.isClosed()) {
@@ -212,5 +236,6 @@ public class DatabaseConnection {
         } catch (SQLException ignore) {
             // Ignore this error
         }
+        LOG.trace("closed connection to " + url);
     }
 }
