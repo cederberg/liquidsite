@@ -43,6 +43,43 @@ public class Permission extends PersistentObject {
 
     /**
      * Returns an array of all permission objects for the specified 
+     * domain object. Note that this method only returns the list of 
+     * permissions set on the domain object, not all the permissions
+     * for content objects in the domain.
+     * 
+     * @param domain         the domain
+     * 
+     * @return an array of permission objects found, or 
+     *         an empty array if no permissions were found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    protected static Permission[] findByDomain(Domain domain) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Permission[]        res;
+
+        try {
+            list = PermissionPeer.doSelectByContent(domain.getName(),
+                                                    0, 
+                                                    con);
+            res = new Permission[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new Permission((PermissionData) list.get(i));
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
+     * Returns an array of all permission objects for the specified 
      * content object. Note that this method only returns the list of 
      * permissions set on the content object, not any inherited 
      * permissions.
@@ -63,7 +100,9 @@ public class Permission extends PersistentObject {
         Permission[]        res;
 
         try {
-            list = PermissionPeer.doSelectByContent(content.getId(), con);
+            list = PermissionPeer.doSelectByContent(content.getDomainName(),
+                                                    content.getId(), 
+                                                    con);
             res = new Permission[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new Permission((PermissionData) list.get(i));
@@ -99,7 +138,8 @@ public class Permission extends PersistentObject {
         PermissionData      data;
 
         try {
-            data = PermissionPeer.doSelectByUser(content.getId(), 
+            data = PermissionPeer.doSelectByUser(content.getDomainName(),
+                                                 content.getId(), 
                                                  user.getName(),
                                                  group.getName(),
                                                  con);
@@ -112,6 +152,27 @@ public class Permission extends PersistentObject {
             return null;
         } else {
             return new Permission(data);
+        }
+    }
+
+    /**
+     * Creates a new permission with default values. This permission
+     * is valid for the domain root.
+     * 
+     * @param domain         the domain object
+     * @param user           the user, or null for any user
+     * @param group          the gruop, or null for any group
+     */
+    public Permission(Domain domain, User user, Group group) {
+        super(false);
+        this.data = new PermissionData();
+        this.data.setString(PermissionData.DOMAIN, domain.getName());
+        this.data.setInt(PermissionData.CONTENT, 0);
+        if (user != null) {
+            this.data.setString(PermissionData.USER, user.getName());
+        }
+        if (group != null) {
+            this.data.setString(PermissionData.GROUP, group.getName());
         }
     }
 
@@ -166,7 +227,7 @@ public class Permission extends PersistentObject {
     /**
      * Checks if this permission equals another object. This method 
      * will only return true if the other object is a permission with 
-     * the same content identifier, user and group.
+     * the same domain, content identifier, user and group.
      * 
      * @param obj            the object to compare with
      * 
@@ -174,7 +235,8 @@ public class Permission extends PersistentObject {
      *         false otherwise 
      */
     public boolean equals(Permission obj) {
-        return getContentId() == obj.getContentId()
+        return getDomainName().equals(obj.getDomainName())
+            && getContentId() == obj.getContentId()
             && getUserName().equals(obj.getUserName())
             && getGroupName().equals(obj.getGroupName());
     }
@@ -187,7 +249,9 @@ public class Permission extends PersistentObject {
     public String toString() {
         StringBuffer  buffer = new StringBuffer();
         
-        buffer.append("Object: ");
+        buffer.append("Domain: ");
+        buffer.append(getDomainName());
+        buffer.append(", Content: ");
         buffer.append(getContentId());
         buffer.append(", ");
         if (!getUserName().equals("")) {
@@ -434,9 +498,6 @@ public class Permission extends PersistentObject {
         } else if (getDomain() == null) {
             throw new ContentException("domain '" + getDomainName() + 
                                        "'does not exist");
-        } else if (getContentId() <= 0) {
-            throw new ContentException("no content id set for " +
-                                       "permission object");
         }
     }
 

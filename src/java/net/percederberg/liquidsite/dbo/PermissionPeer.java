@@ -42,9 +42,11 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Returns a list of all permission objects with the specified 
-     * content id.
+     * domain and content id. If the content id is zero (0), the 
+     * permissions for the domain root is returned.
      * 
-     * @param content        the content id
+     * @param domain         the domain name
+     * @param content        the content id, or zero (0)
      * @param con            the database connection to use
      * 
      * @return the list of permission objects found
@@ -52,20 +54,23 @@ public class PermissionPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static ArrayList doSelectByContent(int content, 
+    public static ArrayList doSelectByContent(String domain,
+                                              int content, 
                                               DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.select.content");
         
+        query.addParameter(domain);
         query.addParameter(content);
         return PEER.selectList(query, con);
     }
 
     /**
-     * Returns the permission object with the specified content id,
-     * user, and group.
+     * Returns the permission object with the specified domain,
+     * content id, user, and group.
      * 
+     * @param domain         the domain name
      * @param id             the content id
      * @param user           the permission user name
      * @param group          the permission group name
@@ -77,7 +82,8 @@ public class PermissionPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static PermissionData doSelectByUser(int id,
+    public static PermissionData doSelectByUser(String domain,
+                                                int id,
                                                 String user,
                                                 String group, 
                                                 DatabaseConnection con)
@@ -85,6 +91,7 @@ public class PermissionPeer extends AbstractPeer {
 
         DatabaseQuery  query = new DatabaseQuery("permission.select.user");
         
+        query.addParameter(domain);
         query.addParameter(id);
         query.addParameter(user);
         query.addParameter(group);
@@ -134,6 +141,7 @@ public class PermissionPeer extends AbstractPeer {
         query.addParameter(data.getBoolean(PermissionData.WRITE));
         query.addParameter(data.getBoolean(PermissionData.PUBLISH));
         query.addParameter(data.getBoolean(PermissionData.ADMIN));
+        query.addParameter(data.getString(PermissionData.DOMAIN));
         query.addParameter(data.getInt(PermissionData.CONTENT));
         query.addParameter(data.getString(PermissionData.USER));
         query.addParameter(data.getString(PermissionData.GROUP));
@@ -154,6 +162,7 @@ public class PermissionPeer extends AbstractPeer {
 
         DatabaseQuery  query = new DatabaseQuery("permission.delete");
 
+        query.addParameter(data.getString(PermissionData.DOMAIN));
         query.addParameter(data.getInt(PermissionData.CONTENT));
         query.addParameter(data.getString(PermissionData.USER));
         query.addParameter(data.getString(PermissionData.GROUP));

@@ -542,13 +542,13 @@
 
     <table name="LS_PERMISSION">
       <description>
-        The content object permission table. Each content object may
+        The object permission table. Each domain or content object may
         have an access control list associated with it, in the form of
         one of more rows in this table. In the absence of an access 
         control list, the content object inherits all permissions 
         from its parent object. If no parent object exists to inherit
-        from, the empty access list is inherited which allows noone
-        access.
+        from, the empty access list is inherited which allows no 
+        access for others than superusers.
       </description>
       <column name="DOMAIN">
         <description>
@@ -561,7 +561,8 @@
       <column name="CONTENT">
         <description>
           The content object identifier. The permissions are valid for
-          all revisions of a content object.
+          all revisions of a content object. If this value is zero (0),
+          the permission applies to the domain object itself.
         </description>
         <type name="INTEGER" required="true" />
         <ref table="LS_CONTENT" column="ID" />
@@ -624,9 +625,10 @@
       </column>
       <primarykey>
         <description>
-          The content permission is uniquely indexed by the object 
-          identifier, user name, and group name.
+          The content permission is uniquely indexed by the domain, 
+          content identifier, user name, and group name.
         </description>
+        <ref column="DOMAIN" />
         <ref column="CONTENT" />
         <ref column="USER" />
         <ref column="GROUP" />
