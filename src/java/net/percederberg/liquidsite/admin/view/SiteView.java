@@ -242,11 +242,14 @@ public class SiteView extends AdminView {
         throws ContentException, ContentSecurityException {
 
         ContentPage  page;
+        Content      content;
         ContentSite  site;
         String       name;
         int          parent;
         ArrayList    folders = null;
         String       template;
+        int          section;
+        ArrayList    sections;
         String       comment;
         HashMap      locals = new HashMap();
         Iterator     iter;
@@ -263,6 +266,8 @@ public class SiteView extends AdminView {
             site = findSite(page);
             folders = findFolders(request.getUser(), site, null);
             template = String.valueOf(page.getTemplateId());
+            section = page.getSectionId();
+            sections = findSections(request.getUser(), page.getDomain(), null); 
             if (page.getRevisionNumber() == 0) {
                 comment = page.getComment();
             } else {
@@ -275,12 +280,15 @@ public class SiteView extends AdminView {
                 locals.put(str, AdminUtils.getScriptString(value));
             }
         } else {
+            content = (Content) reference;
             setRequestTemplates(request, 
-                                ((Content) reference).getDomain(), 
+                                content.getDomain(), 
                                 0);
             name = "";
             parent = 0;
             template = "0";
+            section = 0;
+            sections = findSections(request.getUser(), content.getDomain(), null); 
             comment = "Created";
         }
 
@@ -294,6 +302,12 @@ public class SiteView extends AdminView {
                 parent = 0;
             }
             template = request.getParameter("template", "0");
+            try {
+                str = request.getParameter("section", "0");
+                section = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                section = 0;
+            }
             comment = request.getParameter("comment", "");
             locals.clear();
             iter = request.getAllParameters().keySet().iterator();
@@ -312,6 +326,8 @@ public class SiteView extends AdminView {
         request.setAttribute("parent", String.valueOf(parent));
         request.setAttribute("folders", folders);
         request.setAttribute("template", template);
+        request.setAttribute("section", String.valueOf(section));
+        request.setAttribute("sections", sections);
         request.setAttribute("comment", comment);
         request.setAttribute("locals", locals);
         request.sendTemplate("admin/edit-page.ftl");
@@ -611,80 +627,6 @@ public class SiteView extends AdminView {
             page = page.getParent();
         }
         return (ContentSite) page;
-    }
-
-    /**
-     * Finds all content folders in a site. The folders will not be
-     * added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each folder will 
-     * be added.
-     *
-     * @param user           the user
-     * @param site           the content site
-     * @param exclude        the folder to exclude, or null
-     * 
-     * @return the list of folders found (in maps)
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private ArrayList findFolders(User user,
-                                  ContentSite site, 
-                                  ContentFolder exclude)
-        throws ContentException {
-
-        ArrayList  result = new ArrayList();
-        findFolders(user, "", site, exclude, result);
-        return result;
-    }
-
-    /**
-     * Finds all content folders in a site. The folders will not be
-     * added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each folder will 
-     * be added.
-     * 
-     * @param user           the user
-     * @param baseName       the base name
-     * @param parent         the parent site or folder
-     * @param exclude        the folder to exclude, or null
-     * @param result         the list of folders found (in maps)
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private void findFolders(User user, 
-                             String baseName,
-                             Content parent,
-                             ContentFolder exclude,
-                             ArrayList result)
-        throws ContentException {
-
-        ContentManager  manager = AdminUtils.getContentManager();
-        Content[]       children;
-        HashMap         values;
-
-        if (parent instanceof ContentSite) {
-            baseName = "/";
-            values = new HashMap(2);
-            values.put("id", String.valueOf(parent.getId()));
-            values.put("name", baseName);
-            result.add(values);
-        } else if (parent instanceof ContentFolder) {
-            baseName = baseName + parent.getName() + "/";
-            values = new HashMap(2);
-            values.put("id", String.valueOf(parent.getId()));
-            values.put("name", baseName);
-            result.add(values);
-        } else {
-            return;
-        }
-        children = manager.getContentChildren(user, parent);
-        for (int i = 0; i < children.length; i++) {
-            if (!children[i].equals(exclude)) {
-                findFolders(user, baseName, children[i], exclude, result);
-            }
-        }
     }
 
     /**

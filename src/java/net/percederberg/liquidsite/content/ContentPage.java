@@ -29,7 +29,10 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
 
 /**
- * A web page.
+ * A web page. A page has optional links to a template and a section.
+ * A template link means that the page elements in the templates are
+ * inherited by this page. A section link means that any documents in
+ * the section can be presented by this page.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -40,6 +43,11 @@ public class ContentPage extends Content {
      * The template content attribute.
      */
     private static final String TEMPLATE_ATTRIBUTE = "TEMPLATE";
+
+    /**
+     * The section content attribute.
+     */
+    private static final String SECTION_ATTRIBUTE = "SECTION";
 
     /**
      * The page element content attribute prefix.
@@ -123,7 +131,13 @@ public class ContentPage extends Content {
      * @return the template content identifier
      */
     public int getTemplateId() {
-        return Integer.parseInt(getAttribute(TEMPLATE_ATTRIBUTE));
+        String  value = getAttribute(TEMPLATE_ATTRIBUTE);
+
+        if (value == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(value);
+        }
     }
     
     /**
@@ -133,6 +147,67 @@ public class ContentPage extends Content {
      */
     public void setTemplateId(int template) {
         setAttribute(TEMPLATE_ATTRIBUTE, String.valueOf(template));
+    }
+    
+    /**
+     * Returns the page section.
+     *
+     * @param user           the user performing the operation
+     *
+     * @return the page section, or null for none
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the section
+     */
+    public ContentSection getSection(User user)
+        throws ContentException, ContentSecurityException {
+
+        int  id = getSectionId();
+        
+        if (id <= 0) {
+            return null;
+        } else {
+            return (ContentSection) getContentManager().getContent(user, id);
+        }
+    }
+
+    /**
+     * Sets the page section.
+     * 
+     * @param section        the new section, or null for none
+     */
+    public void setSection(ContentSection section) {
+        if (section == null) {
+            setSectionId(0);
+        } else {
+            setSectionId(section.getId());
+        }
+    }
+
+    /**
+     * Returns the section content identifier.
+     * 
+     * @return the section content identifier
+     */
+    public int getSectionId() {
+        String  value = getAttribute(SECTION_ATTRIBUTE);
+
+        if (value == null) {
+            return 0;
+        } else {
+            return Integer.parseInt(value);
+        }
+    }
+    
+    /**
+     * Sets the section content identifier.
+     * 
+     * @param section        the new section identifier
+     */
+    public void setSectionId(int section) {
+        setAttribute(SECTION_ATTRIBUTE, String.valueOf(section));
     }
     
     /**

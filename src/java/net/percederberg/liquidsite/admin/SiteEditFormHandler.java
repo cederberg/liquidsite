@@ -371,6 +371,12 @@ class SiteEditFormHandler extends AdminFormHandler {
             id = 0;
         }
         page.setTemplateId(id);
+        try {
+            id = Integer.parseInt(request.getParameter("section"));
+        } catch (NumberFormatException ignore) {
+            id = 0;
+        }
+        page.setSectionId(id);
         page.setComment(request.getParameter("comment"));
         while (iter.hasNext()) {
             name = iter.next().toString();
