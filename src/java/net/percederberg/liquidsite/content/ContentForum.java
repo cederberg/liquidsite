@@ -43,6 +43,11 @@ public class ContentForum extends Content {
     private static final String DESCRIPTION_ATTRIBUTE = "DESCRIPTION";
 
     /**
+     * The moderator content attribute.
+     */
+    private static final String MODERATOR_ATTRIBUTE = "MODERATOR";
+
+    /**
      * Creates a new forum with default values.
      *
      * @param manager        the content manager to use
@@ -58,6 +63,7 @@ public class ContentForum extends Content {
         setParent(parent);
         setAttribute(REAL_NAME_ATTRIBUTE, "");
         setAttribute(DESCRIPTION_ATTRIBUTE, "");
+        setAttribute(MODERATOR_ATTRIBUTE, "");
     }
 
     /**
@@ -112,6 +118,77 @@ public class ContentForum extends Content {
      */
     public void setDescription(String description) {
         setAttribute(DESCRIPTION_ATTRIBUTE, description);
+    }
+
+    /**
+     * Returns the moderator group.
+     *
+     * @return the moderator group, or
+     *         null for none
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Group getModerator() throws ContentException {
+        return getContentManager().getGroup(getDomain(), getModeratorName());
+    }
+
+    /**
+     * Sets the moderator group.
+     *
+     * @param moderator      the new moderator group, or null for none
+     */
+    public void setModerator(Group moderator) {
+        if (moderator == null) {
+            setModeratorName("");
+        } else {
+            setModeratorName(moderator.getName());
+        }
+    }
+
+    /**
+     * Returns the moderator group name.
+     *
+     * @return the moderator group name, or
+     *         an empty string for none
+     */
+    public String getModeratorName() {
+        String  name = getAttribute(MODERATOR_ATTRIBUTE);
+
+        return (name == null) ? "" : name;
+    }
+
+    /**
+     * Sets the moderator group name.
+     *
+     * @param moderator      the new moderator group
+     */
+    public void setModeratorName(String moderator) {
+        setAttribute(MODERATOR_ATTRIBUTE, moderator);
+    }
+
+    /**
+     * Checks if the specified user is a forum moderator.
+     *
+     * @param user           the user to check
+     *
+     * @return true if the user is a forum moderator, or
+     *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean isModerator(User user) throws ContentException {
+        Group[]  groups = user.getGroups();
+
+        for (int i = 0; i < groups.length; i++) {
+            if (groups[i].getDomainName().equals(getDomainName())
+             && groups[i].getName().equals(getModeratorName())) {
+
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
