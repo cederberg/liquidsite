@@ -256,8 +256,11 @@ public class ContentView extends AdminView {
             properties = findSectionProperties(doc);
             for (i = 0; i < properties.size(); i++) {
                 property = (DocumentProperty) properties.get(i);
-                str = property.getId();
-                data.put(str, doc.getProperty(str));
+                str = doc.getProperty(property.getId());
+                if (property.getType() == DocumentProperty.HTML_TYPE) {
+                    str = AdminUtils.getScriptString(str);
+                }
+                data.put(property.getId(), str);
             }
             if (doc.getRevisionNumber() == 0) {
                 comment = doc.getComment();
