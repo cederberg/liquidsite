@@ -122,6 +122,11 @@
         link to public resources on other sites.</text>
       </item>
 
+      <item id="superuser" style="draft">
+        <title>Superuser</title>
+        <text></text>
+      </item>
+
       <item id="template">
         <title>Template</title>
         <text>A template is a <ref id="page">Page</ref> that is only
