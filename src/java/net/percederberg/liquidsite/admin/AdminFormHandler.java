@@ -391,7 +391,7 @@ abstract class AdminFormHandler extends FormHandler {
         } else if (!lock.isOwner(user)) {
             throw new ContentSecurityException(
                 "object locked by " + lock.getUserName() +
-                " since " + AdminUtils.formatDate(lock.getAcquiredDate()));
+                " since " + lock.getAcquiredDate());
         }
     }
     

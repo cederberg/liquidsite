@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
@@ -29,6 +30,7 @@ import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
 
@@ -58,11 +60,13 @@ class UnpublishDialogHandler extends AdminDialogHandler {
      * Initializes the form validator.
      */
     private void initialize() {
-        String  error;
-        
+        SimpleDateFormat  df;
+        String            error;
+
         validator.addRequiredConstraint("date", "No unpublish date specified");
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
-        validator.addDateConstraint("date", AdminUtils.DATE_FORMAT, error); 
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        validator.addDateConstraint("date", df, error); 
         validator.addRequiredConstraint("comment", "No comment specified");
     }
 
@@ -130,17 +134,18 @@ class UnpublishDialogHandler extends AdminDialogHandler {
         throws ContentException, ContentSecurityException {
 
         Content  content = (Content) AdminUtils.getReference(request);
+        User     user = request.getUser();
         String   date;
 
         content.setRevisionNumber(content.getRevisionNumber() + 1);
         try {
             date = request.getParameter("date");
-            content.setOfflineDate(AdminUtils.parseDate(date));
+            content.setOfflineDate(AdminUtils.parseDate(user, date));
         } catch (ParseException e) {
             content.setOfflineDate(new Date());
         }
         content.setComment(request.getParameter("comment"));
-        content.save(request.getUser());
+        content.save(user);
         return 0;
     }
 }

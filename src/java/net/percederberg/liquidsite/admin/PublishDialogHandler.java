@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
@@ -60,11 +61,13 @@ class PublishDialogHandler extends AdminDialogHandler {
      * Initializes the form validator.
      */
     private void initialize() {
-        String  error;
+        SimpleDateFormat  df;
+        String            error;
         
         validator.addRequiredConstraint("date", "No publish date specified");
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
-        validator.addDateConstraint("date", AdminUtils.DATE_FORMAT, error); 
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        validator.addDateConstraint("date", df, error); 
         validator.addRequiredConstraint("comment", "No comment specified");
     }
 
@@ -132,19 +135,20 @@ class PublishDialogHandler extends AdminDialogHandler {
         throws ContentException, ContentSecurityException {
 
         Content  content = (Content) AdminUtils.getReference(request);
+        User     user = request.getUser();
         Date     date;
         String   comment;
         boolean  recursive;
 
         try {
-            date = AdminUtils.parseDate(request.getParameter("date"));
+            date = AdminUtils.parseDate(user, request.getParameter("date"));
         } catch (ParseException e) {
             date = new Date();
         }
         recursive = request.getParameter("recursive", "").equals("true");
         comment = request.getParameter("comment");
         content.setComment(comment);
-        publish(request.getUser(), content, date, comment, recursive);
+        publish(user, content, date, comment, recursive);
         return 0;
     }
 

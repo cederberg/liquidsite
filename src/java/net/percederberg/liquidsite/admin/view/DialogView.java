@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A helper class for the dialog views. This class contains methods 
@@ -111,11 +112,12 @@ public class DialogView {
      * @param content        the content object to publish
      */
     public void viewPublish(Request request, Content content) {
-        String dateStr = request.getParameter("date");
-        String comment = request.getParameter("comment");
+        User    user = request.getUser();
+        String  dateStr = request.getParameter("date");
+        String  comment = request.getParameter("comment");
 
         if (dateStr == null) {
-            dateStr = AdminUtils.formatDate(new Date());
+            dateStr = AdminUtils.formatDate(user, new Date());
         }
         if (comment == null) {
             if (content.getRevisionNumber() == 0) {
@@ -137,14 +139,15 @@ public class DialogView {
      * @param content        the content object to unpublish
      */
     public void viewUnpublish(Request request, Content content) {
-        String dateStr = request.getParameter("date");
-        String comment = request.getParameter("comment");
+        User    user = request.getUser();
+        String  dateStr = request.getParameter("date");
+        String  comment = request.getParameter("comment");
 
         if (dateStr == null) {
-            dateStr = AdminUtils.formatDate(content.getOfflineDate());
+            dateStr = AdminUtils.formatDate(user, content.getOfflineDate());
         }
         if (dateStr.equals("")) {
-            dateStr = AdminUtils.formatDate(new Date());
+            dateStr = AdminUtils.formatDate(user, new Date());
         }
         if (comment == null) {
             comment = "Unpublished";

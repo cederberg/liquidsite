@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite.admin.view;
 
+import java.util.Date;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
@@ -252,6 +253,7 @@ public class ScriptView {
         StringBuffer  buffer = new StringBuffer();
         int           status = getContentStatus(content);
         Lock          lock = content.getLock();
+        Date          date;
 
         buffer.append("objectShow('");
         buffer.append(AdminUtils.getCategory(content));
@@ -264,14 +266,16 @@ public class ScriptView {
         buffer.append(AdminUtils.getScriptString(getContentUrl(content)));
         buffer.append(");\n");
         buffer.append("objectAddOnlineProperty(");
-        buffer.append(AdminUtils.getScriptDate(content.getOnlineDate()));
+        date = content.getOnlineDate();
+        buffer.append(AdminUtils.getScriptDate(user, date));
         buffer.append(", ");
-        buffer.append(AdminUtils.getScriptDate(content.getOfflineDate()));
+        date = content.getOfflineDate();
+        buffer.append(AdminUtils.getScriptDate(user, date));
         buffer.append(");\n");
         buffer.append("objectAddStatusProperty(");
         buffer.append(status);
         buffer.append(", ");
-        buffer.append(getLock(lock));
+        buffer.append(getLock(user, lock));
         buffer.append(");\n");
         if (content instanceof ContentSite) {
             buffer.append(getSiteProperties((ContentSite) content));
@@ -279,7 +283,7 @@ public class ScriptView {
             buffer.append(getFileProperties((ContentFile) content));
         }
         buffer.append(getButtons(user, content, view, status, lock));
-        buffer.append(getRevisions(content));
+        buffer.append(getRevisions(user, content));
         buffer.append(getPermissions(content));
         return buffer.toString();
     }
@@ -482,15 +486,16 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting content revisions.
-     * 
+     *
+     * @param user           the current user
      * @param content        the content object
-     * 
+     *
      * @return the JavaScript for presenting content revisions
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getRevisions(Content content) 
+    private String getRevisions(User user, Content content) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -505,11 +510,11 @@ public class ScriptView {
             }
         }
         if (work != null) {
-            buffer.append(getRevision(work, previewUrl));
+            buffer.append(getRevision(user, work, previewUrl));
         }
         for (int i = 0; i < revisions.length; i++) {
             if (revisions[i] != work) {
-                buffer.append(getRevision(revisions[i], previewUrl));
+                buffer.append(getRevision(user, revisions[i], previewUrl));
             }
         }
         return buffer.toString();
@@ -517,15 +522,20 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting a content revision.
-     * 
+     *
+     * @param user           the current user
      * @param revision       the content revison object
      * @param previewUrl     the content preview URL, or null
-     * 
+     *
      * @return the JavaScript for presenting a content revision
      */
-    private String getRevision(Content revision, String previewUrl) {
+    private String getRevision(User user,
+                               Content revision,
+                               String previewUrl) {
+
         StringBuffer  buffer = new StringBuffer();
-        
+        Date          date;
+
         buffer.append("objectAddRevision(");
         if (revision.getRevisionNumber() == 0) {
             buffer.append("'Work'");
@@ -533,7 +543,8 @@ public class ScriptView {
             buffer.append(revision.getRevisionNumber());
         }
         buffer.append(", ");
-        buffer.append(AdminUtils.getScriptDate(revision.getModifiedDate()));
+        date = revision.getModifiedDate();
+        buffer.append(AdminUtils.getScriptDate(user, date));
         buffer.append(", ");
         buffer.append(AdminUtils.getScriptString(revision.getAuthorName()));
         buffer.append(", ");
@@ -780,18 +791,19 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript representation of a lock object.
-     * 
+     *
+     * @param user           the current user
      * @param lock           the lock object, or null
-     * 
+     *
      * @return the JavaScript representation of a lock object
      */
-    private String getLock(Lock lock) {
+    private String getLock(User user, Lock lock) {
         String  str;
 
         if (lock == null) {
             return "null, null";
         } else {
-            str = AdminUtils.formatDate(lock.getAcquiredDate());
+            str = AdminUtils.formatDate(user, lock.getAcquiredDate());
             return AdminUtils.getScriptString(lock.getUserName()) +
                    ", " + AdminUtils.getScriptString(str);
         }

@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.content;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -378,7 +379,17 @@ public class User extends PersistentObject {
     public void setEmail(String email) {
         data.setString(UserData.EMAIL, email);
     }
-    
+
+    /**
+     * Returns the user time zone.
+     *
+     * @return the user time zone
+     */
+    public TimeZone getTimeZone() {
+        // TODO: the timezone should be stored in the database
+        return TimeZone.getTimeZone("Europe/Stockholm");
+    }
+
     /**
      * Returns the user comment.
      * 

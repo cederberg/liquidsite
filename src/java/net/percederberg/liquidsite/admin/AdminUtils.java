@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.admin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
@@ -41,12 +42,6 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 public class AdminUtils {
-
-    /**
-     * The date format used by this class.
-     */
-    public static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The content manager used for administration.
@@ -79,52 +74,76 @@ public class AdminUtils {
     }
 
     /**
-     * Formats a date to a printable string.
-     * 
+     * Returns a date format for the specified user.
+     *
+     * @param user           the user to create a date format for
+     *
+     * @return a date format for the specified user
+     */
+    public static SimpleDateFormat getDateFormat(User user) {
+        SimpleDateFormat  df;
+
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        df.setCalendar(Calendar.getInstance(user.getTimeZone()));
+        return df;
+    }
+
+    /**
+     * Formats a date to a printable string. The user timezone will
+     * be used.
+     *
+     * @param user           the current user
      * @param date           the date to format
-     * 
+     *
      * @return a printable string with the date
      */
-    public static String formatDate(Date date) {
+    public static String formatDate(User user, Date date) {
         if (date == null) {
             return "";
         } else {
-            return DATE_FORMAT.format(date);
+            return getDateFormat(user).format(date);
         }
     }
     
     /**
-     * Parses a date string into a date.
-     * 
+     * Parses a date string into a date. The user timezone will be
+     * used.
+     *
+     * @param user           the current user
      * @param str            the string containing the date
-     * 
+     *
      * @return the date found
-     * 
+     *
      * @throws ParseException if the string didn't contain a valid 
      *             date
      */
-    public static Date parseDate(String str) throws ParseException {
-        Date  date = DATE_FORMAT.parse(str);
-        
-        if (str.equals(formatDate(date))) {
+    public static Date parseDate(User user, String str)
+        throws ParseException {
+
+        Date  date;
+
+        date = getDateFormat(user).parse(str);
+        if (str.equals(formatDate(user, date))) {
             return date;
         } else {
             throw new ParseException("invalid date: " + str, 0);
         }
     }
-        
+
     /**
-     * Returns the JavaScript representation of a date.
+     * Returns the JavaScript representation of a date. The user
+     * timezone will be used.
      * 
+     * @param user           the user
      * @param date           the date to present, or null
      * 
      * @return a JavaScript representation of the date
      */
-    public static String getScriptDate(Date date) {
+    public static String getScriptDate(User user, Date date) {
         if (date == null) {
             return "null";
         } else {
-            return getScriptString(formatDate(date)); 
+            return getScriptString(formatDate(user, date)); 
         }
     }
 
