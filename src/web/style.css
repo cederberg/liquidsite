@@ -43,20 +43,20 @@ h1 {
         font-family: helvetica;
         font-size: 20px;
         color: rgb(180, 170, 160);
-        margin-top: 0.5em;
-        margin-bottom: 0.3em;
+        margin-top: 14px;
+        margin-bottom: 10px;
 }
 h2 {
         font-family: helvetica;
         font-size: 16px;
-        margin-top: 0.3em;
-        margin-bottom: 0.3em;
+        margin-top: 8px;
+        margin-bottom: 8px;
         color: rgb(140, 130, 130);
 }
 h3 {
         font-family: helvetica;
         font-size: 12px;
-        margin-top: 0em;
+        margin-top: 0px;
 }
 
 
@@ -121,22 +121,22 @@ sup {
 ul,
 ol,
 dl {
-        margin-top: 0.5em;
-        margin-bottom: 0.5em;
+        margin-top: 6px;
+        margin-bottom: 6px;
 }
 dt {
-        margin-top: 0.7em;
-        margin-bottom: 0em;
+        margin-top: 8px;
+        margin-bottom: 0px;
         margin-left: 30px;
 }
 dd {
         font-size: smaller;
         margin-left: 30px;
-        margin-top: 0.4em;
-        margin-bottom: 1em;
+        margin-top: 4px;
+        margin-bottom: 16px;
 }
 li {
-        margin-bottom: 1em;
+        margin-bottom: 16px;
 }
 
 /* Table style */
@@ -197,7 +197,7 @@ iframe {
 /* Menu style */
 table.menu {
         width: 100%;
-        margin-bottom: 1em;
+        margin-bottom: 14px;
         border-collapse: collapse;
 }
 table.menu td.logo {
@@ -253,8 +253,8 @@ table.menu td.filler {
 
 /* Form style */
 table.form {
-        margin-top: 1.5em;
-        margin-bottom: 1.5em;
+        margin-top: 20px;
+        margin-bottom: 20px;
         margin-left: 10%;
         margin-right: 10%;
         border: 1px solid black;
@@ -265,7 +265,7 @@ table.form td.decoration {
         padding-top: 40px;
 }
 table.form td.field {
-        padding-bottom: 0.5em;
+        padding-bottom: 6px;
 }
 table.form td.buttons {
         text-align: left;
@@ -289,7 +289,7 @@ table.dialog td.decoration {
         padding-top: 40px;
 }
 table.dialog td.field {
-        padding-bottom: 0.5em;
+        padding-bottom: 6px;
 }
 table.dialog td.buttons {
         text-align: right;
@@ -300,8 +300,8 @@ table.dialog button {
 
 /* Treeview style */
 .treeview {
-        width: 25em;
-        height: 20em;
+        width: 330px;
+        height: 260px;
         border: 1px solid black;
         padding: 5px;
 }
@@ -404,7 +404,7 @@ table.border td {
         margin-right: 30px;
 }
 .first {
-        margin-top: 0em;
+        margin-top: 0px;
 }
 .header {
         margin-top: 0px;
@@ -422,14 +422,15 @@ table.border td {
 div.figure {
         background: white;
         margin: 6px;
-        padding: 0.5cm;
-        padding-top: 0.1cm;
-        padding-bottom: 0.3cm;
+        padding-top: 4px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
         border-style: solid;
         border-width: 1px;
 }
 div.example {
-        padding-left: 1.5em;
+        padding-left: 20px;
 }
 div.illustration, p.illustration {
         text-align: center;
@@ -438,13 +439,13 @@ div.illustration, p.illustration {
 /* Layout styles */
 div.decoration {
         float: right;
-        margin-top: -2em;
-        margin-bottom: 1em;
-        margin-left: 1em;
+        margin-top: -26px;
+        margin-bottom: 13px;
+        margin-left: 13px;
         margin-right: -20px;
 }
 div.border {
-        padding: 1em;
+        padding: 14px;
         border-style: solid;
         border-width: 1px;
         background: white;
