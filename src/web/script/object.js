@@ -203,7 +203,7 @@ function objectAddDeleteButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddPublishButton(url) {
-    var script = "objectInternalOpenDialog('" + url + "',580,300)";
+    var script = "objectInternalOpenDialog('" + url + "',580,330)";
 
     objectInternalAddButton("Publish", "online.png", script);
 }

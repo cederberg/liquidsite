@@ -28,6 +28,7 @@ import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
@@ -130,35 +131,55 @@ class PublishDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        User       user = request.getUser();
-        Content    content = (Content) AdminUtils.getReference(request);
-        Content[]  revisions;
-        Content    max = content;
-        String     date;
+        Content  content = (Content) AdminUtils.getReference(request);
+        Date     date;
+        String   comment;
+        boolean  recursive;
+
+        try {
+            date = AdminUtils.parseDate(request.getParameter("date"));
+        } catch (ParseException e) {
+            date = new Date();
+        }
+        recursive = request.getParameter("recursive", "").equals("true");
+        comment = request.getParameter("comment");
+        publish(request.getUser(), content, date, comment, recursive);
+        return 0;
+    }
+    
+    private void publish(User user,
+                         Content content,
+                         Date date,
+                         String comment,
+                         boolean recursive)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        Content[]       list;
+        int             max = content.getRevisionNumber();
 
         if (content.getRevisionNumber() == 0) {
-            revisions = content.getAllRevisions();
-            for (int i = 0; i < revisions.length; i++) {
-                if (max.getRevisionNumber() <
-                    revisions[i].getRevisionNumber()) {
-
-                    max = revisions[i];
+            list = content.getAllRevisions();
+            for (int i = 0; i < list.length; i++) {
+                if (max < list[i].getRevisionNumber()) {
+                    max = list[i].getRevisionNumber();
                 }
             }
-            content.setRevisionNumber(max.getRevisionNumber() + 1);
-            content.setOfflineDate(max.getOfflineDate());
+            content.setRevisionNumber(max + 1);
         } else {
             content.setRevisionNumber(content.getRevisionNumber() + 1);
+            content.setComment(comment);
         }
-        try {
-            date = request.getParameter("date");
-            content.setOnlineDate(AdminUtils.parseDate(date));
-        } catch (ParseException e) {
-            content.setOnlineDate(new Date());
-        }
+        content.setOnlineDate(date);
         content.setOfflineDate(null);
-        content.setComment(request.getParameter("comment"));
         content.save(user);
-        return 0;
+        if (recursive) {
+            list = manager.getContentChildren(user, content);
+            for (int i = 0; i < list.length; i++) {
+                if (!list[i].isOnline() || list[i].getRevisionNumber() == 0) {
+                    publish(user, list[i], date, comment, recursive);
+                }
+            }
+        }
     }
 }

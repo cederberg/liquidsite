@@ -20,7 +20,7 @@
       <input type="hidden" name="id" value="${id}" />
       <table class="dialog">
         <tr>
-          <td class="decoration" rowspan="4">
+          <td class="decoration" rowspan="5">
             <img src="images/icons/48x48/onoff.png" alt="Publish" />
           </td>
           <td colspan="2">
@@ -41,20 +41,30 @@
         </tr>
         <tr>
           <th>
+            Recursive:
+          </th>
+          <td>
+            <input type="checkbox" tabindex="2"
+                   name="recursive" value="true" />
+            Publish all child objects as well.
+          </td>
+        </tr>
+        <tr>
+          <th>
             Comment:
           </th>
           <td>
-            <textarea tabindex="2" rows="2" cols="30"
+            <textarea tabindex="3" rows="2" cols="30"
                       name="comment">${comment}</textarea>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="4" onclick="previous();">
+            <button type="button" tabindex="5" onclick="previous();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
-            <button type="submit" tabindex="3">
+            <button type="submit" tabindex="4">
               <img src="images/icons/24x24/online.png" />
               Publish
             </button>
