@@ -201,7 +201,7 @@ public class ContentManager {
         
         host = CacheManager.getInstance().getHost(name);
         if (host == null) {
-            CacheManager.getInstance().addAll(Host.findAll());
+            CacheManager.getInstance().addAll(Host.findAll(this));
             host = CacheManager.getInstance().getHost(name);
         }
         return host;
@@ -222,7 +222,7 @@ public class ContentManager {
         
         res = CacheManager.getInstance().getSites(domain);
         if (res == null) {
-            res = ContentSite.findByDomain(domain);
+            res = ContentSite.findByDomain(this, domain);
             CacheManager.getInstance().add(domain, res);
         }
         return res;
@@ -241,7 +241,7 @@ public class ContentManager {
      *             properly
      */
     Content getContent(int id) throws ContentException {
-        return Content.findByMaxRevision(id);
+        return Content.findByMaxRevision(this, id);
     }
     
     /**
@@ -286,7 +286,7 @@ public class ContentManager {
     Content getContent(int id, int revision) 
         throws ContentException {
 
-        return Content.findByRevision(id, revision);
+        return Content.findByRevision(this, id, revision);
     }
 
     /**
@@ -304,7 +304,7 @@ public class ContentManager {
     public Content[] getContentChildren(User user, Domain domain) 
         throws ContentException {
 
-        Content[]  children = Content.findByParent(domain);
+        Content[]  children = Content.findByParent(this, domain);
         ArrayList  list = new ArrayList(children.length);
         Content[]  res;
 
@@ -334,7 +334,7 @@ public class ContentManager {
     public Content[] getContentChildren(User user, Content parent) 
         throws ContentException {
 
-        Content[]  children = Content.findByParent(parent);
+        Content[]  children = Content.findByParent(this, parent);
         ArrayList  list = new ArrayList(children.length);
         Content[]  res;
 
@@ -368,9 +368,9 @@ public class ContentManager {
 
         User  user;
         
-        user = User.findByName(domain, name);
+        user = User.findByName(this, domain, name);
         if (user == null) {
-            user = User.findByName(null, name);
+            user = User.findByName(this, null, name);
         }
         return user;
     }
@@ -390,7 +390,7 @@ public class ContentManager {
     public Group getGroup(Domain domain, String name) 
         throws ContentException {
 
-        return Group.findByName(domain, name);
+        return Group.findByName(this, domain, name);
     }
 
     /**
@@ -468,7 +468,7 @@ public class ContentManager {
         String     str;
 
         while (path.length() > 0) {
-            children = Content.findByParent(parent);
+            children = Content.findByParent(this, parent);
             match = "";
             for (int i = 0; i < children.length; i++) {
                 str = findPageMatch(children[i], path);

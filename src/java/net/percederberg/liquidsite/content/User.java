@@ -71,6 +71,7 @@ public class User extends PersistentObject {
     /**
      * Returns an array of all users in a certain domain.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain, or null for superusers
      * 
      * @return an array of all users in the domain
@@ -78,10 +79,10 @@ public class User extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static User[] findByDomain(Domain domain) 
+    static User[] findByDomain(ContentManager manager, Domain domain) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         User[]              res;
         String              domainName = "";
@@ -99,7 +100,7 @@ public class User extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -107,6 +108,7 @@ public class User extends PersistentObject {
     /**
      * Returns a user with a specified name.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain, or null for superusers
      * @param name           the user name
      * 
@@ -116,10 +118,12 @@ public class User extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static User findByName(Domain domain, String name)
+    static User findByName(ContentManager manager,
+                           Domain domain,
+                           String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         UserData            data;
         String              domainName = "";
 
@@ -132,7 +136,7 @@ public class User extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         if (data == null) {
             return null;
@@ -144,6 +148,7 @@ public class User extends PersistentObject {
     /**
      * Returns an array of all users in a certain group.
      * 
+     * @param manager        the content manager to use
      * @param group          the group
      * 
      * @return an array of all users in the group
@@ -151,10 +156,10 @@ public class User extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static User[] findByGroup(Group group) 
+    static User[] findByGroup(ContentManager manager, Group group) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         User[]              res;
         UserGroupData       data;
@@ -178,7 +183,7 @@ public class User extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -403,7 +408,7 @@ public class User extends PersistentObject {
      */
     public Group[] getGroups() throws ContentException {
         if (groups == null) {
-            groups = Group.findByUser(this);
+            groups = Group.findByUser(getContentManager(), this);
         }
         return groups;
     }

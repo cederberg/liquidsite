@@ -231,7 +231,7 @@ public class ContentPage extends Content {
         if (getParent() == null) {
             throw new ContentException("no parent set for page");
         }
-        children = Content.findByParent(getParent());
+        children = Content.findByParent(getContentManager(), getParent());
         for (int i = 0; i < children.length; i++) {
             if (children[i].getId() != getId()
              && children[i].getName().equals(getName())) {

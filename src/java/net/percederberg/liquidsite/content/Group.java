@@ -62,6 +62,7 @@ public class Group extends PersistentObject {
     /**
      * Returns an array of all groups in a certain domain.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain
      * 
      * @return an array of all groups in the domain
@@ -69,10 +70,10 @@ public class Group extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Group[] findByDomain(Domain domain)
+    static Group[] findByDomain(ContentManager manager, Domain domain)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Group[]             res;
 
@@ -86,7 +87,7 @@ public class Group extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -94,6 +95,7 @@ public class Group extends PersistentObject {
     /**
      * Returns a group with a specified name.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain
      * @param name           the group name
      * 
@@ -103,10 +105,12 @@ public class Group extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Group findByName(Domain domain, String name)
+    static Group findByName(ContentManager manager,
+                            Domain domain,
+                            String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         GroupData           data;
 
         try {
@@ -115,7 +119,7 @@ public class Group extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         if (data == null) {
             return null;
@@ -127,6 +131,7 @@ public class Group extends PersistentObject {
     /**
      * Returns an array of all groups a certain user belongs to.
      * 
+     * @param manager        the content manager to use
      * @param user           the user
      * 
      * @return an array of all groups the user belongs to
@@ -134,10 +139,10 @@ public class Group extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Group[] findByUser(User user)
+    static Group[] findByUser(ContentManager manager, User user)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Group[]             res;
         UserGroupData       data;
@@ -161,7 +166,7 @@ public class Group extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -306,7 +311,7 @@ public class Group extends PersistentObject {
      *             properly
      */
     public User[] getUsers() throws ContentException {
-        return User.findByGroup(this);
+        return User.findByGroup(getContentManager(), this);
     }
 
     /**

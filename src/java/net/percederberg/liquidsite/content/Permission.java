@@ -53,6 +53,7 @@ public class Permission extends PersistentObject {
      * permissions set on the domain object, not all the permissions
      * for content objects in the domain.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain
      * 
      * @return an array of permission objects found, or 
@@ -61,10 +62,10 @@ public class Permission extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Permission[] findByDomain(Domain domain) 
+    static Permission[] findByDomain(ContentManager manager, Domain domain) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Permission[]        res;
 
@@ -80,7 +81,7 @@ public class Permission extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -91,6 +92,7 @@ public class Permission extends PersistentObject {
      * permissions set on the content object, not any inherited 
      * permissions.
      * 
+     * @param manager        the content manager to use
      * @param content        the content object
      * 
      * @return an array of permission objects found, or 
@@ -99,10 +101,11 @@ public class Permission extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Permission[] findByContent(Content content) 
+    static Permission[] findByContent(ContentManager manager,
+                                      Content content) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Permission[]        res;
 
@@ -118,7 +121,7 @@ public class Permission extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -127,6 +130,7 @@ public class Permission extends PersistentObject {
      * Returns the permission object with the specified content id,
      * user, and group.
      * 
+     * @param manager        the content manager to use
      * @param content        the content object
      * @param user           the user
      * @param group          the group
@@ -137,12 +141,13 @@ public class Permission extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Permission findByUser(Content content,
-                                           User user,
-                                           Group group)
+    static Permission findByUser(ContentManager manager,
+                                 Content content,
+                                 User user,
+                                 Group group)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         PermissionData      data;
 
         try {
@@ -155,7 +160,7 @@ public class Permission extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         if (data == null) {
             return null;

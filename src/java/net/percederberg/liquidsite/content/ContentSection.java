@@ -163,9 +163,9 @@ public class ContentSection extends Content {
 
         super.validate();
         if (getParent() == null) {
-            children = Content.findByParent(getDomain());
+            children = Content.findByParent(getContentManager(), getDomain());
         } else {
-            children = Content.findByParent(getParent());
+            children = Content.findByParent(getContentManager(), getParent());
         }
         for (int i = 0; i < children.length; i++) {
             if (children[i].getId() != getId()

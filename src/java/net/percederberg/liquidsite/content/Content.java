@@ -114,6 +114,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * Returns an array of content object revisions with the 
      * specified identifier.
      * 
+     * @param manager        the content manager to use
      * @param id             the content identifier
      * 
      * @return an array of the content object revisions found
@@ -121,8 +122,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Content[] findById(int id) throws ContentException {
-        DatabaseConnection  con = getDatabaseConnection();
+    static Content[] findById(ContentManager manager, int id)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Content[]           res;
 
@@ -136,7 +139,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -145,6 +148,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * Returns the content object with the specified identifier and 
      * highest revision.
      * 
+     * @param manager        the content manager to use
      * @param id             the content identifier
      * 
      * @return the content object found, or
@@ -153,10 +157,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Content findByMaxRevision(int id) 
+    static Content findByMaxRevision(ContentManager manager, int id) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ContentData         data;
 
         try {
@@ -170,7 +174,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
     }
 
@@ -178,6 +182,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * Returns the content object with the specified identifier and 
      * revision.
      * 
+     * @param manager        the content manager to use
      * @param id             the content identifier
      * @param revision       the content revision
      * 
@@ -187,10 +192,12 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Content findByRevision(int id, int revision) 
+    static Content findByRevision(ContentManager manager,
+                                  int id,
+                                  int revision) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ContentData         data;
 
         try {
@@ -204,7 +211,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
     }
 
@@ -213,6 +220,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * domain. Only the latest revision of each content object will 
      * be returned.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain
      * 
      * @return an array of content objects found
@@ -220,10 +228,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Content[] findByParent(Domain domain) 
+    static Content[] findByParent(ContentManager manager, Domain domain) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Content[]           res;
 
@@ -237,7 +245,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -247,6 +255,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * parent. Only the latest revision of each content object will 
      * be returned.
      * 
+     * @param manager        the content manager to use
      * @param parent         the parent content
      * 
      * @return an array of content objects found
@@ -254,10 +263,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Content[] findByParent(Content parent) 
+    static Content[] findByParent(ContentManager manager, Content parent) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Content[]           res;
 
@@ -273,7 +282,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -782,7 +791,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public Content getRevision(int revision) throws ContentException {
-        return findByRevision(getId(), revision);
+        return findByRevision(getContentManager(), getId(), revision);
     }
 
     /**
@@ -794,7 +803,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public Content[] getAllRevisions() throws ContentException {
-        return findById(getId());
+        return findById(getContentManager(), getId());
     }
 
     /**
@@ -808,7 +817,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public Lock getLock() throws ContentException {
-        return Lock.findByContent(this);
+        return Lock.findByContent(getContentManager(), this);
     }
 
     /**
@@ -821,7 +830,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public Permission[] getPermissions() throws ContentException {
-        return Permission.findByContent(this);
+        return Permission.findByContent(getContentManager(), this);
     }
 
     /**
@@ -854,7 +863,7 @@ public abstract class Content extends PersistentObject implements Comparable {
     public void deleteRevision(User user) 
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(getContentManager());
 
         // Delete from database
         try {
@@ -864,7 +873,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(getContentManager(), con);
         }
 
         // Delete from cache
@@ -946,7 +955,7 @@ public abstract class Content extends PersistentObject implements Comparable {
     protected void doDelete(User user, DatabaseConnection con)
         throws ContentException {
 
-        Content[]  children = findByParent(this);
+        Content[]  children = findByParent(getContentManager(), this);
 
         try {
             for (int i = 0; i < children.length; i++) {

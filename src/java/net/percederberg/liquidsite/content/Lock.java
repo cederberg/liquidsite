@@ -50,6 +50,7 @@ public class Lock extends PersistentObject {
     /**
      * Returns the lock object with the specified content id.
      * 
+     * @param manager        the content manager to use
      * @param content        the content object
      * 
      * @return the lock found, or
@@ -58,10 +59,10 @@ public class Lock extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Lock findByContent(Content content)
+    static Lock findByContent(ContentManager manager, Content content)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         LockData            data;
 
         try {
@@ -70,7 +71,7 @@ public class Lock extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         if (data == null) {
             return null;

@@ -249,7 +249,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public Permission[] getPermissions() throws ContentException {
-        return Permission.findByDomain(this);
+        return Permission.findByDomain(getContentManager(), this);
     }
 
     /**
@@ -261,7 +261,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public Host[] getHosts() throws ContentException {
-        return Host.findByDomain(this);
+        return Host.findByDomain(getContentManager(), this);
     }
 
     /**

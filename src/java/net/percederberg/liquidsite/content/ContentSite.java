@@ -68,7 +68,8 @@ public class ContentSite extends Content {
 
     /**
      * Returns an array of all domain sites in the database.
-     * 
+     *
+     * @param manager        the content manager to use
      * @param domain         the domain
      * 
      * @return an array of all domain sites in the database
@@ -76,10 +77,10 @@ public class ContentSite extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static ContentSite[] findByDomain(Domain domain) 
+    static ContentSite[] findByDomain(ContentManager manager, Domain domain) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         ContentSite[]       res;
 
@@ -94,7 +95,7 @@ public class ContentSite extends Content {
         } catch (DatabaseObjectException e) {
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -331,7 +332,7 @@ public class ContentSite extends Content {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        ContentSite[]  sites = findByDomain(getDomain());
+        ContentSite[]  sites = findByDomain(getContentManager(), getDomain());
 
         super.validate();
         if (!getProtocol().equals("http") && !getProtocol().equals("https")) {

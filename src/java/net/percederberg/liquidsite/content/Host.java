@@ -56,14 +56,16 @@ public class Host extends PersistentObject {
     
     /**
      * Returns an array of all hosts in the database.
-     * 
+     *
+     * @param manager        the content manager to use
+     *  
      * @return an array of all hosts in the database
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Host[] findAll() throws ContentException {
-        DatabaseConnection  con = getDatabaseConnection();
+    static Host[] findAll(ContentManager manager) throws ContentException {
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Host[]              res;
 
@@ -77,7 +79,7 @@ public class Host extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -85,6 +87,7 @@ public class Host extends PersistentObject {
     /**
      * Returns an array of all hosts in a certain domain.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain
      * 
      * @return an array of all hosts in the domain
@@ -92,10 +95,10 @@ public class Host extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Host[] findByDomain(Domain domain)
+    static Host[] findByDomain(ContentManager manager, Domain domain)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Host[]              res;
 
@@ -109,7 +112,7 @@ public class Host extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -117,6 +120,7 @@ public class Host extends PersistentObject {
     /**
      * Returns a host with a specified name.
      * 
+     * @param manager        the content manager to use
      * @param name           the host name
      * 
      * @return the host found, or
@@ -125,8 +129,10 @@ public class Host extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Host findByName(String name) throws ContentException {
-        DatabaseConnection  con = getDatabaseConnection();
+    static Host findByName(ContentManager manager, String name)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
         HostData            data;
 
         try {
@@ -135,7 +141,7 @@ public class Host extends PersistentObject {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         if (data == null) {
             return null;

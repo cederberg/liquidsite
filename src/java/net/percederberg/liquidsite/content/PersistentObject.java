@@ -69,63 +69,6 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Returns the current application database connector.
-     * 
-     * @return the current application database connector
-     * 
-     * @throws ContentException if no content manager or database
-     *             connector is available
-     */
-    // TODO: remove this method
-    private static DatabaseConnector getDatabase() 
-        throws ContentException {
-        
-        DatabaseConnector  db;
-
-        db = getContentManager().getApplication().getDatabase();
-        if (db == null) {
-            LOG.error("no database connector available");
-            throw new ContentException("no database connector available");
-        }
-        return db;
-    }
-
-    /**
-     * Returns a database connection.
-     * 
-     * @return a database connection
-     * 
-     * @throws ContentException if no database connector is available
-     *             or connection could be made
-     */
-    // TODO: remove this method
-    static DatabaseConnection getDatabaseConnection() 
-        throws ContentException {
-        
-        try {
-            return getDatabase().getConnection();
-        } catch (DatabaseConnectionException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        }
-    }
-
-    /**
-     * Disposes of a database connection.
-     * 
-     * @param con            the database connection
-     */
-    // TODO: remove this method
-    static void returnDatabaseConnection(DatabaseConnection con) {
-        try {
-            getDatabase().returnConnection(con);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            con.close();
-        }
-    }
-
-    /**
      * Returns the content manager database connector.
      * 
      * @param manager        the content manager to use
@@ -373,7 +316,7 @@ public abstract class PersistentObject {
         DatabaseConnection  con;
         
         // Save to database
-        con = getDatabaseConnection();
+        con = getDatabaseConnection(getContentManager());
         try {
             if (!isPersistent()) {
                 SecurityManager.getInstance().checkInsert(user, this);
@@ -384,7 +327,7 @@ public abstract class PersistentObject {
                 doUpdate(user, con);
             }
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(getContentManager(), con);
         }
 
         // Save to cache
@@ -412,14 +355,14 @@ public abstract class PersistentObject {
     public final void delete(User user) 
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(getContentManager());
 
         // Delete from database
         try {
             SecurityManager.getInstance().checkDelete(user, this);
             doDelete(user, con);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(getContentManager(), con);
         }
 
         // Delete from cache
