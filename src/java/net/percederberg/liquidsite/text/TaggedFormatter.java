@@ -185,7 +185,7 @@ public class TaggedFormatter {
             if (str != null && str.equals("new")) {
                 return "<a href=\"" +
                        context.linkTo((String) attrs.get("url")) +
-                       "\" target=\"_new\">";
+                       "\" target=\"_blank\">";
             } else {
                 return "<a href=\"" +
                        context.linkTo((String) attrs.get("url")) +
