@@ -126,6 +126,39 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Returns an array of content objects having the specified 
+     * parent. Only the latest revision of each content object will 
+     * be returned.
+     * 
+     * @param parent         the parent content
+     * 
+     * @return an array of content objects found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    protected static Content[] findByParent(Content parent) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Content[]           res;
+
+        try {
+            list = ContentPeer.doSelectByParent(parent.getId(), con);
+            res = new Content[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = createContent((ContentData) list.get(i), con);
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
      * Creates a content subclass depending on the content category.
      * 
      * @param data           the content object data
@@ -570,6 +603,19 @@ public abstract class Content extends PersistentObject {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the child content objects. Only the highest revision 
+     * of each object will be returned.
+     * 
+     * @return the child content objects
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content[] getChildren() throws ContentException {
+        return findByParent(this);
     }
 
     /**
