@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
@@ -743,10 +744,10 @@ public class InstallController extends Controller {
 
         try {
             domain.setDescription("Root Domain");
-            domain.save();
+            domain.save(user);
             user.setRealName("Administrator");
             user.setPassword(adminPassword);
-            user.save();
+            user.save(user);
             site.setName("Admin Site");
             site.setProtocol("http");
             site.setHost("*");
@@ -755,10 +756,11 @@ public class InstallController extends Controller {
             site.setAdmin(true);
             site.setOnlineDate(new Date());
             site.setOfflineDate(null);
-            site.setAuthor(user);
             site.setComment("Created");
-            site.save();
+            site.save(user);
         } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        } catch (ContentSecurityException e) {
             LOG.error(e.getMessage());
         }
     }

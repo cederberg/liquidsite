@@ -443,7 +443,8 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns the content last modification author.
+     * Returns the content last modification author. The author name
+     * is set automatically by the save method.
      * 
      * @return the content last modification author
      * 
@@ -455,16 +456,8 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Sets the content last modification author.
-     * 
-     * @param author         the author user
-     */
-    public void setAuthor(User author) {
-        setAuthorName(author.getName());
-    }
-
-    /**
-     * Returns the content last modification author.
+     * Returns the content last modification author. The author name
+     * is set automatically by the save method.
      * 
      * @return the content last modification author
      */
@@ -472,15 +465,6 @@ public abstract class Content extends PersistentObject {
         return data.getString(ContentData.AUTHOR);
     }
     
-    /**
-     * Sets the content last modification author.
-     * 
-     * @param author         the author user name
-     */
-    public void setAuthorName(String author) {
-        data.setString(ContentData.AUTHOR, author);
-    }
-
     /**
      * Returns the content revision comment.
      * 
@@ -595,6 +579,7 @@ public abstract class Content extends PersistentObject {
             return true;
         }
         if (perms.length == 0) {
+            // TODO: Check parent access!
             return getParentId() > 0;
         }
         if (user != null) {
@@ -602,6 +587,43 @@ public abstract class Content extends PersistentObject {
         }
         for (int i = 0; i < perms.length; i++) {
             if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks the write access for a user. If no content permissions 
+     * are set, this method will return true for all but root content 
+     * objects. 
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has write access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasWriteAccess(User user) 
+        throws ContentException {
+
+        Permission[]  perms = getPermissions();
+        Group[]       groups = null;
+        
+        if (user != null && user.getDomainName().equals("")) {
+            return true;
+        }
+        if (perms.length == 0) {
+            // TODO: Check parent access!
+            return getParentId() > 0;
+        }
+        if (user != null) {
+            groups = user.getGroups();
+        }
+        for (int i = 0; i < perms.length; i++) {
+            if (perms[i].isMatch(user, groups) && perms[i].getWrite()) {
                 return true;
             }
         }
@@ -622,9 +644,50 @@ public abstract class Content extends PersistentObject {
                                        "'does not exist");
         } else if (getName().equals("")) {
             throw new ContentException("no name set for content object");
-        } else if (getAuthorName().equals("")) {
-            throw new ContentException("no author set for content object");
         }
+    }
+
+    /**
+     * Saves this object to the database. This method checks the 
+     * permissions of the specified user for performing the 
+     * operation.
+     * 
+     * @param user           the user performing the operation
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public void save(User user) 
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        }
+        data.setString(ContentData.AUTHOR, user.getName());
+        super.save(user);
+    }
+    
+    /**
+     * Deletes this object from the database. This method to check 
+     * the permissions of the specified user for performing the 
+     * operation.
+     * 
+     * @param user           the user performing the operation
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public void delete(User user) 
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
+        }
+        super.delete(user);
     }
 
     /**

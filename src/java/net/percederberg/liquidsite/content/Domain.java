@@ -211,6 +211,25 @@ public class Domain extends PersistentObject {
     }
 
     /**
+     * Checks the write access for a user. All users in the same 
+     * domain have write access, in addition to superusers.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has write access, or
+     *         false otherwise
+     */
+    public boolean hasWriteAccess(User user) {
+        if (user == null) {
+            return false;
+        } else if (user.getDomainName().equals("")) {
+            return true;
+        } else {
+            return getName().equals(user.getDomainName());
+        }
+    }
+
+    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 
@@ -225,6 +244,48 @@ public class Domain extends PersistentObject {
             throw new ContentException("domain '" + getName() + 
                                        "' already exists");
         }
+    }
+
+    /**
+     * Saves this object to the database. This method checks the 
+     * permissions of the specified user for performing the 
+     * operation.
+     * 
+     * @param user           the user performing the operation
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public void save(User user) 
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        }
+        super.save(user);
+    }
+    
+    /**
+     * Deletes this object from the database. This method to check 
+     * the permissions of the specified user for performing the 
+     * operation.
+     * 
+     * @param user           the user performing the operation
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public void delete(User user) 
+        throws ContentException, ContentSecurityException {
+
+        if (!hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
+        }
+        super.delete(user);
     }
 
     /**

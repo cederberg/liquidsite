@@ -216,12 +216,20 @@ public abstract class PersistentObject {
     public abstract void validate() throws ContentException;
 
     /**
-     * Saves this object to the database.
+     * Saves this object to the database. Subclasses may override 
+     * this method to check the permissions of the specified user for 
+     * performing the operation.
+     * 
+     * @param user           the user performing the operation
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
      */
-    public void save() throws ContentException {
+    public void save(User user) 
+        throws ContentException, ContentSecurityException {
+
         DatabaseConnection  con;
         
         // Validate data
@@ -252,12 +260,20 @@ public abstract class PersistentObject {
     }
     
     /**
-     * Deletes this object from the database.
+     * Deletes this object from the database. Subclasses may override 
+     * this method to check the permissions of the specified user for 
+     * performing the operation.
+     * 
+     * @param user           the user performing the operation
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
      */
-    public void delete() throws ContentException {
+    public void delete(User user) 
+        throws ContentException, ContentSecurityException {
+
         DatabaseConnection  con = getDatabaseConnection();
 
         // Delete from database
