@@ -540,6 +540,39 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Checks the read access for a user. If no content permissions 
+     * are set, this method will return true for all but root content 
+     * objects. 
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has read access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasReadAccess(User user) 
+        throws ContentException {
+
+        Permission[]  perms = getPermissions();
+        Group[]       groups = null;
+        
+        if (perms.length == 0) {
+            return getParentId() > 0;
+        }
+        if (user != null) {
+            groups = user.getGroups();
+        }
+        for (int i = 0; i < perms.length; i++) {
+            if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 

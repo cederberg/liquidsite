@@ -21,13 +21,10 @@
 
 package net.percederberg.liquidsite;
 
-import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.Host;
-import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
@@ -79,6 +76,7 @@ public class DefaultController extends Controller {
         Site    site;
         User    user;
         String  path = request.getPath();
+        boolean access;
 
         // Find domain & site
         try {
@@ -104,7 +102,13 @@ public class DefaultController extends Controller {
         user = request.getUser();
 
         // Process site request
-        if (hasReadAccess(site, user)) {
+        try {
+            access = site.hasReadAccess(user);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+        if (access) {
             processAuthorized(request, site, path);
         } else { 
             processUnauthorized(request, site, path);
@@ -240,53 +244,5 @@ public class DefaultController extends Controller {
             }
         }
         return res;
-    }
-    
-    /**
-     * Checks the read access to a content object for a user. If no
-     * content permissions are set, this method will default to true
-     * for all but a root content element. 
-     *
-     * @param content        the content object 
-     * @param user           the user to check, or null for none
-     * 
-     * @return true if the user has read access, or
-     *         false otherwise
-     * 
-     * @throws RequestException if the database couldn't be accessed
-     *             properly
-     */
-    private boolean hasReadAccess(Content content, User user) 
-        throws RequestException {
-
-        Permission[]  perms;
-        Group[]       groups = null;
-        
-        // Retrieve permissions
-        try {
-            perms = content.getPermissions();
-            if (perms.length == 0) {
-                return content.getParentId() > 0;
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        }
-        
-        // Check permissions
-        try {
-            if (user != null) {
-                groups = user.getGroups();
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        }
-        for (int i = 0; i < perms.length; i++) {
-            if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
