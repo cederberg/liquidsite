@@ -27,8 +27,10 @@ import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentPost;
+import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentTopic;
+import net.percederberg.liquidsite.text.PlainFormatter;
 
 /**
  * A topic template bean. This class is used to access topics from
@@ -115,6 +117,18 @@ public class TopicBean {
      */
     public String getSubject() {
         if (topic != null) {
+            return PlainFormatter.formatHtml(topic.getSubject());
+        }
+        return "";
+    }
+
+    /**
+     * Returns the unprocessed topic subject.
+     *
+     * @return the unprocessed topic subject
+     */
+    public String getSubjectSource() {
+        if (topic != null) {
             return topic.getSubject();
         }
         return "";
@@ -200,6 +214,33 @@ public class TopicBean {
             }
         }
         return 0;
+    }
+
+    /**
+     * Returns a specified post in this topic. The post content
+     * identifier must be specified.
+     *
+     * @param id             the post content identifier
+     *
+     * @return the post found (as a post bean), or
+     *         an empty post if not found
+     */
+    public PostBean findPost(int id) {
+        Content  content;
+
+        if (topic != null) {
+            try {
+                content = baseBean.selectContent(id);
+                if (content != null) {
+                    return new PostBean(baseBean, (ContentPost) content);
+                }
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            } catch (ContentSecurityException e) {
+                LOG.warning(e.getMessage());
+            }
+        }
+        return new PostBean();
     }
 
     /**

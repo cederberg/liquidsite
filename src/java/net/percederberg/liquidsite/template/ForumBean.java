@@ -133,6 +133,22 @@ public class ForumBean {
     }
 
     /**
+     * Checks if the current user is a forum moderator.
+     *
+     * @return true if the current user is a forum moderator, or
+     *         false otherwise
+     */
+    public boolean getModerator() {
+        String  moderator;
+
+        if (forum != null) {
+            moderator = forum.getModeratorName();
+            return baseBean.getUser().inGroup(moderator);
+        }
+        return false;
+    }
+
+    /**
      * Returns the first topic in this forum. The topics are ordered
      * in modification date order.
      *

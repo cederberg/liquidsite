@@ -41,6 +41,11 @@ import net.percederberg.liquidsite.text.PlainFormatter;
 public class PostBean {
 
     /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(PostBean.class);
+
+    /**
      * The base template bean.
      */
     private LiquidSiteBean baseBean;
@@ -81,6 +86,18 @@ public class PostBean {
     }
 
     /**
+     * Returns the content revision number.
+     *
+     * @return the content revision number
+     */
+    public int getRevision() {
+        if (post != null) {
+            return post.getRevisionNumber();
+        }
+        return 0;
+    }
+
+    /**
      * Returns the post subject.
      *
      * @return the post subject
@@ -88,6 +105,18 @@ public class PostBean {
     public String getSubject() {
         if (post != null) {
             return PlainFormatter.formatHtml(post.getSubject());
+        }
+        return "";
+    }
+
+    /**
+     * Returns the unprocessed post subject.
+     *
+     * @return the unprocessed post subject
+     */
+    public String getSubjectSource() {
+        if (post != null) {
+            return post.getSubject();
         }
         return "";
     }
@@ -105,24 +134,57 @@ public class PostBean {
     }
 
     /**
-     * Returns the post author.
+     * Returns the unprocessed post text.
      *
-     * @return the post author
+     * @return the unprocessed post text
      */
-    public String getUser() {
-        // TODO: implement this properly with user bean?
+    public String getTextSource() {
         if (post != null) {
-            return post.getAuthorName();
+            return post.getText();
         }
         return "";
     }
 
     /**
-     * Returns the post modification date.
+     * Returns the post author.
      *
-     * @return the post modification date
+     * @return the post author
+     */
+    public UserBean getUser() {
+        if (post != null) {
+            return baseBean.findUser(post.getAuthorName());
+        }
+        return new UserBean(null);
+    }
+
+    /**
+     * Returns the post creation date.
+     *
+     * @return the post creation date
      */
     public Date getDate() {
+        Content  revision;
+
+        if (post != null) {
+            if (getRevision() > 1) {
+                try {
+                    revision = post.getRevision(1);
+                    return revision.getModifiedDate();
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+            return post.getModifiedDate();
+        }
+        return new Date();
+    }
+
+    /**
+     * Returns the last post modification date.
+     *
+     * @return the last post modification date
+     */
+    public Date getUpdate() {
         if (post != null) {
             return post.getModifiedDate();
         }

@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
@@ -37,6 +38,7 @@ import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
 /**
@@ -89,9 +91,9 @@ public class LiquidSiteBean {
     private TopicBean topicBean = null;
 
     /**
-     * The user bean.
+     * The user beans. Each user is indexed by the user name.
      */
-    private UserBean userBean = null;
+    private HashMap users = new HashMap();
 
     /**
      * The relative path to the site root directory. The path is
@@ -215,10 +217,14 @@ public class LiquidSiteBean {
      * @return the user bean for the current user
      */
     public UserBean getUser() {
-        if (userBean == null) {
-            userBean = new UserBean(request.getUser());
+        User    user = request.getUser();
+        String  name;
+
+        name = (user == null) ? "" : user.getName();
+        if (!users.containsKey(name)) {
+            users.put(name, new UserBean(user));
         }
-        return userBean;
+        return (UserBean) users.get(name);
     }
 
     /**
@@ -455,6 +461,30 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Returns the user corresponding to the specified name.
+     *
+     * @param name           the user name
+     *
+     * @return the user found, or
+     *         an empty user if not found
+     */
+    public UserBean findUser(String name) {
+        Domain   domain;
+        User     user = null;
+
+        if (!users.containsKey(name)) {
+            try {
+                domain = request.getEnvironment().getDomain();
+                user = manager.getUser(domain, name);
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+            users.put(name, new UserBean(user));
+        }
+        return (UserBean) users.get(name);
+    }
+
+    /**
      * Finds a specified content section or document.
      *
      * @param path           the content path
@@ -650,6 +680,23 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Selects a content object with the specified content id.
+     *
+     * @param id             the content identifier
+     *
+     * @return the content object found, or
+     *         null for none
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    Content selectContent(int id)
+        throws ContentException, ContentSecurityException {
+
+        return manager.getContent(request.getUser(), id);
+    }
+
+    /**
      * Selects a set of content objects with a content selector.
      *
      * @param selector       the content selector
@@ -658,6 +705,8 @@ public class LiquidSiteBean {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the object couldn't be
+     *             read by the current user
      */
     Content[] selectContent(ContentSelector selector)
         throws ContentException {

@@ -75,6 +75,8 @@ public class ForumRequestProcessor extends RequestProcessor {
 
         if (action.equals("forum.post")) {
             processPost(request);
+        } else if (action.equals("forum.edit")) {
+            processEdit(request);
         } else if (action.equals("forum.delete")) {
             processDelete(request);
         } else {
@@ -134,7 +136,70 @@ public class ForumRequestProcessor extends RequestProcessor {
                                  PlainFormatter.formatHtml(text));
         } else {
             post(forum, topic, subject, text, request.getUser());
-            request.setAttribute("result", "posted");
+            request.setAttribute("redirect", "true");
+        }
+    }
+
+    /**
+     * Processes a forum edit request action.
+     *
+     * @param request        the request object
+     *
+     * @throws RequestException if the action couldn't be processed
+     */
+    private void processEdit(Request request) throws RequestException {
+        ContentForum    forum;
+        ContentTopic    topic;
+        ContentPost     post;
+        String          subject;
+        String          text;
+        String          preview;
+        String          str;
+
+        // Find request parameters
+        forum = findForum(request);
+        topic = findTopic(request, forum);
+        if (topic == null) {
+            LOG.warning(request + ": no topic in forum edit request");
+            throw RequestException.INTERNAL_ERROR;
+        }
+        post = findPost(request, topic);
+        if (post == null) {
+            LOG.warning(request + ": no post in forum edit request");
+            throw RequestException.INTERNAL_ERROR;
+        }
+        str = request.getParameter("liquidsite.subject", "");
+        subject = PlainFormatter.clean(str);
+        str = request.getParameter("liquidsite.textformat", "");
+        if (!str.equals("plain")) {
+            LOG.warning(request + ": text format '" + str +
+                        "' is undefined");
+            throw RequestException.INTERNAL_ERROR;
+        }
+        str = request.getParameter("liquidsite.text", "");
+        text = PlainFormatter.clean(str);
+        preview = request.getParameter("liquidsite.preview", "");
+
+        // Post forum message
+        if (subject.length() <= 0) {
+            str = "Subject must be longer than zero characters";
+            request.setAttribute("error", str);
+        } else if (subject.length() > 80) {
+            str = "Subject mustn't be longer than 80 characters";
+            request.setAttribute("error", str);
+        } else if (text.length() <= 0) {
+            str = "Text must be longer than zero characters";
+            request.setAttribute("error", str);
+        } else if (preview.equals("true")) {
+            request.setAttribute("subject", subject);
+            request.setAttribute("text", text);
+            request.setAttribute("previewsubject",
+                                 PlainFormatter.formatHtml(subject));
+            request.setAttribute("previewtext",
+                                 PlainFormatter.formatHtml(text));
+        } else {
+            edit(post, subject, text, request.getUser());
+            request.setAttribute("redirect", "true");
         }
     }
 
@@ -363,6 +428,46 @@ public class ForumRequestProcessor extends RequestProcessor {
     }
 
     /**
+     * Edits a posted message.
+     *
+     * @param post           the content post
+     * @param subject        the message subject
+     * @param text           the message text
+     * @param user           the user posting the message
+     */
+    private void edit(ContentPost post,
+                      String subject,
+                      String text,
+                      User user)
+        throws RequestException {
+
+        ContentManager  manager = getContentManager();
+
+        if (user == null) {
+            LOG.debug("anonymous user cannot delete posts");
+            throw RequestException.FORBIDDEN;
+        } else if (!user.getName().equals(post.getAuthorName())) {
+            LOG.debug("user '" + user + "' cannot edit post " + 
+                      post + " from '" + post.getAuthorName() + "'");
+            throw RequestException.FORBIDDEN;
+        }
+        try {
+            post.setSubject(subject);
+            post.setTextType(ContentPost.PLAIN_TEXT_TYPE);
+            post.setText(text);
+            post.setRevisionNumber(post.getRevisionNumber() + 1);
+            post.setComment("Forum post");
+            post.save(user);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.debug(e.getMessage());
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
      * Deletes a message from the specified forum and topic.
      *
      * @param forum          the content forum
@@ -380,11 +485,11 @@ public class ForumRequestProcessor extends RequestProcessor {
         Content[]        posts;
         boolean          moderator;
 
+        if (user == null) {
+            LOG.debug("anonymous user cannot delete posts");
+            throw RequestException.FORBIDDEN;
+        }
         try {
-            if (user == null) {
-                LOG.debug("anonymous user cannot delete posts");
-                throw RequestException.FORBIDDEN;
-            }
             moderator = user.isSuperUser() || forum.isModerator(user);
             if (post == null) {
                 if (!moderator) {
