@@ -22,6 +22,9 @@
 package net.percederberg.liquidsite.content;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
@@ -187,6 +190,65 @@ public class ContentFile extends Content {
         Application  app = getContentManager().getApplication();
         
         return app.getServletContext().getMimeType(getFileName());
+    }
+
+    /**
+     * Returns the text content of a file. If the file isn't a text
+     * file or if the file size is too big, null will be returned.
+     *
+     * @return the text file contents, or
+     *         null for non-text files
+     *
+     * @throws ContentException if the file data couldn't be read
+     *             properly
+     */
+    public String getTextContent() throws ContentException {
+        File        file = getFile();
+        String      mimeType = getMimeType();
+        FileReader  reader;
+        char[]      buffer;
+        int         length;
+
+        // Check for text file and maximum size
+        if (!file.exists() || file.length() > 100000) {
+            return null;
+        } else if (mimeType == null || !mimeType.startsWith("text/")) {
+            return null;
+        }
+
+        // Read text file
+        try {
+            reader = new FileReader(file);
+            buffer = new char[(int) file.length()];
+            length = reader.read(buffer);
+            reader.close();
+        } catch (IOException e) {
+            throw new ContentException("couldn't read file "+ getFileName(),
+                                       e);
+        }
+        return new String(buffer, 0, length);
+    }
+
+    /**
+     * Sets the content of the file to the specified string. If the
+     * file doesn't exist it will be created, otherwise overwritten.
+     *
+     * @param content         the new file contents
+     *
+     * @throws ContentException if the file data couldn't be written
+     *             properly
+     */
+    public void setTextContent(String content) throws ContentException {
+        FileWriter  writer;
+
+        try {
+            writer = new FileWriter(getFile());
+            writer.write(content);
+            writer.close();
+        } catch (IOException e) {
+            throw new ContentException("couldn't write file "+ getFileName(),
+                                       e);
+        }
     }
 
     /**

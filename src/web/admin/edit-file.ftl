@@ -85,15 +85,16 @@
 </#if>
         <tr>
           <th>
-            File&nbsp;Content:
+            File&nbsp;Upload:
           </th>
           <td class="field">
             <input type="file" tabindex="3"
-                   name="content" />
-            <p>The file content. This is the local file that contains
-            the data. The file will be uploaded and inserted into the 
-            system. Note that the file extension on the uploaded file
-            determines the file type seen by the user.
+                   name="upload" />
+            <p>The file contents to upload. This is the local file
+            that contains the data. The file will be uploaded and
+            inserted into the system. Note that the file extension on
+            the uploaded file determines the file type seen by the
+            user.
 <#if !isadd>
             If you leave this field blank, the previous file data will
             be reused.
@@ -101,23 +102,36 @@
             </p>
           </td>
         </tr>
+<#if content?exists>
+        <tr>
+          <th>
+            File&nbsp;Content:
+          </th>
+          <td class="field">
+            <textarea tabindex="4" cols="70" rows="30"
+                      name="content">${content}</textarea>
+            <p>The file content. The file data can either be edited
+            here or being uploaded.</p>
+          </td>
+        </tr>
+</#if>
         <tr>
           <th>
             Comment:
           </th>
           <td class="field">
-            <input type="text" tabindex="4" size="40"
+            <input type="text" tabindex="5" size="40"
                    name="comment" value="${comment}" />
             <p>The revision comment.</p>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="6" onclick="previous()">
+            <button type="button" tabindex="7" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" tabindex="5">
+            <button type="submit" tabindex="6">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

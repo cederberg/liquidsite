@@ -123,10 +123,10 @@ class SiteAddFormHandler extends AdminFormHandler {
         } else {
             edit.validateStep(request, step);
             if (category.equals("file")) {
-                param = request.getFileParameter("content");
+                param = request.getFileParameter("upload");
                 if (param == null || param.getSize() <= 0) {
-                    message = "No file content specified"; 
-                    throw new FormValidationException("content", message);
+                    message = "No file upload specified"; 
+                    throw new FormValidationException("upload", message);
                 }
             }
         }
@@ -330,7 +330,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         ContentFile     file;
         
         try {
-            param = request.getFileParameter("content");
+            param = request.getFileParameter("upload");
             file = new ContentFile(manager, parent, param.getName());
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));

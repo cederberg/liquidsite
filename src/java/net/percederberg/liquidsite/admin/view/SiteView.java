@@ -351,6 +351,7 @@ public class SiteView extends AdminView {
         String       name;
         int          parent;
         ArrayList    folders = null;
+        String       content = null;
         String       comment;
         String       str;
 
@@ -362,6 +363,7 @@ public class SiteView extends AdminView {
             parent = file.getParentId();
             site = findSite(file);
             folders = findFolders(request.getUser(), site, null);
+            content = file.getTextContent();
             if (file.getRevisionNumber() == 0) {
                 comment = file.getComment();
             } else {
@@ -382,6 +384,9 @@ public class SiteView extends AdminView {
             } catch (NumberFormatException e) {
                 parent = 0;
             }
+            if (request.getParameter("content") != null) {
+                content = request.getParameter("content");
+            }
             comment = request.getParameter("comment", "");
         }
 
@@ -389,6 +394,9 @@ public class SiteView extends AdminView {
         request.setAttribute("name", name);
         request.setAttribute("parent", String.valueOf(parent));
         request.setAttribute("folders", folders);
+        if (content != null) {
+            request.setAttribute("content", content);
+        }
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-file.ftl");
     }
