@@ -338,7 +338,8 @@ public class Site extends Content {
             throw new ContentException("no host name set for site");
         }
         for (int i = 0; i < sites.length; i++) {
-            if (sites[i].getProtocol().equals(getProtocol())
+            if (sites[i].getId() != getId()
+             && sites[i].getProtocol().equals(getProtocol())
              && sites[i].getHost().equals(getHost())
              && sites[i].getPort() == getPort()
              && sites[i].getDirectory().equals(getDirectory())) {
