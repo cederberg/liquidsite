@@ -108,7 +108,7 @@ public class Host extends DataObject {
     }
     
     /**
-     * Returns the host domain name
+     * Returns the host domain name.
      * 
      * @return the host domain name
      */
@@ -127,7 +127,7 @@ public class Host extends DataObject {
     }
     
     /**
-     * Returns the unique host name
+     * Returns the unique host name.
      * 
      * @return the unique host name
      */
@@ -143,7 +143,6 @@ public class Host extends DataObject {
     public void setName(String name) {
         this.name = name;
         setModified(true);
-        setPersistent(false);
     }
     
     /**

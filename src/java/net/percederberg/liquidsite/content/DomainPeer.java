@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseResults;
@@ -36,11 +35,6 @@ import net.percederberg.liquidsite.db.DatabaseResults;
  * @version  1.0
  */
 public final class DomainPeer extends Peer {
-
-    /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(DomainPeer.class);
 
     /**
      * The domain peer instance.
@@ -128,9 +122,7 @@ public final class DomainPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static void doInsert(Domain domain) 
-        throws ContentException {
-
+    public static void doInsert(Domain domain) throws ContentException {
         doInsert(domain, null);
     }
     
@@ -166,9 +158,7 @@ public final class DomainPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static void doUpdate(Domain domain) 
-        throws ContentException {
-
+    public static void doUpdate(Domain domain) throws ContentException {
         doUpdate(domain, null);
     }
     
@@ -204,9 +194,7 @@ public final class DomainPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static void doDelete(Domain domain) 
-        throws ContentException {
-
+    public static void doDelete(Domain domain) throws ContentException {
         doDelete(domain, null);
     }
     

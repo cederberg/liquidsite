@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseResults;
@@ -38,12 +37,7 @@ import net.percederberg.liquidsite.db.DatabaseResults;
 public class HostPeer extends Peer {
 
     /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(HostPeer.class);
-
-    /**
-     * The hsot peer instance.
+     * The host peer instance.
      */
     private static final Peer PEER = new HostPeer();
 
@@ -83,7 +77,7 @@ public class HostPeer extends Peer {
      * 
      * @param domain         the domain
      * 
-     * @return a list of all hosts in a certain domain
+     * @return a list of all hosts in the domain
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
@@ -100,7 +94,7 @@ public class HostPeer extends Peer {
      * @param domain         the domain
      * @param con            the database connection to use
      * 
-     * @return a list of all hosts in a certain domain
+     * @return a list of all hosts in the domain
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
@@ -166,9 +160,7 @@ public class HostPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static void doInsert(Host host) 
-        throws ContentException {
-
+    public static void doInsert(Host host) throws ContentException {
         doInsert(host, null);
     }
 
@@ -204,9 +196,7 @@ public class HostPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static void doUpdate(Host host) 
-        throws ContentException {
-
+    public static void doUpdate(Host host) throws ContentException {
         doUpdate(host, null);
     }
 
@@ -242,9 +232,7 @@ public class HostPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static void doDelete(Host host) 
-        throws ContentException {
-
+    public static void doDelete(Host host) throws ContentException {
         doDelete(host, null);
     }
 

@@ -91,7 +91,7 @@ public class Domain extends DataObject {
     }
 
     /**
-     * Returns the unique domain name
+     * Returns the unique domain name.
      * 
      * @return the unique domain name
      */
@@ -107,7 +107,6 @@ public class Domain extends DataObject {
     public void setName(String name) {
         this.name = name;
         setModified(true);
-        setPersistent(false);
     }
     
     /**
