@@ -1,0 +1,691 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The section object</h1>
+
+    <p>The <code>section</code> object represents a content
+    section.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="countDocuments">countDocuments</ref></title>
+        <text>Returns the number of documents in the section and any
+        subsections.</text>
+      </item>
+      <item>
+        <title><ref
+        id="findDocument">findDocument(path)</ref></title>
+        <text>Returns the document corresponding to a specified
+        path.</text>
+      </item>
+      <item>
+        <title><ref id="findDocuments">findDocuments(offset,
+        count)</ref></title>
+        <text>Returns all documents in the section and any
+        subsections.</text>
+      </item>
+      <item>
+        <title><ref id="findDocuments2">findDocuments(sorting,
+        offset, count)</ref></title>
+        <text>Returns a list of documents in the section and any
+        subsections, ordered by a specified sort criterion.</text>
+      </item>
+      <item>
+        <title><ref
+        id="findForum">findForum(name)</ref></title>
+        <text>Returns the named forum in this section.</text>
+      </item>
+      <item>
+        <title><ref id="description">description</ref></title>
+        <text>Returns the section description in HTML format.</text>
+      </item>
+      <item>
+        <title><ref id="forums">forums</ref></title>
+        <text>Returns all the section forums.</text>
+      </item>
+      <item>
+        <title><ref id="sections">sections</ref></title>
+        <text>Returns all the section subsections.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the section created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the section revision date.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the section id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the section lock object.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the section online flag.</text>
+      </item>
+      <item>
+        <title><ref id="parent">parent</ref></title>
+        <text>Returns the section parent object.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the section path.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the section revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the section revision author.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the section.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="countDocuments" style="inner">countDocuments</h2>
+
+    <p>Returns the number of documents in the section and any
+    subsections. The path is always relative to the domain root
+    directory. Nested subsections are separated by <code>/</code>.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>countDocuments &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The number of documents in the section and any
+    subsections.</p>
+
+    <h3>Example:</h3>
+
+    <p>Assuming a content structure like this:</p>
+
+    <example>
+      <preformat>- mydomain
+  - Section1
+      doc1
+      doc2
+      doc3 
+    - Section1.1
+        doc1.1
+        doc1.2</preformat>
+    </example>
+
+    <p>Then the line:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The number of documents in Section1 is
+${liquidsite.findSection("Section1").countDocuments}.&lt;p&gt;</preformat>
+    </example>
+
+    <p>Will output:</p>
+
+    <example>
+      <p>The number of documents in Section1 is 5.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findDocument" style="inner">findDocument</h2>
+
+    <p>Returns the document corresponding to a specified path. The
+    path is always relative to the section. Nested subsections are
+    separated by <code>/</code>.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findDocument(path) &#8594; <ref
+    file="document.xml">document object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of a document within the section</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document specified by <code>path</code>
+    inside the section.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code finds a document and assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign doc1 = liquidsite.findSection("Section1").findDocument("doc1")&gt;</preformat>
+    </example>
+
+    <p>If the document was not found, <code>doc1</code> will contain
+    an empty document. This line checks whether <code>doc1</code> is
+    empty:</p>
+
+    <example>
+      <preformat>&lt;#if doc1.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findDocuments" style="inner">findDocuments</h2>
+
+    <p>Returns all documents in the section and any subsections. The
+    path is always relative to the section. Nested subsections are
+    separated by <code>/</code>. The documents returned are ordered by
+    modification date in descending order.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findDocuments(offset, count) &#8594;
+    sequence of <ref file="document.xml">document
+    objects</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>offset</code> -- the number of documents to
+        skip</text>
+      </item>
+      <item>
+        <text><code>count</code> -- the maximum number of documents to
+        return</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of at most <code>count</code> documents
+    in the section and any subsections, ordered by modified date in
+    descending order, beginning at document number
+    <code>offset</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>The next code loops through the four first documents in
+    <code>Section1</code>.</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findSection("Section1").findDocuments(0, 4) as doc&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findDocuments2" style="inner">findDocuments</h2>
+
+    <p>Returns a list of documents in the section and any subsections,
+    ordered by a specified sort criterion. The path is always relative
+    to the section. Nested subsections are separated by
+    <code>/</code>.</p>
+
+    <p>Read about the sort criterion format in the liquidsite object
+    <ref file="liquidsite.xml#findDocuments2">findDocuments</ref>
+    method.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findDocuments(sorting, offset, count)
+    &#8594; sequence of <ref file="document.xml">document
+    objects</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>sorting</code> -- the string containing the sort
+        criterion</text>
+      </item>
+      <item>
+        <text><code>offset</code> -- indicates the number of documents
+        to skip</text>
+      </item>
+      <item>
+        <text><code>count</code> -- indicates the maximum number of
+        documents to return</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of at most <code>count</code> documents
+    in the section and any subsections, ordered by the specified
+    sorting criterion, beginning at document number
+    <code>offset</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>The next code loops through the four first documents in
+    <code>Section1</code> ordered by parent section id and name in
+    ascending order.</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findSection("Section1").findDocuments("+parent,+name", 0, 4) as doc&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findForum" style="inner">findForum</h2>
+
+    <p>Returns the named forum in this section.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findForum(name) &#8594; <ref
+    file="forum.xml">forum object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>name</code> -- the string containing the name of
+        the forum</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum specified by <code>name</code> in this
+    section.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code finds a forum inside the section "Section1" and
+    assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign forum = liquidsite.findSection("Section1").findForum("forum1")&gt;</preformat>
+    </example>
+
+    <p>If the forum was not found, <code>forum</code> will contain an
+    empty forum. This line checks whether <code>forum</code> is
+    empty:</p>
+
+    <example>
+      <preformat>&lt;#if forum.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="description" style="inner">description</h2>
+
+    <p>Returns the section description in HTML format.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>description &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section description in HTML format.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the description of "Section1":</p>
+
+    <example>
+      <preformat>&lt;#assign sec1 = liquidsite.findSection("Section1")&gt;
+&lt;p&gt;The section description is:&lt;/p&gt;
+${sec1.description}</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The section description is:</p>
+      <p style="indent">Section1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="forums" style="inner">forums</h2>
+
+    <p>Returns all the section forums.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>forums &#8594; sequence of <ref
+    file="forum.xml">forum objects</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">All the section forums.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through the forums in "Section1":</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findSection("Section1").forums as forum&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="sections" style="inner">sections</h2>
+
+    <p>Returns all the section subsections.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>sections &#8594; sequence of <ref
+    file="section.xml">section objects</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">All the section subsections.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through the subsections in "Section1":</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findSection("Section1").sections as sec&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the section created date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section created date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the section created date:</p>
+
+    <example>
+      <preformat>&lt;#assign sec1 = liquidsite.findSection("Section1")&gt;
+&lt;p&gt;The section created date is ${sec1.created}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The section created date is 2005-01-15.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the section revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the section revision date:</p>
+
+    <example>
+      <preformat>&lt;#assign sec1 = liquidsite.findSection("Section1")&gt;
+&lt;p&gt;The section revision date is ${sec1.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The section revision date is 2005-01-21.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the section id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section id.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the section id:</p>
+
+    <example>
+      <preformat>&lt;#assign sec1 = liquidsite.findSection("Section1")&gt;
+&lt;p&gt;The section id is ${sec1.id}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The section id is 123.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the section lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the lock object of a section and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findSection("Section1").lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the section online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the section is online, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the online flag of a section and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign online = liquidsite.findSection("Section1").online&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="parent" style="inner">parent</h2>
+
+    <p>Returns the section parent object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>parent &#8594; <ref
+    file="content.xml">content object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section parent object, which is the content
+    object under which the section is located.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the parent object of a section and stores it in
+    a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign parent = liquidsite.findSection("Section1.1").parent&gt;</preformat>
+    </example>
+
+    <p>In this case the parent of "Section1.1" is the content object
+    "Section1".</p>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the section path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the path of a section:</p>
+
+    <example>
+      <preformat>&lt;#assign path = liquidsite.findSection("Section1").path&gt;
+&lt;p&gt;The path of "Section1" is ${path}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be:</p>
+
+    <example>
+      <p>The path of "Section1" is Section1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the section revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section revision number, or zero (0) if the
+    section doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision of a section:</p>
+
+    <example>
+      <preformat>&lt;#assign revision = liquidsite.findSection("Section1").revision&gt;
+&lt;p&gt;The revision of "Section1" is ${revision}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be something like:</p>
+
+    <example>
+      <p>The revision of "Section1" is 2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the section revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section revision author, or an empty user
+    if the section doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the revision author of a section and assigns it
+    to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findSection("Section1").user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks whether the current logged in user has a specified
+    permission over the section.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user has the specified permission over the section, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the current logged in user has read
+    access to a section:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.findSection("Section1").hasAccess("r")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

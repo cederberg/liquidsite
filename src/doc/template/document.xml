@@ -1,0 +1,423 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The document object</h1>
+
+    <p>The <code>document</code> object represents a content
+    document.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="data">data</ref></title>
+        <text>Returns the document data.</text>
+      </item>
+      <item>
+        <title><ref id="files">files</ref></title>
+        <text>Returns the document associated files.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the document name.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the document created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the document revision date.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the document id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the document lock object.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the document online flag.</text>
+      </item>
+      <item>
+        <title><ref id="parent">parent</ref></title>
+        <text>Returns the document parent object.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the document path.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the document revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the document revision author.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the document.</text>
+      </item>
+    </list>
+
+    <separator/>
+
+    <h2 id="data" style="inner">data</h2>
+
+    <p>Returns the document data.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>data &#8594; <ref
+    file="documentdata.xml">document data object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document data.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code obtains the data from a document and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign data = liquidsite.findDocument("Section1/doc1").data&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="files" style="inner">files</h2>
+
+    <p>Returns the document associated files.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>files &#8594; sequence of <ref
+    file="documentfile.xml">document file objects</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document associated files.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through the files associated to a document:</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="name" style="inner">name</h2>
+
+    <p>Returns the document name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>name &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document name.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code obtains the name of a document and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign name = liquidsite.findDocument("Section1/doc1").name&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the document created date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document created date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the document created date:</p>
+
+    <example>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;p&gt;The document created date is ${doc.created}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The document created date is 2005-01-15.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the document revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the document revision date:</p>
+
+    <example>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;p&gt;The document revision date is ${doc.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The document revision date is 2005-01-21.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the document id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document id.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the document id:</p>
+
+    <example>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;p&gt;The document id is ${doc.id}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The document id is 123.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the document lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the lock object of a document and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/doc1").lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the document online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the document is online, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the online flag of a document and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/doc1").online&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="parent" style="inner">parent</h2>
+
+    <p>Returns the document parent object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>parent &#8594; <ref
+    file="content.xml">content object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document parent object, which is the content
+    object under which the document is located.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the parent object of a document and stores it in
+    a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/doc1").parent&gt;</preformat>
+    </example>
+
+    <p>In this case the parent of "doc1" is the content object
+    "Section1".</p>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the document path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the path of a document:</p>
+
+    <example>
+      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/doc1").path&gt;
+&lt;p&gt;The path of "doc1" is ${path}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be:</p>
+
+    <example>
+      <p>The path of "doc1" is Section1/doc1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the document revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document revision number, or zero (0) if the
+    document doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision of a document:</p>
+
+    <example>
+      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/doc1").revision&gt;
+&lt;p&gt;The revision of "doc1" is ${revision}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be something like:</p>
+
+    <example>
+      <p>The revision of "doc1" is 2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the document revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document revision author, or an empty user
+    if the document doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the revision author of a document and assigns it
+    to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findDocument("Section1/doc1").user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks whether the current logged in user has a specified
+    permission over the document.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user has the specified permission over the document, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the current logged in user has read
+    access to a document:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.findDocument("Section1/doc1").hasAccess("r")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

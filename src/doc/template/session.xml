@@ -1,0 +1,118 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The session object</h1>
+
+    <p>The <code>session</code> object represents an http session.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="clear">clear</ref></title>
+        <text>Clears all data in the user session.</text>
+      </item>
+      <item>
+        <title><ref id="destroy">destroy</ref></title>
+        <text>Destroys the user session.</text>
+      </item>
+      <item>
+        <title><ref id="get">get</ref></title>
+        <text>Returns a session data value as a template model.</text>
+      </item>
+      <item>
+        <title><ref id="isEmpty">isEmpty</ref></title>
+        <text>Checks whether the user session is empty.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="clear" style="inner">clear</h2>
+
+    <p>Clears all data in the user session.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>clear</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code clears all data in the user session:</p>
+
+    <example>
+      <preformat>${session.clear}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="destroy" style="inner">destroy</h2>
+
+    <p>Destroys the user session.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>destroy</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code destroys the user session:</p>
+
+    <example>
+      <preformat>${session.destroy}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="get" style="inner">get</h2>
+
+    <p>Returns a session data value as a template model.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>get &#8594; template model</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A session data value as a template model.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets a session data value and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = session.get("user")&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="isEmpty" style="inner">isEmpty</h2>
+
+    <p>Checks whether the user session is empty.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>isEmpty &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the user session is empty, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the user session is empty:</p>
+
+    <example>
+      <preformat>&lt;#if session.isEmpty&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

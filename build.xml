@@ -132,6 +132,7 @@ build.date=${build.printdate}
     <delete dir="${build.dir}/doc" quiet="true" />
     <mkdir dir="${build.dir}/doc" />
     <mkdir dir="${build.dir}/doc/manual" />
+    <mkdir dir="${build.dir}/doc/template" />
     <mkdir dir="${build.dir}/doc/db" />
     <mkdir dir="${build.dir}/doc/api" />
   </target>
@@ -182,11 +183,24 @@ build.date=${build.printdate}
       <fileset dir="src/doc/manual"
                includes="*.png" />
     </copy>
+    <xslt style="${build.dir}/src/doc/html.xsl"
+          basedir="${build.dir}/src/doc/template"
+          destdir="${build.dir}/doc/template"
+          extension=".html"
+          includes="*.xml">
+      <param name="date" expression="${build.printdate}" />
+      <param name="style" expression="../style.css" />
+      <param name="logo" expression="../liquidsite.jpeg" />
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="url" expression="http://www.liquidsite.org/" />
+    </xslt>
   </target>
 
   <target name="doc-db">
     <afterdoc>
-      <in type="afterdoc" src="${build.dir}/src/db/liquidsite-schema.afterdoc" />
+      <in type="afterdoc"
+          src="${build.dir}/src/db/liquidsite-schema.afterdoc" />
       <out type="html" dest="${build.dir}/doc/db" />
     </afterdoc>
   </target>

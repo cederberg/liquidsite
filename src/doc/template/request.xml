@@ -1,0 +1,126 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The request object</h1>
+
+    <p>The <code>request</code> object represents an http request.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="param">param</ref></title>
+        <text>Returns the request parameters.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the request path.</text>
+      </item>
+      <item>
+        <title><ref id="site">site</ref></title>
+        <text>Returns the site path.</text>
+      </item>
+      <item>
+        <title><ref id="url">url</ref></title>
+        <text>Returns the complete request url.</text>
+      </item>
+    </list>
+
+    <separator/>
+
+    <h2 id="param" style="inner">param</h2>
+
+    <p>Returns the request parameters.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>param &#8594; hash model</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The request parameters.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through all the request parameters:</p>
+
+    <example>
+      <preformat>&lt;#list request.param as param&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the request path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The request path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the request path and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign path = request.path&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="site" style="inner">site</h2>
+
+    <p>Returns the site path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>site &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the site path and assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign site = request.site&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="url" style="inner">url</h2>
+
+    <p>Returns the complete request url.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>url &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The complete request url. It will not include
+    request parameters or similar.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the request url and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign url = request.url&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

@@ -1,0 +1,820 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The liquidsite object</h1>
+
+    <p>The <code>liquidsite</code> object is the global entry point to
+    the content of your domain. You can also access the request and
+    session objects, and obtain information about users.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref
+        id="countDocuments">countDocuments(path)</ref></title>
+        <text>Returns the number of documents in the section and
+        subsections specified by a path.</text>
+      </item>
+      <item>
+        <title><ref
+        id="findDocument">findDocument(path)</ref></title>
+        <text>Returns the document corresponding to a specified
+        path.</text>
+      </item>
+      <item>
+        <title><ref id="findDocuments">findDocuments(path, offset,
+        count)</ref></title>
+        <text>Returns a list of documents in the section and any
+        subsections specified by a path.</text>
+      </item>
+      <item>
+        <title><ref id="findDocuments2">findDocuments(path, sorting,
+        offset, count)</ref></title>
+        <text>Returns a list of documents in the section and any
+        subsections specified by a path, ordered by a specified sort
+        criterion.</text>
+      </item>
+      <item>
+        <title><ref
+        id="findSection">findSection(path)</ref></title>
+        <text>Returns the section corresponding to a specified path.</text>
+      </item>
+      <item>
+        <title><ref id="findUser">findUser(name)</ref></title>
+        <text>Returns the user corresponding to a specified
+        name.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the Liquid Site build date.</text>
+      </item>
+      <item>
+        <title><ref id="doc">doc</ref></title>
+        <text>Returns the document matched by a translator.</text>
+      </item>
+      <item>
+        <title><ref id="forum">forum</ref></title>
+        <text>Returns the forum matched by a translator.</text>
+      </item>
+      <item>
+        <title><ref id="request">request</ref></title>
+        <text>Returns the HTTP request object.</text>
+      </item>
+      <item>
+        <title><ref id="section">section</ref></title>
+        <text>Returns the section matched by a translator.</text>
+      </item>
+      <item>
+        <title><ref id="session">session</ref></title>
+        <text>Returns the HTTP session object.</text>
+      </item>
+      <item>
+        <title><ref id="topic">topic</ref></title>
+        <text>Returns the topic matched by a translator.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the current user logged in.</text>
+      </item>
+      <item>
+        <title><ref id="util">util</ref></title>
+        <text>Returns the util object.</text>
+      </item>
+      <item>
+        <title><ref id="version">version</ref></title>
+        <text>Returns the Liquid Site version.</text>
+      </item>
+      <item>
+        <title><ref id="linkTo">linkTo</ref></title>
+        <text>Returns a relative link to an object in the same
+        site.</text>
+      </item>
+      <item>
+        <title><ref id="mailTo">mailTo</ref></title>
+        <text>Sends an email to a specified receiver.</text>
+      </item>
+    </list>
+
+    <separator/>
+
+    <h2 id="countDocuments" style="inner">countDocuments</h2>
+
+    <p>Returns the number of documents in the section and subsections
+    specified by a path. The path is always relative to the domain
+    root directory. Nested subsections are separated by
+    <code>/</code>.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>countDocuments(path) &#8594;
+    number</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of a section within the content view of a domain</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The number of documents in the section and
+    subsections specified by <code>path</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>Assuming a content structure like this:</p>
+
+    <example>
+      <preformat>- mydomain
+  - Section1
+      doc1
+      doc2
+      doc3 
+    - Section1.1
+        doc1.1
+        doc1.2</preformat>
+    </example>
+
+    <p>Then the line:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The number of documents in Section1 is
+${liquidsite.countDocuments("Section1")}.&lt;p&gt;</preformat>
+    </example>
+
+    <p>Will output:</p>
+
+    <example>
+      <p>The number of documents in Section1 is 5.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findDocument" style="inner">findDocument</h2>
+
+    <p>Returns the document corresponding to a specified path. The
+    path is always relative to the domain root directory. Nested
+    subsections are separated by <code>/</code>.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findDocument(path) &#8594; <ref
+    file="document.xml">document object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of a section within the content view of a domain</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document specified by <code>path</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code finds a document and assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign doc1 = liquidsite.findDocument("Section1/doc1")&gt;</preformat>
+    </example>
+
+    <p>If the document was not found, <code>doc1</code> will contain
+    an empty document. This line checks whether <code>doc1</code> is
+    empty:</p>
+
+    <example>
+      <preformat>&lt;#if doc1.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findDocuments" style="inner">findDocuments</h2>
+
+    <p>Returns a list of documents in the section and any subsections
+    specified by a path. The path is always relative to the domain
+    root directory. Nested subsections are separated by
+    <code>/</code>. The documents returned are ordered by modification
+    date in descending order.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findDocuments(path, offset, count) &#8594;
+    sequence of <ref file="document.xml">document
+    objects</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of a section within the content view of a domain</text>
+      </item>
+      <item>
+        <text><code>offset</code> -- the number of documents to
+        skip</text>
+      </item>
+      <item>
+        <text><code>count</code> -- the maximum number of documents to
+        return</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of at most <code>count</code> documents
+    in the section and subsections specified by <code>path</code>,
+    ordered by modified date in descending order, beginning at
+    document number <code>offset</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>The next code loops through the four first documents in
+    <code>Section1</code>.</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findDocuments("Section1", 0, 4) as doc&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findDocuments2" style="inner">findDocuments</h2>
+
+    <p>Returns a list of documents in the section and any subsections
+    specified by a path, ordered by a specified sort criterion. The
+    path is always relative to the domain root directory. Nested
+    subsections are separated by <code>/</code>.</p>
+
+    <p>The sort criterion can contain several criterion separated by
+    commas. A criteria has the format:</p>
+
+    <p style="indent"><code>[+|-]columName</code></p>
+
+    <p>An optional leading <code>+</code> or <code>-</code> indicates
+    ascending or descending order, respectively. By default ascending
+    order is chosen. And <code>columnName</code> can take these
+    values:</p>
+
+    <list style="compact">
+      <item>
+        <text><code>id</code>: sorts by document id</text>
+      </item>
+      <item>
+        <text><code>name</code>: sorts by document name</text>
+      </item>
+      <item>
+        <text><code>path</code>: sorts by document path</text>
+      </item>
+      <item>
+        <text><code>parent</code>: sorts by document parent section
+        id</text>
+      </item>
+      <item>
+        <text><code>revision</code>: sorts by document revision
+        number</text>
+      </item>
+      <item>
+        <text><code>date</code>: sorts by document modified
+        date</text>
+      </item>
+      <item>
+        <text><code>user</code>: sorts by document user id</text>
+      </item>
+      <item>
+        <text><code>data.*</code>: sorts by document data field</text>
+      </item>
+    </list>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findDocuments(path, sorting, offset,
+    count) &#8594; sequence of <ref file="document.xml">document
+    objects</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of a section within the content view of a domain</text>
+      </item>
+      <item>
+        <text><code>sorting</code> -- the string containing the sort
+        criterion</text>
+      </item>
+      <item>
+        <text><code>offset</code> -- indicates the number of documents
+        to skip</text>
+      </item>
+      <item>
+        <text><code>count</code> -- indicates the maximum number of
+        documents to return</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of at most <code>count</code> documents
+    in the section and subsections specified by <code>path</code>,
+    ordered by the specified sorting criterion, beginning at document
+    number <code>offset</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>The next code loops through the four first documents in
+    <code>Section1</code> ordered by parent section id and name in
+    ascending order.</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findDocuments("Section1", "+parent,+name", 0, 4) as doc&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findSection" style="inner">findSection</h2>
+
+    <p>Returns the section corresponding to a specified path. The
+    path is always relative to the domain root directory. Nested
+    subsections are separated by <code>/</code>.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findSection(path) &#8594; <ref
+    file="section.xml">section object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of a section within the content view of a domain</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section specified by <code>path</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code finds a section and assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign sec1 = liquidsite.findSection("Section1")&gt;</preformat>
+    </example>
+
+    <p>If the section was not found, <code>sec1</code> will contain an
+    empty section. This line checks whether <code>sec1</code> is
+    empty:</p>
+
+    <example>
+      <preformat>&lt;#if sec1.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findUser" style="inner">findUser</h2>
+
+    <p>Returns the user corresponding to a specified name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findUser(name) &#8594; <ref
+    file="user.xml">user object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>name</code> -- the string containing the name of
+        the user</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The user specified by <code>name</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code finds a user and assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite")&gt;</preformat>
+    </example>
+
+    <p>If the user was not found, <code>user</code> will contain an
+    empty user. This line checks whether <code>user</code> is
+    empty:</p>
+
+    <example>
+      <preformat>&lt;#if user.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the Liquid Site build date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The Liquid Site build date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the build date:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The Liquid Site build date is ${liquidsite.date}.&lt;p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The Liquid Site build date is 2005-01-25.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="doc" style="inner">doc</h2>
+
+    <p>Returns the document matched by a translator. If no translator
+    was used, or the translator didn't match any document, an empty
+    document is returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>doc &#8594; <ref
+    file="document.xml">document object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The document matched by a translator, or an
+    empty document.</p>
+
+    <h3>Example:</h3>
+
+    <p>To obtain the document and assign it to a variable would be
+    done with this code:</p>
+
+    <example>
+      <preformat>&lt;#assign doc = liquidsite.doc&gt;</preformat>
+    </example>
+
+    <p>To check whether the returned document is empty can be done
+    like this:</p>
+
+    <example>
+      <preformat>&lt;#if doc.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="forum" style="inner">forum</h2>
+
+    <p>Returns the forum matched by a translator. If no translator was
+    used, or the translator didn't match any forum, an empty forum is
+    returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>forum &#8594; <ref file="forum.xml">forum
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum matched by a translator, or an empty
+    forum.</p>
+
+    <h3>Example:</h3>
+
+    <p>To obtain the forum and assign it to a variable would be done
+    with this code:</p>
+
+    <example>
+      <preformat>&lt;#assign forum = liquidsite.forum&gt;</preformat>
+    </example>
+
+    <p>To check whether the returned forum is empty can be done like
+    this:</p>
+
+    <example>
+      <preformat>&lt;#if forum.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="request" style="inner">request</h2>
+
+    <p>Returns the HTTP request object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>request &#8594; <ref
+    file="request.xml">request object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The HTTP request object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code obtains the request object and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign request = liquidsite.request&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="section" style="inner">section</h2>
+
+    <p>Returns the section matched by a translator. If no translator
+    was used, or the translator didn't match any section, an empty
+    section is returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>section &#8594; <ref
+    file="section.xml">section object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section matched by a translator, or an empty
+    section.</p>
+
+    <h3>Example:</h3>
+
+    <p>To obtain the section and assign it to a variable would be done
+    with this code:</p>
+
+    <example>
+      <preformat>&lt;#assign section = liquidsite.section&gt;</preformat>
+    </example>
+
+    <p>To check whether the returned section is empty can be done like
+    this:</p>
+
+    <example>
+      <preformat>&lt;#if section.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="session" style="inner">session</h2>
+
+    <p>Returns the HTTP session object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>session &#8594; <ref
+    file="session.xml">session object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The HTTP session object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code obtains the session object and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign session = liquidsite.session&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="topic" style="inner">topic</h2>
+
+    <p>Returns the topic matched by a translator. If no translator was
+    used, or the translator didn't match any topic, an empty topic is
+    returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>topic &#8594; <ref file="topic.xml">topic
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic matched by a translator, or an empty
+    topic.</p>
+
+    <h3>Example:</h3>
+
+    <p>To obtain the topic and assign it to a variable would be done
+    with this code:</p>
+
+    <example>
+      <preformat>&lt;#assign topic = liquidsite.topic&gt;</preformat>
+    </example>
+
+    <p>To check whether the returned topic is empty can be done like
+    this:</p>
+
+    <example>
+      <preformat>&lt;#if topic.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the current user logged in. If no user is logged in, an
+    empty user is returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The current user logged in, or an empty
+    user.</p>
+
+    <h3>Example:</h3>
+
+    <p>To obtain the user and assign it to a variable would be done
+    with this code:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.user&gt;</preformat>
+    </example>
+
+    <p>To check whether the returned user is empty can be done like
+    this:</p>
+
+    <example>
+      <preformat>&lt;#if user.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="util" style="inner">util</h2>
+
+    <p>Returns the util object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>util &#8594; <ref file="util.xml">util
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The util object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code obtains the util object and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign util = liquidsite.util&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="version" style="inner">version</h2>
+
+    <p>Returns the Liquid Site version.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>version &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The Liquid Site version.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the version:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The Liquid Site version is ${liquidsite.version}.&lt;p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>The Liquid Site version is 0.8.2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="linkTo" style="inner">linkTo</h2>
+
+    <p>Returns a relative link to an object in the same site. If the
+    specified path starts with <code>/</code> it is assumed to be
+    relative to the site root directory, otherwise it is assumed to be
+    relative to the page directory. Note that the page directory is
+    NOT always an empty string (consider dynamic pages linked to
+    sections).</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>linkTo(path) &#8594; string</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>path</code> -- the string containing the location
+        of the object</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A relative link to a specified object in the
+    same site.</p>
+
+    <h3>Example:</h3>
+
+    <p>The next code specifies a reference to a stylesheet located at
+    the site root directory:</p>
+
+    <example>
+      <preformat>&lt;link rel="stylesheet" type="text/css"
+      href="${liquidsite.linkTo('/style.css')}" /&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="mailTo" style="inner">mailTo</h2>
+
+    <p>Sends an email to a specified receiver. The email will not be
+    sent immediately, but rather queued in the outgoing mail
+    queue.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>mailTo(receiver, subject, text) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>receiver</code> -- the string containing the email
+        address of the receiver</text>
+      </item>
+      <item>
+        <text><code>subject</code> -- the string containing the
+        subject of the email</text>
+      </item>
+      <item>
+        <text><code>text</code> -- the string containing the text
+        of the email</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A boolean value of true if the email was queued
+    correctly, and false otherwise</p>
+
+    <h3>Example:</h3>
+
+    <p>The next code sends an email and checks whether it
+    succeeded:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.mailTo("info@liquidsite.org", "About Liquid Site" "Liquid Site rocks!")/&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

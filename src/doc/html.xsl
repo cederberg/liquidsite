@@ -150,6 +150,16 @@
     <h2><xsl:apply-templates select="@*|*|text()" /></h2>
   </xsl:template>
 
+  <xsl:template match="h3">
+    <h3><xsl:apply-templates select="@*|*|text()" /></h3>
+  </xsl:template>
+
+  <xsl:template match="separator">
+    <hr>
+      <xsl:apply-templates select="@*" />
+    </hr>
+  </xsl:template>
+
   <xsl:template match="p">
     <p><xsl:apply-templates select="@*|*|text()" /></p>
   </xsl:template>
@@ -280,6 +290,21 @@
       </p>
       &newline;&indent;&indent;
     </div>
+  </xsl:template>
+
+  <xsl:template match="example">
+    &newline;&indent;&indent;
+    <div class="example">
+      <xsl:apply-templates />
+      &newline;&indent;&indent;
+    </div>
+  </xsl:template>
+
+  <xsl:template match="preformat">
+    &newline;&indent;&indent;
+    <pre>
+      <xsl:apply-templates />
+    </pre>
   </xsl:template>
 
   <xsl:template match="@id">
