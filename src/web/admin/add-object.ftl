@@ -136,6 +136,20 @@
           </td>
         </tr>
 </#if>
+<#if enableDocument?exists>
+        <tr>
+          <th style="width: 7em;">
+            <input type="radio" tabindex="8"
+                   name="category" value="document" />
+            Document
+          </th>
+          <td>
+            A document can store any type of text content, such as
+            articles, news and similar. The containing section 
+            defines the document properties available.
+          </td>
+        </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="11" onclick="previous()">

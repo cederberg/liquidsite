@@ -29,6 +29,7 @@ import java.util.Iterator;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
@@ -122,6 +123,7 @@ public class ContentView extends AdminView {
             content = (Content) parent;
             if (content.hasWriteAccess(user)) {
                 request.setAttribute("enableSection", true);
+                request.setAttribute("enableDocument", true);
             }
         }
         request.sendTemplate("admin/add-object.ftl");
@@ -161,7 +163,9 @@ public class ContentView extends AdminView {
         } else {
             AdminUtils.setReference(request, section);
             name = section.getName();
-            parents = findSectionParents(request.getUser(), section);
+            parents = findSections(request.getUser(), 
+                                   section.getDomain(), 
+                                   section);
             parentId = section.getParentId();
             comment = "";
             properties = findSectionProperties(section, false);
@@ -207,6 +211,92 @@ public class ContentView extends AdminView {
         request.setAttribute("properties", properties);
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-section.ftl");
+    }
+    
+    /**
+     * Shows the add or edit document page. Either the parent or the
+     * document object must be specified.
+     * 
+     * @param request        the request object
+     * @param reference      the parent or document object 
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewEditDocument(Request request, 
+                                 Content reference) 
+        throws ContentException {
+
+        ContentDocument   doc;
+        String            name;
+        String            comment;
+        int               section;
+        ArrayList         sections;
+        ArrayList         properties = new ArrayList();
+        HashMap           data = new HashMap();
+        DocumentProperty  property;
+        Iterator          iter;
+        String            param;
+        String            str;
+        int               i;
+
+        // Find default values
+        AdminUtils.setReference(request, reference);
+        if (reference instanceof ContentDocument) {
+            doc = (ContentDocument) reference;
+            name = doc.getName();
+            section = doc.getParentId();
+            sections = findSections(request.getUser(), 
+                                    doc.getDomain(),
+                                    null);
+            properties = findSectionProperties(doc);
+            for (i = 0; i < properties.size(); i++) {
+                property = (DocumentProperty) properties.get(i);
+                str = property.getId();
+                data.put(str, doc.getProperty(str));
+            }
+            comment = "";
+        } else {
+            name = "";
+            section = 0;
+            sections = new ArrayList(0);
+            properties = findSectionProperties(reference);
+            for (i = 0; i < properties.size(); i++) {
+                property = (DocumentProperty) properties.get(i);
+                data.put(property.getId(), "");
+            }
+            comment = "Created";
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            str = request.getParameter("section", "0");
+            try {
+                section = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                section = 0;
+            }
+            comment = request.getParameter("comment", "");
+            data.clear();
+            iter = request.getAllParameters().keySet().iterator();
+            while (iter.hasNext()) {
+                param = iter.next().toString();
+                if (param.startsWith("property.")) {
+                    data.put(param.substring(9), 
+                             request.getParameter(param));
+                }
+            }
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("section", String.valueOf(section));
+        request.setAttribute("sections", sections);
+        request.setAttribute("properties", properties);
+        request.setAttribute("data", data);
+        request.setAttribute("comment", comment);
+        request.sendTemplate("admin/edit-document.ftl");
     }
     
     /**
@@ -349,49 +439,51 @@ public class ContentView extends AdminView {
     }
     
     /**
-     * Finds all potential content section parents and adds them to a
-     * list. The parents will not be added directly to the list, but
-     * rather a map containing the id and name of each parent will be
-     * added.  
+     * Finds all content sections in a domain. The sections will not
+     * be added directly to the result list, but rather a simplified
+     * hash map containing only the id and name of each section will 
+     * be added.  
      * 
      * @param user           the user
-     * @param section        the content section
+     * @param domain         the domain
+     * @param exclude        the section to exclude, or null
      * 
      * @return the list of sections found (in maps)
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private ArrayList findSectionParents(User user, 
-                                         ContentSection section)
+    private ArrayList findSections(User user,
+                                   Domain domain, 
+                                   ContentSection exclude)
         throws ContentException {
 
         ArrayList  result = new ArrayList();
         
-        findSectionChildren(user, "", section.getDomain(), section, result);
+        findSections(user, "", domain, exclude, result);
         return result;
     }
 
     /**
-     * Finds all content section children and adds them to a list. 
-     * The content sections will not be added directly to the list,
-     * rather a map containing the id and name of the section will be
-     * added. A specific section can also be excluded from the list.  
+     * Finds all content sections in a domain. The sections will not
+     * be added directly to the result list, but rather a simplified
+     * hash map containing only the id and name of each section will 
+     * be added.  
      * 
      * @param user           the user
      * @param baseName       the base name
      * @param parent         the parent domain or content object
-     * @param exclude        the section to exclude
+     * @param exclude        the section to exclude, or null
      * @param result         the list of sections found (in maps)
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private void findSectionChildren(User user, 
-                                     String baseName,
-                                     Object parent,
-                                     ContentSection exclude,
-                                     ArrayList result)
+    private void findSections(User user, 
+                              String baseName,
+                              Object parent,
+                              ContentSection exclude,
+                              ArrayList result)
         throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
@@ -413,11 +505,8 @@ public class ContentView extends AdminView {
                 name = baseName + children[i].getName();
                 values.put("name", name);
                 result.add(values);
-                findSectionChildren(user, 
-                                    name + "/", 
-                                    children[i], 
-                                    exclude, 
-                                    result);
+                name += "/";
+                findSections(user, name, children[i], exclude, result);
             }
         }
     }

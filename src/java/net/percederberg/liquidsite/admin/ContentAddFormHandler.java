@@ -26,6 +26,8 @@ import java.util.Map;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
+import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -71,6 +73,8 @@ public class ContentAddFormHandler extends AdminFormHandler {
             AdminView.CONTENT.viewAddObject(request, parent);
         } else if (category.equals("section")) {
             AdminView.CONTENT.viewEditSection(request, parent, null);
+        } else if (category.equals("document")) {
+            AdminView.CONTENT.viewEditDocument(request, (Content) parent);
         } else {
             AdminView.CONTENT.viewAddObject(request, parent);
         }
@@ -137,6 +141,8 @@ public class ContentAddFormHandler extends AdminFormHandler {
             return 2;
         } else if (category.equals("section")) {
             handleAddSection(request, parent);
+        } else if (category.equals("document")) {
+            handleAddDocument(request, (ContentSection) parent);
         }
         return 0;
     }
@@ -197,5 +203,38 @@ public class ContentAddFormHandler extends AdminFormHandler {
         }
         section.save(request.getUser());
         AdminView.CONTENT.setContentTreeFocus(request, section);
+    }
+
+    /**
+     * Handles the add document form.
+     * 
+     * @param request        the request object
+     * @param parent         the parent section object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleAddDocument(Request request, ContentSection parent) 
+        throws ContentException, ContentSecurityException {
+
+        ContentDocument  doc;
+        Map              params = request.getAllParameters();
+        Iterator         iter = params.keySet().iterator();
+        String           name;
+
+        doc = new ContentDocument(parent);
+        doc.setName(request.getParameter("name"));
+        doc.setComment(request.getParameter("comment"));
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("property.")) {
+                doc.setProperty(name.substring(9), 
+                                request.getParameter(name));
+            }
+        }
+        doc.save(request.getUser());
+        AdminView.CONTENT.setContentTreeFocus(request, doc);
     }
 }

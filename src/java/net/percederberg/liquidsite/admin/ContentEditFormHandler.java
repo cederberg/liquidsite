@@ -26,6 +26,7 @@ import java.util.Map;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
+import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -51,6 +52,11 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * The section form validator.
      */
     private FormValidator section = new FormValidator();
+
+    /**
+     * The document form validator.
+     */
+    private FormValidator document = new FormValidator();
 
     /**
      * Returns an instance of this class. If a prior instance has 
@@ -86,6 +92,11 @@ public class ContentEditFormHandler extends AdminFormHandler {
         section.addRequiredConstraint("name", "No section name specified");
         error = "No revision comment specified";
         section.addRequiredConstraint("comment", error);
+
+        // Add and edit document validator
+        document.addRequiredConstraint("name", "No document name specified");
+        error = "No revision comment specified";
+        document.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -109,6 +120,9 @@ public class ContentEditFormHandler extends AdminFormHandler {
             AdminView.CONTENT.viewEditSection(request, 
                                               null, 
                                               (ContentSection) ref);
+        } else if (ref instanceof ContentDocument) {
+            AdminView.CONTENT.viewEditDocument(request, 
+                                               (ContentDocument) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -134,6 +148,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         if (category.equals("section")) {
             section.validate(request);
+        } else if (category.equals("document")) {
+            document.validate(request);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
@@ -169,6 +185,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         if (ref instanceof ContentSection) {
             handleEditSection(request, (ContentSection) ref);
+        } else if (ref instanceof ContentDocument) {
+            handleEditDocument(request, (ContentDocument) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -240,5 +258,50 @@ public class ContentEditFormHandler extends AdminFormHandler {
             }
         }
         section.save(request.getUser());
+    }
+
+    /**
+     * Handles the edit document form.
+     * 
+     * @param request        the request object
+     * @param doc            the document content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleEditDocument(Request request, ContentDocument doc) 
+        throws ContentException, ContentSecurityException {
+
+        Map       params = request.getAllParameters();
+        Iterator  iter = params.keySet().iterator();
+        String    name;
+        int       section;
+
+        doc.setRevisionNumber(0);
+        doc.setName(request.getParameter("name"));
+        doc.setComment(request.getParameter("comment"));
+        try {
+            section = Integer.parseInt(request.getParameter("section"));
+            doc.setParentId(section);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("property.")) {
+                doc.setProperty(name.substring(9), 
+                                request.getParameter(name));
+            }
+        }
+        iter = doc.getPropertyNames().iterator();
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (!params.containsKey("property." + name)) {
+                doc.setProperty(name, null);
+            }
+        }
+        doc.save(request.getUser());
     }
 }

@@ -21,6 +21,10 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
 
@@ -69,15 +73,40 @@ public class ContentDocument extends Content {
     }
 
     /**
+     * Returns all property names in this document. Note that this
+     * set may differ from what the section specifies, normally due
+     * to some properties not being defined in the document. If a
+     * document has been moved, however, additional properties may be
+     * present.
+     * 
+     * @return a collection of property names
+     */
+    public Collection getPropertyNames() {
+        ArrayList  list = new ArrayList();
+        Iterator   iter = getAttributeNames();
+        String     name;
+        
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith(PROPERTY_PREFIX)) {
+                list.add(name.substring(PROPERTY_PREFIX.length()));
+            }
+        }
+        return list;
+    }
+
+    /**
      * Returns an identified document property value.
      * 
      * @param id             the document property identifier 
      * 
      * @return the document property value, or
-     *         null if not found
+     *         an empty string if not found
      */
     public String getProperty(String id) {
-        return getAttribute(PROPERTY_PREFIX + id);
+        String  value = getAttribute(PROPERTY_PREFIX + id);
+        
+        return (value == null) ? "" : value;
     }
 
     /**
@@ -87,7 +116,7 @@ public class ContentDocument extends Content {
      * @param id             the document property identifier
      * @param value          the document property value, or null
      */
-    public void setDocumentProperty(String id, String value) {
+    public void setProperty(String id, String value) {
         setAttribute(PROPERTY_PREFIX + id, value);
     }
 
