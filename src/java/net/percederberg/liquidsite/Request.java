@@ -123,7 +123,10 @@ public class Request {
      * @return the request path with file name
      */
     public String getPath() {
-        return request.getRequestURI();
+        String  context = request.getContextPath();
+        String  path = request.getRequestURI(); 
+
+        return path.substring(context.length());
     }
 
     /**
@@ -332,7 +335,12 @@ public class Request {
         LOG.debug("Handling request for " + this + " with file " + 
                   responseData);
         file = new File(responseData);
-        input = new FileInputStream(file);
+        try {
+            input = new FileInputStream(file);
+        } catch (IOException e) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         response.setContentType(context.getMimeType(responseData));
         response.setContentLength((int) file.length());
         output = response.getOutputStream();
