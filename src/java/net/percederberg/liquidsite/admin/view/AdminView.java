@@ -111,6 +111,21 @@ public class AdminView {
     }
 
     /**
+     * Shows the information message page. When the user presses the
+     * confirmation button on the page, the browser will be
+     * redirected to the specified page.
+     *
+     * @param request        the request object
+     * @param message        the information message
+     * @param page           the redirect page
+     */
+    public void viewInfo(Request request, String message, String page) {
+        request.setAttribute("message", message);
+        request.setAttribute("page", page);
+        request.sendTemplate("admin/info.ftl");
+    }
+
+    /**
      * Shows the redirect page. This page is sometimes needed to
      * compensate for erroneous 403 handling by some browsers (i.e.
      * Internet Explorer).
