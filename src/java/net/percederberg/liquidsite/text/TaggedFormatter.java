@@ -161,6 +161,7 @@ public class TaggedFormatter {
         String   name;
         HashMap  attrs;
         int      pos;
+        String   url;
         String   str;
 
         // Parse tag
@@ -181,32 +182,28 @@ public class TaggedFormatter {
 
             return "<" + name + ">";
         } else if (name.equals("link")) {
+            url = context.linkTo((String) attrs.get("url"));
+            url = PlainFormatter.escapeHtml(url);
             str = (String) attrs.get("window");
             if (str != null && str.equals("new")) {
-                return "<a href=\"" +
-                       context.linkTo((String) attrs.get("url")) +
-                       "\" target=\"_blank\">";
+                return "<a href=\"" + url + "\" target=\"_blank\">";
             } else {
-                return "<a href=\"" +
-                       context.linkTo((String) attrs.get("url")) +
-                       "\">";
+                return "<a href=\"" + url + "\">";
             }
         } else if (name.equals("/link")) {
             return "</a>";
         } else if (name.equals("image")) {
+            url = context.linkTo((String) attrs.get("url"));
+            url = PlainFormatter.escapeHtml(url);
             str = (String) attrs.get("layout");
             if (str != null && str.equals("right")) {
-                return "<img src=\"" +
-                       context.linkTo((String) attrs.get("url")) +
+                return "<img src=\"" + url +
                        "\" alt=\"\" style=\"float: right;\" />";
             } else if (str != null && str.equals("left")) {
-                return "<img src=\"" +
-                       context.linkTo((String) attrs.get("url")) +
+                return "<img src=\"" + url +
                        "\" alt=\"\" style=\"float: left;\" />";
             } else {
-                return "<img src=\"" +
-                       context.linkTo((String) attrs.get("url")) +
-                       "\" alt=\"\" />";
+                return "<img src=\"" + url + "\" alt=\"\" />";
             }
         } else if (name.equals("list")) {
             str = (String) attrs.get("type");

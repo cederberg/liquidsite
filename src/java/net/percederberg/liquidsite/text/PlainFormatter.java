@@ -55,9 +55,40 @@ public class PlainFormatter {
     }
 
     /**
+     * Escapes HTML constructs in a string.
+     *
+     * @param str            the string to process
+     *
+     * @return the HTML escaped string
+     */
+    public static String escapeHtml(String str) {
+        StringBuffer  buffer = new StringBuffer();
+        char          c;
+
+        for (int i = 0; i < str.length(); i++) {
+            c = str.charAt(i);
+            switch (c) {
+            case '<':
+                buffer.append("&lt;");
+                break;
+            case '>':
+                buffer.append("&gt;");
+                break;
+            case '&':
+                buffer.append("&amp;");
+                break;
+            default:
+                buffer.append(c);
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
      * Formats a plain text string in HTML. This method will escape
-     * any occurencies of special HTML characters while also inserting
-     * HTML linebreaks instead of normal line breaks.
+     * any occurencies of special HTML characters, insert HTML
+     * linebreaks instead of normal line breaks and create links for
+     * any absolute URLs found.
      *
      * @param text           the plain text string
      *
@@ -132,35 +163,5 @@ public class PlainFormatter {
             }
         }
         return str.substring(offset, pos);
-    }
-
-    /**
-     * Escapes HTML constructs in a string.
-     *
-     * @param str            the string to process
-     *
-     * @return the HTML escaped string
-     */
-    private static String escapeHtml(String str) {
-        StringBuffer  buffer = new StringBuffer();
-        char          c;
-
-        for (int i = 0; i < str.length(); i++) {
-            c = str.charAt(i);
-            switch (c) {
-            case '<':
-                buffer.append("&lt;");
-                break;
-            case '>':
-                buffer.append("&gt;");
-                break;
-            case '&':
-                buffer.append("&amp;");
-                break;
-            default:
-                buffer.append(c);
-            }
-        }
-        return buffer.toString();
     }
 }
