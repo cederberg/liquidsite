@@ -406,10 +406,12 @@ class SecurityManager {
         throws ContentException {
 
         switch (content.getCategory()) {
-        case Content.DOCUMENT_CATEGORY:
-            return false;
         case Content.FILE_CATEGORY:
             return hasPermissionList(content.getParent());
+        case Content.DOCUMENT_CATEGORY:
+        case Content.TOPIC_CATEGORY:
+        case Content.POST_CATEGORY:
+            return false;
         default:
             return true;
         }
