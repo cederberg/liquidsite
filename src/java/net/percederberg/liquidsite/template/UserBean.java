@@ -143,9 +143,11 @@ public class UserBean {
         Group[]    groups;
 
         try {
-            groups = user.getGroups();
-            for (int i = 0; i < groups.length; i++) {
-                list.add(groups[i].getName());
+            if (user != null) {
+                groups = user.getGroups();
+                for (int i = 0; i < groups.length; i++) {
+                    list.add(groups[i].getName());
+                }
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
