@@ -113,7 +113,7 @@ public class Request {
      * The response data. 
      */
     private String responseData = null;
-
+    
     /**
      * The request site.
      */
@@ -491,6 +491,9 @@ public class Request {
     void commit(ServletContext context) 
         throws IOException, ServletException {
 
+        // TODO: make cache control more dynamic!
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Expires", "-1");
         switch (responseType) {
         case DATA_RESPONSE:
             commitData();
