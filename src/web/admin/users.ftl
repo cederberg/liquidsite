@@ -120,6 +120,7 @@
           <th>Group</th>
           <th>Description</th>
           <th>Comment</th>
+          <th>Members</th>
           <th>&nbsp;</th>
         </tr>
   <#if groups?size = 0>
@@ -133,6 +134,7 @@
           <td><a href="edit-users.html?${params}">${group.name?xml}</a></td>
           <td>${group.description?xml}</td>
           <td>${group.comment?xml}</td>
+          <td>${group.members} user(s) of ${userCount}</td>
           <td>
             <a href="#" title="Delete" 
                onclick="return openDeleteDialog('delete-user.html?${params}')"

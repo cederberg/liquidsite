@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -95,6 +95,35 @@ public class User extends PersistentObject {
                 domainName = domain.getName();
             }
             return UserPeer.doCountByDomain(domainName, filter, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
+     * Returns the number of users in a specified group.
+     *
+     * @param manager        the content manager to use
+     * @param group          the group
+     *
+     * @return the number of users in the group
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static int countByGroup(ContentManager manager,
+                            Group group)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+
+        try {
+            return UserGroupPeer.doCountByGroup(group.getDomainName(),
+                                                group.getName(),
+                                                con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);

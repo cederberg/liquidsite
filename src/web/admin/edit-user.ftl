@@ -128,8 +128,9 @@
   </#if>
             <strong>${group.name}</strong>
   <#if group.description?has_content>
-            &ndash; ${group.description}<br />
+            &ndash; ${group.description}
   </#if>
+            <br />
 </#list>
             <p>The user group memberships.</p>
           </td>

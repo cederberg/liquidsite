@@ -16,15 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseQuery;
+import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
  * A user group database peer. This class contains static methods 
@@ -36,9 +39,45 @@ import net.percederberg.liquidsite.db.DatabaseQuery;
 public class UserGroupPeer extends AbstractPeer {
 
     /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(UserGroupPeer.class);
+
+    /**
      * The user group peer instance.
      */
     private static final UserGroupPeer PEER = new UserGroupPeer();
+
+    /**
+     * Returns a list of all user groups for a certain group.
+     * 
+     * @param domain         the domain name
+     * @param group          the group name
+     * @param con            the database connection to use
+     * 
+     * @return a list of all user groups for the group
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static int doCountByGroup(String domain, 
+                                     String group, 
+                                     DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query = new DatabaseQuery("usergroup.count.group");
+        DatabaseResults  res;
+
+        query.addParameter(domain);
+        query.addParameter(group);
+        res = PEER.execute("counting users", query, con);
+        try {
+            return res.getRow(0).getInt(0);
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+    }
 
     /**
      * Returns a list of all user groups for a certain user.

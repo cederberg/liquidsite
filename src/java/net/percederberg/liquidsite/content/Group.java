@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -306,9 +306,23 @@ public class Group extends PersistentObject {
     public void setComment(String comment) {
         data.setString(GroupData.COMMENT, comment);
     }
-    
+
     /**
-     * Returns the users that belongs to this group. This method will
+     * Returns the number of users that belong to this group. This 
+     * method will only count the users registered to this group in 
+     * the database.
+     *
+     * @return the number of users that belong to this group
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public int getUserCount() throws ContentException {
+        return User.countByGroup(getContentManager(), this);
+    }
+
+    /**
+     * Returns the users that belong to this group. This method will
      * only return the users registered to this group in the database.
      * 
      * @return an array of users belonging to this group

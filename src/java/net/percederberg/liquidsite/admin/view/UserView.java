@@ -103,7 +103,7 @@ public class UserView extends AdminView {
         } else {
             request.setSessionAttribute("users.list.type", "group");
             groups = findGroups(user, domain, filter);
-            count = 0;
+            count = manager.getUserCount(domain, "");
         }
 
         // Set request parameters
@@ -118,13 +118,14 @@ public class UserView extends AdminView {
         request.setAttribute("users", users);        
         request.setAttribute("groups", groups);
         request.setAttribute("page", page);
-        if (count == 0) {
+        if (count == 0 || groups != null) {
             request.setAttribute("pages", 1);
         } else if (count % PAGE_SIZE == 0) {
             request.setAttribute("pages", count / PAGE_SIZE);
         } else {
             request.setAttribute("pages", count / PAGE_SIZE + 1);
         }
+        request.setAttribute("userCount", count);
         request.sendTemplate("admin/users.ftl");
     }
 
@@ -341,6 +342,7 @@ public class UserView extends AdminView {
             map.put("name", groups[i].getName());
             map.put("description", groups[i].getDescription());
             map.put("comment", groups[i].getComment());
+            map.put("members", String.valueOf(groups[i].getUserCount()));
             result.add(map);
         }
         return result;
