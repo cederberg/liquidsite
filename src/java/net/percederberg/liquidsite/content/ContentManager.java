@@ -292,7 +292,7 @@ public class ContentManager {
      *             properly
      */
     Content getContent(int id) throws ContentException {
-        return Content.findByMaxRevision(this, id);
+        return InternalContent.findByMaxRevision(this, id);
     }
     
     /**
@@ -340,7 +340,7 @@ public class ContentManager {
     Content getContent(int id, int revision) 
         throws ContentException {
 
-        return Content.findByRevision(this, id, revision);
+        return InternalContent.findByRevision(this, id, revision);
     }
 
     /**
@@ -362,7 +362,7 @@ public class ContentManager {
     public Content getContentChild(User user, Content parent, String name) 
         throws ContentException, ContentSecurityException {
 
-        Content[]  children = Content.findByParent(this, parent);
+        Content[]  children = InternalContent.findByParent(this, parent);
 
         // TODO: implement this more efficiently with specific query
         for (int i = 0; i < children.length; i++) {
@@ -394,7 +394,7 @@ public class ContentManager {
     public Content[] getContentChildren(User user, Domain domain) 
         throws ContentException {
 
-        Content[]  children = Content.findByParent(this, domain);
+        Content[]  children = InternalContent.findByParent(this, domain);
         ArrayList  list = new ArrayList(children.length);
         Content[]  res;
 
@@ -424,7 +424,7 @@ public class ContentManager {
     public Content[] getContentChildren(User user, Content parent) 
         throws ContentException {
 
-        Content[]  children = Content.findByParent(this, parent);
+        Content[]  children = InternalContent.findByParent(this, parent);
         ArrayList  list = new ArrayList(children.length);
         Content[]  res;
 

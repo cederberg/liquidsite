@@ -187,7 +187,8 @@ public class ContentFile extends Content {
         if (getParent() == null) {
             throw new ContentException("no parent set for file");
         }
-        children = Content.findByParent(getContentManager(), getParent());
+        children = InternalContent.findByParent(getContentManager(),
+                                                getParent());
         for (int i = 0; i < children.length; i++) {
             if (children[i].getId() != getId()
              && children[i].getName().equals(getName())) {

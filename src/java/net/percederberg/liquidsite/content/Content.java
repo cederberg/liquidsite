@@ -111,243 +111,6 @@ public abstract class Content extends PersistentObject implements Comparable {
     private ArrayList attributesRemoved = new ArrayList();
 
     /**
-     * Returns an array of content object revisions with the 
-     * specified identifier.
-     * 
-     * @param manager        the content manager to use
-     * @param id             the content identifier
-     * 
-     * @return an array of the content object revisions found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    static Content[] findById(ContentManager manager, int id)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-
-        try {
-            list = ContentPeer.doSelectById(id, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Returns the content object with the specified identifier and 
-     * highest revision.
-     * 
-     * @param manager        the content manager to use
-     * @param id             the content identifier
-     * 
-     * @return the content object found, or
-     *         null if no matching content existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    static Content findByMaxRevision(ContentManager manager, int id) 
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentData         data;
-
-        try {
-            data = ContentPeer.doSelectByMaxRevision(id,
-                                                     manager.isAdmin(),
-                                                     con);
-            if (data != null) {
-                return createContent(manager, data, con);
-            } else {
-                return null;
-            }
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Returns the content object with the specified identifier and 
-     * revision.
-     * 
-     * @param manager        the content manager to use
-     * @param id             the content identifier
-     * @param revision       the content revision
-     * 
-     * @return the content object found, or
-     *         null if no matching content existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    static Content findByRevision(ContentManager manager,
-                                  int id,
-                                  int revision) 
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentData         data;
-
-        try {
-            data = ContentPeer.doSelectByRevision(id, revision, con);
-            if (data != null) {
-                return createContent(manager, data, con);
-            } else {
-                return null;
-            }
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Returns an array of root content objects in the specified 
-     * domain. Only the latest revision of each content object will 
-     * be returned.
-     * 
-     * @param manager        the content manager to use
-     * @param domain         the domain
-     * 
-     * @return an array of content objects found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    static Content[] findByParent(ContentManager manager, Domain domain) 
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-
-        try {
-            list = ContentPeer.doSelectByParent(domain.getName(),
-                                                0,
-                                                manager.isAdmin(),
-                                                con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Returns an array of content objects having the specified 
-     * parent. Only the latest revision of each content object will 
-     * be returned.
-     * 
-     * @param manager        the content manager to use
-     * @param parent         the parent content
-     * 
-     * @return an array of content objects found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    static Content[] findByParent(ContentManager manager, Content parent) 
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-
-        try {
-            list = ContentPeer.doSelectByParent(parent.getDomainName(),
-                                                parent.getId(),
-                                                manager.isAdmin(),
-                                                con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-    }
-
-    /**
-     * Creates an array of content objects. The content subclass
-     * matching the category value will be used.
-     * 
-     * @param manager        the content manager to use 
-     * @param list           the list of content object data
-     * @param con            the database connection to use
-     * 
-     * @return the array of new content objects
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly, or if the content category was unknown
-     */
-    private static Content[] createContent(ContentManager manager,
-                                           ArrayList list,
-                                           DatabaseConnection con)
-        throws ContentException {
-
-        Content[]    res;
-        ContentData  data;
-
-        res = new Content[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            data = (ContentData) list.get(i);
-            res[i] = createContent(manager, data, con);
-        }
-        return res;
-    }
-
-    /**
-     * Creates a content object. The content subclass matching the
-     * category value will be used.
-     * 
-     * @param manager        the content manager to use 
-     * @param data           the content object data
-     * @param con            the database connection to use
-     * 
-     * @return the new content object
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly, or if the content category was unknown
-     */
-    private static Content createContent(ContentManager manager,
-                                         ContentData data,
-                                         DatabaseConnection con)
-        throws ContentException {
-
-        switch (data.getInt(ContentData.CATEGORY)) {
-        case SITE_CATEGORY:
-            return new ContentSite(manager, data, con);
-        case FOLDER_CATEGORY:
-            return new ContentFolder(manager, data,  con);
-        case PAGE_CATEGORY:
-            return new ContentPage(manager, data, con);
-        case FILE_CATEGORY:
-            return new ContentFile(manager, data, con);
-        case TEMPLATE_CATEGORY:
-            return new ContentTemplate(manager, data, con);
-        case SECTION_CATEGORY:
-            return new ContentSection(manager, data, con);
-        case DOCUMENT_CATEGORY:
-            return new ContentDocument(manager, data, con);
-        default:
-            throw new ContentException(
-                "content category " + data.getInt(ContentData.CATEGORY) +
-                " hasn't been defined"); 
-        }
-    }
-
-    /**
      * Creates a new content object with default values. The content
      * identifier will be set to the next available one after storing
      * to the database, and the content revision is set to zero (0).
@@ -813,7 +576,9 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public Content getRevision(int revision) throws ContentException {
-        return findByRevision(getContentManager(), getId(), revision);
+        return InternalContent.findByRevision(getContentManager(),
+                                              getId(),
+                                              revision);
     }
 
     /**
@@ -825,7 +590,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *             properly
      */
     public Content[] getAllRevisions() throws ContentException {
-        return findById(getContentManager(), getId());
+        return InternalContent.findById(getContentManager(), getId());
     }
 
     /**
@@ -973,8 +738,9 @@ public abstract class Content extends PersistentObject implements Comparable {
     protected void doDelete(User user, DatabaseConnection con)
         throws ContentException {
 
-        Content[]  children = findByParent(getContentManager(), this);
-
+        Content[]  children;
+        
+        children = InternalContent.findByParent(getContentManager(), this);
         try {
             for (int i = 0; i < children.length; i++) {
                 children[i].doDelete(user, con);

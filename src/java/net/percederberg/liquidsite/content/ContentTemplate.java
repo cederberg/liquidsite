@@ -188,7 +188,8 @@ public class ContentTemplate extends Content {
 
         super.validate();
         if (getParent() != null) {
-            children = Content.findByParent(getContentManager(), getParent());
+            children = InternalContent.findByParent(getContentManager(),
+                                                    getParent());
             for (int i = 0; i < children.length; i++) {
                 if (children[i].getId() != getId()
                  && children[i].getName().equals(getName())) {
