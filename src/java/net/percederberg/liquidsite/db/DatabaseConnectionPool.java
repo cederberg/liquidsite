@@ -162,8 +162,9 @@ public class DatabaseConnectionPool {
             if (con == null) {
                 con = create();
             }
-        } finally {
-            LOG.warning("failed getting pooled connection for " + db);
+        } catch (DatabaseConnectionException e) {
+            LOG.warning("failed getting pooled connection for " + db, e);
+            throw e;
         }
         LOG.trace("got pooled connection");
         return con;
@@ -228,9 +229,11 @@ public class DatabaseConnectionPool {
         for (i = 0; getCurrentSize() < minSize; i++) {
             try {
                 con = create();
-            } finally {
+            } catch (DatabaseConnectionException e) {
                 LOG.warning("failed creating new connections in pool for " +
-                            db);
+                            db,
+                            e);
+                throw e;
             }
             checkIn(con);
         }
