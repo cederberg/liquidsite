@@ -167,6 +167,9 @@ public class AdminRequestProcessor extends RequestProcessor {
         } else {
             processWorkflow(request, path);
         }
+        if (!request.hasResponse()) {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        }
     }
 
     /**

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2003-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.servlet;
@@ -357,27 +357,68 @@ public class LiquidSiteServlet extends HttpServlet
         }
 
         // TODO: handle offline state gracefully
-        // TODO: handle exceptions and error responses
 
         // Process request
         LOG.info("Incoming request: " + r);
         try {
             processor.process(r);
+        } catch (RequestException e) {
+            LOG.info("Erroneous request: " + r + ", Message: " +
+                     e.getMessage());
+            processError(r, e);
+        }
+        try {
             if (r.hasResponse()) {
                 r.commit(getServletContext(), content);
             } else {
                 LOG.info("Unhandled request: " + r);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
-        } catch (RequestException e) {
-            LOG.info("Erroneous request: " + r + ", Message: " +
-                     e.getMessage());
-            response.sendError(e.getCode(), e.getMessage());
         } catch (IOException e) {
             LOG.info("IO error when processing request: " + r +
                      ", Message: " + e.getMessage());
         }
         r.dispose();
+    }
+
+    /**
+     * Processes a request error.
+     *
+     * @param request        the request object
+     * @param error          the request error
+     */
+    private void processError(Request request, RequestException error) {
+        String  text;
+
+        switch (error.getCode()) {
+        case 401:
+            request.setAttribute("heading", "Authentication Required (401)");
+            text = "You must be logged in to access the document " +
+                   "or resource located at this URL.";
+            break;
+        case 403:
+            request.setAttribute("heading", "Access Forbidden (403)");
+            text = "You don't have permission to access the document " +
+                   "or resource located at this URL.";
+            break;
+        case 404:
+            request.setAttribute("heading", "Document Not Found (404)");
+            text = "The document or resource pointed to by this URL " +
+                   "doesn't exist. This may be caused by the document " +
+                   "having been moved.";
+            break;
+        default:
+            text = "Internal Error (" + error.getCode() + ")";
+            request.setAttribute("heading", text);
+            text = "An internal error has ocurred. " +
+                   "Please try again later.";
+        }
+        request.setAttribute("text", text);
+        try {
+            processor.sendTemplate(request, "error.ftl");
+        } catch (TemplateException e) {
+            request.sendData("text/plain", "Error: " + e.getMessage());
+        }
     }
 
     /**
