@@ -47,6 +47,15 @@ public class RequestBean {
     }
 
     /**
+     * Returns the site path.
+     *
+     * @return the site path
+     */
+    public String getSite() {
+        return request.getEnvironment().getSite().getDirectory();
+    }
+
+    /**
      * Returns the request path.
      *
      * @return the request path
