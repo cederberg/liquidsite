@@ -349,7 +349,9 @@ public class RequestSession {
             file = (File) files.get(name);
             if (file != null) {
                 files.remove(name);
-                file.delete();
+                if (file.exists()) {
+                    file.delete();
+                }
             }
         }
 
@@ -363,7 +365,9 @@ public class RequestSession {
             iter = files.values().iterator();
             while (iter.hasNext()) {
                 file = (File) iter.next();
-                file.delete();
+                if (file.exists()) {
+                    file.delete();
+                }
             }
             files.clear();
         }
