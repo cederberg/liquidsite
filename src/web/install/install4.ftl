@@ -29,6 +29,15 @@
 </#if>
           </td>
         </tr>
+<#if updateVersion?has_content>
+        <tr>
+          <td colspan="2">
+            No configuration updates are needed. All the configuration
+            parameters from the previous version ${updateVersion} will
+            be transferred without changes.
+          </td>
+        </tr>
+<#else>
         <tr>
           <th>
             Data&nbsp;Directory:
@@ -72,6 +81,7 @@
             <p>Password verification for the admin user above.</p>
           </td>
         </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="6" onclick="previous()">

@@ -17,8 +17,8 @@
             <h2>Select Database Server (Step 1 of 5)</h2>
 
             <p>Welcome to Liquid Site! By following the steps in this
-            installation guide, you will create a Liquid Site data
-            repository and perform the basic setup.</p>
+            installation guide, you will create or update a Liquid
+            Site data repository and perform the basic setup.</p>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
 </#if>

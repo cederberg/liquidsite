@@ -69,16 +69,22 @@ public class InstallRequestProcessor extends RequestProcessor {
     private Application application;
 
     /**
-     * The description of the last error encountered. If this
-     * variable is set to null, no error has ocurred.
+     * The installer to use. This variable is initially set to null if
+     * no valid database connection has been made.
      */
-    private String lastError = null;
+    private Installer installer = null;
 
     /**
      * The MySQL database connector. This variable is set to null if
      * no valid database connection has been made.
      */
     private MySQLDatabaseConnector connector = null;
+
+    /**
+     * The description of the last error encountered. If this
+     * variable is set to null, no error has ocurred.
+     */
+    private String lastError = null;
 
     /**
      * The database host name.
@@ -134,6 +140,12 @@ public class InstallRequestProcessor extends RequestProcessor {
      * The create database user flag.
      */
     private boolean createDatabaseUser = false;
+
+    /**
+     * The update version number. This is set to null if no update
+     * should be attempted.
+     */
+    private String updateVersion = null;
 
     /**
      * Creates a new install request processor.
@@ -231,10 +243,13 @@ public class InstallRequestProcessor extends RequestProcessor {
      */
     private void processStep2(Request request) {
         createDatabase = false;
+        updateVersion = null;
         database = request.getParameter("database1", "");
         if (database.equals("")) {
             createDatabase = true;
             database = request.getParameter("database2", "").trim();
+        } else {
+            updateVersion = getVersion(database);
         }
         if (database.equals("")) {
             lastError = "No database selected";
@@ -311,29 +326,29 @@ public class InstallRequestProcessor extends RequestProcessor {
         File    file;
         String  str;
 
-        // Extract form data
-        dataDir = request.getParameter("dir", "").trim();
-        adminUser = request.getParameter("user", "").trim();
-        adminPassword = request.getParameter("password1", "");
-        str = request.getParameter("password2", "");
-
         // Validate form data
-        if (dataDir.equals("")) {
-            lastError = "No data directory specified";
-        } else if (adminUser.equals("")) {
-            lastError = "No administrator user name specified";
-        } else if (adminPassword.equals("")) {
-            lastError = "No administrator password specified";
-        } else if (!adminPassword.equals(str)) {
-            lastError = "The two passwords must be identical";
-            adminPassword = "";
-        } else {
-            file = new File(dataDir);
-            if (!file.exists()) {
-                lastError = "Data directory does not exist";
-            } else if (!file.canWrite()) {
-                lastError = "Cannot write to data directory, " +
-                            "check permissions";
+        if (updateVersion == null) {
+            dataDir = request.getParameter("dir", "").trim();
+            adminUser = request.getParameter("user", "").trim();
+            adminPassword = request.getParameter("password1", "");
+            str = request.getParameter("password2", "");
+            if (dataDir.equals("")) {
+                lastError = "No data directory specified";
+            } else if (adminUser.equals("")) {
+                lastError = "No administrator user name specified";
+            } else if (adminPassword.equals("")) {
+                lastError = "No administrator password specified";
+            } else if (!adminPassword.equals(str)) {
+                lastError = "The two passwords must be identical";
+                adminPassword = "";
+            } else {
+                file = new File(dataDir);
+                if (!file.exists()) {
+                    lastError = "Data directory does not exist";
+                } else if (!file.canWrite()) {
+                    lastError = "Cannot write to data directory, " +
+                                "check permissions";
+                }
             }
         }
 
@@ -363,10 +378,19 @@ public class InstallRequestProcessor extends RequestProcessor {
             if (isAdministrator()) {
                 connector.addAccessPrivileges(database, databaseUser);
             }
-            createTables();
+            if (updateVersion == null) {
+                installer.createTables(database);
+            } else {
+                installer.updateTables(database, updateVersion);
+            }
             writeConfiguration();
             application.restart();
-            writeDefaultData(request.getServletPath());
+            if (updateVersion == null) {
+                writeDefaultData(request.getServletPath());
+            }
+        } catch (InstallException e) {
+            LOG.error("couldn't finish installation", e);
+            lastError = e.getMessage();
         } catch (DatabaseConnectionException e) {
             LOG.error("couldn't finish installation", e);
             lastError = e.getMessage();
@@ -384,7 +408,7 @@ public class InstallRequestProcessor extends RequestProcessor {
             lastError = e.getMessage();
         }
 
-        // Display errors or restart application
+        // Display errors or start application
         if (lastError != null) {
             displayStep5(request);
         } else {
@@ -427,7 +451,11 @@ public class InstallRequestProcessor extends RequestProcessor {
             databaseInfo.add(info);
             lastError = null;
             tables = listTables(databases.get(i).toString());
-            version = getVersion(databases.get(i).toString());
+            if (tables.contains("LS_CONFIGURATION")) {
+                version = getVersion(databases.get(i).toString());
+            } else {
+                version = null;
+            }
             info.put("name", databases.get(i));
             info.put("tables", new Integer(tables.size()));
             if (lastError != null) {
@@ -438,7 +466,12 @@ public class InstallRequestProcessor extends RequestProcessor {
                 info.put("info", "MySQL administration database");
             } else if (version != null) {
                 str = "Liquid Site version " + version;
-                info.put("status", new Integer(0));
+                if (installer.canUpdate(version)) {
+                    info.put("status", new Integer(1));
+                } else {
+                    str += " (Unsupported)";
+                    info.put("status", new Integer(0));
+                }
                 info.put("info", str);
             } else if (getTableConflicts(tables) > 0) {
                 str = getTableConflicts(tables) +
@@ -490,9 +523,12 @@ public class InstallRequestProcessor extends RequestProcessor {
      */
     private void displayStep4(Request request) {
         request.setAttribute("error", lastError);
-        request.setAttribute("dir", dataDir);
-        request.setAttribute("user", adminUser);
-        request.setAttribute("password", adminPassword);
+        request.setAttribute("updateVersion", updateVersion);
+        if (updateVersion == null) {
+            request.setAttribute("dir", dataDir);
+            request.setAttribute("user", adminUser);
+            request.setAttribute("password", adminPassword);
+        }
         request.sendTemplate("install/install4.ftl");
     }
 
@@ -506,10 +542,13 @@ public class InstallRequestProcessor extends RequestProcessor {
         request.setAttribute("host", host);
         request.setAttribute("database", database);
         request.setAttribute("databaseUser", databaseUser);
-        request.setAttribute("dataDir", dataDir);
-        request.setAttribute("adminUser", adminUser);
         request.setAttribute("createDatabase", createDatabase);
         request.setAttribute("createDatabaseUser", createDatabaseUser);
+        request.setAttribute("updateVersion", updateVersion);
+        if (updateVersion == null) {
+            request.setAttribute("dataDir", dataDir);
+            request.setAttribute("adminUser", adminUser);
+        }
         request.sendTemplate("install/install5.ftl");
     }
 
@@ -531,6 +570,9 @@ public class InstallRequestProcessor extends RequestProcessor {
         try {
             connector.loadFunctions(getFile("WEB-INF/database.properties"));
             connector.returnConnection(connector.getConnection());
+            installer = new Installer(application.getBuildVersion(),
+                                      connector,
+                                      getFile("WEB-INF/sql"));
         } catch (FileNotFoundException e) {
             LOG.error("couldn't read database functions", e);
             lastError = "Couldn't find 'database.properties' file";
@@ -558,6 +600,7 @@ public class InstallRequestProcessor extends RequestProcessor {
                 // Do ignore
             }
             connector = null;
+            installer = null;
         }
     }
 
@@ -626,19 +669,19 @@ public class InstallRequestProcessor extends RequestProcessor {
 
     /**
      * Returns a list of all users found with the current connector.
-     * As a side-effect, this method will log any error encountered,
-     * and set the lastError variable.
+     * This method will ignore any error encountered.
      *
-     * @return the list with user names
+     * @return the list with user names, or
+     *         a list with the install user if no users could be found
      */
     private ArrayList listUsers() {
         ArrayList users;
 
         try {
             return connector.listUsers();
-        } catch (DatabaseConnectionException e) {
+        } catch (DatabaseConnectionException ignore) {
             // Do nothing
-        } catch (DatabaseException e) {
+        } catch (DatabaseException ignore) {
             // Do noting
         }
         users = new ArrayList();
@@ -647,12 +690,13 @@ public class InstallRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Returns the Liquid Site version of the specified database.
+     * Returns the Liquid Site version of the specified database. This
+     * method will ignore any error encountered.
      *
      * @param database       the database to check
      *
-     * @return the Liquid Site version number of the database, or
-     *         null if no number could be found
+     * @return the version number found in the database, or
+     *         null if the database wasn't a Liquid Site database
      */
     private String getVersion(String database) {
         Configuration       config = new Configuration();
@@ -663,14 +707,12 @@ public class InstallRequestProcessor extends RequestProcessor {
             con.setCatalog(database);
             config.read(con);
             return config.get(Configuration.VERSION, null);
-        } catch (DatabaseConnectionException e) {
-            LOG.error("couldn't read database version", e);
-            lastError = e.getMessage();
-        } catch (DatabaseException e) {
-            LOG.error("couldn't read database version", e);
-            lastError = e.getMessage();
+        } catch (DatabaseConnectionException ignore) {
+            // Do nothing
+        } catch (DatabaseException ignore) {
+            // Do nothing
         } catch (ConfigurationException ignore) {
-            // Ignore
+            // Do nothing
         } finally {
             if (con != null) {
                 connector.returnConnection(con);
@@ -702,37 +744,6 @@ public class InstallRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Creates the Liquid Site database tables.
-     *
-     * @throws DatabaseConnectionException if a database connection
-     *             couldn't be established
-     * @throws DatabaseException if a database statement execution
-     *             failed
-     * @throws FileNotFoundException if the create tables SQL file
-     *             couldn't be found
-     * @throws IOException if the create tables SQL file couldn't be
-     *             read
-     */
-    private void createTables()
-        throws DatabaseConnectionException, DatabaseException,
-               FileNotFoundException, IOException {
-
-        DatabaseConnection  con = null;
-        File                sqlFile;
-
-        try {
-            con = connector.getConnection();
-            con.setCatalog(database);
-            sqlFile = getFile("WEB-INF/sql/CREATE_LIQUIDSITE_TABLES.sql");
-            con.execute(sqlFile);
-        } finally {
-            if (con != null) {
-                connector.returnConnection(con);
-            }
-        }
-    }
-
-    /**
      * Writes the Liquid Site configuration file and database table.
      *
      * @throws FileNotFoundException if the database functions file
@@ -747,6 +758,7 @@ public class InstallRequestProcessor extends RequestProcessor {
 
         MySQLDatabaseConnector  con = null;
         Configuration           config;
+        Configuration           oldConfig;
 
         // Create database connector
         con = new MySQLDatabaseConnector(host,
@@ -757,16 +769,23 @@ public class InstallRequestProcessor extends RequestProcessor {
 
         // Write configuration
         config = application.getConfig();
+        if (updateVersion != null) {
+            oldConfig = new Configuration();
+            oldConfig.read(con);
+            config.setAll(oldConfig);
+        }
         config.set(Configuration.VERSION, application.getBuildVersion());
         config.set(Configuration.DATABASE_HOSTNAME, host);
         config.set(Configuration.DATABASE_NAME, database);
         config.set(Configuration.DATABASE_USER, databaseUser);
         config.set(Configuration.DATABASE_PASSWORD, databasePassword);
         config.set(Configuration.DATABASE_POOL_SIZE, 10);
-        config.set(Configuration.FILE_DIRECTORY, dataDir);
-        config.set(Configuration.UPLOAD_DIRECTORY,
-                   application.getBaseDir() + "/tmp");
-        config.set(Configuration.UPLOAD_MAX_SIZE, 10000000);
+        if (updateVersion == null) {
+            config.set(Configuration.FILE_DIRECTORY, dataDir);
+            config.set(Configuration.UPLOAD_DIRECTORY,
+                       application.getBaseDir() + "/tmp");
+            config.set(Configuration.UPLOAD_MAX_SIZE, 10000000);
+        }
         config.write(con);
     }
 

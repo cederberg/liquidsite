@@ -44,6 +44,8 @@
             ${database}
 <#if createDatabase>
             (create database)
+<#elseif updateVersion?has_content>
+            (update from version ${updateVersion})
 <#else>
             (existing database)
 </#if>
@@ -62,6 +64,7 @@
 </#if>
           </td>
         </tr>
+<#if dataDir?has_content>
         <tr>
           <th>
             Data&nbsp;Directory:
@@ -70,6 +73,8 @@
             ${dataDir}
           </td>
         </tr>
+</#if>
+<#if adminUser?has_content>
         <tr>
           <th>
             Admin&nbsp;User:
@@ -78,6 +83,7 @@
             ${adminUser}
           </td>
         </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="2" onclick="previous()">
