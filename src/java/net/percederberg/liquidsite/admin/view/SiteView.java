@@ -199,7 +199,11 @@ public class SiteView extends AdminView {
             defaultHost = site.getHost();
             defaultPort = String.valueOf(site.getPort());
             defaultDir = site.getDirectory();
-            defaultComment = "";
+            if (site.getRevisionNumber() == 0) {
+                defaultComment = site.getComment();
+            } else {
+                defaultComment = "";
+            }
         }
         hosts = domain.getHosts();
         for (int i = 0; i < hosts.length; i++) {
@@ -259,7 +263,11 @@ public class SiteView extends AdminView {
             site = findSite(page);
             folders = findFolders(request.getUser(), site, null);
             template = String.valueOf(page.getTemplateId());
-            comment = "";
+            if (page.getRevisionNumber() == 0) {
+                comment = page.getComment();
+            } else {
+                comment = "";
+            }
             iter = page.getLocalElementNames().iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
@@ -337,7 +345,11 @@ public class SiteView extends AdminView {
             parent = file.getParentId();
             site = findSite(file);
             folders = findFolders(request.getUser(), site, null);
-            comment = "";
+            if (file.getRevisionNumber() == 0) {
+                comment = file.getComment();
+            } else {
+                comment = "";
+            }
         } else {
             name = "";
             parent = 0;
@@ -399,7 +411,11 @@ public class SiteView extends AdminView {
             parentId = folder.getParentId();
             site = findSite(folder);
             folders = findFolders(request.getUser(), site, folder);
-            comment = "";
+            if (folder.getRevisionNumber() == 0) {
+                comment = folder.getComment();
+            } else {
+                comment = "";
+            }
         }
 
         // Adjust for incoming request
@@ -463,7 +479,11 @@ public class SiteView extends AdminView {
                                 template.getDomain(), 
                                 template.getId());
             name = template.getName();
-            comment = "";
+            if (template.getRevisionNumber() == 0) {
+                comment = template.getComment();
+            } else {
+                comment = "";
+            }
             iter = template.getLocalElementNames().iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();

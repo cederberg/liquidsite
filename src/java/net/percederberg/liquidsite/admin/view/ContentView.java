@@ -167,7 +167,11 @@ public class ContentView extends AdminView {
                                    section.getDomain(), 
                                    section);
             parentId = section.getParentId();
-            comment = "";
+            if (section.getRevisionNumber() == 0) {
+                comment = section.getComment();
+            } else {
+                comment = "";
+            }
             properties = findSectionProperties(section, false);
         }
 
@@ -255,7 +259,11 @@ public class ContentView extends AdminView {
                 str = property.getId();
                 data.put(str, doc.getProperty(str));
             }
-            comment = "";
+            if (doc.getRevisionNumber() == 0) {
+                comment = doc.getComment();
+            } else {
+                comment = "";
+            }
         } else {
             name = "";
             section = 0;
