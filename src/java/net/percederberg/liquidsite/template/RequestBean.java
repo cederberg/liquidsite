@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.template;
 
+import java.util.Map;
+
 import net.percederberg.liquidsite.web.Request;
 
 /**
@@ -36,6 +38,11 @@ public class RequestBean {
      * The request being processed.
      */
     private Request request;
+
+    /**
+     * The request parameters.
+     */
+    private Map parameters = null;
 
     /**
      * Creates a new request bean.
@@ -82,5 +89,17 @@ public class RequestBean {
         }
         buffer.append(request.getPath());
         return buffer.toString();
+    }
+
+    /**
+     * Returns a map with all the request parameter names and values.
+     *
+     * @return the map with request parameter names and values
+     */
+    public Map getParam() {
+        if (parameters == null) {
+            parameters = request.getAllParameters();
+        }
+        return parameters;
     }
 }

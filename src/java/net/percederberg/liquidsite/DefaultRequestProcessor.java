@@ -54,6 +54,11 @@ public class DefaultRequestProcessor extends RequestProcessor {
     private AdminRequestProcessor admin;
 
     /**
+     * The forum request processor.
+     */
+    private ForumRequestProcessor forum;
+
+    /**
      * Creates a new default request processor.
      *
      * @param app            the application context
@@ -61,6 +66,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
     public DefaultRequestProcessor(Application app) {
         super(app.getContentManager(), app.getBaseDir());
         admin = new AdminRequestProcessor(app);
+        forum = new ForumRequestProcessor(app);
     }
 
     /**
@@ -69,6 +75,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
      */
     public void destroy() {
         admin.destroy();
+        forum.destroy();
     }
 
     /**
@@ -83,7 +90,6 @@ public class DefaultRequestProcessor extends RequestProcessor {
         User         user;
         ContentSite  site;
         Content      content;
-        boolean      access;
 
         // Find domain & site
         try {
@@ -103,19 +109,18 @@ public class DefaultRequestProcessor extends RequestProcessor {
 
         // Process request action
         if (request.getParameter("liquidsite.action") != null) {
-            processAction(request, site);
+            processAction(request);
             if (request.hasResponse()) {
                 return;
             }
         }
-        user = request.getUser();
 
         // Find page and create response
         path = path.substring(site.getDirectory().length());
         try {
             if (site.isAdmin()) {
-                access = site.hasReadAccess(user);
-                if (access && user != null) {
+                user = request.getUser();
+                if (user != null && site.hasReadAccess(user)) {
                     admin.processAuthorized(request, path);
                 } else {
                     admin.processUnauthorized(request, path);
@@ -164,21 +169,23 @@ public class DefaultRequestProcessor extends RequestProcessor {
      * before contining processing after calling this method.
      *
      * @param request        the request object
-     * @param site           the content site
      *
      * @throws RequestException if the action couldn't be processed
      */
-    private void processAction(Request request, ContentSite site)
+    private void processAction(Request request)
         throws RequestException {
 
         String  action = request.getParameter("liquidsite.action");
 
         if (action.equals("login")) {
-            processLogin(request, site);
+            processLogin(request);
         } else if (action.equals("logout")) {
             processLogout(request);
+        } else if (action.equals("forumpost")) {
+            forum.processPost(request);
         } else {
-            LOG.warning("request action '" + action + "' is undefined");
+            LOG.warning(request + ": request action '" + action +
+                        "' is undefined");
             throw RequestException.INTERNAL_ERROR;
         }
     }
@@ -191,17 +198,19 @@ public class DefaultRequestProcessor extends RequestProcessor {
      * unsuccessful login, as the login page must be displayed again.
      *
      * @param request        the request object
-     * @param site           the site
      *
      * @throws RequestException if the request couldn't be processed
      */
-    private void processLogin(Request request, ContentSite site)
+    private void processLogin(Request request)
         throws RequestException {
 
-        String  name = request.getParameter("liquidsite.login", "");
-        String  password = request.getParameter("liquidsite.password", "");
-        User    user;
+        ContentSite  site = request.getEnvironment().getSite();
+        String       name;
+        String       password;
+        User         user;
 
+        name = request.getParameter("liquidsite.login", "");
+        password = request.getParameter("liquidsite.password", "");
         try {
             user = getContentManager().getUser(site.getDomain(), name);
         } catch (ContentException e) {
