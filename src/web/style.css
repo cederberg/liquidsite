@@ -165,18 +165,17 @@ input.disabled {
         background: rgb(230, 230, 230);
 }
 button {
-        height: 32px;
         margin-top: 8px;
         margin-bottom: 8px;
         padding-left: 10px;
         padding-right: 10px;
+        padding-top: 1px;
+        padding-bottom: 1px;
         vertical-align: middle;
         font-size: 13px;
         font-weight: bold;
-}
-button img {
-        height: 24px;
-        vertical-align: -40%;
+        background-color: rgb(240, 240, 240);
+        border: outset 2px rgb(240, 240, 240);
 }
 iframe {
         background: white;
@@ -205,6 +204,7 @@ table.menu td.logo {
         padding: 0px;
 }
 table.menu td.title {
+        height: 60px;
         padding-left: 10px;
         padding-right: 10px;
 }
@@ -218,11 +218,13 @@ table.menu td.end {
 }
 table.menu td.active {
         height: 11px;
+        width: 1px;
         border: 1px solid black;
         border-bottom-color: white;
         padding-left: 10px;
         padding-right: 10px;
         background: white;
+        vertical-align: bottom;
 }
 table.menu td.inactive {
         height: 11px;
@@ -230,14 +232,17 @@ table.menu td.inactive {
         padding-left: 10px;
         padding-right: 10px;
         background: rgb(240, 237, 235);
+        vertical-align: bottom;
 }
 table.menu td.hover {
         height: 11px;
+        width: 1px;
         border: 1px solid black;
         border-bottom-color: white;
         padding-left: 10px;
         padding-right: 10px;
         background: rgb(250, 248, 246);
+        vertical-align: bottom;
 }
 table.menu td.space {
         width: 5px;
@@ -442,7 +447,7 @@ dl.compact dd {
         padding-left: 30px;
 }
 div.figure {
-        background: white;
+        background-color: white; 
         margin: 6px;
         padding-top: 4px;
         padding-bottom: 10px;
