@@ -341,8 +341,7 @@ function utilLoadScript(url, iframeParentId, iframeScriptUrl) {
                  "<body>\n" +
                  "</body>\n" +
                  "</html>\n";
-        iframe.document.open("about:blank", "replace");
-        iframe.document.write(html);
+        iframe.document.write(script);
         iframe.document.close();
     }
 }
