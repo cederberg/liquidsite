@@ -54,6 +54,11 @@ public class User extends PersistentObject {
     private UserData data;
 
     /**
+     * The user groups found in the database.
+     */
+    private Group[] groups = null;
+
+    /**
      * The list of group names added since the object was saved.
      */
     private ArrayList groupsAdded = null;
@@ -352,6 +357,8 @@ public class User extends PersistentObject {
     /**
      * Returns the groups that this user belongs to. This method will
      * only return the groups registered to this user in the database.
+     * The results will also be cached to return the same list every
+     * time, until this object is written to the database.
      * 
      * @return an array of groups this user belongs to
      * 
@@ -359,7 +366,10 @@ public class User extends PersistentObject {
      *             properly
      */
     public Group[] getGroups() throws ContentException {
-        return Group.findByUser(this);
+        if (groups == null) {
+            groups = Group.findByUser(this);
+        }
+        return groups;
     }
 
     /**
@@ -424,6 +434,7 @@ public class User extends PersistentObject {
 
         UserPeer.doInsert(data, con);
         doUserGroups(con);
+        groups = null;
     }
 
     /**
@@ -439,6 +450,7 @@ public class User extends PersistentObject {
 
         UserPeer.doUpdate(data, con);
         doUserGroups(con);
+        groups = null;
     }
 
     /**
@@ -453,6 +465,7 @@ public class User extends PersistentObject {
         throws DatabaseObjectException {
 
         UserPeer.doDelete(data, con);
+        groups = null;
     }
     
     /**
