@@ -1,7 +1,13 @@
-<#assign title = "Unublish ${type?cap_first}">
+<#assign title>Unpublish ${type?cap_first}</#assign>
+<#assign onload = "initialize()">
 <#include "header.ftl">
 
-  <body>
+    <script type="text/javascript">
+    function initialize() {
+        document.getElementsByName("date").item(0).focus();
+    }
+    </script>
+
 
     <form method="post">
       <input type="hidden" name="type" value="${type}" />
@@ -36,7 +42,8 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button onclick="window.close();">
+<#assign cancel>unpublish-site.html?type=${type}&id=${id}&cancel=true</#assign>
+            <button type="button" onclick="window.location='${cancel}'">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>

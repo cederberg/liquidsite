@@ -426,7 +426,10 @@ public class AdminController extends Controller {
         
         try {
             content = (Content) view.getRequestReference(request);
-            if (request.getParameter("date") == null) {
+            if (request.getParameter("cancel") != null) {
+                removeLock(content, request.getUser(), false);
+                view.dialogClose(request);
+            } else if (request.getParameter("date") == null) {
                 checkLock(content, request.getUser(), true);
                 view.dialogPublish(request, content);
             } else {
@@ -458,7 +461,6 @@ public class AdminController extends Controller {
         String   date = request.getParameter("date");
         String   comment = request.getParameter("comment");
         Content  work = content.getRevision(0);
-        Lock     lock = content.getLock();
 
         try {
             checkLock(content, request.getUser(), false);
@@ -474,7 +476,7 @@ public class AdminController extends Controller {
             content.setOfflineDate(null);
             content.setComment(comment);
             content.save(request.getUser());
-            lock.delete(request.getUser());
+            removeLock(content, request.getUser(), false);
             view.dialogClose(request);
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
@@ -501,7 +503,10 @@ public class AdminController extends Controller {
         
         try {
             content = (Content) view.getRequestReference(request);
-            if (request.getParameter("date") == null) {
+            if (request.getParameter("cancel") != null) {
+                removeLock(content, request.getUser(), false);
+                view.dialogClose(request);
+            } else if (request.getParameter("date") == null) {
                 checkLock(content, request.getUser(), true);
                 view.dialogUnpublish(request, content);
             } else {
@@ -532,7 +537,6 @@ public class AdminController extends Controller {
 
         String   date = request.getParameter("date");
         String   comment = request.getParameter("comment");
-        Lock     lock = content.getLock();
 
         try {
             checkLock(content, request.getUser(), false);
@@ -541,7 +545,7 @@ public class AdminController extends Controller {
             content.setOfflineDate(DATE_FORMAT.parse(date));
             content.setComment(comment);
             content.save(request.getUser());
-            lock.delete(request.getUser());
+            removeLock(content, request.getUser(), false);
             view.dialogClose(request);
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
@@ -565,17 +569,13 @@ public class AdminController extends Controller {
         throws RequestException {
 
         Content  content;
-        Lock     lock;
         
         try {
             content = (Content) view.getRequestReference(request);
-            lock = content.getLock();
             if (request.getParameter("confirmed") == null) {
                 view.dialogUnlock(request, content);
-            } else if (lock != null) {
-                lock.delete(request.getUser());
-                view.dialogClose(request);
             } else {
+                removeLock(content, request.getUser(), true);
                 view.dialogClose(request);
             }
         } catch (ContentException e) {
@@ -654,11 +654,37 @@ public class AdminController extends Controller {
             lock.save(user);
         } else if (lock == null) {
             throw new ContentSecurityException(
-                "no lock on object, changes not allowed");
+                "object is not locked by " + user.getName());
         } else if (!lock.isOwner(user)) {
             throw new ContentSecurityException(
                 "object locked by " + lock.getUserName() +
                 " since " + DATE_FORMAT.format(lock.getAcquiredDate()));
+        }
+    }
+    
+    /**
+     * Removes a content lock. This method will quietly ignore a 
+     * missing lock or a lock owner by another user. If the force
+     * flag is specified, an existing lock will be removed.
+     * 
+     * @param content        the content object
+     * @param user           the user owning the lock
+     * @param force          the force removal flag
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have 
+     *             permission to remove the lock 
+     */
+    private void removeLock(Content content, User user, boolean force)
+        throws ContentException, ContentSecurityException {
+
+        Lock  lock = content.getLock();
+
+        if (lock == null) {
+            // Do nothing
+        } else if (lock.isOwner(user) || force) {
+            lock.delete(user);
         }
     }
 }

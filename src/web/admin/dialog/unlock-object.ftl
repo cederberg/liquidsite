@@ -1,4 +1,4 @@
-<#assign title = "Unlock ${type?cap_first}">
+<#assign title>Unlock ${type?cap_first}</#assign>
 <#include "header.ftl">
 
     <form method="post">
