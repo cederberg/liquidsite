@@ -58,18 +58,9 @@ class AdminView {
     private AdminScript script = new AdminScript();
 
     /**
-     * The content manager to use.
-     */
-    // FIXME: cannot cling to content manager instance!
-    private ContentManager manager;
-
-    /**
      * Creates a new admin view helper.
-     * 
-     * @param manager        the content manager to use
      */
-    public AdminView(ContentManager manager) {
-        this.manager = manager;
+    public AdminView() {
     }
 
     /**
@@ -262,6 +253,7 @@ class AdminView {
     public void pageSite(Request request) 
         throws ContentException, ContentSecurityException {
 
+        ContentManager  manager = getContentManager();
         Object          focus = getSiteTreeFocus(request);
         User            user = request.getUser();
         Domain[]        domains;
@@ -590,7 +582,8 @@ class AdminView {
                                   boolean recursive) 
         throws ContentException {
 
-        Content[]  children; 
+        ContentManager  manager = getContentManager();
+        Content[]       children; 
 
         if (content == null) {
             children = manager.getSites(user, domain);
@@ -647,9 +640,10 @@ class AdminView {
     public Object getRequestReference(Request request) 
         throws ContentException, ContentSecurityException {
 
-        User    user = request.getUser();
-        String  type = request.getParameter("type");
-        String  id = request.getParameter("id");
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        String          type = request.getParameter("type");
+        String          id = request.getParameter("id");
         
         if (type == null || id == null) {
             return null;
@@ -694,5 +688,16 @@ class AdminView {
         } else {
             return DATE_FORMAT.format(date);
         }
+    }
+
+    /**
+     * Returns the content manager currently in use.
+     * 
+     * @return the content manager currently in use
+     * 
+     * @throws ContentException if no content manager exists
+     */
+    private ContentManager getContentManager() throws ContentException {
+        return ContentManager.getInstance();
     }
 }

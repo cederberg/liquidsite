@@ -65,7 +65,7 @@ public class AdminController extends Controller {
     /**
      * The admin view helper.
      */
-    private AdminView view;
+    private AdminView view = new AdminView();
 
     /**
      * The admin form validator.
@@ -79,7 +79,6 @@ public class AdminController extends Controller {
      */
     public AdminController(Application app) {
         super(app);
-        view = new AdminView(app.getContentManager());
     }
 
     /**
