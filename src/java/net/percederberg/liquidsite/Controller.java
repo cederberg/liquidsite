@@ -21,18 +21,61 @@
 
 package net.percederberg.liquidsite;
 
+import java.io.File;
+
 /**
  * A request controller.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public interface Controller {
+public abstract class Controller {
+
+    /**
+     * The application context.
+     */
+    private Application application;
+
+    /**
+     * Creates a new request controller.
+     * 
+     * @param app            the application context
+     */
+    public Controller(Application app) {
+        this.application = app;
+    }
+    
+    /**
+     * Destroys this request controller. This method frees all
+     * internal resources used by this controller.
+     */
+    public abstract void destroy();
 
     /**
      * Processes a request.
      * 
      * @param request        the request to process
      */
-    void process(Request request);
+    public abstract void process(Request request);
+
+    /**
+     * Returns the application context.
+     * 
+     * @return the application context
+     */
+    protected Application getApplication() {
+        return application;
+    }
+    
+    /**
+     * Returns a file in the application context. The file path is
+     * specified relative to the application base directory.
+     * 
+     * @param path           the relative file path
+     * 
+     * @return the file in the application context
+     */
+    protected File getFile(String path) {
+        return new File(application.getBaseDir(), path);
+    }
 }

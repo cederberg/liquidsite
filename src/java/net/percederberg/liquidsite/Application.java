@@ -26,7 +26,7 @@ import java.io.File;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 
 /**
- * The application interface. This interface provides the basic 
+ * The application context. This interface provides the basic 
  * infrastructure for inter-application communication and for sharing
  * global datastructures.
  *

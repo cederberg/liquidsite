@@ -23,6 +23,8 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -61,8 +63,7 @@ public class FrontControllerServlet extends HttpServlet
     /**
      * The installation controller.
      */
-    // TODO: replace with array of controllers
-    private InstallController install;
+    private ArrayList controllers = null;
 
     /**
      * Initializes this servlet.
@@ -119,8 +120,12 @@ public class FrontControllerServlet extends HttpServlet
         }
 
         // Initialize controllers
-        // TODO: only create install if no config file
-        install = new InstallController(this);
+        controllers = new ArrayList();
+        if (file.exists()) {
+            // TODO: add default controller
+        } else {
+            controllers.add(new InstallController(this));
+        }
     }
     
     /**
@@ -128,8 +133,9 @@ public class FrontControllerServlet extends HttpServlet
      * controllers and the database.
      */
     public void shutdown() {
-        // TODO: deinitialize all controllers
-        install = null;
+        for (int i = 0; i < controllers.size(); i++) {
+            ((Controller) controllers.get(i)).destroy();
+        }
         database.setPoolSize(0);
         try {
             database.update();
@@ -194,8 +200,17 @@ public class FrontControllerServlet extends HttpServlet
      * @param request        the request object
      */
     private void process(Request request) {
-        // TODO: implement this method properly
-        install.process(request);
+        Controller  c;
+
+        // TODO: find controller (and handler) directly
+        // TODO: handle run-time exceptions
+        for (int i = 0; i < controllers.size(); i++) {
+            c = (Controller) controllers.get(i);
+            c.process(request);
+            if (request.isProcessed() || request.isForward()) {
+                return;
+            }
+        }
     }
 
     /**

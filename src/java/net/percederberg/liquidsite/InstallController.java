@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
@@ -42,20 +43,22 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
  * @author   Marielle Fois, <marielle at kth dot se>
  * @version  1.0
  */
-public class InstallController implements Controller {
-
-    /**
-     * The front controller servlet.
-     */
-    private FrontControllerServlet servlet;
+public class InstallController extends Controller {
 
     /**
      * Creates a new install controller. 
      *
-     * @param servlet           the front controller servlet
+     * @param app            the application context
      */
-    public InstallController(FrontControllerServlet servlet) {
-        this.servlet = servlet;
+    public InstallController(Application app) {
+        super(app);
+    }
+
+    /**
+     * Destroys this request controller. This method frees all
+     * internal resources used by this controller.
+     */
+    public void destroy() {
     }
 
     /**
@@ -1052,15 +1055,14 @@ public class InstallController implements Controller {
         throws DatabaseConnectionException, DatabaseException,
                FileNotFoundException, IOException {
 
-        String filename;
+        File file;
         FileInputStream queriesFile;
         PropertyResourceBundle queries;
         String sql;
 
         // read properties file
-        filename = servlet.getServletContext().getRealPath("/") + 
-            "WEB-INF/db_create_tables.properties";
-        queriesFile = new FileInputStream(filename);
+        file = getFile("WEB-INF/db_create_tables.properties");
+        queriesFile = new FileInputStream(file);
         queries = new PropertyResourceBundle(queriesFile);
 
         // perform all queries
@@ -1078,15 +1080,14 @@ public class InstallController implements Controller {
         throws DatabaseConnectionException, DatabaseException,
                FileNotFoundException, IOException {
 
-        String filename;
+        File file;
         FileInputStream queriesFile;
         PropertyResourceBundle queries;
         String sql;
 
         // read properties file
-        filename = servlet.getServletContext().getRealPath("/") + 
-            "WEB-INF/db_init.properties";
-        queriesFile = new FileInputStream(filename);
+        file = getFile("WEB-INF/db_init.properties");
+        queriesFile = new FileInputStream(file);
         queries = new PropertyResourceBundle(queriesFile);
 
         // perform all queries
@@ -1101,13 +1102,12 @@ public class InstallController implements Controller {
                                   String password) 
         throws FileNotFoundException {
 
-        String filename;
+        File file;
         PrintStream config;
 
         // create print stream
-        filename = servlet.getServletContext().getRealPath("/") + 
-            "WEB-INF/config.properties";
-        config = new PrintStream(new FileOutputStream(filename));
+        file = getFile("WEB-INF/config.properties");
+        config = new PrintStream(new FileOutputStream(file));
 
         // write to stream
         config.println("HOST=" + host);
