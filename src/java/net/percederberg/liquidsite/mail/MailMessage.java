@@ -50,6 +50,11 @@ public class MailMessage {
     private static final Log LOG = new Log(MailMessage.class);
 
     /**
+     * The character set to use for the messages.
+     */
+    private static final String CHARACTER_SET = "ISO-8859-1";
+
+    /**
      * The list of mail recipients. This list contains InternetAddress
      * instances.
      */
@@ -297,8 +302,8 @@ public class MailMessage {
                 addresses = new InternetAddress[1];
                 addresses[0] = (InternetAddress) recipients.get(i);
                 msgs[i].setRecipients(MimeMessage.RecipientType.TO, addresses);
-                msgs[i].setSubject(subject, "UTF-8");
-                msgs[i].setText(text, "UTF-8");
+                msgs[i].setSubject(subject, CHARACTER_SET);
+                msgs[i].setText(text, CHARACTER_SET);
                 msgs[i].saveChanges();
             }
         } catch (MessagingException e) {
