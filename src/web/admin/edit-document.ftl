@@ -132,6 +132,39 @@
 </#list>
         <tr>
           <th>
+            Files:
+          </th>
+          <td class="field">
+            The files attached to this document.<br/><br/>
+            <table class="border">
+              <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Type</th>
+              </tr>
+<#if files?size = 0>
+              <tr>
+                <td colspan="3">No files attached</td>
+              </tr>
+</#if>
+<#list files as file>
+              <tr>
+                <td>${file.name}</td>
+                <td>${file.fileSize}</td>
+                <td>${file.mimeType}</td>
+              </tr>
+</#list>
+            </table>
+<!--
+            <button type="button" tabindex="103" onclick="return false;">
+              <img src="images/icons/24x24/add.png" />
+              Add File
+            </button>
+-->
+          </td>
+        </tr>
+        <tr>
+          <th>
             Comment:
           </th>
           <td class="field">

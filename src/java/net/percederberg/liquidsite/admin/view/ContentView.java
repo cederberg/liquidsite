@@ -267,6 +267,7 @@ public class ContentView extends AdminView {
         ArrayList         sections;
         ArrayList         properties = new ArrayList();
         HashMap           data = new HashMap();
+        ArrayList         files;
         DocumentProperty  property;
         boolean           publish;
         String            str;
@@ -290,6 +291,7 @@ public class ContentView extends AdminView {
                 }
                 data.put(property.getId(), str);
             }
+            files = findDocumentFiles(request.getUser(), doc);
             if (doc.getRevisionNumber() == 0) {
                 comment = doc.getComment();
             } else {
@@ -310,6 +312,7 @@ public class ContentView extends AdminView {
                 }
                 data.put(property.getId(), str);
             }
+            files = new ArrayList();
             comment = "Created";
             publish = reference.hasPublishAccess(request.getUser()) &&
                       AdminUtils.isOnline(reference);
@@ -343,6 +346,7 @@ public class ContentView extends AdminView {
         request.setAttribute("properties", properties);
         request.setAttribute("data", data);
         request.setAttribute("comment", comment);
+        request.setAttribute("files", files);
         request.setAttribute("publish", String.valueOf(publish));
         if (request.getParameter("liquidsite.startpage") != null) {
             request.setAttribute("startpage", 
@@ -641,5 +645,42 @@ public class ContentView extends AdminView {
             result.add(properties[i]);
         }
         return result;
+    }
+
+    /**
+     * Finds all content document files and adds them to a list. This
+     * method will not add the content files themselves, but rather a
+     * hash map with selected attributes.
+     *
+     * @param content        the content object
+     *
+     * @return the list of files found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ArrayList findDocumentFiles(User user, Content content)
+        throws ContentException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ArrayList       res = new ArrayList();
+        Content[]       children;
+        ContentFile     file;
+        HashMap         map;
+
+        children = manager.getContentChildren(user,
+                                              content,
+                                              Content.FILE_CATEGORY);
+        for (int i = 0; i < children.length; i++) {
+            file = (ContentFile) children[i];
+            map = new HashMap();
+            map.put("id", String.valueOf(file.getId()));
+            map.put("name", file.getName());
+            map.put("fileSize",
+                    AdminUtils.formatFileSize(file.getFile().length()));
+            map.put("mimeType", file.getMimeType());
+            res.add(map);
+        }
+        return res;
     }
 }
