@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.content;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.db.DatabaseConnection;
@@ -215,6 +216,39 @@ public class ContentFile extends Content {
     }
 
     /**
+     * Deletes this content revision from the database.
+     * 
+     * @param user           the user performing the operation
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public void deleteRevision(User user) 
+        throws ContentException, ContentSecurityException {
+
+        super.deleteRevision(user);
+        cleanUnusedFiles();
+    }
+
+    /**
+     * Updates the object data in the database.
+     * 
+     * @param user           the user performing the operation
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     */
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException {
+
+        super.doUpdate(user, con);
+        cleanUnusedFiles();
+    }
+
+    /**
      * Deletes the object data from the database.
      * 
      * @param user           the user performing the operation
@@ -242,6 +276,41 @@ public class ContentFile extends Content {
         } catch (SecurityException e) {
             throw new ContentException(
                 "access denied while deleting content file directory");
+        }
+    }
+
+    /**
+     * Removes any unused files in the data directory. An unused file
+     * is one that isn't referenced by any revision in the database.
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    private void cleanUnusedFiles() throws ContentException {
+        Content[]  content = getAllRevisions();
+        ArrayList  usedFiles = new ArrayList();
+        File       dir;
+        File[]     files;
+
+        // Find all used files
+        for (int i = 0; i < content.length; i++) {
+            usedFiles.add(((ContentFile) content[i]).getFile());
+        }
+
+        // Delete unused files
+        try {
+            dir = getDirectory();
+            files = dir.listFiles();
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    if (!usedFiles.contains(files[i])) {
+                        files[i].delete();
+                    }
+                }
+            }
+        } catch (SecurityException e) {
+            throw new ContentException(
+                "access denied while deleting unused files");
         }
     }
 }
