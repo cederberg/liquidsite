@@ -121,7 +121,7 @@ public class DefaultController extends Controller {
         if (host != null) {
             return getContentManager().getDomain(host.getDomainName());
         } else {
-            return getContentManager().getDomain("ROOT");
+            return getContentManager().getRootDomain();
         }
     }
 

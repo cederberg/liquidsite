@@ -139,6 +139,17 @@ public class ContentManager {
     }
 
     /**
+     * Returns the root domain. This method will only consult the 
+     * internal cache, and not the database. 
+     * 
+     * @return the root domain, or
+     *         null if no such domain exists
+     */
+    public Domain getRootDomain() {
+        return getDomain("ROOT");
+    }
+
+    /**
      * Returns a host with the specified name. This method will only 
      * consult the internal cache, and not the database. 
      * 
