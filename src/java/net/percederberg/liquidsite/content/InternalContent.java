@@ -460,6 +460,8 @@ class InternalContent {
         switch (data.getInt(ContentData.CATEGORY)) {
         case Content.SITE_CATEGORY:
             return new ContentSite(manager, data, con);
+        case Content.TRANSLATOR_CATEGORY:
+            return new ContentTranslator(manager, data,  con);
         case Content.FOLDER_CATEGORY:
             return new ContentFolder(manager, data,  con);
         case Content.PAGE_CATEGORY:
