@@ -42,10 +42,6 @@
 
   <xsl:template match="table">
     &newline;&newline;
-    <xsl:call-template name="sql-comment">
-      <xsl:with-param name="text" select="description" />
-      <xsl:with-param name="indent" select="''" />
-    </xsl:call-template>
     <xsl:text>CREATE TABLE </xsl:text>
     <xsl:value-of select="@name" />
     <xsl:text> (</xsl:text>
@@ -56,11 +52,6 @@
   </xsl:template>
 
   <xsl:template match="column">
-    &newline;
-    <xsl:call-template name="sql-comment">
-      <xsl:with-param name="text" select="description" />
-      <xsl:with-param name="indent" select="'    '" />
-    </xsl:call-template>
     &indent;
     <xsl:value-of select="@name" />
     <xsl:apply-templates />
@@ -84,11 +75,6 @@
   </xsl:template>
 
   <xsl:template match="primarykey">
-    &newline;
-    <xsl:call-template name="sql-comment">
-      <xsl:with-param name="text" select="description" />
-      <xsl:with-param name="indent" select="'    '" />
-    </xsl:call-template>
     &indent;
     <xsl:text>PRIMARY KEY (</xsl:text>
     <xsl:for-each select="column">
@@ -105,11 +91,6 @@
   </xsl:template>
 
   <xsl:template match="index">
-    &newline;
-    <xsl:call-template name="sql-comment">
-      <xsl:with-param name="text" select="description" />
-      <xsl:with-param name="indent" select="'    '" />
-    </xsl:call-template>
     &indent;
     <xsl:if test="@unique = 'true'">
       <xsl:text>UNIQUE </xsl:text>
@@ -134,74 +115,6 @@
   </xsl:template>
 
   <xsl:template match="*|text()">
-  </xsl:template>
-
-
-  <!-- ### HELPER FUNCTIONS ### -->
-
-  <xsl:template name="sql-comment">
-    <xsl:param name="text" />
-    <xsl:param name="indent" />
-    <xsl:call-template name="linebreak-string">
-      <xsl:with-param name="str" select="normalize-space($text)" />
-      <xsl:with-param name="lineStart">
-        <xsl:value-of select="$indent" />
-        <xsl:text>-- </xsl:text>
-      </xsl:with-param>
-      <xsl:with-param name="lineLength" select="70" />
-    </xsl:call-template>
-    &newline;
-  </xsl:template>
-
-  <xsl:template name="linebreak-string">
-    <!-- Adapted from a function by Kevin Manley published in
-         http://www-106.ibm.com/developerworks/xml/library/x-tiplnbrk.html -->
-    <xsl:param name="str" />
-    <xsl:param name="lineStart" />
-    <xsl:param name="lineLength" />
-    <xsl:variable name="maxStrLength" 
-                  select="$lineLength - string-length($lineStart)" />
-    <xsl:choose>
-      <xsl:when test="string-length($str) &lt;= $maxStrLength">
-        <xsl:value-of select="$lineStart" />
-        <xsl:value-of select="$str" />
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="strFirst">
-          <xsl:call-template name="max-substring-ending-with-break">
-            <xsl:with-param name="str" 
-                            select="substring($str,1,$maxStrLength)" />
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:variable name="strRest" 
-                      select="substring-after($str,$strFirst)" />
-        <xsl:value-of select="$lineStart" />
-        <xsl:value-of select="$strFirst" />
-        &newline;
-        <xsl:call-template name="linebreak-string">
-          <xsl:with-param name="str" select="$strRest" />
-          <xsl:with-param name="lineStart" select="$lineStart" />
-          <xsl:with-param name="lineLength" select="$lineLength" />
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template name="max-substring-ending-with-break">
-    <!-- Slightly adapted from a function by Kevin Manley published in
-         http://www-106.ibm.com/developerworks/xml/library/x-tiplnbrk.html -->
-    <xsl:param name="str" />
-    <xsl:variable name="len" select="string-length($str)" />
-    <xsl:choose>
-      <xsl:when test="len &lt;= 1 or substring($str,$len)=' ' or contains($str,' ')=false">
-        <xsl:value-of select="$str" />
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="max-substring-ending-with-break">
-          <xsl:with-param name="str" select="substring($str, 1, $len - 1)" />
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>

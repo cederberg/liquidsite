@@ -63,26 +63,37 @@
         <include name="liquidsite*.jar" />
         <include name="mysql*.jar" />
       </lib>
+      <webinf dir="${build.dir}">
+        <include name="sql/*" />
+      </webinf>
     </war>
   </target>
 
   <target name="compile-clean">
-    <delete>
+    <delete quiet="true">
       <fileset dir="${build.dir}/classes" />
+      <fileset dir="${build.dir}/sql" />
       <fileset dir="${build.dir}/lib" 
                includes="liquidsite*.jar" />
       <fileset dir="${build.dir}" 
                includes="liquidsite.war" />
     </delete>
     <mkdir dir="${build.dir}/classes" />
-    <mkdir dir="${build.dir}/classes/sql" />
+    <mkdir dir="${build.dir}/sql" />
     <mkdir dir="${build.dir}/lib" />
   </target>
 
   <target name="compile-db">
     <xslt style="${build.dir}/src/db/sql-create.xsl"
           in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/classes/sql/liquidsite-create-tables.sql">
+          out="${build.dir}/sql/create-tables.sql">
+      <param name="date" expression="${build.printdate}" />
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/sql-drop.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/sql/drop-tables.sql">
       <param name="date" expression="${build.printdate}" />
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
@@ -109,7 +120,7 @@
   </target>
 
   <target name="doc-clean">
-    <delete dir="${build.dir}/doc" />
+    <delete dir="${build.dir}/doc" quiet="true" />
     <mkdir dir="${build.dir}/doc" />
     <mkdir dir="${build.dir}/doc/manual" />
     <mkdir dir="${build.dir}/doc/db" />
