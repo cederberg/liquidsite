@@ -302,7 +302,17 @@ public class ContentManager {
      *             properly
      */
     Content getContent(int id) throws ContentException {
-        return InternalContent.findByMaxRevision(this, id);
+        CacheManager  cache = CacheManager.getInstance();
+        Content       content;
+
+        content = cache.getContent(id);
+        if (content == null) {
+            content = InternalContent.findByMaxRevision(this, id);
+            if (!cache.isCached(content)) {
+                cache.add(content);
+            }
+        }
+        return content;
     }
 
     /**
@@ -323,12 +333,7 @@ public class ContentManager {
     public Content getContent(User user, int id)
         throws ContentException, ContentSecurityException {
 
-        CacheManager  cache = CacheManager.getInstance();
-        Content       content;
-
-        content = getContent(id);
-        cache.add(content);
-        return postProcess(user, content);
+        return postProcess(user, getContent(id));
     }
 
     /**
@@ -354,7 +359,9 @@ public class ContentManager {
         Content       content;
 
         content = InternalContent.findByName(this, domain, name);
-        cache.add(content);
+        if (!cache.isCached(content)) {
+            cache.add(content);
+        }
         return postProcess(user, content);
     }
 
@@ -381,7 +388,9 @@ public class ContentManager {
         Content       content;
 
         content = InternalContent.findByName(this, parent, name);
-        cache.add(content);
+        if (!cache.isCached(content)) {
+            cache.add(content);
+        }
         return postProcess(user, content);
     }
 
@@ -587,7 +596,9 @@ public class ContentManager {
                     return getPermissions(content.getDomain());
                 }
                 content = content.getParent();
-                cache.add(content);
+                if (!cache.isCached(content)) {
+                    cache.add(content);
+                }
                 permissions = cache.getPermissions(content, true);
                 if (permissions == null) {
                     permissions = PermissionList.findByContent(this, content);

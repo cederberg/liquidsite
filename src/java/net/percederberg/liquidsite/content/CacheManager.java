@@ -30,6 +30,7 @@ import net.percederberg.liquidsite.Log;
  * A content cache manager. This class will be used to cache objects
  * upon retrieval from a caching content manager. Only a single
  * instance exists, in order to easily guarantee cache consistency.
+ * This class also synchronizes any changes to the cache content.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -84,6 +85,15 @@ class CacheManager {
     private HashMap parents = new HashMap();
 
     /**
+     * The content object cache. This is a map containing some of the
+     * content objects, indexed by the content identifiers. Only
+     * content objects where the work and the highest revision
+     * correlates and being in a limited set of categories will be
+     * added to this cache.
+     */
+    private HashMap contents = new HashMap();
+
+    /**
      * The permission list cache. This is a map of domain and content
      * permission lists. It is indexed by either the domain name or
      * the content identifier. If the permission list is empty for a
@@ -99,11 +109,60 @@ class CacheManager {
     }
 
     /**
+     * Checks if a specified object is present in the cache. Only
+     * objects that can be cached and that is not present will return
+     * true. Non-cacheable objects will always return false. This
+     * method is suitable to use before calling add() to avoid costs
+     * of cache maintenance and object synchronization.
+     *
+     * @param obj            the object to check
+     *
+     * @return true if the object is cacheable but not cached, or
+     *         false otherwise
+     */
+    public boolean isCached(PersistentObject obj) {
+        Domain          domain;
+        Host            host;
+        Content         content;
+        PermissionList  perms;
+        Object          key;
+
+        if (obj instanceof Domain) {
+            domain = (Domain) obj;
+            return domains.containsKey(domain.getName());
+        } else if (obj instanceof Host) {
+            host = (Host) obj;
+            return hosts.containsKey(host.getName());
+        } else if (obj instanceof Content) {
+            content = (Content) obj;
+            if (content.isLatestRevision() && content.isPublishedRevision()) {
+                key = new Integer(content.getId());
+                if (parents.containsKey(key)) {
+                    if (content instanceof ContentTemplate) {
+                        return contents.containsKey(key);
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        } else if (obj instanceof PermissionList) {
+            perms = (PermissionList) obj;
+            if (perms.getContentId() == 0) {
+                key = perms.getDomainName();
+            } else {
+                key = new Integer(perms.getContentId());
+            }
+            return permissions.containsKey(key);
+        }
+        return false;
+    }
+
+    /**
      * Adds a persistent object to the cache.
      *
      * @param obj            the object to add
      */
-    public void add(PersistentObject obj) {
+    public synchronized void add(PersistentObject obj) {
         Domain          domain;
         Host            host;
         Content         content;
@@ -121,9 +180,13 @@ class CacheManager {
         } else if (obj instanceof Content) {
             content = (Content) obj;
             if (content.isLatestRevision() && content.isPublishedRevision()) {
-                parents.put(new Integer(content.getId()),
-                            new Integer(content.getParentId()));
-                LOG.trace("cached content parent for " + content.getId());
+                key = new Integer(content.getId());
+                parents.put(key, new Integer(content.getParentId()));
+                LOG.trace("cached content parent for " + key);
+                if (content instanceof ContentTemplate) {
+                    contents.put(key, content);
+                    LOG.trace("cached content object for " + key);
+                }
             }
         } else if (obj instanceof PermissionList) {
             perms = (PermissionList) obj;
@@ -149,7 +212,9 @@ class CacheManager {
      */
     public void addAll(PersistentObject[] objs) {
         for (int i = 0; i < objs.length; i++) {
-            add(objs[i]);
+            if (!isCached(objs[i])) {
+                add(objs[i]);
+            }
         }
     }
 
@@ -159,7 +224,7 @@ class CacheManager {
      * @param domain         the domain to use for retrieval
      * @param content        the array of content sites
      */
-    public void addSites(Domain domain, Content[] content) {
+    public synchronized void addSites(Domain domain, Content[] content) {
         addAll(content);
         sites.put(domain.getName(), content);
         LOG.trace("cached site list for " + domain.getName());
@@ -170,7 +235,7 @@ class CacheManager {
      *
      * @param obj            the object to remove
      */
-    public void remove(PersistentObject obj) {
+    public synchronized void remove(PersistentObject obj) {
         Domain          domain;
         Host            host;
         Content         content;
@@ -195,6 +260,10 @@ class CacheManager {
             }
             parents.remove(new Integer(content.getId()));
             LOG.trace("uncached content parent for " + content.getId());
+            if (obj instanceof ContentTemplate) {
+                contents.remove(new Integer(content.getId()));
+                LOG.trace("uncached content object for " + content.getId());
+            }
             permissions.remove(new Integer(content.getId()));
             LOG.trace("uncached permission list for " + content.getId());
         } else if (obj instanceof PermissionList) {
@@ -215,11 +284,12 @@ class CacheManager {
      * Removes all persistent objects from the cache. This is a
      * complete cache flush and should be avoided.
      */
-    public void removeAll() {
+    public synchronized void removeAll() {
         domains.clear();
         hosts.clear();
         sites.clear();
         parents.clear();
+        contents.clear();
         permissions.clear();
         LOG.trace("cleared all caches");
     }
@@ -254,7 +324,15 @@ class CacheManager {
      *         null if not present in the cache
      */
     public Host getHost(String name) {
-        return (Host) hosts.get(name);
+        Host  host;
+
+        host = (Host) hosts.get(name);
+        if (host == null) {
+            LOG.trace("cache miss on host " + name);
+        } else {
+            LOG.trace("cache hit on host " + name);
+        }
+        return host;
     }
 
     /**
@@ -267,6 +345,26 @@ class CacheManager {
      */
     public Content[] getSites(Domain domain) {
         return (Content[]) sites.get(domain.getName());
+    }
+
+    /**
+     * Returns a content object from the cache.
+     *
+     * @param id             the content identifier
+     *
+     * @return the content object, or
+     *         null if not present in the cache
+     */
+    public Content getContent(int id) {
+        Content  content;
+
+        content = (Content) contents.get(new Integer(id));
+        if (content == null) {
+            LOG.trace("cache miss on content object " + id);
+        } else {
+            LOG.trace("cache hit on content object " + id);
+        }
+        return content;
     }
 
     /**
