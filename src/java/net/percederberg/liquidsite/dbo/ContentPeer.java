@@ -259,8 +259,8 @@ public class ContentPeer extends AbstractPeer {
     /**
      * Deletes a content object from the database. This method will
      * delete all revisions, as well as related attributes, 
-     * permissions and locks. It will also delete all child content
-     * objects recursively in the same way.
+     * permissions and locks. Note, however, that it will NOT delete 
+     * referenced child objects.
      * 
      * @param data           the content data object
      * @param con            the database connection to use
@@ -273,12 +273,7 @@ public class ContentPeer extends AbstractPeer {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete");
         int            id = data.getInt(ContentData.ID);
-        ArrayList      list;
 
-        list = doSelectByParent(id, con);
-        for (int i = 0; i < list.size(); i++) {
-            doDelete((ContentData) list.get(i), con);
-        }
         query.addParameter(id);
         PEER.delete(query, con);
         AttributePeer.doDeleteContent(id, con);

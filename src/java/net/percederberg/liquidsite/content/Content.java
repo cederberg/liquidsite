@@ -899,7 +899,8 @@ public abstract class Content extends PersistentObject implements Comparable {
     }
 
     /**
-     * Deletes the object data from the database.
+     * Deletes the object data from the database. This method will 
+     * also delete any child content object recursively.
      * 
      * @param user           the user performing the operation
      * @param con            the database connection to use
@@ -910,7 +911,12 @@ public abstract class Content extends PersistentObject implements Comparable {
     protected void doDelete(User user, DatabaseConnection con)
         throws ContentException {
 
+        Content[]  children = findByParent(this);
+
         try {
+            for (int i = 0; i < children.length; i++) {
+                children[i].doDelete(user, con);
+            }
             ContentPeer.doDelete(data, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
