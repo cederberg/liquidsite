@@ -25,9 +25,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
@@ -732,6 +734,7 @@ public class InstallController extends Controller {
     private void writeDefaultData() {
         Domain  domain = new Domain("ROOT");
         User    user = new User(domain, adminUser);
+        Site    site = new Site(domain);
 
         try {
             domain.setDescription("Root Domain");
@@ -739,6 +742,15 @@ public class InstallController extends Controller {
             user.setRealName("Administrator");
             user.setPassword(adminPassword);
             user.save();
+            site.setName("Admin Site");
+            site.setProtocol("http");
+            site.setHost("*");
+            site.setPort(0);
+            site.setDirectory("/");
+            site.setOnlineDate(new Date());
+            site.setOfflineDate(null);
+            site.setAuthor(user);
+            site.save();
         } catch (ContentException e) {
             LOG.error(e.getMessage());
         }
