@@ -149,9 +149,22 @@ public class UsersEditFormHandler extends AdminFormHandler {
 
         String  type = request.getParameter("type", "");
         String  message;
+        String  domain;
+        String  name;
+        String  enabled;
 
         if (type.equals("user")) {
             user.validate(request);
+            domain = request.getParameter("domain", "");
+            name = request.getParameter("name");
+            enabled = request.getParameter("enabled", "");
+            if (request.getUser().getDomainName().equals(domain)
+             && request.getUser().getName().equals(name)
+             && !enabled.equals("true")) {
+
+                message = "Cannot disable the current user";
+                throw new FormValidationException("enabled", message);
+            }
         } else if (type.equals("group")) {
             group.validate(request);
         } else {

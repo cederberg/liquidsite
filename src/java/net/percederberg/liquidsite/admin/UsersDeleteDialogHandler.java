@@ -111,7 +111,7 @@ class UsersDeleteDialogHandler extends AdminDialogHandler {
             user = (User) ref;
             if (user.equals(request.getUser())) {
                 throw new ContentSecurityException(
-                    "Cannot delete the active user");
+                    "Cannot delete the current user");
             }
             user.delete(request.getUser());
         } else if (ref instanceof Group) {
