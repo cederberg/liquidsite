@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.UserData;
+import net.percederberg.liquidsite.dbo.UserGroupData;
+import net.percederberg.liquidsite.dbo.UserGroupPeer;
 import net.percederberg.liquidsite.dbo.UserPeer;
 
 /**
@@ -42,11 +44,14 @@ public class User extends PersistentObject {
     private UserData data;
 
     /**
-     * The list of user group data objects. This variable is null
-     * until the list of user groups has been requested the first 
-     * time.
+     * The list of group names added since the object was saved.
      */
-    private ArrayList groups = null;
+    private ArrayList groupsAdded = null;
+
+    /**
+     * The list of group names removed since the object was saved.
+     */
+    private ArrayList groupsRemoved = null;
 
     /**
      * Returns an array of all users in a certain domain.
@@ -109,6 +114,47 @@ public class User extends PersistentObject {
         } else {
             return new User(data);
         }
+    }
+
+    /**
+     * Returns an array of all users in a certain group.
+     * 
+     * @param group          the group
+     * 
+     * @return an array of all users in the group
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static User[] findByGroup(Group group) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        User[]              res;
+        UserGroupData       data;
+        UserData            user;
+        String              name;
+
+        try {
+            list = UserGroupPeer.doSelectByGroup(group.getDomainName(),
+                                                 group.getName(), 
+                                                 con);
+            res = new User[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                data = (UserGroupData) list.get(i);
+                name = data.getString(UserGroupData.USER);
+                user = UserPeer.doSelectByName(group.getDomainName(),
+                                               name, 
+                                               con);
+                res[i] = new User(user);
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
     }
 
     /**
@@ -280,6 +326,36 @@ public class User extends PersistentObject {
     }
     
     /**
+     * Adds this user to the specified group. This action will not 
+     * take effect until this object is saved.
+     * 
+     * @param group          the group object 
+     */
+    public void addToGroup(Group group) {
+        if (getDomainName().equals(group.getDomainName())) {
+            if (groupsAdded == null) {
+                groupsAdded = new ArrayList();
+            }
+            groupsAdded.add(group.getName());
+        }
+    }
+    
+    /**
+     * Removes this user from the specified group. This action will 
+     * not take effect until this object is saved.
+     * 
+     * @param group          the group object 
+     */
+    public void removeFromGroup(Group group) {
+        if (getDomainName().equals(group.getDomainName())) {
+            if (groupsRemoved == null) {
+                groupsRemoved = new ArrayList();
+            }
+            groupsRemoved.add(group.getName());
+        }
+    }
+
+    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 
@@ -310,6 +386,7 @@ public class User extends PersistentObject {
         throws DatabaseObjectException {
 
         UserPeer.doInsert(data, con);
+        doUserGroups(con);
     }
 
     /**
@@ -324,6 +401,7 @@ public class User extends PersistentObject {
         throws DatabaseObjectException {
 
         UserPeer.doUpdate(data, con);
+        doUserGroups(con);
     }
 
     /**
@@ -338,5 +416,45 @@ public class User extends PersistentObject {
         throws DatabaseObjectException {
 
         UserPeer.doDelete(data, con);
+    }
+    
+    /**
+     * Adds and removes user groups from the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    private void doUserGroups(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        UserGroupData  data;
+        
+        // Handle added groups
+        if (groupsAdded != null) {
+            for (int i = 0; i < groupsAdded.size(); i++) {
+                data = new UserGroupData();
+                data.setString(UserGroupData.DOMAIN, getDomainName());
+                data.setString(UserGroupData.USER, getName());
+                data.setString(UserGroupData.GROUP,
+                               groupsAdded.get(i).toString());
+                UserGroupPeer.doInsert(data, con);
+            }
+            groupsAdded = null;
+        }
+
+        // Handle removed groups
+        if (groupsRemoved != null) {
+            for (int i = 0; i < groupsRemoved.size(); i++) {
+                data = new UserGroupData();
+                data.setString(UserGroupData.DOMAIN, getDomainName());
+                data.setString(UserGroupData.USER, getName());
+                data.setString(UserGroupData.GROUP,
+                               groupsRemoved.get(i).toString());
+                UserGroupPeer.doDelete(data, con);
+            }
+            groupsRemoved = null;
+        }
     }
 }
