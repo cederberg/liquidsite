@@ -440,6 +440,36 @@ public class ContentManager {
     }
 
     /**
+     * Returns the user readable child content objects. Only the 
+     * highest revision of each object will be returned.
+     * 
+     * @param user           the user requesting the content
+     * @param parents        the content parents
+     * 
+     * @return the user readable child content objects
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content[] getContentChildren(User user, Content[] parents) 
+        throws ContentException {
+
+        Content[]  children = InternalContent.findByParents(this, parents);
+        ArrayList  list = new ArrayList(children.length);
+        Content[]  res;
+
+        for (int i = 0; i < children.length; i++) {
+            if (isReadableOnline(user, children[i])) {
+                list.add(children[i]);
+            }
+        } 
+        Collections.sort(list);
+        res = new Content[list.size()];
+        list.toArray(res);
+        return res;                    
+    }
+
+    /**
      * Returns a user with a specified name. If the user couldn't be
      * found in the specified domain, this method also checks for 
      * superusers with the specified name.

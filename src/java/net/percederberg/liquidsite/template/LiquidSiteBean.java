@@ -292,7 +292,7 @@ public class LiquidSiteBean {
             if (section == null) {
                 LOG.error("failed to find section: " + path);
             } else {
-                findDocuments(section, result);
+                findDocuments(findSections(section), result);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -380,26 +380,49 @@ public class LiquidSiteBean {
     }
 
     /**
-     * Finds all documents in the specified section (and in 
-     * subsections). The documents will be added (as document beans)
-     * to the specified list.
+     * Finds all subsections to a specified section. The specified
+     * section will be included in the result.
      * 
      * @param section        the content section
+     * 
+     * @return the array of sections found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ContentSection[] findSections(ContentSection section)
+        throws ContentException {
+
+        ArrayList         list = new ArrayList();
+        ContentSection[]  res;
+
+        list.add(section);
+        // TODO: find child sections
+        res = new ContentSection[list.size()];
+        list.toArray(res);
+        return res;
+    }
+
+    /**
+     * Finds all documents in the specified sections. The documents
+     * will be added (as document beans) to the specified list.
+     * 
+     * @param sections       the content sections
      * @param results        the list with results
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private void findDocuments(ContentSection section, ArrayList results) 
+    private void findDocuments(ContentSection[] sections,
+                               ArrayList results)
         throws ContentException {
 
         Content[]  children;
 
-        children = manager.getContentChildren(request.getUser(), section);
+        children = manager.getContentChildren(request.getUser(), sections);
         for (int i = 0; i < children.length; i++) {
-            if (children[i] instanceof ContentSection) {
-                findDocuments((ContentSection) children[i], results);
-            } else if (children[i] instanceof ContentDocument) {
+            if (children[i] instanceof ContentDocument) {
+                // TODO: add base section to provide correct URL
                 results.add(new DocumentBean((ContentDocument) children[i]));
             }
         }

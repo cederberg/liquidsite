@@ -178,6 +178,63 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
+     * Returns a list of content objects having one of the specified
+     * parents. By adding a parent content id of zero (0), the root
+     * content objects in a domain can be retrieved. Only the highest
+     * revision of each content object will be returned. A flag can
+     * be set to regard the revision number zero (0) as the highest
+     * one.
+     *
+     * @param domain         the domain name
+     * @param parents        the array of parent content identifiers
+     * @param maxIsZero      the revision zero is max flag
+     * @param con            the database connection to use
+     *
+     * @return a list of all matching content objects
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static ArrayList doSelectByParents(String domain,
+                                              int[] parents,
+                                              boolean maxIsZero,
+                                              DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query = new DatabaseQuery();
+        StringBuffer     sql = new StringBuffer();
+        DatabaseResults  res;
+        ArrayList        list = new ArrayList();
+        ContentData      data;
+
+        sql.append("SELECT DISTINCT ID FROM LS_CONTENT WHERE DOMAIN = ");
+        appendSql(sql, domain);
+        sql.append(" AND ID NOT IN ");
+        appendSql(sql, parents);
+        sql.append(" AND PARENT IN ");
+        appendSql(sql, parents);
+        query.setSql(sql.toString());
+        res = PEER.execute("reading content list", query, con);
+        try {
+            for (int i = 0; i < res.getRowCount(); i++) {
+                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
+                                             maxIsZero,
+                                             con);
+                for (int j = 0; j < parents.length; j++) {
+                    if (data.getInt(ContentData.PARENT) == parents[j]) {
+                        list.add(data);
+                        break;
+                    }
+                }
+            }
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+        return list;
+    }
+
+    /**
      * Returns a list of content objects having the specified 
      * category. Only the highest revision of each content object
      * will be returned. A flag can be set to regard the revision
@@ -384,6 +441,48 @@ public class ContentPeer extends AbstractPeer {
             }
         }
         return id + 1;
+    }
+
+    /**
+     * Appends a string to an SQL statement.
+     *
+     * @param sql            the SQL statement
+     * @param value          the value to append
+     */
+    private static void appendSql(StringBuffer sql, String value) {
+        char  c;
+
+        if (value == null) {
+            sql.append("null");
+        } else {
+            sql.append("'");
+            for (int i = 0; i < value.length(); i++) {
+                c = value.charAt(i);
+                if (c == '\'') {
+                    sql.append("\\'"); 
+                } else {
+                    sql.append(c);
+                }
+            }
+            sql.append("'");
+        }
+    }
+
+    /**
+     * Appends an array to an SQL statement.
+     *
+     * @param sql            the SQL statement
+     * @param values         the array of values to append
+     */
+    private static void appendSql(StringBuffer sql, int[] values) {
+        sql.append("(");
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                sql.append(",");
+            }
+            sql.append(values[i]);
+        }
+        sql.append(")");
     }
 
     /**

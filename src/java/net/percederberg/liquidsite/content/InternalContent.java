@@ -214,6 +214,47 @@ class InternalContent {
     }
 
     /**
+     * Returns an array of content objects having one of the
+     * specified parents. Only the latest revision of each content
+     * object will be returned.
+     * 
+     * @param manager        the content manager to use
+     * @param parents        the parent content identifiers
+     * 
+     * @return an array of content objects found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static Content[] findByParents(ContentManager manager,
+                                   Content[] parents) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ArrayList           list;
+        Domain              domain;
+        int[]               ids;
+
+        domain = parents[0].getDomain();
+        ids = new int[parents.length];
+        for (int i = 0; i < parents.length; i++) {
+            ids[i] = parents[i].getId();
+        }
+        try {
+            list = ContentPeer.doSelectByParents(domain.getName(),
+                                                 ids,
+                                                 manager.isAdmin(),
+                                                 con);
+            return createContent(manager, list, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
      * Creates an array of content objects. The content subclass
      * matching the category value will be used.
      * 
