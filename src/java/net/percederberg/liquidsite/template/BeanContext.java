@@ -74,15 +74,6 @@ class BeanContext {
     private String sitePath = null;
 
     /**
-     * The relative path to the page directory. The path is relative
-     * to the request URL and may be empty if the request refers to
-     * an object in the page directory. Otherwise the path ends with
-     * an "/" character. Note that the page path is NOT always an
-     * empty string (consider dynamic pages linked to sections).
-     */
-    private String pagePath = null;
-
-    /**
      * The cache of user beans. Each user is indexed by the user name.
      * The special user name "" (i.e. an empty string) is used for the
      * current user.
@@ -134,30 +125,6 @@ class BeanContext {
             sitePath = getRelativePath(site.getDirectory());
         }
         return sitePath;
-    }
-
-    /**
-     * Returns the relative path to the page directory. The path is
-     * relative to the request URL and may be empty if the request
-     * refers directly to an object in the page directory. Otherwise
-     * the path ends with an "/" character. Note that the page path
-     * is NOT always an empty string (consider dynamic pages linked
-     * to sections).
-     *
-     * @return the relative path to the page directory
-     */
-    public String getPagePath() {
-        ContentPage   page;
-
-        if (pagePath == null) {
-            page = request.getEnvironment().getPage();
-            if (page == null) {
-                pagePath = getSitePath();
-            } else {
-                pagePath = getRelativePath(getContentPath(page));
-            }
-        }
-        return pagePath;
     }
 
     /**

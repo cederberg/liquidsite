@@ -176,7 +176,7 @@ public class LiquidSiteBean {
         } else if (path.startsWith("/")) {
             return context.getSitePath() + path.substring(1);
         } else {
-            return context.getPagePath() + path;
+            return path;
         }
     }
 
