@@ -244,7 +244,7 @@ public class InstallController extends Controller {
         // get request parameters
         getParameters(request);
 
-        // check user info
+        // check database connection info
         checkDbConnInfo();
         
         // if no error happened, create a connector to the database,
@@ -282,7 +282,7 @@ public class InstallController extends Controller {
         // get request parameters
         getParameters(request);
 
-        // check user info
+        // check database info
         checkDbInfo();
 
         // if error, get the databases information, 
@@ -318,59 +318,22 @@ public class InstallController extends Controller {
         // initialize errors
         initializeErrors();
 
-        // get info
+        // get request parameters
         getParameters(request);
+
+        // get the list of users
+        users = getUserNames();
         
-        // get list of users
-        try {
-            users = con.listUsers();
-        } catch (DatabaseConnectionException e) {
-            // could not open connection
-            error = true;
-            errorConnection = true;
-            // TODO write log
-            e.printStackTrace();
-        } catch (DatabaseException e) {
-            // TODO write log
-            e.printStackTrace();
-            // forward to error page
-            request.forward("/install/error.jsp");
-            return;
-        }
+        // check user info
+        checkUserInfo(users);
 
-        // check input info
-        if (userchoice.equals("select") && usersel.equals("")) {
-            error = true;
-        } else if (userchoice.equals("create")) {
-            if (username.equals("") || password.equals("") ||
-                verify.equals("")) {
-                error = true;
-            } else if (users.contains(username)) {
-                error = true;
-                errorUserExists = true;
-            }
-        }
-        if (!error && !password.equals(verify)) {
-            error = true;
-            errorVerify = true;
-            password = "";
-            verify = "";
-        }
-
-        // set attributes in request
+        // set request attributes
         setAttributes(request);
 
-        // check if error happened
         if (error) {
-
-            // set attributes in request
             request.setAttribute("users", users);
-
-            // forward to same page
             request.forward("/install/install3.jsp");
-
         } else {
-            // forward to next page
             request.forward("/install/install4.jsp");
         }
     }
@@ -571,6 +534,30 @@ public class InstallController extends Controller {
         } else if (dbsel.equals("") && databaseExists(database)) {
             error = true;
             errorDbExists = true;
+        }
+    }
+
+    /**
+     * Checks the correctness of the user selection information.
+     *
+     * @param users          the names of the database users 
+     */
+    private void checkUserInfo(ArrayList users) {
+        // get list of users
+        users = getUserNames(); 
+
+        // check input info
+        if (usersel.equals("") && username.equals("")) {
+            error = true;
+        } else if (usersel.equals("") && users.contains(username)) {
+            error = true;
+            errorUserExists = true;
+        }
+        if (!error && !password.equals(verify)) {
+            error = true;
+            errorVerify = true;
+            password = "";
+            verify = "";
         }
     }
 
