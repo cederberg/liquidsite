@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.web;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 
 /**
@@ -44,6 +45,11 @@ public class RequestEnvironment {
      * The content site.
      */
     private ContentSite site = null;
+
+    /**
+     * The content translator.
+     */
+    private ContentTranslator translator = null;
 
     /**
      * The content page.
@@ -95,6 +101,24 @@ public class RequestEnvironment {
      */
     public void setSite(ContentSite site) {
         this.site = site;
+    }
+
+    /**
+     * Returns the content translator.
+     *
+     * @return the content translator
+     */
+    public ContentTranslator getTranslator() {
+        return translator;
+    }
+
+    /**
+     * Sets the content translator.
+     *
+     * @param translator     the content translator
+     */
+    public void setTranslator(ContentTranslator translator) {
+        this.translator = translator;
     }
 
     /**

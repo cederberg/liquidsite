@@ -34,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
@@ -109,6 +110,8 @@ public abstract class RequestProcessor {
      * Finds the content page corresponding to a request path. Note
      * that this method may return any type of content object as long
      * as it supports being presented by the sendContent() method.
+     * This method may set parts of the request environment while
+     * processing the path.
      *
      * @param request        the request object
      * @param site           the content site
@@ -155,10 +158,10 @@ public abstract class RequestProcessor {
     /**
      * Finds the content child object corresponding to a name. This
      * method will first attempt a direct match. If that fails, it
-     * will search through all content pages linked to sections for
-     * a matching document. Note that this method may return any type
-     * of content object as long as it supports being presented by
-     * the sendContent() method.
+     * will search translators and content pages linked to sections
+     * for a matching document. Note that this method may return any
+     * type of content object as long as it supports being presented
+     * by the sendContent() method.
      *
      * @param request        the request object
      * @param parent         the content parent
@@ -182,10 +185,38 @@ public abstract class RequestProcessor {
         Content         content;
         Content[]       children;
 
-        content = manager.getContentChild(user, parent, name);
+        // Check translator children
+        content = request.getEnvironment().getTranslator();
         if (content != null) {
+            content = manager.getContentChild(user, content, name);
+            if (isPage(content)) {
+                updateRequestEnvironment(request, content);
+                return content;
+            }
+        }
+
+        // Check parent object children
+        content = manager.getContentChild(user, parent, name);
+        if (isDirectory(content) || isPage(content)) {
+            updateRequestEnvironment(request, content);
             return content;
         }
+
+        // Check parent translators
+        children = manager.getContentChildren(user,
+                                              parent,
+                                              Content.TRANSLATOR_CATEGORY);
+        for (int i = 0; i < children.length; i++) {
+            content = locateTranslated(request,
+                                       (ContentTranslator) children[i],
+                                       name);
+            if (content != null) {
+                updateRequestEnvironment(request, content);
+                return content;
+            }
+        }
+
+        // Check linked pages (TODO: remove!)
         children = manager.getContentChildren(user,
                                               parent,
                                               Content.PAGE_CATEGORY);
@@ -194,10 +225,59 @@ public abstract class RequestProcessor {
                                      (ContentPage) children[i],
                                      name);
             if (content != null) {
+                updateRequestEnvironment(request, content);
                 return content;
             }
         }
         return null;
+    }
+
+    /**
+     * Finds the translator child object corresponding to a name. This
+     * will search any object linked to the translator for a matching
+     * section or document. Note that this method may return any type
+     * of content object as long as it supports being presented by the
+     * sendContent() method.
+     *
+     * @param request        the request object
+     * @param translator     the content translator
+     * @param name           the child name
+     *
+     * @return the content object corresponding to the name, or
+     *         null if no matching content was found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
+     *             object wasn't readable by the user
+     */
+    private Content locateTranslated(Request request,
+                                     ContentTranslator translator,
+                                     String name)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        Content         content = null;
+
+        if (translator.getType() == ContentTranslator.ALIAS_TYPE) {
+            /* TODO: enable when env.setPage() works for aliases
+            content = translator.getAlias(user);
+            content = manager.getContentChild(user, content, name);
+            */
+        } else if (translator.getType() ==  ContentTranslator.REDIRECT_TYPE) {
+            // TODO: implement this!
+        } else if (translator.getType() ==  ContentTranslator.SECTION_TYPE) {
+            content = manager.getContentChild(user, translator, name);
+            if (content == null) {
+                content = translator.getSection(user);
+                content = manager.getContentChild(user, content, name);
+            }
+            if (content != null) {
+                request.getEnvironment().setTranslator(translator);
+            }
+        }
+        return content;
     }
 
     /**
@@ -222,6 +302,7 @@ public abstract class RequestProcessor {
                                    String name)
         throws ContentException, ContentSecurityException {
 
+        // TODO: remove this method (eventually)
         ContentManager  manager = getContentManager();
         User            user = request.getUser();
         ContentSection  section;
@@ -335,19 +416,28 @@ public abstract class RequestProcessor {
         if (isDirectory(content) && !request.getPath().endsWith("/")) {
             request.sendRedirect(request.getPath() + "/");
         } else if (content instanceof ContentSite) {
-            content = locateIndexPage(request, content);
-            sendContent(request, content);
+            sendContent(request, locateIndexPage(request, content));
         } else if (content instanceof ContentFolder) {
-            content = locateIndexPage(request, content);
-            sendContent(request, content);
+            sendContent(request, locateIndexPage(request, content));
         } else if (content instanceof ContentPage) {
             request.getEnvironment().setPage((ContentPage) content);
             sendContentPage(request, (ContentPage) content);
         } else if (content instanceof ContentFile) {
             request.sendFile(((ContentFile) content).getFile());
+        } else if (content instanceof ContentSection) {
+            if (request.getEnvironment().getTranslator() != null) {
+                content = request.getEnvironment().getTranslator();
+                sendContent(request, locateIndexPage(request, content));
+            } else {
+                throw RequestException.RESOURCE_NOT_FOUND;
+            }
         } else if (content instanceof ContentDocument) {
-            request.getEnvironment().setDocument((ContentDocument) content);
-            sendContent(request, request.getEnvironment().getPage());
+            if (request.getEnvironment().getTranslator() != null) {
+                content = request.getEnvironment().getTranslator();
+                sendContent(request, locateIndexPage(request, content));
+            } else {
+                sendContent(request, request.getEnvironment().getPage());
+            }
         } else {
             throw RequestException.RESOURCE_NOT_FOUND;
         }
@@ -387,5 +477,33 @@ public abstract class RequestProcessor {
             || content instanceof ContentFolder
             || content instanceof ContentSection
             || content instanceof ContentDocument;
+    }
+
+    /**
+     * Checks if the specified content object represents a page.
+     *
+     * @param content        the content object to check
+     *
+     * @return true if the content object is a page, or
+     *         false otherwise
+     */
+    private boolean isPage(Content content) {
+        return content instanceof ContentPage
+            || content instanceof ContentFile;
+    }
+
+    /**
+     * Updates the request environment with the specified content
+     * object.
+     *
+     * @param request        the request
+     * @param content        the content object
+     */
+    private void updateRequestEnvironment(Request request, Content content) {
+        if (content instanceof ContentPage) {
+            request.getEnvironment().setPage((ContentPage) content);
+        } else if (content instanceof ContentDocument) {
+            request.getEnvironment().setDocument((ContentDocument) content);
+        }
     }
 }
