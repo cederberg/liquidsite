@@ -198,15 +198,15 @@ public class TaggedFormatter {
             if (str != null && str.equals("right")) {
                 return "<img src=\"" +
                        context.linkTo((String) attrs.get("url")) +
-                       "\" style=\"float: right;\" />";
+                       "\" alt=\"\" style=\"float: right;\" />";
             } else if (str != null && str.equals("left")) {
                 return "<img src=\"" +
                        context.linkTo((String) attrs.get("url")) +
-                       "\" style=\"float: left;\" />";
+                       "\" alt=\"\" style=\"float: left;\" />";
             } else {
                 return "<img src=\"" +
                        context.linkTo((String) attrs.get("url")) +
-                       "\" />";
+                       "\" alt=\"\" />";
             }
         } else if (name.equals("list")) {
             str = (String) attrs.get("type");
