@@ -139,10 +139,15 @@ public class InstallController extends Controller {
      * @param request        the request object to process
      */
     public void process(Request request) {
+        String  path = request.getPath();
         String  step = request.getParameter("step", "");
 
         lastError = null;
-        if (request.getParameter("prev") != null) {
+        if (path.equals("/style.css") || path.startsWith("/images")) {
+            request.sendFile(getFile(path));
+        } else if (!path.equals("/") && !path.equals("/install.html")) {
+            // Do nothing for unrecognized pages
+        } else if (request.getParameter("prev") != null) {
             processPrevious(request, step);
         } else if (step.equals("1")) {
             processStep1(request);
