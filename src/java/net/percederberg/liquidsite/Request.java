@@ -579,7 +579,7 @@ public class Request {
             template = TemplateManager.getFileTemplate(responseData);
             template.process(this, out);
         } catch (TemplateException e) {
-            LOG.error("while processing " + responseData + "template", e);
+            LOG.error("while processing " + responseData + " template", e);
             throw new IOException(e.getMessage());
         } finally {
             out.close();
