@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.content;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
@@ -42,6 +43,11 @@ public class HostPeer extends Peer {
     private static final Log LOG = new Log(HostPeer.class);
 
     /**
+     * The hsot peer instance.
+     */
+    private static final Peer PEER = new HostPeer();
+
+    /**
      * Returns a list of all hosts in the database.
      * 
      * @return a list of all hosts in the database
@@ -50,22 +56,26 @@ public class HostPeer extends Peer {
      *             properly
      */
     public static ArrayList doSelectAll() throws ContentException {
+        return doSelectAll(null);
+    }
+
+    /**
+     * Returns a list of all hosts in the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @return a list of all hosts in the database
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static ArrayList doSelectAll(DatabaseConnection con)
+        throws ContentException {
+
         DatabaseResults  res;
-        ArrayList        list = new ArrayList();
-        Host             host;        
         
-        res = execute("host.select.all", "reading hosts");
-        for (int i = 0; i < res.getRowCount(); i++) {
-            host = new Host();
-            try {
-                transfer(res.getRow(i), host);
-            } catch (DatabaseDataException e) {
-                LOG.error("reading hosts", e);
-                throw new ContentException("reading hosts", e);
-            }
-            list.add(host);
-        }
-        return list;
+        res = execute("host.select.all", null, "reading hosts", con);
+        return PEER.createObjectList(res);
     }
 
     /**
@@ -81,24 +91,30 @@ public class HostPeer extends Peer {
     public static ArrayList doSelectByDomain(Domain domain)
         throws ContentException {
 
+        return doSelectByDomain(domain, null);
+    }
+
+    /**
+     * Returns a list of all hosts in a certain domain.
+     * 
+     * @param domain         the domain
+     * @param con            the database connection to use
+     * 
+     * @return a list of all hosts in a certain domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static ArrayList doSelectByDomain(Domain domain,
+                                             DatabaseConnection con)
+        throws ContentException {
+
         ArrayList        params = new ArrayList();
         DatabaseResults  res;
-        ArrayList        list = new ArrayList();
-        Host             host;        
         
         params.add(domain.getName());
-        res = execute("host.select.domain", "reading hosts");
-        for (int i = 0; i < res.getRowCount(); i++) {
-            host = new Host();
-            try {
-                transfer(res.getRow(i), host);
-            } catch (DatabaseDataException e) {
-                LOG.error("reading hosts", e);
-                throw new ContentException("reading hosts", e);
-            }
-            list.add(host);
-        }
-        return list;
+        res = execute("host.select.domain", params, "reading hosts", con);
+        return PEER.createObjectList(res);
     }
 
     /**
@@ -115,24 +131,30 @@ public class HostPeer extends Peer {
     public static Host doSelectByName(String name)
         throws ContentException {
 
+        return doSelectByName(name, null);
+    }
+
+    /**
+     * Returns a host with a specified name.
+     * 
+     * @param name           the host name
+     * @param con            the database connection to use
+     * 
+     * @return the host found, or
+     *         null if no matching host existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Host doSelectByName(String name, DatabaseConnection con)
+        throws ContentException {
+
         ArrayList        params = new ArrayList();
         DatabaseResults  res;
-        Host             host;
         
         params.add(name);
-        res = execute("host.select.name", "reading host");
-        if (res.getRowCount() < 1) {
-            return null;
-        } else {
-            try {
-                host = new Host();
-                transfer(res.getRow(0), host);
-            } catch (DatabaseDataException e) {
-                LOG.error("reading host", e);
-                throw new ContentException("reading host", e);
-            }
-        }
-        return host;
+        res = execute("host.select.name", params, "reading host", con);
+        return (Host) PEER.createObject(res);
     }
 
     /**
@@ -144,7 +166,23 @@ public class HostPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static synchronized void doInsert(Host host) 
+    public static void doInsert(Host host) 
+        throws ContentException {
+
+        doInsert(host, null);
+    }
+
+    /**
+     * Inserts a new host into the database. This method also updates
+     * the content manager cache.
+     * 
+     * @param host           the host to insert
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static void doInsert(Host host, DatabaseConnection con) 
         throws ContentException {
 
         ArrayList  params = new ArrayList();
@@ -153,7 +191,7 @@ public class HostPeer extends Peer {
         params.add(host.getName());
         params.add(host.getDescription());
         params.add(host.getOptions());
-        execute("host.insert", params, "inserting host");
+        execute("host.insert", params, "inserting host", con);
         ContentManager.getInstance().addHost(host);
     }
     
@@ -166,7 +204,23 @@ public class HostPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static synchronized void doUpdate(Host host) 
+    public static void doUpdate(Host host) 
+        throws ContentException {
+
+        doUpdate(host, null);
+    }
+
+    /**
+     * Updates a host in the database. This method also updates the
+     * content manager cache.
+     * 
+     * @param host           the host to update
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static void doUpdate(Host host, DatabaseConnection con) 
         throws ContentException {
 
         ArrayList  params = new ArrayList();
@@ -175,7 +229,7 @@ public class HostPeer extends Peer {
         params.add(host.getDescription());
         params.add(host.getOptions());
         params.add(host.getName());
-        execute("host.update", params, "updating host");
+        execute("host.update", params, "updating host", con);
         ContentManager.getInstance().addHost(host);
     }
     
@@ -188,27 +242,52 @@ public class HostPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static synchronized void doDelete(Host host) 
+    public static void doDelete(Host host) 
+        throws ContentException {
+
+        doDelete(host, null);
+    }
+
+    /**
+     * Deletes a host from the database. This method also updates 
+     * the content manager cache.
+     * 
+     * @param host           the host to delete
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static void doDelete(Host host, DatabaseConnection con) 
         throws ContentException {
 
         ArrayList  params = new ArrayList();
 
         params.add(host.getName());
-        execute("host.delete", params, "deleting host");
+        execute("host.delete", params, "deleting host", con);
         ContentManager.getInstance().removeHost(host);
     }
     
     /**
-     * Transfers a database result row to a host object.
+     * Creates a new host database peer.
+     */
+    private HostPeer() {
+        super("host", Host.class);
+    }
+
+    /**
+     * Transfers a database result row to a data object.
      * 
      * @param row            the database result row
-     * @param host           the host object
+     * @param obj            the data object
      * 
      * @throws DatabaseDataException if the database results didn't
      *             contain the expected column names
      */
-    private static void transfer(DatabaseResults.Row row, Host host) 
+    protected void transfer(DatabaseResults.Row row, DataObject obj) 
         throws DatabaseDataException {
+
+        Host  host = (Host) obj;
 
         host.setDomainName(row.getString("DOMAIN"));
         host.setName(row.getString("NAME"));

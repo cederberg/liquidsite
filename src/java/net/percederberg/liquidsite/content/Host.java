@@ -24,6 +24,8 @@ package net.percederberg.liquidsite.content;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.db.DatabaseConnection;
+
 /**
  * A web site host.
  *
@@ -251,14 +253,16 @@ public class Host extends DataObject {
     /**
      * Saves this host to the database.
      * 
+     * @param con            the database connection to use
+     * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public void save() throws ContentException {
+    public void save(DatabaseConnection con) throws ContentException {
         if (!isPersistent()) {
-            HostPeer.doInsert(this);
+            HostPeer.doInsert(this, con);
         } else if (isModified()) {
-            HostPeer.doUpdate(this);
+            HostPeer.doUpdate(this, con);
         }
     }
 }

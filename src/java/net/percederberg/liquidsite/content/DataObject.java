@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.content;
 
+import net.percederberg.liquidsite.db.DatabaseConnection;
+
 /**
  * The base data object class.
  *
@@ -95,5 +97,18 @@ public abstract class DataObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public abstract void save() throws ContentException;
+    public void save() throws ContentException {
+        save(null);
+    }
+
+    /**
+     * Saves this data object to the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public abstract void save(DatabaseConnection con) 
+        throws ContentException;
 }

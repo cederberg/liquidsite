@@ -24,6 +24,8 @@ package net.percederberg.liquidsite.content;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.db.DatabaseConnection;
+
 /**
  * A resource and user domain.
  *
@@ -210,14 +212,16 @@ public class Domain extends DataObject {
     /**
      * Saves this domain to the database.
      * 
+     * @param con            the database connection to use
+     * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public void save() throws ContentException {
+    public void save(DatabaseConnection con) throws ContentException {
         if (!isPersistent()) {
-            DomainPeer.doInsert(this);
+            DomainPeer.doInsert(this, con);
         } else if (isModified()) {
-            DomainPeer.doUpdate(this);
+            DomainPeer.doUpdate(this, con);
         }
     }
 }

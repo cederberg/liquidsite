@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.content;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
@@ -34,12 +35,17 @@ import net.percederberg.liquidsite.db.DatabaseResults;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DomainPeer extends Peer {
+public final class DomainPeer extends Peer {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(DomainPeer.class);
+
+    /**
+     * The domain peer instance.
+     */
+    private static final Peer PEER = new DomainPeer();
 
     /**
      * Returns a list of all domains in the database.
@@ -50,22 +56,26 @@ public class DomainPeer extends Peer {
      *             properly
      */
     public static ArrayList doSelectAll() throws ContentException {
+        return doSelectAll(null);
+    }
+
+    /**
+     * Returns a list of all domains in the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @return a list of all domains in the database
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static ArrayList doSelectAll(DatabaseConnection con) 
+        throws ContentException {
+
         DatabaseResults  res;
-        ArrayList        list = new ArrayList();
-        Domain           domain;        
         
-        res = execute("domain.select.all", "reading domains");
-        for (int i = 0; i < res.getRowCount(); i++) {
-            domain = new Domain();
-            try {
-                transfer(res.getRow(i), domain);
-            } catch (DatabaseDataException e) {
-                LOG.error("reading domains", e);
-                throw new ContentException("reading domains", e);
-            }
-            list.add(domain);
-        }
-        return list;
+        res = execute("domain.select.all", null, "reading domains", con);
+        return PEER.createObjectList(res);
     }
 
     /**
@@ -82,24 +92,31 @@ public class DomainPeer extends Peer {
     public static Domain doSelectByName(String name)
         throws ContentException {
 
+        return doSelectByName(name, null);
+    }
+
+    /**
+     * Returns a domain with a specified name.
+     * 
+     * @param name           the domain name
+     * @param con            the database connection to use
+     * 
+     * @return the domain found, or
+     *         null if no matching domain existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Domain doSelectByName(String name, 
+                                        DatabaseConnection con)
+        throws ContentException {
+
         ArrayList        params = new ArrayList();
         DatabaseResults  res;
-        Domain           domain;
         
         params.add(name);
-        res = execute("domain.select.name", "reading domain");
-        if (res.getRowCount() < 1) {
-            return null;
-        } else {
-            try {
-                domain = new Domain();
-                transfer(res.getRow(0), domain);
-            } catch (DatabaseDataException e) {
-                LOG.error("reading domain", e);
-                throw new ContentException("reading domain", e);
-            }
-        }
-        return domain;
+        res = execute("domain.select.name", params, "reading domain", con);
+        return (Domain) PEER.createObject(res);
     }
 
     /**
@@ -111,7 +128,23 @@ public class DomainPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static synchronized void doInsert(Domain domain) 
+    public static void doInsert(Domain domain) 
+        throws ContentException {
+
+        doInsert(domain, null);
+    }
+    
+    /**
+     * Inserts a new domain into the database. This method also 
+     * updates the content manager cache.
+     * 
+     * @param domain         the domain to insert
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static void doInsert(Domain domain, DatabaseConnection con) 
         throws ContentException {
 
         ArrayList  params = new ArrayList();
@@ -120,8 +153,8 @@ public class DomainPeer extends Peer {
         params.add(domain.getName());
         params.add(domain.getDescription());
         params.add(domain.getOptions());
-        execute("domain.insert", params, "inserting domain");
-        ContentManager.getInstance().addDomain(domain);
+        execute("domain.insert", params, "inserting domain", con);
+        getContentManager().addDomain(domain);
     }
     
     /**
@@ -133,7 +166,23 @@ public class DomainPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static synchronized void doUpdate(Domain domain) 
+    public static void doUpdate(Domain domain) 
+        throws ContentException {
+
+        doUpdate(domain, null);
+    }
+    
+    /**
+     * Updates a domain in the database. This method also updates the
+     * content manager cache.
+     * 
+     * @param domain         the domain to update
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static void doUpdate(Domain domain, DatabaseConnection con) 
         throws ContentException {
 
         ArrayList  params = new ArrayList();
@@ -142,8 +191,8 @@ public class DomainPeer extends Peer {
         params.add(domain.getDescription());
         params.add(domain.getOptions());
         params.add(domain.getName());
-        execute("domain.update", params, "updating domain");
-        ContentManager.getInstance().addDomain(domain);
+        execute("domain.update", params, "updating domain", con);
+        getContentManager().addDomain(domain);
     }
     
     /**
@@ -155,27 +204,52 @@ public class DomainPeer extends Peer {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public static synchronized void doDelete(Domain domain) 
+    public static void doDelete(Domain domain) 
+        throws ContentException {
+
+        doDelete(domain, null);
+    }
+    
+    /**
+     * Deletes a domain from the database. This method also updates 
+     * the content manager cache.
+     * 
+     * @param domain         the domain to delete
+     * @param con            the database connection to use
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static void doDelete(Domain domain, DatabaseConnection con) 
         throws ContentException {
 
         ArrayList  params = new ArrayList();
 
         params.add(domain.getName());
-        execute("domain.delete", params, "deleting domain");
-        ContentManager.getInstance().removeDomain(domain);
+        execute("domain.delete", params, "deleting domain", con);
+        getContentManager().removeDomain(domain);
     }
     
     /**
-     * Transfers a database result row to a domain object.
+     * Creates a new domain database peer.
+     */
+    private DomainPeer() {
+        super("domain", Domain.class);
+    }
+
+    /**
+     * Transfers a database result row to a data object.
      * 
      * @param row            the database result row
-     * @param domain         the domain object
+     * @param obj            the data object
      * 
      * @throws DatabaseDataException if the database results didn't
      *             contain the expected column names
      */
-    private static void transfer(DatabaseResults.Row row, Domain domain) 
+    protected void transfer(DatabaseResults.Row row, DataObject obj) 
         throws DatabaseDataException {
+
+        Domain  domain = (Domain) obj;
 
         domain.setName(row.getString("NAME"));
         domain.setDescription(row.getString("DESCRIPTION"));
