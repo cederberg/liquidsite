@@ -403,8 +403,7 @@ function tagEditInternalAdjustSelection(editor, paragraph) {
     if (paragraph) {
         pos = selection.start;
         while (pos > 0) {
-            if (value.charAt(pos) == '\n' || value.charAt(pos) == '\r') {
-                pos++;
+            if (value.charAt(pos-1) == '\n' || value.charAt(pos-1) == '\r') {
                 break;
             }
             pos--;
