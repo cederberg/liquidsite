@@ -28,6 +28,7 @@ import java.util.HashMap;
 import freemarker.template.TemplateExceptionHandler;
 
 import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.Request;
 
 /**
  * A template class. This class wraps a FreeMarker template and adds
@@ -62,18 +63,21 @@ public class Template {
     }
 
     /**
-     * Processes the template with a data model and an output stream.
+     * Processes the template with a request and an output stream. 
+     * All the attributes in the request will be exposed in the 
+     * template data model. 
      * 
-     * @param data           the root data model.
+     * @param request        the request object
      * @param out            the output stream writer
      * 
      * @throws TemplateException if the template processing failed
      */
-    public void process(HashMap data, Writer out) 
+    public void process(Request request, Writer out) 
         throws TemplateException {
 
+        HashMap  data = request.getAllAttributes();
 
-        data.put("liquidsite", new LiquidSiteBean());
+        data.put("liquidsite", new LiquidSiteBean(request));
         try {
             template.process(data, out);
         } catch (IOException e) {

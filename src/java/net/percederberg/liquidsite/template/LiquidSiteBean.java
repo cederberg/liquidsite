@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.template;
 
+import net.percederberg.liquidsite.Request;
+
 /**
  * A LiquidSite template bean. This class is used to insert the 
  * "liquidsite" namespace into the template data model.
@@ -31,9 +33,17 @@ package net.percederberg.liquidsite.template;
 public class LiquidSiteBean {
 
     /**
-     * Creates a new LiquidSite template bean.
+     * The request being processed. 
      */
-    LiquidSiteBean() {
+    private Request request;
+
+    /**
+     * Creates a new LiquidSite template bean.
+     * 
+     * @param request        the request object
+     */
+    LiquidSiteBean(Request request) {
+        this.request = request;
     }
 
     /**
@@ -52,5 +62,18 @@ public class LiquidSiteBean {
      */
     public String getDate() {
         return TemplateManager.getApplication().getBuildDate();
+    }
+    
+    /**
+     * Returns the user name for the currently logged in user. 
+     * 
+     * @return the user name for the currently logged in user
+     */
+    public String getUser() {
+        if (request.getUser() == null) {
+            return "";
+        } else {
+            return request.getUser().getName(); 
+        }
     }
 }

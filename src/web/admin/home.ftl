@@ -1,5 +1,5 @@
 <#include "header.ftl">
 
-    <p>&nbsp;</p>
+    <h2>Welcome to LiquidSite, ${liquidsite.user}!</h2>
 
 <#include "footer.ftl">

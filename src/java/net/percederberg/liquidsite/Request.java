@@ -475,7 +475,7 @@ public class Request {
         out = new PrintWriter(response.getOutputStream());
         try {
             template = TemplateManager.getFileTemplate(responseData);
-            template.process(getAllAttributes(), out);
+            template.process(this, out);
         } catch (TemplateException e) {
             LOG.error("while processing " + responseData + "template", e);
             throw new IOException(e.getMessage());
