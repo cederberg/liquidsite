@@ -118,7 +118,7 @@ public class DomainPeer extends Peer {
 
         params.add(domain.getName());
         params.add(domain.getDescription());
-        params.add(domain.getComment());
+        params.add(domain.getOptions());
         execute("domain.insert", params, "inserting domain");
         ContentManager.getInstance().addDomain(domain);
     }
@@ -138,7 +138,7 @@ public class DomainPeer extends Peer {
         ArrayList  params = new ArrayList();
 
         params.add(domain.getDescription());
-        params.add(domain.getComment());
+        params.add(domain.getOptions());
         params.add(domain.getName());
         execute("domain.update", params, "updating domain");
         ContentManager.getInstance().addDomain(domain);
@@ -177,7 +177,7 @@ public class DomainPeer extends Peer {
 
         domain.setName(row.getString("NAME"));
         domain.setDescription(row.getString("DESCRIPTION"));
-        domain.setComment(row.getString("COMMENT"));
+        domain.setOptions(row.getString("OPTIONS"));
         domain.setModified(false);
         domain.setPersistent(true);
     }

@@ -21,6 +21,9 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
  * A resource and user domain.
  *
@@ -40,9 +43,9 @@ public class Domain extends DataObject {
     private String description = "";
     
     /**
-     * The domain comment.
+     * The domain options.
      */
-    private String comment = "";
+    private HashMap options = new HashMap();
     
     /**
      * Creates a new domain with default values.
@@ -125,21 +128,62 @@ public class Domain extends DataObject {
     }
     
     /**
-     * Returns the optional comment.
+     * Returns the encoded options.
      * 
-     * @return the comment
+     * @return the encoded options
      */
-    public String getComment() {
-        return comment;
+    String getOptions() {
+        StringBuffer  buffer = new StringBuffer();
+        Iterator      iter = options.keySet().iterator();
+        String        name;
+        Object        value;
+
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            value = options.get(name);
+            if (buffer.length() > 0) {
+                buffer.append(":");
+            }
+            buffer.append(name);
+            if (value != null) {
+                buffer.append("=");
+                buffer.append(value);
+            }
+        }
+        return buffer.toString();
     }
 
     /**
-     * Sets the comment.
+     * Sets the encoded options.
      * 
-     * @param comment        the new comment
+     * @param options        the new options
      */
-    public void setComment(String comment) {
-        this.comment = comment;
+    void setOptions(String options) {
+        String  name;
+        String  value;
+        String  str;
+        int     pos;
+
+        this.options.clear();
+        while (options.length() > 0) {
+            pos = options.indexOf(":");
+            if (pos > 0) {
+                str = options.substring(0, pos);
+                options = options.substring(pos + 1);
+            } else {
+                str = options;
+                options = "";
+            }
+            pos = str.indexOf("=");
+            if (pos > 0) {
+                name = str.substring(0, pos);
+                value = str.substring(pos + 1);
+            } else {
+                name = str;
+                value = null;
+            }
+            this.options.put(name, value);
+        }
         setModified(true);
     }
 
