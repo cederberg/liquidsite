@@ -73,7 +73,7 @@
             <input type="checkbox" tabindex="1" checked="checked"
 </#if>
                    name="inherit" value="true"
-                   onchange="permissionToggleEdit();" />
+                   onclick="permissionToggleEdit();" />
             Inherit parent object permissions.
           </td>
         </tr>
