@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.form;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
 
@@ -316,11 +317,16 @@ public class FormValidator {
         protected void validate(String value) 
             throws FormValidationException {
 
+            Date  date;
+
             if (value == null) {
                 return;
             }
             try {
-                format.parse(value);
+                date = format.parse(value);
+                if (!value.equals(format.format(date))) {
+                    error();
+                }
             } catch (ParseException e) {
                 error();
             }
