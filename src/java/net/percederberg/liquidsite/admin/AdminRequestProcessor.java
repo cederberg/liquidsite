@@ -60,7 +60,7 @@ public class AdminRequestProcessor extends RequestProcessor {
     /**
      * The system view request processor.
      */
-    private SystemRequestProcessor system;
+    private SystemRequestProcessor system = new SystemRequestProcessor();
 
     /**
      * The admin form handlers (workflows).
@@ -76,7 +76,6 @@ public class AdminRequestProcessor extends RequestProcessor {
         super(new ContentManager(app, true), app.getBaseDir());
         AdminUtils.setConfiguration(app.getConfig());
         AdminUtils.setContentManager(getContentManager());
-        system = new SystemRequestProcessor(app);
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());

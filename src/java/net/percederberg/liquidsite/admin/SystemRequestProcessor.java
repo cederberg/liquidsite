@@ -21,10 +21,10 @@
 
 package net.percederberg.liquidsite.admin;
 
-import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.admin.view.AdminView;
+import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
@@ -43,17 +43,9 @@ public class SystemRequestProcessor {
     private static final Log LOG = new Log(SystemRequestProcessor.class);
 
     /**
-     * The application object.
-     */
-    private Application application;
-
-    /**
      * Creates a new administration request processor.
-     *
-     * @param app            the application context
      */
-    public SystemRequestProcessor(Application app) {
-        this.application = app;
+    public SystemRequestProcessor() {
     }
 
     /**
@@ -90,10 +82,14 @@ public class SystemRequestProcessor {
     private void processAuthorized(Request request, String path)
         throws RequestException {
 
-        String  operation = request.getParameter("operation", "");
+        String  action = request.getParameter("action", "");
 
-        if (operation.equals("restart")) {
+        if (action.equals("restart")) {
             handleRestart(request);
+        } else if (action.equals("backup")) {
+            handleBackup(request);
+        } else if (action.equals("restore")) {
+            handleRestore(request);
         } else {
             AdminView.SYSTEM.viewSystem(request);
         }
@@ -118,11 +114,124 @@ public class SystemRequestProcessor {
      * Handles the system restart requests.
      *
      * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
      */
-    private void handleRestart(Request request) {
-        application.restart();
-        AdminView.BASE.viewInfo(request,
-                                "System restarted successfully",
-                                "system.html");
+    private void handleRestart(Request request) throws RequestException {
+        try {
+            AdminUtils.getContentManager().getApplication().restart();
+            AdminView.BASE.viewInfo(request,
+                                    "System restarted successfully",
+                                    "system.html");
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Handles the system backup requests.
+     *
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void handleBackup(Request request) throws RequestException {
+        try {
+            if (!validateBackup(request)) {
+                AdminView.SYSTEM.viewBackup(request);
+            } else {
+                AdminView.BASE.viewInfo(request,
+                                        "Not implemented yet",
+                                        "system.html");
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Handles the system restore requests.
+     *
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void handleRestore(Request request) throws RequestException {
+        try {
+            if (!validateRestore(request)) {
+                AdminView.SYSTEM.viewRestore(request);
+            } else {
+                AdminView.BASE.viewInfo(request,
+                                        "Not implemented yet",
+                                        "system.html");
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Validates the backup form.
+     *
+     * @param request        the request object
+     *
+     * @return true if the form parameters validated correctly, or
+     *         false otherwise
+     */
+    private boolean validateBackup(Request request) {
+        String  message;
+
+        if (request.getParameter("domain") == null) {
+            return false;
+        }
+        if (request.getParameter("domain", "").equals("")) {
+            message = "Please select a domain to backup";
+            request.setAttribute("error", message);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates the restore form.
+     *
+     * @param request        the request object
+     *
+     * @return true if the form parameters validated correctly, or
+     *         false otherwise
+     */
+    private boolean validateRestore(Request request) {
+        String  message;
+        String  name;
+
+        if (request.getParameter("backup") == null) {
+            return false;
+        }
+        if (request.getParameter("backup", "").equals("")) {
+            message = "Please select a backup file to restore";
+            request.setAttribute("error", message);
+            return false;
+        }
+        name = request.getParameter("domain", "");
+        if (name.equals("")) {
+            message = "Please enter the name of a domain to create";
+            request.setAttribute("error", message);
+            return false;
+        }
+        for (int i = 0; i < name.length(); i++) {
+            if (AdminFormHandler.DOMAIN_CHARS.indexOf(name.charAt(i)) < 0) {
+                message = "invalid character in domain name: '" +
+                           name.charAt(i) + "'";
+                request.setAttribute("error", message);
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import net.percederberg.liquidsite.Configuration;
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -45,6 +46,11 @@ import net.percederberg.liquidsite.web.Request;
  * @version  1.0
  */
 public class AdminUtils {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(AdminUtils.class);
 
     /**
      * The configuration used for administration.
@@ -97,6 +103,35 @@ public class AdminUtils {
      */
     static void setContentManager(ContentManager manager) {
         AdminUtils.manager = manager;
+    }
+
+    /**
+     * Returns the backup directory for the system.
+     *
+     * @return the backup directory, or
+     *         null if not readable
+     */
+    public static File getBackupDir() {
+        String         basedir;
+        File           dir;
+
+        basedir = config.get(Configuration.FILE_DIRECTORY, null);
+        if (basedir == null) {
+            LOG.error("application base file directory not configured");
+            return null;
+        }
+        dir = new File(basedir, "backup");
+        try {
+            if (!dir.exists() && !dir.mkdirs()) {
+                LOG.error("couldn't create backup directory: " + dir);
+                return null;
+            }
+        } catch (SecurityException e) {
+            LOG.error("access denied while creating backup directory: " +
+                      dir);
+            return null;
+        }
+        return dir;
     }
 
     /**

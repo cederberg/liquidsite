@@ -21,6 +21,14 @@
 
 package net.percederberg.liquidsite.admin.view;
 
+import java.io.File;
+import java.util.ArrayList;
+
+import net.percederberg.liquidsite.admin.AdminUtils;
+import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 
 /**
@@ -45,5 +53,58 @@ public class SystemView {
      */
     public void viewSystem(Request request) {
         request.sendTemplate("admin/system.ftl");
+    }
+
+    /**
+     * Shows the system backup form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewBackup(Request request) throws ContentException {
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        Domain[]        domains;
+        ArrayList       list = new ArrayList();
+
+        domains = manager.getDomains(user);
+        for (int i = 0; i < domains.length; i++) {
+            list.add(domains[i].getName());
+        }
+        request.setAttribute("domains", list);
+        request.sendTemplate("admin/system-backup.ftl");
+    }
+
+    /**
+     * Shows the system restore form.
+     *
+     * @param request        the request object
+     */
+    public void viewRestore(Request request) throws ContentException {
+        File        backupDir;
+        String[]    files;
+        String      backup;
+        ArrayList   backups = new ArrayList();
+        String      domain;
+        String      revisions;
+
+        backupDir = AdminUtils.getBackupDir();
+        if (backupDir == null) {
+            throw new ContentException("no backup directory found");
+        }
+        files = backupDir.list();
+        for (int i = 0; i < files.length; i++) {
+            backups.add(files[i]);
+        }
+        backup = request.getParameter("backup", "");
+        domain = request.getParameter("domain", "");
+        revisions = request.getParameter("revisions", "");
+        request.setAttribute("backup", backup);
+        request.setAttribute("backups", backups);
+        request.setAttribute("domain", domain);
+        request.setAttribute("revisions", revisions);
+        request.sendTemplate("admin/system-restore.ftl");
     }
 }
