@@ -453,13 +453,18 @@ public class AdminRequestProcessor extends RequestProcessor {
 
         Content  content;
         String   revision;
+        String   dir;
 
         content = locatePage(request, site, path);
         revision = request.getParameter("revision");
         if (content != null && revision != null) {
             content = content.getRevision(Integer.parseInt(revision));
         }
-        request.getEnvironment().setSite((ContentSite) site);
+        request.getEnvironment().setDomain(site.getDomain());
+        dir = request.getEnvironment().getSite().getDirectory() + 
+              "preview/" + site.getId() + "/";
+        site.setDirectory(dir);
+        request.getEnvironment().setSite(site);
         sendContent(request, content);
     }
 
