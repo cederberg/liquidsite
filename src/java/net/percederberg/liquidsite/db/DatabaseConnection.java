@@ -31,7 +31,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
@@ -259,17 +258,20 @@ public class DatabaseConnection {
         throws DatabaseException {
 
         PreparedStatement  stmt;
-        ResultSet          set;
+        String             id = "query '" + name + "'";
         String             sql;
         
+        // Find query
+        sql = db.getFunction(name);
+        if (sql == null) {
+            sql = "no database function '" + name + "' exists";
+            LOG.debug(sql);
+            throw new DatabaseException(sql);
+        }
+
+        // Prepare query
         try {
-            LOG.trace("executing query '" + name + "'...");
-            sql = db.getFunction(name);
-            if (sql == null) {
-                sql = "no database function '" + name + "'";
-                LOG.debug(sql);
-                throw new DatabaseException(sql);
-            }
+            LOG.trace("preparing " + id + "...");
             stmt = con.prepareStatement(sql,
                                         ResultSet.TYPE_FORWARD_ONLY,
                                         ResultSet.CONCUR_READ_ONLY,
@@ -279,18 +281,17 @@ public class DatabaseConnection {
             for (int i = 0; i < params.size(); i++) {
                 stmt.setObject(i + 1, params.get(i));
             }
-            set = stmt.executeQuery();
-            LOG.trace("executed query '" + name + "'");
         } catch (SQLException e) {
-            LOG.debug("failed to execute query '" + name + "'", e);
-            throw new DatabaseException(e);
+            LOG.debug("failed to prepare " + id, e);
+            throw new DatabaseException("couldn't prepare " + id, e);
         }
 
-        return extractResults(set);
+        // Execute query
+        return executeQuery(id, stmt);
     }
 
     /**
-     * Executes an SQL query or statement. 
+     * Executes an SQL query or statement.
      * 
      * @param sql            the SQL query or statement to execute
      * 
@@ -302,23 +303,25 @@ public class DatabaseConnection {
     public DatabaseResults executeSql(String sql) 
         throws DatabaseException {
 
-        Statement        stmt;
-        ResultSet        set;
+        PreparedStatement  stmt;
+        String             id = "SQL '" + sql + "'";
 
+        // Prepare query
         try {
-            LOG.trace("executing SQL '" + sql + "'...");
-            stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-                                       ResultSet.CONCUR_READ_ONLY,
-                                       ResultSet.CLOSE_CURSORS_AT_COMMIT);
+            LOG.trace("preparing " + id + "...");
+            stmt = con.prepareStatement(sql,
+                                        ResultSet.TYPE_FORWARD_ONLY,
+                                        ResultSet.CONCUR_READ_ONLY,
+                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
             stmt.setQueryTimeout(queryTimeout);
-            set = stmt.executeQuery(sql);
-            LOG.trace("executed SQL '" + sql + "'");
+            stmt.clearParameters();
         } catch (SQLException e) {
-            LOG.debug("failed to execute SQL '" + sql + "'", e);
-            throw new DatabaseException(e);
+            LOG.debug("failed to prepare " + id, e);
+            throw new DatabaseException("couldn't prepare " + id, e);
         }
 
-        return extractResults(set);
+        // Execute query
+        return executeQuery(id, stmt);
     }
 
     /**
@@ -364,32 +367,41 @@ public class DatabaseConnection {
     }
 
     /**
-     * Extracts the result from a JDBC result set. The result set 
-     * will be closed after all the results have been extracted. 
+     * Executes an SQL query statement. This method closes the 
+     * statement after extracting the results from the result set.
      * 
-     * @param set            the result set to extract data from
+     * @param name           the statement name (used in logs)
+     * @param stmt           the statement to execute
      * 
      * @return the database results
      * 
-     * @throws DatabaseException if the results couldn't be extracted 
-     *             properly
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
      */
-    private DatabaseResults extractResults(ResultSet set) 
+    private DatabaseResults executeQuery(String name, 
+                                         PreparedStatement stmt) 
         throws DatabaseException {
             
         DatabaseResults  res;
+        ResultSet        set = null;
 
         try {
-            LOG.trace("extracting database results...");
+            LOG.trace("executing " + name + "...");
+            set = stmt.executeQuery();
+            LOG.trace("extracting results from " + name + "...");
             res = new DatabaseResults(set);
-            LOG.trace("extracted database results");
+            LOG.trace("done executing " + name);
         } catch (SQLException e) {
-            LOG.debug("failed to extract database results", e);
-            throw new DatabaseException(e);
+            LOG.debug("failed to execute " + name, e);
+            throw new DatabaseException("couldn't execute " + name, e);
         } finally {
             try {
-                LOG.trace("closing result set");
-                set.close();
+                LOG.trace("closing " + name + " resources...");
+                if (set != null) {
+                    set.close();
+                }
+                stmt.close();
+                LOG.trace("done closing " + name + " resources...");
             } catch (SQLException ignore) {
                 // Do nothing
             }
