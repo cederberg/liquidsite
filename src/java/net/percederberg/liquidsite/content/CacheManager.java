@@ -190,7 +190,7 @@ class CacheManager {
                 LOG.trace("cached content parent for " + key);
                 if (content instanceof ContentTemplate) {
                     contents.put(key, content);
-                    LOG.trace("cached content object for " + key);
+                    LOG.trace("cached content object " + key);
                 }
             }
         } else if (obj instanceof PermissionList) {
@@ -277,7 +277,7 @@ class CacheManager {
             LOG.trace("uncached content parent for " + content.getId());
             if (obj instanceof ContentTemplate) {
                 contents.remove(new Integer(content.getId()));
-                LOG.trace("uncached content object for " + content.getId());
+                LOG.trace("uncached content object " + content.getId());
             }
             permissions.remove(new Integer(content.getId()));
             LOG.trace("uncached permission list for " + content.getId());
