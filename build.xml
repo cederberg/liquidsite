@@ -28,7 +28,9 @@
             value="${basedir}" />
 
   <path id="project.class.path">
-    <pathelement location="${build.dir}/lib/servlet.jar" />
+    <fileset dir="${build.dir}/lib">
+      <include name="**/*.jar"/>
+    </fileset>
   </path>
 
   <target name="init">
@@ -58,7 +60,8 @@
          basedir="${build.dir}/src/web"
          excludes="**/web.xml">
       <lib dir="${build.dir}/lib">
-        <exclude name="servlet.jar" />
+        <include name="liquidsite*.jar" />
+        <include name="mysql*.jar" />
       </lib>
     </war>
   </target>

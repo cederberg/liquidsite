@@ -24,6 +24,7 @@ package net.percederberg.liquidsite;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -44,6 +45,12 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
  */
 public class FrontControllerServlet extends HttpServlet 
     implements Application {
+
+    /**
+     * The class logger.
+     */
+    private static final Logger LOG = 
+        Logger.getLogger(FrontControllerServlet.class.getName());
 
     /**
      * The application monitor thread.
@@ -102,7 +109,7 @@ public class FrontControllerServlet extends HttpServlet
         try {
             MySQLDatabaseConnector.loadDriver();
         } catch (DatabaseConnectionException e) {
-            // TODO: log this
+            LOG.severe(e.getMessage());
         }
         host = config.get(Configuration.DATABASE_HOSTNAME, "");
         name = config.get(Configuration.DATABASE_NAME, "");
@@ -116,7 +123,9 @@ public class FrontControllerServlet extends HttpServlet
         try {
             config.read(database);
         } catch (ConfigurationException e) {
-            // TODO: log this
+            if (file.exists()) {
+                LOG.severe(e.getMessage());
+            }
         }
 
         // Initialize controllers
@@ -311,7 +320,7 @@ public class FrontControllerServlet extends HttpServlet
                     try {
                         getDatabase().update();
                     } catch (DatabaseConnectionException e) {
-                        // TODO: log this exception
+                        LOG.severe(e.getMessage());
                     }
                 }
 
