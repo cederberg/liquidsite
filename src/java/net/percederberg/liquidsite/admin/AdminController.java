@@ -195,7 +195,7 @@ public class AdminController extends Controller {
      */
     private void processEditUser(Request request) {
         try {
-            if (request.getParameter("prev") != null) {
+            if (request.getParameter("prev", "").equals("true")) {
                 request.sendRedirect("home.html");
             } else if (request.getParameter("editpassword") != null) {
                 if (request.getParameter("step") == null) {
@@ -313,7 +313,7 @@ public class AdminController extends Controller {
         
         try {
             parent = view.getRequestReference(request);
-            if (request.getParameter("prev") != null) {
+            if (request.getParameter("prev", "").equals("true")) {
                 if (step.equals("1")) {
                     request.sendRedirect("site.html");
                 } else {
@@ -522,7 +522,7 @@ public class AdminController extends Controller {
                     obj = content;
                 }
             }
-            if (request.getParameter("prev") != null) {
+            if (request.getParameter("prev", "").equals("true")) {
                 if (obj instanceof Content) {
                     removeLock((Content) obj, request.getUser(), false);
                 }

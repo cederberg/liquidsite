@@ -1,9 +1,9 @@
 <#include "header.ftl">
 
     <script type="text/javascript">
-        function initialize() {
-            document.getElementsByName("host").item(0).focus();
-        }
+    function initialize() {
+        document.getElementsByName("host").item(0).focus();
+    }
     </script>
 
     <form method="post" action="install.html">
@@ -59,7 +59,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" name="prev" disabled="disabled">
+            <button type="button" disabled="disabled">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>

@@ -5,11 +5,17 @@
     function initialize() {
         document.getElementsByName("password0").item(0).focus();
     }
+
+    function previous() {
+        document.getElementsByName("prev").item(0).value = "true";
+        document.forms.item(0).submit();
+    }
     </script>
 
     <form method="post">
       <input type="hidden" name="editpassword" value="true" />
       <input type="hidden" name="step" value="1" />
+      <input type="hidden" name="prev" value="" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">
@@ -52,7 +58,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" name="prev">
+            <button type="button" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
