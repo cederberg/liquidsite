@@ -239,16 +239,25 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displaySite(Request request) throws RequestException {
-        Object        type = request.getSessionAttribute("site.view.type");
-        Object        id = request.getSessionAttribute("site.view.id");
-        Domain[]      domains;
-        StringBuffer  buffer = new StringBuffer();
+        Object          type = request.getSessionAttribute("site.view.type");
+        Object          id = request.getSessionAttribute("site.view.id");
+        ContentManager  cm = getContentManager();
+        User            user = request.getUser();
+        Domain[]        domains;
+        Content         content;
+        StringBuffer    buffer = new StringBuffer();
+        String          str;
         
         try {
-            domains = getContentManager().getDomains(request.getUser());
+            domains = cm.getDomains(user);
             buffer.append(script.getTreeView(domains));
             if (type != null && !type.equals("domain")) {
-                // TODO: add all parent content objects
+                content = cm.getContent(user, Integer.parseInt(id.toString()));
+                str = getTreeView(user, 
+                                  content.getDomain(), 
+                                  content.getParent(),
+                                  true);
+                buffer.append(str);
             } 
             if (type != null) {
                 buffer.append(script.getTreeViewSelect(type, id));
@@ -256,6 +265,8 @@ public class AdminController extends Controller {
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
         }
         request.setAttribute("initialize", buffer.toString());
         request.sendTemplate("admin/site.ftl");
@@ -303,18 +314,15 @@ public class AdminController extends Controller {
         User            user = request.getUser();
         Domain          domain;
         Content         content;
-        Content[]       children; 
         String          buffer;
 
         try {
             if (type.equals("domain")) {
                 domain = cm.getDomain(user, id);
-                children = cm.getSites(user, domain);
-                buffer = script.getTreeView(domain, children);
+                buffer = getTreeView(user, domain, null, false); 
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
-                children = cm.getContentChildren(user, content);
-                buffer = script.getTreeView(content, children);
+                buffer = getTreeView(user, null, content, false); 
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -409,5 +417,42 @@ public class AdminController extends Controller {
                              request.getParameter("description", ""));
         request.setAttribute("host", request.getParameter("host", ""));
         request.sendTemplate("admin/add-domain.ftl");
+    }
+    
+    /**
+     * Returns the JavaScript code for displaying child content 
+     * objects. This method may create a nested tree view with all 
+     * parent objects up to the domain if the recursive flag is set.
+     * 
+     * @param user           the current user
+     * @param domain         the domain object
+     * @param content        the content object
+     * @param recursive      the recursive flag
+     * 
+     * @return the JavaScript code for adding the object to the tree
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getTreeView(User user, 
+                               Domain domain, 
+                               Content content,
+                               boolean recursive) 
+        throws ContentException {
+
+        ContentManager  cm = getContentManager();
+        Content[]       children; 
+
+        if (content == null) {
+            children = cm.getSites(user, domain);
+            return script.getTreeView(domain, children);
+        } else if (recursive) {
+            children = cm.getContentChildren(user, content);
+            return getTreeView(user, domain, content.getParent(), true) 
+                 + script.getTreeView(content, children);
+        } else {
+            children = cm.getContentChildren(user, content);
+            return script.getTreeView(content, children);
+        }
     }
 }
