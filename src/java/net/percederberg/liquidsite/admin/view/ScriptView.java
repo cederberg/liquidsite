@@ -587,27 +587,16 @@ public class ScriptView {
      * Returns the JavaScript for presenting domain permissions.
      * 
      * @param domain         the domain object
-     * @param inherited      the inherited permissions flag
      * 
      * @return the JavaScript for presenting domain permissions
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getPermissions(Domain domain, boolean inherited) 
+    private String getPermissions(Domain domain) 
         throws ContentException {
 
-        StringBuffer  buffer = new StringBuffer();
-        Permission[]  permissions;
-        
-        permissions = domain.getPermissions();
-        if (permissions.length == 0) {
-            buffer.append(getPermission(null, true));
-        }
-        for (int i = 0; i < permissions.length; i++) {
-            buffer.append(getPermission(permissions[i], inherited));
-        }
-        return buffer.toString();
+        return getPermissions(domain.getPermissions(), false);
     }
 
     /**
@@ -623,73 +612,68 @@ public class ScriptView {
     private String getPermissions(Content content) 
         throws ContentException {
 
-        StringBuffer  buffer = new StringBuffer();
         Permission[]  permissions;
         Content       parent = content;
         boolean       inherited = false;
         
-        // Find permissions
         permissions = content.getPermissions();
         while (permissions.length == 0 && parent != null) {
             inherited = true;
             parent = parent.getParent();
-            if (parent != null) {
+            if (parent == null) {
+                permissions = content.getDomain().getPermissions();
+            } else {
                 permissions = parent.getPermissions();
             }
         }
-        if (parent == null) {
-            return getPermissions(content.getDomain(), true);
-        }
-
-        // Create permission script
-        for (int i = 0; i < permissions.length; i++) {
-            buffer.append(getPermission(permissions[i], inherited));
-        }
-
-        return buffer.toString();
+        return getPermissions(permissions, inherited);
     }
 
     /**
-     * Returns the JavaScript for presenting a permission.
-     * 
-     * @param perm           the permission object, or null
-     * @param inherited      the inherited flag
-     * 
-     * @return the JavaScript for presenting a permission
+     * Returns the JavaScript for presenting a list of permissions.
+     *
+     * @param permissions     the array of permission objects
+     * @param inherited       the inherited flag
+     *
+     * @return the JavaScript for presenting the permissions
      */
-    private String getPermission(Permission perm, boolean inherited) {
+    private String getPermissions(Permission[] permissions,
+                                  boolean inherited) {
+
         StringBuffer  buffer = new StringBuffer();
         String        str;
-        
-        buffer.append("objectAddPermission(");
-        if (perm == null) {
-            buffer.append("null, null, false, false, false, false");
-        } else {
-            if (perm.getUserName().equals("")) {
-                buffer.append("null");
-            } else {
-                str = perm.getUserName();
-                buffer.append(AdminUtils.getScriptString(str));
-            }
-            buffer.append(", ");
-            if (perm.getGroupName().equals("")) {
-                buffer.append("null");
-            } else {
-                str = perm.getGroupName();
-                buffer.append(AdminUtils.getScriptString(str));
-            }
-            buffer.append(", ");
-            buffer.append(perm.getRead());
-            buffer.append(", ");
-            buffer.append(perm.getWrite());
-            buffer.append(", ");
-            buffer.append(perm.getPublish());
-            buffer.append(", ");
-            buffer.append(perm.getAdmin());
+
+        if (permissions.length == 0) {
+            buffer.append("objectAddPermission(null, null, ");
+            buffer.append("false, false, false, false, false);\n");
         }
-        buffer.append(", ");
-        buffer.append(!inherited);
-        buffer.append(");\n");
+        for (int i = 0; i < permissions.length; i++) {
+            buffer.append("objectAddPermission(");
+            if (permission[i].getUserName().equals("")) {
+                buffer.append("null");
+            } else {
+                str = permission[i].getUserName();
+                buffer.append(AdminUtils.getScriptString(str));
+            }
+            buffer.append(", ");
+            if (permission[i].getGroupName().equals("")) {
+                buffer.append("null");
+            } else {
+                str = permission[i].getGroupName();
+                buffer.append(AdminUtils.getScriptString(str));
+            }
+            buffer.append(", ");
+            buffer.append(permission[i].getRead());
+            buffer.append(", ");
+            buffer.append(permission[i].getWrite());
+            buffer.append(", ");
+            buffer.append(permission[i].getPublish());
+            buffer.append(", ");
+            buffer.append(permission[i].getAdmin());
+            buffer.append(", ");
+            buffer.append(!inherited);
+            buffer.append(");\n");
+        }
 
         return buffer.toString();
     }
