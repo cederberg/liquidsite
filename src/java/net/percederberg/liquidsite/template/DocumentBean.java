@@ -21,21 +21,15 @@
 
 package net.percederberg.liquidsite.template;
 
-import freemarker.template.ObjectWrapper;
+import java.util.Date;
+
 import freemarker.template.SimpleScalar;
-import freemarker.template.TemplateHashModel;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
-import net.percederberg.liquidsite.content.DocumentProperty;
-import net.percederberg.liquidsite.text.HtmlFormatter;
-import net.percederberg.liquidsite.text.PlainFormatter;
-import net.percederberg.liquidsite.text.TaggedFormatter;
 
 /**
  * A document template bean. This class is used to access document
@@ -44,7 +38,7 @@ import net.percederberg.liquidsite.text.TaggedFormatter;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DocumentBean implements TemplateHashModel {
+public class DocumentBean {
 
     /**
      * The class logger.
@@ -70,14 +64,9 @@ public class DocumentBean implements TemplateHashModel {
     private ContentSection baseSection;
 
     /**
-     * The document formatting context.
+     * The document data bean.
      */
-    private DocumentFormattingContext docContext = null;
-
-    /**
-     * The document meta-data template model.
-     */
-    private TemplateModel metadata = null;
+    private DocumentDataBean data = null;
 
     /**
      * Creates a new empty document template bean.
@@ -115,58 +104,47 @@ public class DocumentBean implements TemplateHashModel {
     }
 
     /**
-     * Checks if the hash model is empty.
+     * Returns the document identifier.
      *
-     * @return false as the hash model is never empty
+     * @return the document identifier number, or
+     *         zero (0) for a non-existing document
      */
-    public boolean isEmpty() {
-        return false;
+    public int getId() {
+        if (document == null) {
+            return 0;
+        } else {
+            return document.getId();
+        }
     }
 
     /**
-     * Returns a document property as a template model. The special
-     * properties "name" and "meta" return the document name and
-     * meta-data object respectively.
+     * Returns the name of the document.
      *
-     * @param id             the document property id
-     *
-     * @return the template model object, or
-     *         null if the document property wasn't found
-     *
-     * @throws TemplateModelException if an appropriate template model
-     *             couldn't be created
+     * @return the document name, or
+     *         an empty string for a non-existing document
      */
-    public TemplateModel get(String id) throws TemplateModelException {
-        Object  obj;
-        String  str;
-        int     type;
+    public String getName() {
+        try {
+            return getName(document);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+    }
 
-        if (id.equals("meta")) {
-            if (metadata == null) {
-                obj = new DocumentMetaDataBean(context, document);
-                metadata = ObjectWrapper.BEANS_WRAPPER.wrap(obj);
-            }
-            return metadata;
-        } else if (document == null) {
-            return new SimpleScalar("");
-        } else if (id.equals("name")) {
-            try {
-                return new SimpleScalar(getName(document));
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-                return new SimpleScalar("");
-            }
+    /**
+     * Returns the full document path.
+     *
+     * @return the document path, or
+     *         an empty string for a non-existing document
+     */
+    public String getPath() {
+        String  path = context.getContentPath(document);
+
+        if (path.endsWith("/")) {
+            return path.substring(0, path.length() - 1);
         } else {
-            str = document.getProperty(id);
-            type = document.getPropertyType(id);
-            if (type == DocumentProperty.TAGGED_TYPE) {
-                str = TaggedFormatter.formatHtml(str, getDocContext());
-            } else if (type == DocumentProperty.HTML_TYPE) {
-                str = HtmlFormatter.formatHtml(str, getDocContext());
-            } else {
-                str = PlainFormatter.formatHtml(str);
-            }
-            return new SimpleScalar(str);
+            return path;
         }
     }
 
@@ -204,15 +182,105 @@ public class DocumentBean implements TemplateHashModel {
     }
 
     /**
-     * Returns the document formatting context. If no document
-     * formatting context exists, a new one will be created.
+     * Returns the document parent (always a section).
      *
-     * @return the document formatting context
+     * @return the document parent
      */
-    private DocumentFormattingContext getDocContext() {
-        if (docContext == null) {
-            docContext = new DocumentFormattingContext(context, document);
+    public SectionBean getParent() {
+        if (document != null) {
+            try {
+                return new SectionBean(context,
+                                       (ContentSection) document.getParent());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
         }
-        return docContext;
+        return new SectionBean();
+    }
+
+    /**
+     * Returns the document revision number.
+     *
+     * @return the document revision number, or
+     *         zero (0) for a non-existing document
+     */
+    public int getRevision() {
+        if (document == null) {
+            return 0;
+        } else {
+            return document.getRevisionNumber();
+        }
+    }
+
+    /**
+     * Returns the document revision date.
+     *
+     * @return the document revision date, or
+     *         the current date and time for a non-existing document
+     */
+    public Date getDate() {
+        if (document == null) {
+            return new Date();
+        } else {
+            return document.getModifiedDate();
+        }
+    }
+
+    /**
+     * Returns the document revision author login name.
+     *
+     * @return the document revision user name, or
+     *         an empty string for a non-existing document
+     */
+    public String getUser() {
+        if (document == null) {
+            return "";
+        } else {
+            return document.getAuthorName();
+        }
+    }
+
+    /**
+     * Returns the document online flag.
+     *
+     * @return the document online flag, or
+     *         the false for a non-existing document
+     */
+    public boolean getOnline() {
+        if (document == null) {
+            return false;
+        } else {
+            return document.isOnline();
+        }
+    }
+
+    /**
+     * Returns the document data.
+     *
+     * @return the document data object, or
+     *         an empty data object for a non-existing document
+     */
+    public DocumentDataBean getData() {
+        if (data == null) {
+            data = new DocumentDataBean(context, document);
+        }
+        return data;
+    }
+
+    /**
+     * Returns the document lock.
+     *
+     * @return the document lock object, or
+     *         an empty lock for a non-existing document
+     */
+    public LockBean getLock() {
+        if (document != null) {
+            try {
+                return new LockBean(document.getLock());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return new LockBean(null);
     }
 }

@@ -9,7 +9,7 @@
           ${prop.name}:
         </th>
         <td>
-          ${liquidsite.doc[prop.id]}
+          ${liquidsite.doc.data[prop.id]}
         </td>
       </tr>
 </#list>

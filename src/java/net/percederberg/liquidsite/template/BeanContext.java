@@ -699,20 +699,28 @@ class BeanContext {
                 ascending = str.startsWith("+");
                 str = str.substring(1);
             }
-            if (str.equals("name")) {
-                selector.sortByName(ascending);
-            } else if (str.equals("meta.id")) {
+            if (str.equals("id")) {
                 selector.sortById(ascending);
-            } else if (str.equals("meta.revision")) {
+            } else if (str.equals("name")) {
+                selector.sortByName(ascending);
+            } else if (str.equals("path")) {
+                selector.sortByParent(ascending);
+                selector.sortByName(ascending);
+            } else if (str.equals("parent")) {
+                selector.sortByParent(ascending);
+            } else if (str.equals("revision")) {
                 selector.sortByRevision(ascending);
-            } else if (str.equals("meta.online")) {
-                selector.sortByOnline(ascending);
-            } else if (str.equals("meta.date")) {
+            } else if (str.equals("date")) {
                 selector.sortByModified(ascending);
-            } else if (str.equals("meta.user")) {
+            } else if (str.equals("user")) {
                 selector.sortByAuthor(ascending);
+            } else if (str.equals("online")) {
+                selector.sortByOnline(ascending);
+            } else if (str.startsWith("data.")) {
+                selector.sortByDocumentProperty(str.substring(5), ascending);
             } else {
-                selector.sortByDocumentProperty(str, ascending);
+                LOG.warning("invalid sorting column: " + sorting + 
+                            " in page " + request.getUrl());
             }
         }
     }
