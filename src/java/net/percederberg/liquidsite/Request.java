@@ -129,4 +129,51 @@ public class Request {
     public String getPath() {
         return request.getRequestURI();
     }
+
+    /**
+     * Returns the value of the named attribute as an Object, or null
+     * if no attribute of the given name exists.
+     * 
+     * @param name       a String specifying the name of the attribute 
+     *
+     * @return an Object containing the value of the attribute, or
+     *         null if the attribute does not exist
+     */
+    public Object getAttribute(String name) {
+        return request.getAttribute(name);
+    }
+
+    /**
+     * Stores an attribute in this request. Attributes are reset
+     * between requests. 
+     *
+     * @param name       a String specifying the name of the attribute
+     * @param object     the Object to be stored
+     */
+    public void setAttribute(String name, Object object) {
+        request.setAttribute(name, object);
+    }
+
+    /**
+     * Stores a boolean attribute in this request. Attributes are reset
+     * between requests. 
+     *
+     * @param name       a String specifying the name of the attribute
+     * @param bool       the boolean to be stored
+     */
+    public void setAttribute(String name, boolean bool) {
+        request.setAttribute(name, new Boolean(bool));
+    }
+
+    /**
+     * Returns the value of a request parameter as a String, or null
+     * if the parameter does not exist.
+     *
+     * @param name       a String specifying the name of the parameter
+     *
+     * @return a String representing the single value of the parameter
+     */
+    public String getParameter(String name) {
+        return request.getParameter(name);
+    }
 }
