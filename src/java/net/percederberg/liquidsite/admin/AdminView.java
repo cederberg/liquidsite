@@ -21,7 +21,9 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
@@ -41,6 +43,12 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 class AdminView {
+
+    /**
+     * The date format used by this class.
+     */
+    private static final SimpleDateFormat DATE_FORMAT = 
+        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The admin script helper.
@@ -123,6 +131,34 @@ class AdminView {
         setRequestReference(request, site);
         request.setAttribute("name", site.getName());
         request.sendTemplate("admin/dialog/delete-site.ftl");
+    }
+
+    /**
+     * Shows the content publish dialog.
+     * 
+     * @param request        the request object
+     * @param content        the content object to publish
+     */
+    public void dialogPublish(Request request, Content content) {
+        String dateStr = request.getParameter("date");
+        String comment = request.getParameter("comment");
+
+        if (dateStr == null) {
+            dateStr = formatDate(content.getOnlineDate());
+        }
+        if (dateStr.equals("")) {
+            dateStr = formatDate(new Date());
+        }
+        if (comment == null) {
+            comment = content.getComment();
+        }
+        if (comment.equals("")) {
+            comment = "Published";
+        }
+        setRequestReference(request, content);
+        request.setAttribute("date", dateStr);
+        request.setAttribute("comment", comment);
+        request.sendTemplate("admin/dialog/publish-object.ftl");
     }
 
     /**
@@ -478,6 +514,21 @@ class AdminView {
                                  script.getContentCategory(content));
             request.setAttribute("id", 
                                  String.valueOf(content.getId()));
+        }
+    }
+    
+    /**
+     * Formats a date for form input.
+     * 
+     * @param date           the date to format
+     * 
+     * @return a formatted date string
+     */
+    private String formatDate(Date date) {
+        if (date == null) {
+            return "";
+        } else {
+            return DATE_FORMAT.format(date);
         }
     }
 }

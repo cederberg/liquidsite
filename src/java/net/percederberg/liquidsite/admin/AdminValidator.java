@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.text.SimpleDateFormat;
+
 import net.percederberg.liquidsite.Request;
 
 /**
@@ -50,6 +52,12 @@ public class AdminValidator {
         "0123456789";
 
     /**
+     * The date format used by this class.
+     */
+    private static final SimpleDateFormat DATE_FORMAT = 
+        new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+    /**
      * The add domain form validator.
      */
     private FormValidator addDomain = new FormValidator();
@@ -58,6 +66,11 @@ public class AdminValidator {
      * The add site form validator.
      */
     private FormValidator addSite = new FormValidator();
+
+    /**
+     * The publish and unpublish form validator.
+     */
+    private FormValidator publish = new FormValidator();
 
     /**
      * Creates a new administration validator.
@@ -96,6 +109,12 @@ public class AdminValidator {
                 NUMBER_CHARACTERS + ".-_/";
         error = "Base directory contains invalid character";
         addSite.addCharacterConstraint("dir", chars, error);
+
+        // Add publish validator
+        publish.addRequiredConstraint("date", "No publish date specified");
+        error = "Date format should be 'YYYY-MM-DD HH:MM'";
+        publish.addDateConstraint("date", DATE_FORMAT, error); 
+        publish.addRequiredConstraint("comment", "No comment specified");
     }
 
     /**
@@ -118,5 +137,16 @@ public class AdminValidator {
      */
     public void validateAddSite(Request request) throws FormException {
         addSite.validate(request);
+    }
+
+    /**
+     * Validates the parameters in a publish request.
+     * 
+     * @param request        the publish request
+     * 
+     * @throws FormException if the form validation failed
+     */
+    public void validatePublish(Request request) throws FormException {
+        publish.validate(request);
     }
 }

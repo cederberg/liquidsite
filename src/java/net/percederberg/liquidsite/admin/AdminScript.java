@@ -238,6 +238,8 @@ class AdminScript {
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
+        int           status = getContentStatus(content);
+        Lock          lock = content.getLock();
 
         buffer.append("objectShow('");
         buffer.append(getContentCategory(content));
@@ -255,11 +257,11 @@ class AdminScript {
         buffer.append(getDate(content.getOfflineDate()));
         buffer.append(");\n");
         buffer.append("objectAddStatusProperty(");
-        buffer.append(getContentStatus(content));
+        buffer.append(status);
         buffer.append(", ");
-        buffer.append(getLock(content.getLock()));
+        buffer.append(getLock(lock));
         buffer.append(");\n");
-        buffer.append(getButtons(user, content));
+        buffer.append(getButtons(user, content, status));
         buffer.append(getRevisions(content));
         buffer.append(getPermissions(content));
         return buffer.toString();
@@ -299,23 +301,31 @@ class AdminScript {
      * 
      * @param user           the current user
      * @param content        the content object
+     * @param status         the content status
      * 
      * @return the JavaScript for presenting domain buttons
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getButtons(User user, Content content) 
+    private String getButtons(User user, Content content, int status) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
         
-        if (content.hasWriteAccess(user)) {
+        if (content instanceof Site && content.hasWriteAccess(user)) {
             buffer.append("objectAddNewButton('add-site.html");
             buffer.append(getLinkParameters(content));
             buffer.append("');\n");
         }
         if (content.hasPublishAccess(user)) {
+            if (status == 1) {
+                // TODO: buffer.append("objectAddUnpublishButton");
+            } else {
+                buffer.append("objectAddPublishButton('publish-site.html");
+                buffer.append(getLinkParameters(content));
+                buffer.append("');\n");
+            }
             buffer.append("objectAddDeleteButton('delete-site.html");
             buffer.append(getLinkParameters(content));
             buffer.append("');\n");

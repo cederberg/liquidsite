@@ -21,6 +21,9 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
@@ -46,6 +49,12 @@ public class AdminController extends Controller {
      * The class logger.
      */
     private static final Log LOG = new Log(AdminController.class);
+
+    /**
+     * The date format used by this class.
+     */
+    private static final SimpleDateFormat DATE_FORMAT = 
+        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The admin view helper.
@@ -119,6 +128,8 @@ public class AdminController extends Controller {
             processAddObject(request);
         } else if (path.equals("delete-site.html")) {
             processDeleteObject(request);
+        } else if (path.equals("publish-site.html")) {
+            processPublishObject(request);
         } else if (path.equals("loadsite.js")) {
             processLoadSite(request);
         } else if (path.equals("opensite.js")) {
@@ -386,6 +397,79 @@ public class AdminController extends Controller {
             view.setSiteTreeFocus(request, parent);
         }
         view.dialogClose(request);
+    }
+
+    /**
+     * Processes the publish object requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processPublishObject(Request request) 
+        throws RequestException {
+
+        Content  content;
+        
+        try {
+            content = (Content) view.getRequestReference(request);
+            if (request.getParameter("date") == null) {
+                // TODO: acquire lock
+                view.dialogPublish(request, content);
+            } else {
+                processPublishContent(request, content);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            view.dialogError(request, e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            view.dialogError(request, e);
+        }
+    }
+
+    /**
+     * Processes the confirmed publish requests for the site view.
+     * 
+     * @param request        the request object
+     * @param content        the content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processPublishContent(Request request, Content content) 
+        throws ContentException, ContentSecurityException {
+
+        String   date = request.getParameter("date");
+        String   comment = request.getParameter("comment");
+        Content  work = content.getRevision(0);
+
+        try {
+            // TODO: check for acquired lock
+            validator.validatePublish(request);
+            if (work != null) {
+                work.setRevisionNumber(content.getRevisionNumber() + 1);
+                work.setOfflineDate(content.getOfflineDate());
+                content = work;
+            } else {
+                content.setRevisionNumber(content.getRevisionNumber() + 1);
+            }
+            content.setOnlineDate(DATE_FORMAT.parse(date));
+            content.setComment(comment);
+            content.save(request.getUser());
+            // TODO: unlock content
+            view.dialogClose(request);
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.dialogPublish(request, content);
+        } catch (ParseException e) {
+            comment = "Date format error, " + e.getMessage();
+            request.setAttribute("error", comment);
+            view.dialogPublish(request, content);
+        }
     }
 
     /**

@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Request;
@@ -70,6 +72,21 @@ class FormValidator {
                                        String message) {
 
         constraints.add(new CharacterConstraint(field, chars, message)); 
+    }
+
+    /**
+     * Adds a form field date constraint. This will check that the 
+     * specified form field is parseable with the date formatter.
+     * 
+     * @param field          the field name
+     * @param format         the date format to allow
+     * @param message        the message on error 
+     */
+    public void addDateConstraint(String field, 
+                                  DateFormat format, 
+                                  String message) {
+
+        constraints.add(new DateConstraint(field, format, message)); 
     }
 
     /**
@@ -241,6 +258,53 @@ class FormValidator {
                 if (chars.indexOf(value.charAt(i)) < 0) {
                     error("'" + value.charAt(i) + "'");
                 }
+            }
+        }
+    }
+
+
+    /**
+     * A date set form field constraint.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */    
+    private class DateConstraint extends Constraint {
+
+        /**
+         * The date format to allow.
+         */
+        private DateFormat format;
+
+        /**
+         * Creates a new date format form field constraint.
+         * 
+         * @param field          the field name
+         * @param format         the date format to allow
+         * @param message        the error message
+         */
+        public DateConstraint(String field, 
+                              DateFormat format, 
+                              String message) {
+            super(field, message);
+            this.format = format;
+        }
+
+        /**
+         * Validates this constraint.
+         * 
+         * @param value          the form field value
+         * 
+         * @throws FormException if the form validation failed
+         */
+        protected void validate(String value) throws FormException {
+            if (value == null) {
+                return;
+            }
+            try {
+                format.parse(value);
+            } catch (ParseException e) {
+                error();
             }
         }
     }
