@@ -332,15 +332,18 @@ public class ContentManager {
      * Returns the user readable child content objects. Only the 
      * highest revision of each object will be returned.
      * 
+     * @param user           the user requesting the content
+     * @param parent         the content parent
+     * 
      * @return the user readable child content objects
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public Content[] getContentChildren(User user, Content content) 
+    public Content[] getContentChildren(User user, Content parent) 
         throws ContentException {
 
-        Content[]  children = Content.findByParent(content);
+        Content[]  children = Content.findByParent(parent);
         ArrayList  list = new ArrayList(children.length);
         Content[]  res;
 
