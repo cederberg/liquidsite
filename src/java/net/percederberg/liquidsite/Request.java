@@ -216,4 +216,13 @@ public class Request {
         
         return (value == null) ? defVal : value;
     }
+    
+    /**
+     * Returns a string representation of this request.
+     * 
+     * @return a string representation of this request
+     */
+    public String toString() {
+        return request.getRequestURI();
+    }
 }
