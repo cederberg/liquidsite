@@ -359,27 +359,7 @@ public class ScriptView {
             }
         } else {
             if (content.hasWriteAccess(user)) {
-                if (content instanceof ContentSite 
-                 && !((ContentSite) content).isAdmin()) { 
-
-                    buffer.append("objectAddNewButton('add-");
-                    buffer.append(view);
-                    buffer.append(".html");
-                    buffer.append(getLinkParameters(content));
-                    buffer.append("');\n");
-                } else if (content instanceof ContentFolder) {
-                    buffer.append("objectAddNewButton('add-");
-                    buffer.append(view);
-                    buffer.append(".html");
-                    buffer.append(getLinkParameters(content));
-                    buffer.append("');\n");
-                } else if (content instanceof ContentTemplate) {
-                    buffer.append("objectAddNewButton('add-");
-                    buffer.append(view);
-                    buffer.append(".html");
-                    buffer.append(getLinkParameters(content));
-                    buffer.append("');\n");
-                } else if (content instanceof ContentSection) {
+                if (isContainer(content)) { 
                     buffer.append("objectAddNewButton('add-");
                     buffer.append(view);
                     buffer.append(".html");
@@ -751,5 +731,24 @@ public class ScriptView {
     private String getLinkParameters(Content content) {
         return "?type=" + AdminUtils.getCategory(content) + 
                "&id=" + content.getId();
+    }
+
+    /**
+     * Checks if the specified content object is a container. I.e. if
+     * the content object supports having child content objects.
+     * 
+     * @param content        the content object to check
+     * 
+     * @return true if the content object is a container, or
+     *         false otherwise
+     */
+    private boolean isContainer(Content content) {
+        if (content instanceof ContentSite) {
+            return !((ContentSite) content).isAdmin();
+        } else {
+            return content instanceof ContentFolder
+                || content instanceof ContentTemplate
+                || content instanceof ContentSection;
+        }
     }
 }
