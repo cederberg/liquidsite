@@ -25,11 +25,13 @@ import java.io.File;
 import java.io.StringWriter;
 
 import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
+import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
@@ -103,12 +105,9 @@ public abstract class RequestProcessor {
     public abstract void destroy();
 
     /**
-     * Finds the page content corresponding to a request path. This 
-     * method does NOT control access permissions and should thus 
-     * ONLY be used internally in the request processing. Also note
-     * that any content category matching the request path may be 
-     * returned including the parent content object, if the path was
-     * empty. 
+     * Finds the content page corresponding to a request path. Note
+     * that this method may return any type of content object as long
+     * as it supports being presented by the sendContent() method.
      *
      * @param request        the request object
      * @param parent         the content parent
@@ -125,11 +124,9 @@ public abstract class RequestProcessor {
     protected Content locatePage(Request request, Content parent, String path)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = getContentManager();
-        Content         content = parent;
-        User            user = request.getUser();
-        String          name;
-        int             pos;
+        Content  content = parent;
+        String   name;
+        int      pos;
 
         while (content != null && path.length() > 0) {
             pos = path.indexOf('/');
@@ -138,11 +135,12 @@ public abstract class RequestProcessor {
             } else {
                 name = path.substring(0, pos);
             }
-            content = manager.getContentChild(user, parent, name);
+            content = locateChild(request, parent, name);
             path = path.substring(name.length());
             if (path.startsWith("/")) {
                 if (content instanceof ContentSite
-                 || content instanceof ContentFolder) {
+                 || content instanceof ContentFolder
+                 || content instanceof ContentDocument) {
 
                     path = path.substring(1);
                 }
@@ -150,6 +148,92 @@ public abstract class RequestProcessor {
             parent = content;
         }
         return content;
+    }
+
+    /**
+     * Finds the content child object corresponding to a name. This
+     * method will first attempt a direct match. If that fails, it
+     * will search through all content pages linked to sections for
+     * a matching document. Note that this method may return any type
+     * of content object as long as it supports being presented by
+     * the sendContent() method.
+     *
+     * @param request        the request object
+     * @param parent         the content parent
+     * @param name           the child name
+     * 
+     * @return the content object corresponding to the name, or
+     *         null if no matching content was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    private Content locateChild(Request request,
+                                Content parent,
+                                String name)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        Content         content;
+        Content[]       children;
+
+        content = manager.getContentChild(user, parent, name);
+        if (content != null) {
+            return content;
+        }
+        children = manager.getContentChildren(user, parent);
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] instanceof ContentPage) {
+                content = locateDocument(request,
+                                         (ContentPage) children[i],
+                                         name);
+                if (content != null) {
+                    return content;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the content document object corresponding to a name.
+     * This will search through a section linked to the page for a
+     * matching document.
+     *
+     * @param request        the request object
+     * @param page           the content page
+     * @param name           the child name
+     * 
+     * @return the content document corresponding to the name, or
+     *         null if no matching content was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    private Content locateDocument(Request request,
+                                   ContentPage page,
+                                   String name)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        ContentSection  section;
+        Content         document;
+
+        section = page.getSection(user);
+        if (section == null) {
+            return null;
+        }
+        document = manager.getContentChild(user, section, name);
+        if (document != null) {
+// TODO:            request.setPage(page);
+        }
+        return document;
     }
 
     /**
