@@ -578,6 +578,8 @@ public class User extends PersistentObject {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
+        ContentManager  manager = getContentManager();
+
         if (!getDomainName().equals("") && getDomain() == null) {
             throw new ContentException("domain '" + getDomainName() +
                                        "' does not exist");
@@ -585,6 +587,12 @@ public class User extends PersistentObject {
             throw new ContentException("no name set for user object");
         } else if (getPassword().equals("")) {
             throw new ContentException("no password set for user object");
+        }
+        if (!isPersistent()
+         && manager.getUser(getDomain(), getName()) != null) {
+
+            throw new ContentException("user '" + getName() +
+                                       "' already exists");
         }
     }
 

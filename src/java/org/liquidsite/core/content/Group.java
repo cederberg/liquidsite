@@ -380,6 +380,8 @@ public class Group extends PersistentObject {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
+        ContentManager  manager = getContentManager();
+
         if (getDomainName().equals("")) {
             throw new ContentException("no domain set for group object");
         } else if (getDomain() == null) {
@@ -388,6 +390,12 @@ public class Group extends PersistentObject {
         } else if (getName().equals("")) {
             throw new ContentException("no name set for group object");
         }
+        if (!isPersistent()
+         && manager.getGroup(getDomain(), getName()) != null) {
+
+             throw new ContentException("group '" + getName() +
+                                        "' already exists");
+         }
     }
 
     /**
