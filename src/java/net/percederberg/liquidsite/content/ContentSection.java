@@ -204,12 +204,10 @@ public class ContentSection extends Content {
         }
         for (int i = 0; i < children.length; i++) {
             if (children[i].getId() != getId()
-             && children[i].getName().equals(getName())
-             && children[i].getCategory() == SECTION_CATEGORY) {
+             && children[i].getName().equals(getName())) {
 
                 throw new ContentException(
-                    "another section with the same name is already " +
-                    "present in the parent section");
+                    "another object with the same name already exists");
             }
         }
     }

@@ -349,7 +349,7 @@ public class ContentSite extends Content {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
-        Content[]    sites;
+        Content[]    children;
         ContentSite  site;
 
         super.doValidate();
@@ -358,19 +358,30 @@ public class ContentSite extends Content {
         } else if (getHost().equals("")) {
             throw new ContentException("no host name set for site");
         }
-        sites = InternalContent.findByCategory(getContentManager(),
-                                               getDomain(),
-                                               SITE_CATEGORY);
-        for (int i = 0; i < sites.length; i++) {
-            site = (ContentSite) sites[i];
-            if (site.getId() != getId()
-             && site.getProtocol().equals(getProtocol())
-             && site.getHost().equals(getHost())
-             && site.getPort() == getPort()
-             && site.getDirectory().equals(getDirectory())) {
+        if (getParent() != null) {
+            throw new ContentException("site cannot be located inside " +
+                                       "another site or folder");
+        }
+        children = InternalContent.findByParent(getContentManager(),
+                                                getDomain());
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].getId() != getId()
+             && children[i].getName().equals(getName())) {
 
-                throw new ContentException("an identical site is already " +
-                                           "in the database");
+                throw new ContentException(
+                    "another object with the same name already exists");
+            }
+            if (children[i] instanceof ContentSite) {
+                site = (ContentSite) children[i];
+                if (site.getId() != getId()
+                 && site.getProtocol().equals(getProtocol())
+                 && site.getHost().equals(getHost())
+                 && site.getPort() == getPort()
+                 && site.getDirectory().equals(getDirectory())) {
+
+                    throw new ContentException(
+                        "an identical site definition already exists");
+                }
             }
         }
     }

@@ -186,17 +186,19 @@ public class ContentTemplate extends Content {
         char       c;
 
         super.doValidate();
-        if (getParent() != null) {
+        if (getParent() == null) {
+            children = InternalContent.findByParent(getContentManager(),
+                                                    getDomain());
+        } else {
             children = InternalContent.findByParent(getContentManager(),
                                                     getParent());
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].getId() != getId()
-                 && children[i].getName().equals(getName())) {
+        }
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].getId() != getId()
+             && children[i].getName().equals(getName())) {
 
-                    throw new ContentException(
-                        "another template with the same name " +
-                        "already exists");
-                }
+                throw new ContentException(
+                    "another object with the same name already exists");
             }
         }
         while (iter.hasNext()) {
