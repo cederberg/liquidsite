@@ -122,7 +122,7 @@ public class TopicBean {
     }
 
     /**
-     * Returns the topic parent, i.e. the forum.
+     * Returns the topic parent (always a forum).
      *
      * @return the topic parent
      */

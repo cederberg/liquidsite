@@ -132,7 +132,7 @@ public class ForumBean {
     }
 
     /**
-     * Returns the forum parent, i.e. the section.
+     * Returns the forum parent (always a section).
      *
      * @return the forum parent
      */

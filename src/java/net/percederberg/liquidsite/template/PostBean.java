@@ -87,7 +87,7 @@ public class PostBean {
     }
 
     /**
-     * Returns the post parent, i.e. the topic.
+     * Returns the post parent (always a topic).
      *
      * @return the post parent
      */

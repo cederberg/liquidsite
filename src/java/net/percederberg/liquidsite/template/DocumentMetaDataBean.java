@@ -77,7 +77,7 @@ public class DocumentMetaDataBean {
     }
 
     /**
-     * Returns the document parent, i.e. the section.
+     * Returns the document parent (always a section).
      *
      * @return the document parent
      */
