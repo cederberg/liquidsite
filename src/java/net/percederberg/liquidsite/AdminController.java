@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
+import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -393,8 +394,7 @@ public class AdminController extends Controller {
         buffer.append(content.getName());
         buffer.append("');\n");
         buffer.append("objectAddUrlProperty('");
-        // TODO: add content URL
-        buffer.append(content.toString());
+        buffer.append(getContentUrlScript(content));
         buffer.append("');\n");
         buffer.append("objectAddOnlineProperty(");
         buffer.append(getDateScript(content.getOnlineDate()));
@@ -413,6 +413,21 @@ public class AdminController extends Controller {
         buffer.append(");\n");
         buffer.append(getPermissionsScript(content));
         return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting a content URL.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript for presenting a content URL
+     */
+    private String getContentUrlScript(Content content) {
+        if (content instanceof Site) {
+            return content.toString();
+        } else {
+            return "N/A";
+        }
     }
 
     /**
