@@ -21,11 +21,15 @@
 
 package net.percederberg.liquidsite;
 
+import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.Host;
+import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.Site;
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A controller for normal requests.
@@ -73,9 +77,10 @@ public class DefaultController extends Controller {
     public void process(Request request) throws RequestException {
         Domain  domain;
         Site    site;
+        User    user;
         String  path = request.getPath();
-        
-        // Find site
+
+        // Find domain & site
         try {
             domain = getDomain(request);
             if (domain == null) {
@@ -90,12 +95,90 @@ public class DefaultController extends Controller {
             throw RequestException.INTERNAL_ERROR;
         }
 
-        // Handle page
+        // Find and validate user
         path = path.substring(site.getDirectory().length());
-        if (site.isAdmin()) {
-            admin.process(request, path);
+        if (request.getParameter("liquidsite.login") != null) {
+            processLogin(request, site, path);
+            return;
         }
-        // TODO: handle normal sites and page processing
+        user = request.getUser();
+
+        // Process site request
+        if (hasReadAccess(site, user)) {
+            processAuthorized(request, site, path);
+        } else { 
+            processUnauthorized(request, site, path);
+        }
+    }
+    
+    /**
+     * Processes an authorized request.
+     *
+     * @param request        the request object
+     * @param site           the site
+     * @param path           the request path
+     * 
+     * @throws RequestException if the request couldn't be processed
+     */
+    private void processAuthorized(Request request, Site site, String path)
+        throws RequestException {
+
+        if (site.isAdmin()) {
+            admin.processAuthorized(request, path);
+        } else {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        }
+    }
+
+    /**
+     * Processes an unauthorized request.
+     *
+     * @param request        the request object
+     * @param site           the site
+     * @param path           the request path
+     * 
+     * @throws RequestException if the request couldn't be processed
+     */
+    private void processUnauthorized(Request request, Site site, String path)
+        throws RequestException {
+
+        if (site.isAdmin()) {
+            admin.processUnauthorized(request, path);
+        } else {
+            throw RequestException.UNAUTHORIZED;
+        }
+    }
+
+    /**
+     * Processes a login request.
+     *
+     * @param request        the request object
+     * @param site           the site
+     * @param path           the request path
+     * 
+     * @throws RequestException if the request couldn't be processed
+     */
+    private void processLogin(Request request, Site site, String path) 
+        throws RequestException {
+
+        String  name = request.getParameter("liquidsite.login");
+        String  password = request.getParameter("liquidsite.password");
+        User    user;
+        
+        try {
+            user = getContentManager().getUser(site.getDomain(), name);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+        if (user.verifyPassword(password)) {
+            request.setUser(user);
+            request.sendRedirect(request.getPath());
+        } else {
+            request.setUser(null);
+            request.setAttribute("error", "Invalid user name or password");
+            processUnauthorized(request, site, path);
+        }
     }
 
     /**
@@ -157,5 +240,53 @@ public class DefaultController extends Controller {
             }
         }
         return res;
+    }
+    
+    /**
+     * Checks the read access to a content object for a user. If no
+     * content permissions are set, this method will default to true
+     * for all but a root content element. 
+     *
+     * @param content        the content object 
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has read access, or
+     *         false otherwise
+     * 
+     * @throws RequestException if the database couldn't be accessed
+     *             properly
+     */
+    private boolean hasReadAccess(Content content, User user) 
+        throws RequestException {
+
+        Permission[]  perms;
+        Group[]       groups = null;
+        
+        // Retrieve permissions
+        try {
+            perms = content.getPermissions();
+            if (perms.length == 0) {
+                return content.getParentId() > 0;
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+        
+        // Check permissions
+        try {
+            if (user != null) {
+                groups = user.getGroups();
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+        for (int i = 0; i < perms.length; i++) {
+            if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

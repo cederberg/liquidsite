@@ -56,31 +56,44 @@ public class AdminController extends Controller {
      * @param request        the request object to process
      */
     public void process(Request request) {
-        process(request, request.getPath());
     }
     
     /**
-     * Processes a request.
+     * Processes an authorized request. This is a request from a user
+     * with permissions to access the admin site.
      *
      * @param request        the request object to process
-     * @param path           the path to use
+     * @param path           the request path
      */
-    public void process(Request request, String path) {
+    public void processAuthorized(Request request, String path) {
         if (path.equals("style.css") || path.startsWith("images/")) {
             request.sendFile(getFile(path));
         } else {
-            displayLogin(request, null);
+            displayHome(request);
         }
     }
 
     /**
-     * Displays the login page.
+     * Processes an unauthorized request. This is a request from a 
+     * user without permissions to access the admin site.
+     *
+     * @param request        the request object to process
+     * @param path           the request path
+     */
+    public void processUnauthorized(Request request, String path) {
+        if (path.equals("style.css") || path.startsWith("images/")) {
+            request.sendFile(getFile(path));
+        } else {
+            request.forward("/admin/login.jsp");
+        }
+    }
+    
+    /**
+     * Displays the home page.
      *
      * @param request        the request object
-     * @param error          the error message, or null
      */
-    private void displayLogin(Request request, String error) {
-        request.setAttribute("error", error);
-        request.forward("/admin/login.jsp");
+    private void displayHome(Request request) {
+        request.forward("/admin/home.jsp");
     }
 }

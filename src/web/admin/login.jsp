@@ -18,11 +18,11 @@ String  error = (String) request.getAttribute("error");
         </tr>
         <tr>
           <th>Name:</th>
-          <td><input type="text" name="user" value="" /></td>
+          <td><input type="text" name="liquidsite.login" value="" /></td>
         </tr>
         <tr>
           <th>Password:</th>
-          <td><input type="password" name="password" value="" /></td>
+          <td><input type="password" name="liquidsite.password" value="" /></td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
