@@ -262,10 +262,13 @@ function tagEditInternalUnformat(editor) {
  * @param editor             the editor number
  */
 function tagEditInternalAddLink(editor) {
-    var  html;
     var  text;
+    var  html;
     var  js;
 
+    text = "Enter link URL and type. External URLs must start with " +
+           "\"<code>http://</code>\" and site-relative URLs with " +
+           "\"<code>/</code>\".";
     html = "<tr>\n" +
            "<th width='20%'>URL:</th>\n" +
            "<td width='80%'>\n" +
@@ -289,9 +292,6 @@ function tagEditInternalAddLink(editor) {
          "var type = document.getElementsByName('type').item(0).value;\n" +
          "opener.tagEditInternalInsertLink(" + editor + ", url, type);\n" +
          "window.close();\n";
-    text = "Enter link URL and type. External URLs must start with " +
-           "\"<code>http://</code>\" and site-relative URLs with " +
-           "\"<code>/</code>\".";
     utilCreateDialog("Insert Link", text, html, js, 380, 190);
 }
 

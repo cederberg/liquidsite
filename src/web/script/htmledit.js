@@ -234,9 +234,13 @@ function htmlEditInternalCommandSelect(editor, command) {
  * @param editor             the editor number
  */
 function htmlEditInternalAddLink(editor) {
+    var  text;
     var  html;
     var  js;
 
+    text = "Enter link URL. External URLs must start with " +
+           "\"<code>http://</code>\" and site-relative URLs with " +
+           "\"<code>/</code>\".";
     html = "<tr>\n" +
            "<th width='20%'>URL:</th>\n" +
            "<td width='80%'>\n" +
@@ -249,12 +253,7 @@ function htmlEditInternalAddLink(editor) {
     js = "var url = document.getElementsByName('url').item(0).value;\n" +
          "opener.htmlEditInternalInsertLink(" + editor + ", url);\n" +
          "window.close();\n";
-    utilCreateDialog("Insert Link",
-                     "Enter link URL.",
-                     html,
-                     js,
-                     380,
-                     150);
+    utilCreateDialog("Insert Link", text, html, js, 380, 170);
 }
 
 /**
