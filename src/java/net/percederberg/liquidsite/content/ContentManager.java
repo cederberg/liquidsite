@@ -519,8 +519,16 @@ public class ContentManager {
     public Content findIndexPage(Content parent) 
         throws ContentException {
             
-        // TODO: support more and/or configurable index pages
-        return findPage(parent, "index.html");
+        String[]  index = { "index.html", "index.htm" };
+        Content   page;
+
+        for (int i = 0; i < index.length; i++) {
+            page = findPage(parent, index[i]);
+            if (page != null) {
+                return page;
+            }
+        }
+        return null;
     }
 
     /**
