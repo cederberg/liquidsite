@@ -118,7 +118,11 @@ public class DialogView {
             dateStr = AdminUtils.formatDate(new Date());
         }
         if (comment == null) {
-            comment = content.getComment();
+            if (content.getRevisionNumber() == 0) {
+                comment = content.getComment();
+            } else {
+                comment = "Published";
+            }
         }
         AdminUtils.setReference(request, content);
         request.setAttribute("date", dateStr);
