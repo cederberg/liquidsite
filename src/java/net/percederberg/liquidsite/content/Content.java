@@ -277,6 +277,25 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Checks if this content object revision is online. Note that 
+     * this method does NOT take other revisions into account. A 
+     * later revision may set different online and offline dates,
+     * causing the content object to actually be offline.   
+     * 
+     * @return true if the content object revision is online, or
+     *         false otherwise
+     */
+    public boolean isOnline() {
+        Date  online = getOnlineDate();
+        Date  offline = getOfflineDate();
+        Date  now = new Date();
+        
+        return online != null 
+            && !online.before(now)
+            && (offline == null || offline.after(now));
+    }
+
+    /**
      * Returns the content domain.
      * 
      * @return the content domain

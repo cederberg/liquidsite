@@ -401,8 +401,12 @@ public class AdminController extends Controller {
         buffer.append(getDateScript(content.getOfflineDate()));
         buffer.append(");\n");
         buffer.append("objectAddStatusProperty(");
-        // TODO: get correct status value
-        buffer.append(ONLINE_STATUS);
+        // TODO: check for working revision and content locks
+        if (content.isOnline()) {
+            buffer.append(ONLINE_STATUS);
+        } else {
+            buffer.append(OFFLINE_STATUS);
+        }
         buffer.append(", null);\n");
         buffer.append(getPermissionsScript(content));
         return buffer.toString();
