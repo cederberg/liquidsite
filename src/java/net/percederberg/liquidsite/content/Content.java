@@ -389,7 +389,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *         false otherwise 
      */
     public boolean equals(Content obj) {
-        return getId() == obj.getId();
+        return obj != null && getId() == obj.getId();
     }
 
     /**
