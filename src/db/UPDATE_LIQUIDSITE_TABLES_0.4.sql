@@ -1,6 +1,6 @@
-# Updates Liquid Site Tables to version 0.4 (from 0.3)
+-- Updates Liquid Site Tables to version 0.4 (from 0.3)
 
-# Change domain length to 30 characters
+-- Change domain length to 30 characters
 ALTER TABLE `LS_DOMAIN`
     MODIFY COLUMN `NAME` VARCHAR(30) NOT NULL;
 ALTER TABLE `LS_USER`
@@ -21,13 +21,13 @@ ALTER TABLE `LS_LOCK`
     MODIFY COLUMN `DOMAIN` VARCHAR(30) NOT NULL;
 
 
-# Add ENABLED column to LS_USER
+-- Add ENABLED column to LS_USER
 ALTER TABLE `LS_USER`
     ADD COLUMN `ENABLED` SMALLINT NOT NULL;
 UPDATE `LS_USER` SET `ENABLED` = 1;
 
 
-# Add table LS_PREFERENCE
+-- Add table LS_PREFERENCE
 CREATE TABLE `LS_PREFERENCE` (
     `DOMAIN` VARCHAR(30) NOT NULL,
     `USER` VARCHAR(30) NOT NULL,
