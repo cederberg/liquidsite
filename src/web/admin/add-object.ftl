@@ -56,6 +56,19 @@
           </td>
         </tr>
 </#if>
+<#if enableFolder?exists>
+        <tr>
+          <th style="width: 7em;">
+            <input type="radio" name="category" value="folder" />
+            Folder
+          </th>
+          <td>
+            A folder contains other objects. All object in the folder
+            must have unique names. The special names 'index.html' 
+            and 'index.htm' are used to identify default objects.
+          </td>
+        </tr>
+</#if>
 <#if enableFile?exists>
         <tr>
           <th style="width: 7em;">

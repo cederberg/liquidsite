@@ -36,6 +36,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.FileContent;
+import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Site;
@@ -238,6 +239,12 @@ public class AdminController extends Controller {
                 } else {
                     processAddSite(request, parent);
                 }
+            } else if (category.equals("folder")) {
+                if (step.equals("1")) {
+                    view.pageEditFolder(request, parent, null);
+                } else {
+                    processAddFolder(request, parent);
+                }
             } else if (category.equals("file")) {
                 if (step.equals("1")) {
                     view.pageEditFile(request, parent);
@@ -330,10 +337,41 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Processes the add folder requests for the site view.
+     * 
+     * @param request        the request object
+     * @param parent         the parent content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processAddFolder(Request request, Object parent) 
+        throws ContentException, ContentSecurityException {
+
+        User    user = request.getUser();
+        Folder  folder;
+        
+        try {
+            validator.validateFolder(request);
+            folder = new Folder((Content) parent);
+            folder.setName(request.getParameter("name"));
+            folder.setComment(request.getParameter("comment"));
+            folder.save(user);
+            view.setSiteTreeFocus(request, folder);
+            request.sendRedirect("site.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.pageEditFolder(request, parent, null);
+        }
+    }
+
+    /**
      * Processes the add file requests for the site view.
      * 
      * @param request        the request object
-     * @param parent         the parent domain object
+     * @param parent         the parent content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
@@ -404,6 +442,13 @@ public class AdminController extends Controller {
                 } else {
                     processEditSite(request, (Site) obj);
                 }
+            } else if (obj instanceof Folder) {
+                if (step == null) {
+                    checkLock((Content) obj, request.getUser(), true);
+                    view.pageEditFolder(request, null, (Folder) obj);
+                } else {
+                    processEditFolder(request, (Folder) obj);
+                }
             } else if (obj instanceof FileContent) {
                 if (step == null) {
                     checkLock((Content) obj, request.getUser(), true);
@@ -453,6 +498,37 @@ public class AdminController extends Controller {
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditSite(request, site);
+        }
+    }
+
+    /**
+     * Processes the edit folder requests for the site view.
+     * 
+     * @param request        the request object
+     * @param folder         the folder content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processEditFolder(Request request, Folder folder) 
+        throws ContentException, ContentSecurityException {
+
+        User  user = request.getUser();
+        
+        try {
+            checkLock(folder, request.getUser(), false);
+            validator.validateFolder(request);
+            folder.setRevisionNumber(0);
+            folder.setName(request.getParameter("name"));
+            folder.setComment(request.getParameter("comment"));
+            folder.save(user);
+            removeLock(folder, request.getUser(), false);
+            request.sendRedirect("site.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.pageEditFolder(request, null, folder);
         }
     }
 

@@ -28,6 +28,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.FileContent;
+import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
@@ -348,6 +349,10 @@ class AdminScript {
                     buffer.append("objectAddNewButton('add-site.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
+                } else if (content instanceof Folder) {
+                    buffer.append("objectAddNewButton('add-site.html");
+                    buffer.append(getLinkParameters(content));
+                    buffer.append("');\n");
                 }
                 buffer.append("objectAddEditButton('edit-site.html");
                 buffer.append(getLinkParameters(content));
@@ -580,6 +585,8 @@ class AdminScript {
         switch (content.getCategory()) {
         case Content.SITE_CATEGORY:
             return "site";
+        case Content.FOLDER_CATEGORY:
+            return "folder";
         case Content.FILE_CATEGORY:
             return "file";
         default:
@@ -600,8 +607,11 @@ class AdminScript {
     private String getContentUrl(Content content) throws ContentException {
         if (content instanceof Site) {
             return content.toString();
+        } else if (content instanceof Folder) {
+            return getContentUrl(content.getParent()) +  
+                   content.toString() + "/"; 
         } else if (content instanceof FileContent) {
-            return content.getParent().toString() +  
+            return getContentUrl(content.getParent()) +  
                    content.toString(); 
         } else {
             return "N/A";

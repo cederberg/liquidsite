@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.FileContent;
+import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
@@ -339,9 +340,10 @@ class AdminView {
                 request.setAttribute("enableSite", true);
             }
         }
-        if (parent instanceof Site) {
+        if (parent instanceof Site || parent instanceof Folder) {
             content = (Content) parent;
             if (content.hasWriteAccess(user)) {
+                request.setAttribute("enableFolder", true);
                 request.setAttribute("enableFile", true);
             }
         }
@@ -446,6 +448,36 @@ class AdminView {
         request.setAttribute("comment", 
                              request.getParameter("comment", comment));
         request.sendTemplate("admin/edit-file.ftl");
+    }
+    
+    /**
+     * Shows the add or edit folder page. Either the parent or the
+     * folder object must be specified.
+     * 
+     * @param request        the request object
+     * @param parent         the parent object, or null
+     * @param folder         the folder object, or null
+     */
+    public void pageEditFolder(Request request, 
+                               Object parent, 
+                               Folder folder) {
+
+        String  name;
+        String  comment;
+
+        if (parent != null) {
+            setRequestReference(request, parent);
+            name = "";
+            comment = "Created";
+        } else {
+            setRequestReference(request, folder);
+            name = folder.getName();
+            comment = "";
+        }
+        request.setAttribute("name", request.getParameter("name", name));
+        request.setAttribute("comment", 
+                             request.getParameter("comment", comment));
+        request.sendTemplate("admin/edit-folder.ftl");
     }
     
     /**

@@ -68,6 +68,11 @@ public class AdminValidator {
     private FormValidator site = new FormValidator();
 
     /**
+     * The folder form validator.
+     */
+    private FormValidator folder = new FormValidator();
+
+    /**
      * The file form validator.
      */
     private FormValidator file = new FormValidator();
@@ -81,6 +86,13 @@ public class AdminValidator {
      * Creates a new administration validator.
      */
     public AdminValidator() {
+        initialize();
+    }
+    
+    /**
+     * Initializes all the form validators.
+     */
+    private void initialize() {
         String  error;
         String  chars;
         
@@ -117,8 +129,20 @@ public class AdminValidator {
         error = "No revision comment specified";
         site.addRequiredConstraint("comment", error);
 
+        // Add and edit page validator
+        folder.addRequiredConstraint("name", "No folder name specified");
+        chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
+                NUMBER_CHARACTERS + ".-_";
+        error = "Folder name contains invalid character";
+        folder.addCharacterConstraint("name", chars, error);
+        folder.addRequiredConstraint("comment", "No comment specified");
+    
         // Add and edit file validator
         file.addRequiredConstraint("name", "No file name specified");
+        chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
+                NUMBER_CHARACTERS + ".-_";
+        error = "File name contains invalid character";
+        file.addCharacterConstraint("name", chars, error);
         file.addRequiredConstraint("comment", "No comment specified");
 
         // Add publish validator
@@ -148,6 +172,17 @@ public class AdminValidator {
      */
     public void validateSite(Request request) throws FormException {
         site.validate(request);
+    }
+
+    /**
+     * Validates the parameters in an add and edit folder request.
+     * 
+     * @param request        the add or edit folder request
+     * 
+     * @throws FormException if the form validation failed
+     */
+    public void validateFolder(Request request) throws FormException {
+        folder.validate(request);
     }
 
     /**
