@@ -21,10 +21,7 @@
 
 package net.percederberg.liquidsite;
 
-import org.liquidsite.util.log.Log;
-
-import net.percederberg.liquidsite.admin.AdminRequestProcessor;
-
+import org.liquidsite.app.admin.AdminRequestProcessor;
 import org.liquidsite.app.legacy.ForumRequestProcessor;
 import org.liquidsite.app.servlet.Application;
 import org.liquidsite.app.servlet.RequestException;
@@ -36,6 +33,7 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
+import org.liquidsite.util.log.Log;
 
 /**
  * The default request processor for normal requests.

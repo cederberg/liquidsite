@@ -19,14 +19,13 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin.view;
+package org.liquidsite.app.admin.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.admin.AdminUtils;
-
+import org.liquidsite.app.admin.AdminUtils;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentSecurityException;

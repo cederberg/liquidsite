@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package org.liquidsite.app.admin;
 
 import java.io.File;
 import java.util.ArrayList;

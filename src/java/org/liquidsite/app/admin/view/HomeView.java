@@ -19,10 +19,9 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin.view;
+package org.liquidsite.app.admin.view;
 
-import net.percederberg.liquidsite.admin.AdminUtils;
-
+import org.liquidsite.app.admin.AdminUtils;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 

@@ -1,5 +1,5 @@
 /*
- * UnpublishDialogHandler.java
+ * HomeEditFormHandler.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,15 +19,9 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package org.liquidsite.app.admin;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import net.percederberg.liquidsite.admin.view.AdminView;
-
-import org.liquidsite.core.content.Content;
+import org.liquidsite.app.admin.view.AdminView;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.User;
@@ -36,39 +30,47 @@ import org.liquidsite.core.web.FormValidator;
 import org.liquidsite.core.web.Request;
 
 /**
- * The unpublish request handler. This class handles the unpublish
- * dialog workflow for content objects.
+ * The home edit request handler. This class handles the edit user
+ * and password workflows for the home view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class UnpublishDialogHandler extends AdminDialogHandler {
+class HomeEditFormHandler extends AdminFormHandler {
 
     /**
-     * The form validator.
+     * The edit user form validator.
      */
-    private FormValidator validator = new FormValidator();
+    private FormValidator editUser = new FormValidator();
 
     /**
-     * Creates a new unpublish request handler.
+     * The edit password form validator.
      */
-    public UnpublishDialogHandler() {
-        super("index.html", "unpublish.html", true);
+    private FormValidator editPassword = new FormValidator();
+
+    /**
+     * Creates a new home edit request handler.
+     */
+    public HomeEditFormHandler() {
+        super("home.html", "edit-home.html", false);
         initialize();
     }
 
     /**
-     * Initializes the form validator.
+     * Initializes the form validators.
      */
     private void initialize() {
-        SimpleDateFormat  df;
-        String            error;
+        String  error;
 
-        validator.addRequiredConstraint("date", "No unpublish date specified");
-        error = "Date format should be 'YYYY-MM-DD HH:MM'";
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        validator.addDateConstraint("date", df, error);
-        validator.addRequiredConstraint("comment", "No comment specified");
+        // Edit user validator
+        error = "No user name specified";
+        editUser.addRequiredConstraint("name", error);
+
+        // Edit password validator
+        error = "New password not specified";
+        editPassword.addRequiredConstraint("password1", error);
+        error = "Verification of new password not specified";
+        editPassword.addRequiredConstraint("password2", error);
     }
 
     /**
@@ -77,18 +79,13 @@ class UnpublishDialogHandler extends AdminDialogHandler {
      *
      * @param request        the request object
      * @param step           the workflow step
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
      */
-    protected void displayStep(Request request, int step)
-        throws ContentException, ContentSecurityException {
-
-        Content  content = (Content) AdminUtils.getReference(request);
-
-        AdminView.DIALOG.viewUnpublish(request, content);
+    protected void displayStep(Request request, int step) {
+        if (request.getParameter("edituser", "").equals("true")) {
+            AdminView.HOME.viewEditUser(request);
+        } else {
+            AdminView.HOME.viewEditPassword(request);
+        }
     }
 
     /**
@@ -106,7 +103,26 @@ class UnpublishDialogHandler extends AdminDialogHandler {
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        validator.validate(request);
+        User    user = request.getUser();
+        String  pass1;
+        String  pass2;
+
+        if (request.getParameter("edituser", "").equals("true")) {
+            editUser.validate(request);
+        } else {
+            editPassword.validate(request);
+            pass1 = request.getParameter("password1");
+            pass2 = request.getParameter("password2");
+            if (!pass1.equals(pass2)) {
+                pass1 = "The password verification doesn't match new password";
+                throw new FormValidationException("password2", pass1);
+            }
+            if (!user.verifyPassword(request.getParameter("password0"))) {
+                throw new FormValidationException(
+                    "password0",
+                    "Current password was incorrect");
+            }
+        }
     }
 
     /**
@@ -134,19 +150,16 @@ class UnpublishDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Content  content = (Content) AdminUtils.getReference(request);
-        User     user = request.getUser();
-        String   date;
+        User  user = request.getUser();
 
-        content.setRevisionNumber(content.getRevisionNumber() + 1);
-        try {
-            date = request.getParameter("date");
-            content.setOfflineDate(AdminUtils.parseDate(user, date));
-        } catch (ParseException e) {
-            content.setOfflineDate(new Date());
+        if (request.getParameter("edituser", "").equals("true")) {
+            user.setRealName(request.getParameter("name"));
+            user.setEmail(request.getParameter("email"));
+            user.save(user);
+        } else {
+            user.setPassword(request.getParameter("password1"));
+            user.save(user);
         }
-        content.setComment(request.getParameter("comment"));
-        content.save(user);
         return 0;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * UsersDeleteDialogHandler.java
+ * UnlockDialogHandler.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,32 +19,28 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package org.liquidsite.app.admin;
 
-import net.percederberg.liquidsite.admin.view.AdminView;
-
+import org.liquidsite.app.admin.view.AdminView;
+import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
-import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentSecurityException;
-import org.liquidsite.core.content.Domain;
-import org.liquidsite.core.content.Group;
-import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 
 /**
- * The users delete request handler. This class handles the delete
- * dialog workflow for user and group objects.
+ * The unlock request handler. This class handles the unlock dialog
+ * workflow for content objects.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class UsersDeleteDialogHandler extends AdminDialogHandler {
+class UnlockDialogHandler extends AdminDialogHandler {
 
     /**
-     * Creates a new users delete dialog handler.
+     * Creates a new unlock request handler.
      */
-    public UsersDeleteDialogHandler() {
-        super("index.html", "delete-user.html", true);
+    public UnlockDialogHandler() {
+        super("index.html", "unlock.html", false);
     }
 
     /**
@@ -62,9 +58,9 @@ class UsersDeleteDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object  ref = getReference(request);
+        Content  content = (Content) AdminUtils.getReference(request);
 
-        AdminView.DIALOG.viewDeleteUser(request, ref);
+        AdminView.DIALOG.viewUnlock(request, content);
     }
 
     /**
@@ -105,58 +101,9 @@ class UsersDeleteDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object   ref = getReference(request);
-        User     user;
-        Group    group;
+        Content  content = (Content) AdminUtils.getReference(request);
 
-        if (ref instanceof User) {
-            user = (User) ref;
-            if (user.equals(request.getUser())) {
-                throw new ContentSecurityException(
-                    "Cannot delete the current user");
-            }
-            user.delete(request.getUser());
-        } else if (ref instanceof Group) {
-            group = (Group) ref;
-            group.delete(request.getUser());
-        }
+        unlock(content, request.getUser(), true);
         return 0;
-    }
-
-    /**
-     * Returns the request reference object. This will be either a
-     * user or a group.
-     *
-     * @param request        the request object
-     *
-     * @return the request reference, or
-     *         null for none
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
-     */
-    private Object getReference(Request request)
-        throws ContentException, ContentSecurityException {
-
-        ContentManager  manager = AdminUtils.getContentManager();
-        String          type = request.getParameter("type", "");
-        String          domainName = request.getParameter("domain", "");
-        String          name = request.getParameter("name", "");
-        Domain          domain;
-
-        if (domainName.equals("")) {
-            domain = null;
-        } else {
-            domain = manager.getDomain(request.getUser(), domainName);
-        }
-        if (type.equals("user")) {
-            return manager.getUser(domain, name);
-        } else if (type.equals("group")) {
-            return manager.getGroup(domain, name);
-        } else {
-            return null;
-        }
     }
 }

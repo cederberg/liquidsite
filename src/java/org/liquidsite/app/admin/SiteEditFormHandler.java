@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package org.liquidsite.app.admin;
 
 import java.io.IOException;
 import java.util.Date;
@@ -27,8 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.percederberg.liquidsite.admin.view.AdminView;
-
+import org.liquidsite.app.admin.view.AdminView;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentFile;

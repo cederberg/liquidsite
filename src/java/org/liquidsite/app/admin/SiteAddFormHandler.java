@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package org.liquidsite.app.admin;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,8 +32,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import net.percederberg.liquidsite.admin.view.AdminView;
-
+import org.liquidsite.app.admin.view.AdminView;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentFile;
