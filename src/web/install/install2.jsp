@@ -16,16 +16,40 @@ String db;
 int noTables;
 String type;
 
+boolean isAdmin = 
+    ((Boolean) request.getAttribute("isAdmin")).booleanValue();
+
 boolean error = 
     ((Boolean) request.getAttribute("error")).booleanValue();
 boolean errorDbExists = 
     ((Boolean) request.getAttribute("errorDbExists")).booleanValue();
 boolean errorConnection = 
     ((Boolean) request.getAttribute("errorConnection")).booleanValue();
+    
+String infoColor = "";
+String info1 = "";
+String info2 = "";
+String dbchecked = "";
+String crColor = "";
+String crchecked = "";
+String crenabled = "";
+String nextenabled = "";
+if (!isAdmin) {
+    crenabled = " disabled";
+	crColor = " class=\"unimportant\"";
+} else if (dbsel.equals("")) {
+    crchecked = " checked";
+}
+if (!isAdmin && dbsInfo.size() == 0) {
+    nextenabled = " disabled";
+}
 %>
 <%@ include file="header.jsp" %>
 
-  <h2>Liquid Site Installation (2 of 5)</h2>
+  <h2>Liquid Site Installation (Step 2 of 5)</h2>
+
+  <p>Indicate the Liquid Site database. Note that if you select an 
+  existing database, all its information will be lost.</td>
 
 <% if (errorConnection) { %>
   <p class="incorrect">A connection could not be established to the
@@ -38,10 +62,15 @@ boolean errorConnection =
   <p class="incorrect">Select the radio button according to your
     preferences, and either select a database from the list, or enter
     a new database name.</p>
+<% } else if (!isAdmin && dbsInfo.size() == 0) { %>
+  <p class="incorrect">There are no available databases. Either go back
+    to the previous step and enter the information of a database user
+    with administration rights, or ask your admin to create a database
+    for your user.</p>
 <% } %>
 
   <form method="post" action="install.html">
-    <input type="hidden" name="step" value="3" />
+    <input type="hidden" name="step" value="2" />
     <input type="hidden" name="host" value="<%= host %>" />
     <input type="hidden" name="rootUsername" value="<%= rootUsername %>" />
     <input type="hidden" name="rootPassword" value="<%= rootPassword %>" />
@@ -51,53 +80,60 @@ boolean errorConnection =
     <input type="hidden" name="verify" value="<%= verify %>" />
   
     <table>
-      <tr>
-        <td>Select a database:</td>
-      </tr>
-      <tr>
-        <td>
 <% for (int i=0; i<dbsInfo.size(); i++) {
        dbInfo = (java.util.Hashtable) dbsInfo.get(i);
        db = (String) dbInfo.get("name");
        noTables = ((Integer) dbInfo.get("noTables")).intValue();
        type = (String) dbInfo.get("type");
-       if (dbsel.equals(db)) {
-%>
-          <input checked type="radio" name="dbsel" 
-            value="<%= db %>" /> <%= db %>
-<%     } else { %>
-          <input type="radio" name="dbsel" 
-            value="<%= db %>" /> <%= db %>
-<%     } 
        if (type.equals("conflict")) {
+           infoColor = " class=\"incorrect\"";
+           info1 = "(" + String.valueOf(noTables) + " tables found)";
+           info2 = "Conflict in tables";
+       } else if (type.equals("noaccess")) {
+           infoColor = " class=\"unimportant\"";
+           info1 = "";
+           info2 = "Not accessible";
+       } else if (type.equals("normal")) {
+           infoColor = "";
+           info1 = "(" + String.valueOf(noTables) + " tables found)";
+           info2 = "";
+       } else {
+           infoColor = "";
+           info1 = "(" + String.valueOf(noTables) + " tables found)";
+           info2 = "Liquid Site " + type;
+       }
+       if (dbsel.equals(db)) {
+           dbchecked = " checked";
+       } else {
+           dbchecked = "";
+       }
 %>
-          <span style="color: red">(<%= noTables %> tables found) 
-          CONFLICT IN TABLES</span>
-<%     } else if (type.equals("noaccess")) { %>
-          <span style="color: gray">NOT ACCESSIBLE</span>
-<%     } else if (type.equals("normal")) { %>
-          (<%= noTables %> tables found)
-<%     } else { %>
-          (<%= noTables %> tables found) LIQUID SITE <%= type %>
-<%     } %>
-          <br />
-<% }
-   if (dbsel.equals("")) { 
-%>
-          <input checked type="radio" name="dbsel" value="" />
-<% } else { %>
-          <input type="radio" name="dbsel" value="" />
+      <tr>
+        <td>
+          <input<%= dbchecked %> type="radio" name="dbsel" 
+            value="<%= db %>" /> <span<%= infoColor %>><%= db %></span>
+        </td>
+        <td><span<%= infoColor %>><%= info1 %></span></td>
+        <td><span<%= infoColor %>><%= info2 %></span></td>
+      </tr>
 <% } %>
-          Create new database: 
-          <input type="input" name="database" value="<%= database %>" />
+
+      <tr>
+        <td colspan="3">
+          <input<%= crchecked %><%= crenabled %> type="radio" 
+            name="dbsel" value="" />
+          <span<%= crColor %>>Create new database:</span>
+          <input<%= crenabled %> type="input" name="database" 
+            value="<%= database %>" />
         </td>
       </tr>
-      
+
       <tr>
         <td colspan="3">
           <input type="button" name="submit" value="&lt;&lt; Previous" 
             onclick="submit();" />
-          <input type="submit" name="submit" value="Next &gt;&gt;" /></td>
+          <input<%= nextenabled %> type="submit" name="submit" 
+            value="Next &gt;&gt;" /></td>
       </tr>
     </table>
   </form>
