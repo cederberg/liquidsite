@@ -13,7 +13,7 @@
         utilSessionKeepAlive();
     }
 
-    function previous() {
+    function doPrevious() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
@@ -152,7 +152,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="11" onclick="previous()">
+            <button type="button" tabindex="11" onclick="doPrevious()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>

@@ -7,7 +7,7 @@
         document.getElementsByName("date").item(0).focus();
     }
 
-    function previous() {
+    function doPrevious() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
@@ -60,7 +60,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="5" onclick="previous();">
+            <button type="button" tabindex="5" onclick="doPrevious();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>

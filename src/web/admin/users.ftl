@@ -2,31 +2,31 @@
 
     <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
-    function refresh() {
+    function doRefresh() {
         document.getElementsByName("page").item(0).value = "1";
         document.forms.item(0).submit();
     }
 
-    function changePage(page) {
+    function doChangePage(page) {
         document.getElementsByName("page").item(0).value = page;
         document.getElementsByName("filter").item(0).value = "${filter}";
         document.forms.item(0).submit();
     }
 
-    function openDeleteDialog(url) {
-        utilOpenDialog(url, 580, 310);
+    function doDelete(params) {
+        utilOpenDialog("delete-user.html?" + params, 580, 310);
         return false;
     }
     </script>
 
 
     <form method="get" accept-charset="UTF-8"
-          onsubmit="refresh(); return false;">
+          onsubmit="doRefresh(); return false;">
       <table class="form">
         <tr>
           <th>
             Domain:<br/>
-            <select name="domain" onchange="refresh()">
+            <select name="domain" onchange="doRefresh()">
 <#if liquidsite.user.superuser>
               <option>&lt;None&gt;</option>
 </#if>
@@ -41,7 +41,7 @@
           </th>
           <th>
             Type:<br/>
-            <select name="type" onchange="refresh()">
+            <select name="type" onchange="doRefresh()">
               <option value="user">Users</option>
 <#if groups?exists>
               <option value="group" selected="selected">Groups</option>
@@ -68,7 +68,7 @@
     <div style="margin-left: 10%">
       <p><strong>Page:</strong>
 <#if (page != 1) && (pages > 1)>
-      <a href="#" onclick="changePage(${page-1}); return false;">&lt;&lt;</a>
+      <a href="#" onclick="doChangePage(${page-1}); return false;">&lt;&lt;</a>
 <#else>
       &lt;&lt;
 </#if>
@@ -76,11 +76,11 @@
   <#if item = page>
       <strong>${item}</strong>
   <#else>
-      <a href="#" onclick="changePage(${item}); return false;">${item}</a>
+      <a href="#" onclick="doChangePage(${item}); return false;">${item}</a>
   </#if>
 </#list>
 <#if (page != pages) && (pages > 1)>
-      <a href="#" onclick="changePage(${page+1}); return false;">&gt;&gt;</a>
+      <a href="#" onclick="doChangePage(${page+1}); return false;">&gt;&gt;</a>
 <#else>
       &gt;&gt;
 </#if>
@@ -110,7 +110,7 @@
           <td>${user.comment?xml}</td>
           <td>
             <a href="#" title="Delete"
-               onclick="return openDeleteDialog('delete-user.html?${params}')"
+               onclick="return doDelete('${params}');"
                ><img src="images/icons/24x24/delete.png"  alt="Delete" /></a>
           </td>
         </tr>
@@ -138,7 +138,7 @@
               of ${userCount}</a></td>
           <td>
             <a href="#" title="Delete"
-               onclick="return openDeleteDialog('delete-user.html?${params}')"
+               onclick="return doDelete('${params}')"
                ><img src="images/icons/24x24/delete.png"  alt="Delete" /></a>
           </td>
         </tr>

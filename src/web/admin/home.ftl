@@ -1,12 +1,12 @@
 <#include "header.ftl">
 
     <script type="text/javascript">
-    function editUser() {
+    function doEditUser() {
         document.getElementsByName("edituser").item(0).value = "true";
         document.forms.item(0).submit();
     }
 
-    function editPassword() {
+    function doEditPassword() {
         document.getElementsByName("editpassword").item(0).value = "true";
         document.forms.item(0).submit();
     }
@@ -60,11 +60,11 @@
 </#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="1" onclick="editUser()">
+            <button type="button" tabindex="1" onclick="doEditUser()">
               <img src="images/icons/24x24/edit.png" />
               Edit
             </button>
-            <button type="button" tabindex="2" onclick="editPassword()">
+            <button type="button" tabindex="2" onclick="doEditPassword()">
               <img src="images/icons/24x24/edit.png" />
               Change Password
             </button>

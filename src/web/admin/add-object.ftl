@@ -7,7 +7,7 @@
         document.getElementsByName("category").item(0).focus();
     }
 
-    function previous() {
+    function doPrevious() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
@@ -152,7 +152,7 @@
 </#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="11" onclick="previous()">
+            <button type="button" tabindex="11" onclick="doPrevious()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>

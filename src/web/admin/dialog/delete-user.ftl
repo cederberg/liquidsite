@@ -2,7 +2,7 @@
 <#include "header.ftl">
 
     <script type="text/javascript">
-    function previous() {
+    function doPrevious() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
@@ -34,7 +34,7 @@
         </tr>
         <tr>
           <td class="buttons">
-            <button type="button" tabindex="2" onclick="previous();">
+            <button type="button" tabindex="2" onclick="doPrevious();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>

@@ -25,7 +25,7 @@
         document.getElementsByTagName("head")[0].appendChild(script);
     }
 
-    function previous() {
+    function doPrevious() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
@@ -176,7 +176,7 @@
                     onclick="return false;">
               Mozilla Disable Enter Submit
             </button>
-            <button type="button" tabindex="102" onclick="previous()">
+            <button type="button" tabindex="102" onclick="doPrevious()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
