@@ -169,7 +169,11 @@ public class ContentSite extends Content {
         }
         if (port == 0) {
             buffer.append(":<*>");
-        } else if (port != 80) {
+        } else if (port == 80 && getProtocol().equals("http")) {
+            // Skip printing port
+        } else if (port == 443 && getProtocol().equals("https")) {
+            // Skip printing port
+        } else {
             buffer.append(":");
             buffer.append(port);
         }
