@@ -21,20 +21,13 @@
 
 package net.percederberg.liquidsite;
 
-import java.io.StringWriter;
-
 import net.percederberg.liquidsite.admin.AdminRequestProcessor;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
-import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
  * The default request processor for normal requests.
@@ -88,7 +81,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
         String       path = request.getPath();
         User         user;
         ContentSite  site;
-        Content      page;
+        Content      content;
         boolean      access;
 
         // Find domain & site
@@ -129,17 +122,8 @@ public class DefaultRequestProcessor extends RequestProcessor {
                     admin.processUnauthorized(request, path);
                 }
             } else {
-                page = findPage(user, site, path);
-                // TODO: check for folder paths not ending with /
-                if (page instanceof ContentSite
-                 || page instanceof ContentFolder) {
-
-                    page = findIndexPage(user, page);
-                }
-                if (page == null) {
-                    throw RequestException.RESOURCE_NOT_FOUND;
-                }
-                processAuthorized(request, page);
+                content = locatePage(request, site, path);
+                processContent(request, content);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -151,29 +135,26 @@ public class DefaultRequestProcessor extends RequestProcessor {
     }
     
     /**
-     * Processes an authorized request.
+     * Processes a request for a content object.
      *
      * @param request        the request object
-     * @param page           the page requested
+     * @param content        the content object
      * 
      * @throws RequestException if the request couldn't be processed
      */
-    private void processAuthorized(Request request, Content page)
+    private void processContent(Request request, Content content)
         throws RequestException {
 
-        if (page instanceof ContentPage) {
-            processContentPage(request, (ContentPage) page);
-        } else if (page instanceof ContentFile) {
-            try {
-                request.sendFile(((ContentFile) page).getFile());
-            } catch (ContentException e) {
-                LOG.error("couldn't find content file for " + 
-                          page.getId() + ": " + e.getMessage());
-                throw RequestException.INTERNAL_ERROR;
-            }
-        } else {
-            LOG.error("unrecognized page content category " + 
-                      page.getCategory());
+        try {
+            sendContent(request, content);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.debug(e.getMessage());
+            throw RequestException.FORBIDDEN;
+        } catch (TemplateException e) {
+            LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         }
     }
@@ -227,30 +208,5 @@ public class DefaultRequestProcessor extends RequestProcessor {
     private void processLogout(Request request) {
         request.setUser(null);
         request.sendRedirect(request.getPath());
-    }
-
-    /**
-     * Processes a request to a content page.
-     *
-     * @param request        the request object
-     * @param page           the page requested
-     * 
-     * @throws RequestException if the request couldn't be processed
-     */
-    private void processContentPage(Request request, ContentPage page) 
-        throws RequestException {
-
-        User          user = request.getUser();
-        Template      template;
-        StringWriter  buffer = new StringWriter();
-
-        try {
-            template = TemplateManager.getPageTemplate(user, page);
-            template.process(request, getContentManager(), buffer);
-            request.sendData("text/html", buffer.toString());
-        } catch (TemplateException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        }
     }
 }

@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
@@ -34,16 +33,12 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
-import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
-import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
  * The request processor for the administration site(s).
@@ -404,7 +399,7 @@ public class AdminRequestProcessor extends RequestProcessor {
             } else if (content instanceof ContentDocument) {
                 processPreview(request, (ContentDocument) content, path);
             } else if (content instanceof ContentSection) {
-                processPreview(request, (ContentSection) content, path);
+                processPreview(request, (ContentSection) content);
             } else {
                 throw RequestException.FORBIDDEN;
             }
@@ -443,24 +438,16 @@ public class AdminRequestProcessor extends RequestProcessor {
         throws RequestException, ContentException, 
                ContentSecurityException, TemplateException {
 
-        Content  page;
+        Content  content;
         String   revision;
 
-        page = findPage(request.getUser(), site, path);
+        content = locatePage(request, site, path);
         revision = request.getParameter("revision");
-        if (page != null && revision != null) {
-            page = page.getRevision(Integer.parseInt(revision));
+        if (content != null && revision != null) {
+            content = content.getRevision(Integer.parseInt(revision));
         }
-        // TODO: check for folder paths not ending with /
-        if (page instanceof ContentSite || page instanceof ContentFolder) {
-            page = findIndexPage(request.getUser(), page);
-        }
-        if (page == null) {
-            throw RequestException.RESOURCE_NOT_FOUND;
-        } else {
-            request.setSite((ContentSite) site);
-            processPreview(request, page);
-        }
+        request.setSite((ContentSite) site);
+        sendContent(request, content);
     }
 
     /**
@@ -474,13 +461,11 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws TemplateException if the page template couldn't be 
-     *             processed correctly 
      */
     private void processPreview(Request request,
                                 ContentDocument doc,
                                 String path)
-        throws RequestException, ContentException, TemplateException {
+        throws RequestException, ContentException {
 
         ContentManager  manager = getContentManager();
         Content[]       children;
@@ -501,33 +486,29 @@ public class AdminRequestProcessor extends RequestProcessor {
         if (content != null && revision != null) {
             content = content.getRevision(Integer.parseInt(revision));
         }
-        if (content == null) {
-            throw RequestException.RESOURCE_NOT_FOUND;
-        } else if (!content.hasReadAccess(request.getUser())) {
-            throw RequestException.FORBIDDEN;
+        if (content instanceof ContentDocument) {
+            AdminView.CONTENT.viewDocumentPreview(request,
+                                                  (ContentDocument) content);
+        } else if (content instanceof ContentFile) {
+            request.sendFile(((ContentFile) content).getFile());
         } else {
-            processPreview(request, content);
+            throw RequestException.RESOURCE_NOT_FOUND;
         }
     }
 
     /**
-     * Processes a preview request for a specific section.
+     * Processes a preview request for a content section.
      * 
      * @param request        the request object
      * @param section        the content section object
-     * @param path           the preview path (within the document)
      *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws TemplateException if the page template couldn't be 
-     *             processed correctly 
      */
-    private void processPreview(Request request,
-                                ContentSection section,
-                                String path)
-        throws RequestException, ContentException, TemplateException {
+    private void processPreview(Request request, ContentSection section)
+        throws RequestException, ContentException {
 
         Content  content;
         String   revision;
@@ -537,48 +518,11 @@ public class AdminRequestProcessor extends RequestProcessor {
         if (content != null && revision != null) {
             content = content.getRevision(Integer.parseInt(revision));
         }
-        if (content == null) {
-            throw RequestException.RESOURCE_NOT_FOUND;
-        } else if (!content.hasReadAccess(request.getUser())) {
-            throw RequestException.FORBIDDEN;
-        } else {
-            processPreview(request, content);
-        }
-    }
-
-    /**
-     * Processes a preview request for a specific content object.
-     * 
-     * @param request        the request object
-     * @param content        the content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws TemplateException if the page template couldn't be 
-     *             processed correctly 
-     */
-    private void processPreview(Request request, Content content)
-        throws ContentException, TemplateException {
-
-        Template      template;
-        StringWriter  buffer;
-
-        if (content instanceof ContentPage) {
-            buffer = new StringWriter();
-            template = TemplateManager.getPageTemplate(request.getUser(),
-                                                       (ContentPage) content);
-            template.process(request, getContentManager(), buffer);
-            request.sendData("text/html", buffer.toString());
-        } else if (content instanceof ContentFile) {
-            request.sendFile(((ContentFile) content).getFile());
-        } else if (content instanceof ContentSection) {
+        if (content instanceof ContentSection) {
             AdminView.CONTENT.viewSectionPreview(request,
                                                  (ContentSection) content);
-        } else if (content instanceof ContentDocument) {
-            AdminView.CONTENT.viewDocumentPreview(request,
-                                                  (ContentDocument) content);
         } else {
-            request.sendData("text/plain", "Cannot preview this object");
+            throw RequestException.RESOURCE_NOT_FOUND;
         }
     }
 }

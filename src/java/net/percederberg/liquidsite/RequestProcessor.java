@@ -22,12 +22,20 @@
 package net.percederberg.liquidsite;
 
 import java.io.File;
+import java.io.StringWriter;
 
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.template.Template;
+import net.percederberg.liquidsite.template.TemplateException;
+import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
  * A request processor.
@@ -102,7 +110,7 @@ public abstract class RequestProcessor {
      * returned including the parent content object, if the path was
      * empty. 
      *
-     * @param user           the user requesting the page
+     * @param request        the request object
      * @param parent         the content parent
      * @param path           the request path after the parent
      * 
@@ -114,11 +122,12 @@ public abstract class RequestProcessor {
      * @throws ContentSecurityException if the specified content 
      *             object wasn't readable by the user
      */
-    protected Content findPage(User user, Content parent, String path) 
+    protected Content locatePage(Request request, Content parent, String path)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = getContentManager();
         Content         content = parent;
+        User            user = request.getUser();
         String          name;
         int             pos;
 
@@ -129,11 +138,15 @@ public abstract class RequestProcessor {
             } else {
                 name = path.substring(0, pos);
             }
+            content = manager.getContentChild(user, parent, name);
             path = path.substring(name.length());
             if (path.startsWith("/")) {
-                path = path.substring(1);
+                if (content instanceof ContentSite
+                 || content instanceof ContentFolder) {
+
+                    path = path.substring(1);
+                }
             }
-            content = manager.getContentChild(user, parent, name);
             parent = content;
         }
         return content;
@@ -144,7 +157,7 @@ public abstract class RequestProcessor {
      * NOT control access permissions and should thus ONLY be used 
      * internally in the request processing.
      * 
-     * @param user           the user requesting the page
+     * @param request        the request object
      * @param parent         the content parent
      * 
      * @return the index content object, or
@@ -155,18 +168,76 @@ public abstract class RequestProcessor {
      * @throws ContentSecurityException if the specified content 
      *             object wasn't readable by the user
      */
-    public Content findIndexPage(User user, Content parent) 
+    private Content locateIndexPage(Request request, Content parent) 
         throws ContentException, ContentSecurityException {
             
         String[]  index = { "index.html", "index.htm" };
         Content   page;
 
         for (int i = 0; i < index.length; i++) {
-            page = findPage(user, parent, index[i]);
+            page = locatePage(request, parent, index[i]);
             if (page != null) {
                 return page;
             }
         }
         return null;
+    }
+
+    /**
+     * Processes a request to a content object.
+     *
+     * @param request        the request object
+     * @param content        the content object requested
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     * @throws ContentSecurityException if the requested content 
+     *             object wasn't readable by the user
+     * @throws TemplateException if the page template couldn't be 
+     *             processed correctly 
+     * @throws RequestException if the content wasn't found
+     */
+    protected void sendContent(Request request, Content content)
+        throws ContentException, ContentSecurityException, 
+               TemplateException, RequestException {
+
+        if (content instanceof ContentSite) {
+            content = locateIndexPage(request, content);
+            sendContent(request, content);
+        } else if (content instanceof ContentFolder) {
+            if (request.getPath().endsWith("/")) {
+                content = locateIndexPage(request, content);
+                sendContent(request, content);
+            } else {
+                request.sendRedirect(request.getPath() + "/");
+            }
+        } else if (content instanceof ContentPage) {
+            sendContentPage(request, (ContentPage) content);
+        } else if (content instanceof ContentFile) {
+            request.sendFile(((ContentFile) content).getFile());
+        } else {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        }
+    }
+
+    /**
+     * Processes a request to a content page.
+     *
+     * @param request        the request object
+     * @param page           the page requested
+     * 
+     * @throws TemplateException if the page template couldn't be 
+     *             processed correctly 
+     */
+    private void sendContentPage(Request request, ContentPage page) 
+        throws TemplateException {
+
+        User          user = request.getUser();
+        Template      template;
+        StringWriter  buffer = new StringWriter();
+
+        template = TemplateManager.getPageTemplate(user, page);
+        template.process(request, getContentManager(), buffer);
+        request.sendData("text/html", buffer.toString());
     }
 }
