@@ -1,7 +1,5 @@
-<% 
-    String  error = (String) request.getAttribute("error");
-%>
 <?xml version="1.0" encoding="ISO-8859-1"?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "DTD/xhtml1-strict.dtd">
 
@@ -26,8 +24,8 @@
           <h1>Liquid Site Administration</h1>
         </td>
         <td class="extra">
-          Version&nbsp;<%=request.getAttribute("liquidsite.build.version")%><br />
-          <%=request.getAttribute("liquidsite.build.date")%>
+          Version&nbsp;${liquidSiteVersion}<br />
+          ${liquidSiteDate}
         </td>
       </tr>
       <tr>
@@ -52,9 +50,9 @@
           </td>
           <td colspan="2">
             <h2>Login</h2>
-<% if (error != null) { %>
-            <p class="incorrect">Error: <%=error%></p>
-<% } %>  
+<#if error?has_content>
+            <p class="incorrect">Error: ${error}</p>
+</#if>  
           </td>
         </tr>
         <tr>
@@ -76,4 +74,4 @@
       </table>
     </form>
 
-<%@ include file="footer.jsp" %>
+<#include "footer.ftl">

@@ -149,7 +149,7 @@ public class AdminController extends Controller {
                 request.setAttribute("error", 
                                      "Access denied for your current user."); 
             }
-            request.forward("/admin/login.jsp");
+            request.sendTemplate("admin/login.ftl");
         }
     }
     
@@ -169,7 +169,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displayHome(Request request) {
-        request.forward("/admin/home.jsp");
+        request.sendTemplate("admin/home.ftl");
     }
 
     /**
@@ -183,7 +183,7 @@ public class AdminController extends Controller {
     private void displaySite(Request request) throws RequestException {
         request.setAttribute("initialize", 
                              getSiteInitializeScript(request.getUser()));
-        request.forward("/admin/site.jsp");
+        request.sendTemplate("admin/site.ftl");
     }
 
     /**
@@ -192,7 +192,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displayContent(Request request) {
-        request.forward("/admin/content.jsp");
+        request.sendTemplate("admin/content.ftl");
     }
 
     /**
@@ -201,7 +201,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displayUsers(Request request) {
-        request.forward("/admin/users.jsp");
+        request.sendTemplate("admin/users.ftl");
     }
 
     /**
@@ -210,7 +210,7 @@ public class AdminController extends Controller {
      * @param request        the request object
      */
     private void displaySystem(Request request) {
-        request.forward("/admin/system.jsp");
+        request.sendTemplate("admin/system.ftl");
     }
 
     /**

@@ -1,7 +1,5 @@
-<%
-    request.setAttribute("onload", "initialize()");
-%>
-<%@ include file="header.jsp" %>
+<#assign onload = "initialize()">
+<#include "header.ftl">
 
     <script type="text/javascript" src="script/tree.js"></script>
 
@@ -11,7 +9,7 @@
     function initialize() {
         objectInitialize("object");
         treeInitialize("tree", loadItem, openItem);
-        <%=request.getAttribute("initialize")%>
+        ${initialize}
     }
 
     function loadItem(type, id) {
@@ -42,4 +40,4 @@
       </tr>
     </table>
 
-<%@ include file="footer.jsp" %>
+<#include "footer.ftl">

@@ -29,11 +29,9 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -84,18 +82,11 @@ public class Request {
     private static final int TEMPLATE_RESPONSE = 3;
      
     /**
-     * The forward response type. This type is used when a request
-     * forward has been issued. The response data contains the 
-     * forwarding location when this type is set.
-     */
-    private static final int FORWARD_RESPONSE = 5;
-     
-    /**
      * The redirect response type. This type is used when a request
      * redirect has been issued. The response data contains the 
      * redirect URI (absolute or relative) when this type is set.
      */
-    private static final int REDIRECT_RESPONSE = 6;
+    private static final int REDIRECT_RESPONSE = 4;
 
     /**
      * The HTTP request. 
@@ -334,30 +325,6 @@ public class Request {
     }
 
     /**
-     * Forwards this request to within the same servlet context. This
-     * method will set a request response.
-     * 
-     * @param path           the path to the resource
-     */
-    public void forward(String path) {
-        responseType = FORWARD_RESPONSE;
-        responseData = path;
-    }
-    
-    /**
-     * Redirects this request by sending a temporary redirection URL
-     * to the browser. The location specified may be either an 
-     * absolute or a relative URL. This method will set a request 
-     * response.
-     * 
-     * @param location       the destination location
-     */
-    public void sendRedirect(String location) {
-        responseType = REDIRECT_RESPONSE;
-        responseData = location;
-    }
-
-    /**
      * Sends the specified data as the request response.
      * 
      * @param mimeType       the data MIME type
@@ -397,6 +364,19 @@ public class Request {
     }
     
     /**
+     * Redirects this request by sending a temporary redirection URL
+     * to the browser. The location specified may be either an 
+     * absolute or a relative URL. This method will set a request 
+     * response.
+     * 
+     * @param location       the destination location
+     */
+    public void sendRedirect(String location) {
+        responseType = REDIRECT_RESPONSE;
+        responseData = location;
+    }
+
+    /**
      * Sends the request response to the underlying HTTP response 
      * object. 
      * 
@@ -420,9 +400,6 @@ public class Request {
         case TEMPLATE_RESPONSE:
             commitTemplate();
             break;
-        case FORWARD_RESPONSE:
-            commitForward(context);
-            break;
         case REDIRECT_RESPONSE:
             commitRedirect();
             break;
@@ -432,43 +409,6 @@ public class Request {
         }
     }
 
-    /**
-     * Sends the forward response to the underlying HTTP response 
-     * object. 
-     * 
-     * @param context        the servlet context
-     * 
-     * @throws IOException if an IO error occured while attempting to
-     *             forward the request
-     * @throws ServletException if the JSP servlet wasn't found
-     */
-    private void commitForward(ServletContext context)
-        throws IOException, ServletException {
-
-        RequestDispatcher  disp;
-
-        LOG.debug("Forwarding request for " + this + " to " + responseData);
-        disp = context.getNamedDispatcher("JspServlet");
-        if (disp == null) {
-            throw new ServletException(
-                "Couldn't find 'JspServlet' in context");
-        }
-        disp.forward(new ForwardRequestWrapper(request, responseData), 
-                     response);
-    }
-
-    /**
-     * Sends the redirect response to the underlying HTTP response 
-     * object. 
-     * 
-     * @throws IOException if an IO error occured while attempting to
-     *             redirect the request
-     */
-    private void commitRedirect() throws IOException {
-        LOG.debug("Redirecting request for " + this + " to " + responseData);
-        response.sendRedirect(responseData);
-    }
-    
     /**
      * Sends the data response to the underlying HTTP response object. 
      * 
@@ -549,50 +489,14 @@ public class Request {
     }
 
     /**
-     * An HTTP forwarding request. This request wrapper is used to 
-     * forward request to JSP:s. 
-     *
-     * @author   Per Cederberg, <per at percederberg dot net>
-     * @version  1.0
+     * Sends the redirect response to the underlying HTTP response 
+     * object. 
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             redirect the request
      */
-    private class ForwardRequestWrapper extends HttpServletRequestWrapper {
-
-        /**
-         * The request forward path.
-         */
-        private String forward;
-
-        /**
-         * Creates a new forwarding request.
-         * 
-         * @param request        the original HTTP request
-         * @param forward        the forwarding path
-         */
-        public ForwardRequestWrapper(HttpServletRequest request, 
-                                     String forward) {
-
-            super(request);
-            this.forward = forward;
-        }
-        
-        /**
-         * Returns the forwarding path.
-         * 
-         * @return the forwarding path
-         */
-        public String getServletPath() {
-            return forward;
-        }
-
-        /**
-         * Returns the additional path. This method always returns 
-         * null, as the forwarding request does not support 
-         * additional paths. 
-         * 
-         * @return null as no additional path exists
-         */
-        public String getPathInfo() {
-            return null;
-        }
+    private void commitRedirect() throws IOException {
+        LOG.debug("Redirecting request for " + this + " to " + responseData);
+        response.sendRedirect(responseData);
     }
 }

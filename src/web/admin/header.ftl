@@ -13,11 +13,11 @@
     <title>Liquid Site Administration</title>
   </head>
 
-<% if (request.getAttribute("onload") != null) { %>
-  <body onload="<%=request.getAttribute("onload")%>">
-<% } else { %>
+<#if onload?has_content>
+  <body onload="${onload}">
+<#else>
   <body>
-<% } %>
+</#if>
 
     <table class="menu">
       <tr>
@@ -28,8 +28,8 @@
           <h1>Liquid Site Administration</h1>
         </td>
         <td class="extra">
-          Version&nbsp;<%=request.getAttribute("liquidsite.build.version")%><br />
-          <%=request.getAttribute("liquidsite.build.date")%>
+          Version&nbsp;${liquidSiteVersion}<br />
+          ${liquidSiteDate}
         </td>
       </tr>
       <tr>
