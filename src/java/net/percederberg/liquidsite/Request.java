@@ -194,13 +194,7 @@ public class Request {
      * @see #setUser
      */
     public User getUser() {
-        HttpSession  session = request.getSession(false);
-        
-        if (session != null && session.getAttribute("user") != null) {
-            return (User) session.getAttribute("user");
-        } else {
-            return null;
-        }
+        return (User) getSessionAttribute("user");
     }
     
     /**
@@ -213,11 +207,7 @@ public class Request {
      * @see #getUser
      */
     public void setUser(User user) {
-        if (user != null) {
-            request.getSession().setAttribute("user", user);
-        } else {
-            request.getSession().removeAttribute("user");
-        }
+        setSessionAttribute("user", user);
     }
 
     /**
@@ -314,6 +304,56 @@ public class Request {
         return (value == null) ? defVal : value;
     }
     
+    /**
+     * Returns the value of a session attribute. This method will not
+     * create a new session if one didn't already exist.
+     * 
+     * @param name           the attribute name 
+     *
+     * @return the attribute value, or
+     *         null if no such attribute was found
+     */
+    public Object getSessionAttribute(String name) {
+        return getSessionAttribute(name, null);
+    }
+
+    /**
+     * Returns the value of a session attribute. If the specified
+     * attribute does not exist, a default value will be returned.
+     * This method will not create a new session if one didn't 
+     * already exist.
+     * 
+     * @param name           the attribute name
+     * @param defVal         the default attribute value 
+     *
+     * @return the attribute value, or
+     *         the default value if no such attribute was found
+     */
+    public Object getSessionAttribute(String name, Object defVal) {
+        HttpSession  session = request.getSession(false);
+        
+        if (session != null && session.getAttribute(name) != null) {
+            return session.getAttribute(name);
+        } else {
+            return defVal;
+        }
+    }
+
+    /**
+     * Sets a session attribute value. This method creates a new 
+     * session if one didn't already exist.
+     *
+     * @param name           the attribute name
+     * @param value          the attribute value, or null to remove
+     */
+    public void setSessionAttribute(String name, Object value) {
+        if (value == null) {
+            request.getSession().removeAttribute(name);
+        } else {
+            request.getSession().setAttribute(name, value);
+        }
+    }
+
     /**
      * Returns a string representation of this request.
      * 
