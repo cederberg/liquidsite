@@ -21,6 +21,11 @@
 
 
 /**
+ * The icon location path.
+ */
+var UTIL_ICON_PATH = "images/icons/24x24/";
+
+/**
  * The list of HTML nodes to be removed. This is used as IE 5.0 (at
  * least) require a short delay after removing a form element 
  * (textarea or input). If all elements are removed instantly, the IE
@@ -98,6 +103,30 @@ function utilAddTextElement(parent, text) {
 
     parent.appendChild(elem);
     return elem;
+}
+
+/**
+ * Creates and adds a link element.
+ *
+ * @param parent             the parent HTML node
+ * @param text               the link text
+ * @param image              the link icon image
+ * @param script             the script to execute on click
+ *
+ * @return the HTML element created
+ */
+function utilAddLinkElement(parent, text, image, script) {
+    var  a = utilAddElement(parent, "a");
+
+    a.href = "#";
+    a.title = text;
+    a.tabIndex = "10";
+    a.onclick = new Function(script + " return false;");
+    img = utilAddElement(a, "img");
+    img.src = UTIL_ICON_PATH + image;
+    img.alt = text;
+    utilAddTextElement(a, " " + text);
+    return a;
 }
 
 /**

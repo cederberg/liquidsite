@@ -21,11 +21,6 @@
 
 
 /**
- * The template icon location path.
- */
-var TEMPLATE_ICON_PATH = "images/icons/24x24/";
-
-/**
  * The page element table element. This variable is set by the
  * templateInitialize() function.
  */
@@ -97,7 +92,7 @@ function templateDisplay() {
     input.tabIndex = "10";
     input.name = "template.new";
     script = "templateInternalAddLocal('template.new');";
-    templateInternalAddAction(td, "Add", "add.png", script);
+    utilAddLinkElement(td, "Add", "add.png", script);
 }
 
 /**
@@ -187,7 +182,7 @@ function templateInternalDisplayInherited(name) {
     utilAddElement(td, "br");
     script = "templateAddLocal('" + name + "', TEMPLATE_INHERITED." + 
              name + "); templateDisplay();";
-    templateInternalAddAction(td, "Edit", "edit.png", script);
+    utilAddLinkElement(td, "Edit", "edit.png", script);
     td = utilAddElement(tr, "td");
     templateInternalAddEditor(td, name, TEMPLATE_INHERITED[name], false);
 }
@@ -211,33 +206,9 @@ function templateInternalDisplayLocal(name) {
     utilAddElement(td, "br");
     utilAddElement(td, "br");
     script = "templateRemoveLocal('" + name + "'); templateDisplay();";
-    templateInternalAddAction(td, "Delete", "delete.png", script);
+    utilAddLinkElement(td, "Delete", "delete.png", script);
     td = utilAddElement(tr, "td");
     templateInternalAddEditor(td, name, TEMPLATE_LOCAL[name], true);
-}
-
-/**
- * Creates and adds an action link.
- *
- * @param parent             the parent HTML node
- * @param name               the action name
- * @param image              the action image file name
- * @param script             the script to execute on the action
- *
- * @return the HTML element created
- */
-function templateInternalAddAction(parent, name, image, script) {
-    var  a = utilAddElement(parent, "a");
-
-    a.href = "#";
-    a.title = name;
-    a.tabIndex = "10";
-    a.onclick = new Function(script + " return false;");
-    img = utilAddElement(a, "img");
-    img.src = TEMPLATE_ICON_PATH + image;
-    img.alt = name;
-    utilAddTextElement(a, " " + name);
-    return a;
 }
 
 /**
