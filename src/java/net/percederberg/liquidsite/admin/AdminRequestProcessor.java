@@ -40,6 +40,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.TemplateException;
 
 /**
@@ -581,7 +582,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      * Processes the statistics requests.
      * 
      * @param request        the request object
-     * @param path           the statistics file path
+     * @param path           the statistics path
      *
      * @throws RequestException if the request couldn't be processed
      *             correctly
@@ -589,12 +590,18 @@ public class AdminRequestProcessor extends RequestProcessor {
     private void processStats(Request request, String path)
         throws RequestException {
 
+        User    user = request.getUser();
         Domain  domain;
         File    file;
+        String  str;
+        int     pos;
 
         try {
-            domain = request.getEnvironment().getDomain();
-            if (!domain.hasAdminAccess(request.getUser())) {
+            pos = path.indexOf("/");
+            str = path.substring(0, pos);
+            path = path.substring(pos + 1);
+            domain = getContentManager().getDomain(user, str);
+            if (!domain.hasAdminAccess(user)) {
                 throw RequestException.FORBIDDEN;
             }
             file = AdminUtils.getStatisticsDir(domain);
@@ -609,6 +616,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
+            request.sendData("text/plain", e.getMessage());
+        } catch (ContentSecurityException e) {
             request.sendData("text/plain", e.getMessage());
         }
     }

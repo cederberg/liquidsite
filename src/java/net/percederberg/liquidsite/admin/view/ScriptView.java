@@ -234,7 +234,8 @@ public class ScriptView {
             if (AdminUtils.getStatisticsDir(domain) == null) {
                 buffer.append("'Unavailable'");
             } else {
-                buffer.append("'Available', null, 'stats/index.html'");
+                str = "stats/" + domain.getName() + "/index.html";
+                buffer.append("'Available', null, '" + str + "'");
             }
             buffer.append(");\n");
         }
