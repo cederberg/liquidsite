@@ -11,13 +11,13 @@
   </description>
 
   <servlet>
-    <servlet-name>FrontControllerServlet</servlet-name>
-    <display-name>Front Controller Servlet</display-name>
+    <servlet-name>LiquidSiteServlet</servlet-name>
+    <display-name>Liquid Site Servlet</display-name>
     <description>
-      The front controller servlet. This servlet processes all 
-      incoming HTTP requests.
+      The Liquid Site servlet. This servlet acts as a front controller
+      and processes all incoming HTTP requests.
     </description>
-    <servlet-class>net.percederberg.liquidsite.FrontControllerServlet</servlet-class>
+    <servlet-class>net.percederberg.liquidsite.LiquidSiteServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   
@@ -46,7 +46,7 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>FrontControllerServlet</servlet-name>
+    <servlet-name>LiquidSiteServlet</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
 

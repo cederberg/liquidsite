@@ -1,5 +1,5 @@
 /*
- * FrontControllerServlet.java
+ * LiquidSiteServlet.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -43,13 +43,13 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class FrontControllerServlet extends HttpServlet 
+public class LiquidSiteServlet extends HttpServlet 
     implements Application {
 
     /**
      * The class logger.
      */
-    private static final Log LOG = new Log(FrontControllerServlet.class);
+    private static final Log LOG = new Log(LiquidSiteServlet.class);
 
     /**
      * The application monitor thread.
