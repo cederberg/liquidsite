@@ -22,10 +22,27 @@
         document.forms.item(0).submit();
     }
 
+    function doReload() {
+        htmlEditSubmit();
+        utilGetElement("action").value = "reload";
+        document.forms.item(0).submit();
+    }
+
     function doUpload() {
         htmlEditSubmit();
         utilGetElement("action").value = "upload";
         document.forms.item(0).submit();
+    }
+
+    function doDelete(id, name) {
+        if (id == "0") {
+            htmlEditSubmit();
+            utilGetElement("action").value = "filedelete";
+            utilGetElement("filename").value = name;
+            document.forms.item(0).submit();
+        } else {
+            utilOpenDialog("delete.html?type=file&id=" + id,560,310);
+        }
     }
 
     function doSave() {
@@ -55,6 +72,7 @@
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="category" value="document" />
+      <input type="hidden" name="filename" value="" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="15">
@@ -155,6 +173,7 @@
                 <th>Name</th>
                 <th>Size</th>
                 <th>Type</th>
+                <th></th>
               </tr>
 <#if files?size = 0>
               <tr>
@@ -170,18 +189,20 @@
                 </td>
                 <td>${file.fileSize}</td>
                 <td>${file.mimeType}</td>
+                <td>
+                  <a href="#"
+                     onclick="doDelete('${file.id}', '${file.name}'); return false;"
+                     title="Delete"><img
+                     src="images/icons/24x24/delete.png" /></a>
+                </td>
               </tr>
 </#list>
             </table>
 
-            <p><strong>Add File:
+            <p><img src="images/icons/24x24/add.png" />
+            <strong>Add File:</strong>
             <input type="file" tabindex="98"
-                   name="upload" value="" />
-            &nbsp;
-            <button type="button" tabindex="99" onclick="doUpload()">
-              <img src="images/icons/24x24/add.png" />
-              Add
-            </button></p>
+                   name="upload" onchange="doUpload()" /></p>
           </td>
         </tr>
         <tr>

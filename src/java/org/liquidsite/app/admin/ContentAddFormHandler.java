@@ -174,6 +174,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
         ContentEditFormHandler  edit = ContentEditFormHandler.getInstance();
         Object                  parent = AdminUtils.getReference(request);
         String                  category;
+        String                  action;
 
         category = request.getParameter("category", "");
         if (step == 1) {
@@ -181,8 +182,14 @@ public class ContentAddFormHandler extends AdminFormHandler {
         } else if (category.equals("section")) {
             handleAddSection(request, parent);
         } else if (category.equals("document")) {
-            if (request.getParameter("action", "").equals("upload")) {
-                edit.handleSessionFileUpload(request);
+            action = request.getParameter("action", "");
+            if (action.equals("reload")) {
+                return step;
+            } else if (action.equals("upload")) {
+                edit.handleFileUpload(request);
+                return step;
+            } else if (action.equals("filedelete")) {
+                edit.handleFileRemoval(request);
                 return step;
             } else {
                 handleAddDocument(request, (ContentSection) parent);

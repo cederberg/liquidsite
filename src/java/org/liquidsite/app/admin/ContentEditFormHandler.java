@@ -222,6 +222,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         SiteEditFormHandler  handler = SiteEditFormHandler.getInstance();
         String               category;
+        String               action;
         String               message;
 
         category = request.getParameter("category", "");
@@ -231,7 +232,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
                       "exists in the parent section or domain";
             handler.validateParent(request, "parent", message);
         } else if (category.equals("document")) {
-            if (request.getParameter("action", "").equals("upload")) {
+            action = request.getParameter("action", "");
+            if (action.equals("reload") || action.equals("filedelete")) {
+                // No validation needed
+            } else if (action.equals("upload")) {
                 validateUpload(request);
             } else {
                 documentValidator.validate(request);
@@ -315,12 +319,19 @@ public class ContentEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         Object  ref = AdminUtils.getReference(request);
+        String  action;
 
         if (ref instanceof ContentSection) {
             handleEditSection(request, (ContentSection) ref);
         } else if (ref instanceof ContentDocument) {
-            if (request.getParameter("action", "").equals("upload")) {
-                handleSessionFileUpload(request);
+            action = request.getParameter("action", "");
+            if (action.equals("reload")) {
+                return step;
+            } else if (action.equals("upload")) {
+                handleFileUpload(request);
+                return step;
+            } else if (action.equals("filedelete")) {
+                handleFileRemoval(request);
                 return step;
             } else {
                 handleEditDocument(request, (ContentDocument) ref);
@@ -621,15 +632,15 @@ public class ContentEditFormHandler extends AdminFormHandler {
     }
 
     /**
-     * Handles a session file upload. The file will be added to the
-     * request session.
+     * Handles a file upload (in the document editing form). The file
+     * will be added to the request session.
      *
      * @param request        the request object
      *
      * @throws ContentException if the file couldn't be added to the
      *             session correctly
      */
-    public void handleSessionFileUpload(Request request)
+    public void handleFileUpload(Request request)
         throws ContentException {
 
         FileParameter   param;
@@ -656,6 +667,17 @@ public class ContentEditFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles a file removal (in the document editing form). The
+     * file will either be removed from the request session or
+     * deleted as a content object.
+     *
+     * @param request        the request object
+     */
+    public void handleFileRemoval(Request request) {
+        request.getSession().removeFile(request.getParameter("filename"));
     }
 
     /**
