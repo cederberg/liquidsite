@@ -120,7 +120,6 @@ public class ContentAddFormHandler extends AdminFormHandler {
 
         ContentEditFormHandler  edit = ContentEditFormHandler.getInstance();
         String                  category;
-        FileParameter           param;
         String                  message;
 
         category = request.getParameter("category", "");
@@ -130,20 +129,61 @@ public class ContentAddFormHandler extends AdminFormHandler {
                 throw new FormValidationException("category", message);
             }
         } else {
-            edit.validateStep(request, step);
             if (category.equals("file")) {
-                param = request.getFileParameter("upload");
-                if (param == null || param.getSize() <= 0) {
-                    message = "No file upload specified";
-                    throw new FormValidationException("upload", message);
-                }
+                validateFile(request);
             } else if (category.equals("topic")) {
+                edit.validateStep(request, step);
                 if (request.getParameter("post", "").length() <= 0) {
                     message = "No first post message specified";
                     throw new FormValidationException("post", message);
                 }
+            } else {
+                edit.validateStep(request, step);
             }
         }
+    }
+
+    /**
+     * Validates a content file add form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateFile(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        FileParameter   param;
+        Content         content;
+        String          name;
+        String          message;
+
+        param = request.getFileParameter("upload");
+        if (param == null || param.getSize() <= 0) {
+            message = "No file upload specified";
+            throw new FormValidationException("upload", message);
+        }
+        name = request.getParameter("name");
+        if (name == null || name.equals("")) {
+            name = convertFileName(param.getName());
+        }
+        content = (Content) AdminUtils.getReference(request);
+        content = manager.getContentChild(request.getUser(),
+                                          content,
+                                          name);
+        if (content != null) {
+            message = "Another file with identical name is already " +
+                      "attached to the parent document";
+            throw new FormValidationException("name", message);
+        }
+        validateComment(request);
     }
 
     /**
@@ -340,11 +380,17 @@ public class ContentAddFormHandler extends AdminFormHandler {
         ContentManager  manager = AdminUtils.getContentManager();
         FileParameter   param;
         ContentFile     file;
+        String          name;
 
         try {
             param = request.getFileParameter("upload");
-            file = new ContentFile(manager, parent, param.getName());
-            file.setName(request.getParameter("name"));
+            name = convertFileName(param.getName());
+            file = new ContentFile(manager, parent, name);
+            name = request.getParameter("name");
+            if (name == null || name.equals("")) {
+                name = file.getFileName();
+            }
+            file.setName(name);
             file.setComment(request.getParameter("comment"));
             if (request.getParameter("action", "").equals("publish")) {
                 file.setRevisionNumber(1);

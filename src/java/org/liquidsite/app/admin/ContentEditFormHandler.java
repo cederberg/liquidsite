@@ -221,10 +221,9 @@ public class ContentEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException,
                FormValidationException {
 
-        SiteEditFormHandler  handler = SiteEditFormHandler.getInstance();
-        String               category;
-        String               action;
-        String               message;
+        String  category;
+        String  action;
+        String  message;
 
         category = request.getParameter("category", "");
         if (category.equals("section")) {
@@ -245,8 +244,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
                 validateParent(request, "section", message);
             }
         } else if (category.equals("file")) {
-            handler.validateFile(request);
-            // TODO: validate parent
+            validateFile(request);
         } else if (category.equals("forum")) {
             forumValidator.validate(request);
             message = "Another object with identical name already " +
@@ -260,6 +258,53 @@ public class ContentEditFormHandler extends AdminFormHandler {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
         }
+    }
+
+    /**
+     * Validates a content file edit form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateFile(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        Content         content;
+        String          name;
+        int             id;
+        String          message;
+
+        name = request.getParameter("name");
+        if (name == null || name.equals("")) {
+            message = "No file name specified";
+            throw new FormValidationException("name", message);
+        }
+        for (int i = 0; i < name.length(); i++) {
+            if (CONTENT_CHARS.indexOf(name.charAt(i)) < 0) {
+                message = "File name contains invalid character: " +
+                          "'" + name.charAt(i) + "'";
+                throw new FormValidationException("name", message);
+            }
+        }
+        content = (Content) AdminUtils.getReference(request);
+        id = content.getId();
+        content = manager.getContentChild(request.getUser(),
+                                          content.getParent(),
+                                          name);
+        if (content != null && content.getId() != id) {
+            message = "Another file with identical name is already " +
+                      "attached to the parent document";
+            throw new FormValidationException("name", message);
+        }
+        validateComment(request);
     }
 
     /**
