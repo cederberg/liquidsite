@@ -77,22 +77,30 @@ public class UserView extends AdminView {
         String          str;
 
         // Find users or groups
-        str = request.getParameter("domain");
-        if (str != null) {
+        str = (String) request.getSessionAttribute("users.list.domain",
+                                                   user.getDomainName());
+        str = request.getParameter("domain", str);
+        request.setSessionAttribute("users.list.domain", str);
+        if (!str.equals("")) {
             domain = manager.getDomain(user, str);
         }
-        filter = request.getParameter("filter", "");
+        str = (String) request.getSessionAttribute("users.list.filter", "");
+        filter = request.getParameter("filter", str);
+        request.setSessionAttribute("users.list.filter", filter);
         str = request.getParameter("page", "1");
         try {
             page = Integer.parseInt(str);
         } catch (NumberFormatException e) {
             page = 1;
         }
-        str = request.getParameter("type");
-        if (str == null || !str.equals("group")) {
+        str = (String) request.getSessionAttribute("users.list.type", "user");
+        str = request.getParameter("type", str);
+        if (!str.equals("group")) {
+            request.setSessionAttribute("users.list.type", "user");
             users = findUsers(user, domain, filter, page);
             count = manager.getUserCount(domain, filter);
         } else {
+            request.setSessionAttribute("users.list.type", "group");
             groups = findGroups(user, domain, filter);
             count = 0;
         }
