@@ -252,8 +252,16 @@ class CacheManager {
             domain = (Domain) obj;
             domains.remove(domain.getName());
             LOG.trace("uncached domain " + domain.getName());
-            permissions.remove(domain.getName());
-            LOG.trace("uncached permission list for " + domain.getName());
+            hosts.clear();
+            LOG.trace("uncached all hosts");
+            sites.remove(domain.getName());
+            LOG.trace("uncached site list for " + domain.getName());
+            parents.clear();
+            LOG.trace("uncached all content parents");
+            contents.clear();
+            LOG.trace("uncached all content objects");
+            permissions.clear();
+            LOG.trace("uncached all permission lists");
         } else if (obj instanceof Host) {
             host = (Host) obj;
             hosts.remove(host.getName());
