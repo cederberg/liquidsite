@@ -83,48 +83,44 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
      * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
-        throws ContentException, ContentSecurityException,
-               FormValidationException {
+        throws ContentException, FormValidationException {
 
-        ContentManager  manager = AdminUtils.getContentManager();
-        Object          ref = AdminUtils.getReference(request);
-        int             index = 0;
-        Domain          domain;
-        User            user;
-        Group           group;
-        String          str;
+        Permission[]  permissions;
+        User          user;
+        Group[]       groups;
+        boolean       admin = false;
+        String        str;
 
-        if (ref instanceof Domain) {
-            domain = (Domain) ref;
-        } else {
-            domain = ((Content) ref).getDomain();
+        // Check for unexisting users or groups
+        try {
+            permissions = getPermissions(request);
+        } catch (ContentSecurityException e) {
+            throw new FormValidationException("", e.getMessage());
         }
-        if (!request.getParameter("inherit", "").equals("true")) {
-            while (request.getParameter("perm_" + index + "_type") != null) {
-                str = request.getParameter("perm_" + index + "_user");
-                if (str != null) {
-                    user = manager.getUser(domain, str);
-                    if (user == null || user.isSuperUser()) {
-                        str = "No user '" + str + "' found";
-                        throw new FormValidationException("user", str);
-                    }
-                }
-                str = request.getParameter("perm_" + index + "_group");
-                if (str != null) {
-                    group = manager.getGroup(domain, str);
-                    if (group == null) {
-                        str = "No group '" + str + "' found";
-                        throw new FormValidationException("group", str);
-                    }
-                }
-                index++;
+
+        // Check permissions for sanity
+        user = request.getUser();
+        groups = user.getGroups();
+        for (int i = 0; i < permissions.length; i++) {
+            if (permissions[i].isMatch(null, null)
+             && permissions[i].getAdmin()) {
+
+                str = "Cannot set admin permission for anonymous user";
+                throw new FormValidationException("", str);
             }
+            if (permissions[i].isMatch(user, groups)
+             && permissions[i].getAdmin()) {
+
+                admin  = true;
+            }
+        }
+        if (!admin) {
+            str = "Cannot remove admin permission for current user";
+            throw new FormValidationException("", str);
         }
     }
 
@@ -153,12 +149,40 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = AdminUtils.getContentManager();
-        Object          ref = AdminUtils.getReference(request);
-        User            user = request.getUser();
-        Permission[]    permissions;
-        ArrayList       list = new ArrayList();
-        int             index = 0;
+        Object        ref = AdminUtils.getReference(request);
+        User          user = request.getUser();
+        Permission[]  permissions;
+
+        permissions = getPermissions(request);
+        if (ref instanceof Domain) {
+            ((Domain) ref).setPermissions(user, permissions);
+        } else {
+            ((Content) ref).setPermissions(user, permissions);
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the permissions from the request object. If the
+     * inherited flag is set in the request, an empty array will be
+     * returned.
+     *
+     * @param request         the request
+     *
+     * @return an array of permissions found in the request
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if a permission user or
+     *             group didn't exist in the database
+     */
+    private Permission[] getPermissions(Request request)
+        throws ContentException, ContentSecurityException {
+
+        Object        ref = AdminUtils.getReference(request);
+        ArrayList     list = new ArrayList();
+        Permission[]  permissions;
+        int           index = 0;
 
         if (!request.getParameter("inherit", "").equals("true")) {
             while (request.getParameter("perm_" + index + "_type") != null) {
@@ -168,12 +192,7 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
         }
         permissions = new Permission[list.size()];
         list.toArray(permissions);
-        if (ref instanceof Domain) {
-            ((Domain) ref).setPermissions(user, permissions);
-        } else {
-            ((Content) ref).setPermissions(user, permissions);
-        }
-        return 0;
+        return permissions;
     }
 
     /**
@@ -188,9 +207,11 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the permission user or
+     *             group didn't exist in the database
      */
     private Permission getPermission(Request request, int index, Object ref)
-        throws ContentException {
+        throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         String          prefix = "perm_" + index + "_";
@@ -210,10 +231,21 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
         str = request.getParameter(prefix + "user");
         if (str != null) {
             user = manager.getUser(domain, str);
+            if (user == null) {
+                str = "Couldn't find user '" + str + "'";
+                throw new ContentSecurityException(str);
+            } else if (user.isSuperUser()) {
+                str = "Cannot set permissions for superuser '" + str + "'";
+                throw new ContentSecurityException(str);
+            }
         }
         str = request.getParameter(prefix + "group");
         if (str != null) {
             group = manager.getGroup(domain, str);
+            if (group == null) {
+                str = "Couldn't find group '" + str + "'";
+                throw new ContentSecurityException(str);
+            }
         }
         if (ref instanceof Domain) {
             perm = new Permission(manager, domain, user, group);
