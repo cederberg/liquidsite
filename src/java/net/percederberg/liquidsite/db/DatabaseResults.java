@@ -49,6 +49,12 @@ public class DatabaseResults {
     private ArrayList rows = new ArrayList();
 
     /**
+     * Creates a new empty database results container.
+     */
+    DatabaseResults() {
+    }
+
+    /**
      * Creates a new database results container.
      *  
      * @param results        the result set to use

@@ -297,10 +297,10 @@ public class DatabaseConnection {
         throws DatabaseException {
 
         PreparedStatement  stmt;
-        String             id = "query '" + name + "'";
+        String             id = "function '" + name + "'";
         String             sql;
         
-        // Find query
+        // Find SQL
         sql = db.getFunction(name);
         if (sql == null) {
             sql = "no database function '" + name + "' exists";
@@ -308,7 +308,7 @@ public class DatabaseConnection {
             throw new DatabaseException(sql);
         }
 
-        // Prepare query
+        // Prepare SQL
         try {
             LOG.trace("preparing " + id + "...");
             stmt = con.prepareStatement(sql,
@@ -325,8 +325,12 @@ public class DatabaseConnection {
             throw new DatabaseException("couldn't prepare " + id, e);
         }
 
-        // Execute query
-        return executeQuery(id, stmt);
+        // Execute SQL
+        if (isQuery(sql)) {
+            return executeQuery(id, stmt);
+        } else {
+            return executeStatement(id, stmt);
+        }
     }
 
     /**
@@ -345,7 +349,7 @@ public class DatabaseConnection {
         PreparedStatement  stmt;
         String             id = "SQL '" + sql + "'";
 
-        // Prepare query
+        // Prepare SQL
         try {
             LOG.trace("preparing " + id + "...");
             stmt = con.prepareStatement(sql,
@@ -359,8 +363,12 @@ public class DatabaseConnection {
             throw new DatabaseException("couldn't prepare " + id, e);
         }
 
-        // Execute query
-        return executeQuery(id, stmt);
+        // Execute SQL
+        if (isQuery(sql)) {
+            return executeQuery(id, stmt);
+        } else {
+            return executeStatement(id, stmt);
+        }
     }
 
     /**
@@ -406,16 +414,52 @@ public class DatabaseConnection {
     }
 
     /**
-     * Executes an SQL query statement. This method closes the 
-     * statement after extracting the results from the result set.
+     * Executes an SQL statement. This method closes the statement 
+     * after execution.
      * 
      * @param name           the statement name (used in logs)
      * @param stmt           the statement to execute
      * 
+     * @return an empty database results object
+     * 
+     * @throws DatabaseException if the statement couldn't be 
+     *             executed correctly
+     */
+    private DatabaseResults executeStatement(String name, 
+                                             PreparedStatement stmt) 
+        throws DatabaseException {
+            
+        try {
+            LOG.trace("executing " + name + "...");
+            stmt.executeUpdate();
+            LOG.trace("done executing " + name);
+        } catch (SQLException e) {
+            LOG.debug("failed to execute " + name, e);
+            throw new DatabaseException("couldn't execute " + name, e);
+        } finally {
+            try {
+                LOG.trace("closing " + name + " resources...");
+                stmt.close();
+                LOG.trace("done closing " + name + " resources...");
+            } catch (SQLException ignore) {
+                // Do nothing
+            }
+        }
+
+        return new DatabaseResults();
+    }
+
+    /**
+     * Executes an SQL query. This method closes the statement object
+     * after extracting the results from the result set.
+     * 
+     * @param name           the query name (used in logs)
+     * @param stmt           the statement to execute
+     * 
      * @return the database results
      * 
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
+     * @throws DatabaseException if the query couldn't be executed 
+     *             correctly
      */
     private DatabaseResults executeQuery(String name, 
                                          PreparedStatement stmt) 
@@ -448,6 +492,20 @@ public class DatabaseConnection {
 
         return res;
     }
+
+    /**
+     * Checks if an SQL string is a query or a statement. The 
+     * analysis is made depending on the first word in the string.
+     * 
+     * @param sql            the SQL command to analyze
+     * 
+     * @return true if the SQL command is a query, or
+     *         false otherwise
+     */
+    private boolean isQuery(String sql) {
+        sql = sql.trim().toUpperCase();
+        return sql.startsWith("SELECT ") || sql.startsWith("SHOW ");
+    }    
 
     /**
      * Closes the connection.
