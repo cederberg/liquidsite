@@ -32,8 +32,6 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
  * A controller for requests to the administration site(s).
@@ -54,11 +52,6 @@ public class AdminController extends Controller {
     private AdminView view = new AdminView();
 
     /**
-     * The admin form validator.
-     */
-    private AdminValidator validator = new AdminValidator();
-
-    /**
      * The admin form handlers (workflows).
      */
     private ArrayList workflows = new ArrayList();
@@ -70,6 +63,7 @@ public class AdminController extends Controller {
      */
     public AdminController(Application app) {
         super(app);
+        workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
         workflows.add(new PublishDialogHandler());
@@ -127,8 +121,6 @@ public class AdminController extends Controller {
             view.pageSystem(request);
         } else if (path.equals("logout.html")) {
             processLogout(request);
-        } else if (path.equals("edit-home.html")) {
-            processEditUser(request);
         } else if (path.equals("view.html")) {
             processView(request);
         } else if (path.equals("loadsite.js")) {
@@ -191,95 +183,6 @@ public class AdminController extends Controller {
                 formHandler.process(request);
                 return;
             }
-        }
-    }
-
-    /**
-     * Processes an edit user request.
-     * 
-     * @param request        the request object
-     */
-    private void processEditUser(Request request) {
-        try {
-            if (request.getParameter("prev", "").equals("true")) {
-                request.sendRedirect("home.html");
-            } else if (request.getParameter("editpassword") != null) {
-                if (request.getParameter("step") == null) {
-                    view.pageEditPassword(request);
-                } else {
-                    processEditPassword(request);
-                }
-            } else {
-                if (request.getParameter("step") == null) {
-                    view.pageEditUser(request);
-                } else {
-                    processEditUserDetails(request);
-                }
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.pageError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.pageError(request, e);
-        }
-    }
-
-    /**
-     * Processes the edit user details requests for the home view.
-     * 
-     * @param request        the request object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processEditUserDetails(Request request) 
-        throws ContentException, ContentSecurityException {
-        
-        User  user = request.getUser();
-        
-        try {
-            validator.validateEditUser(request);
-            user.setRealName(request.getParameter("name"));
-            user.setEmail(request.getParameter("email"));
-            user.save(user);
-            request.sendRedirect("home.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditUser(request);
-        }
-    }
-
-    /**
-     * Processes the edit password requests for the home view.
-     * 
-     * @param request        the request object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processEditPassword(Request request) 
-        throws ContentException, ContentSecurityException {
-        
-        User  user = request.getUser();
-        
-        try {
-            validator.validateEditPassword(request);
-            if (!user.verifyPassword(request.getParameter("password0"))) {
-                throw new FormValidationException(
-                    "password0",
-                    "Current password was incorrect");
-            }
-            user.setPassword(request.getParameter("password1"));
-            user.save(user);
-            request.sendRedirect("home.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditPassword(request);
         }
     }
 
