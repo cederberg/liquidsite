@@ -36,6 +36,11 @@ var HTMLEDIT_FRAMES = new Array();
 var HTMLEDIT_INPUTS = new Array();
 
 /**
+ * The HTML editor images array.
+ */
+var HTMLEDIT_IMAGES = new Array();
+
+/**
  * Initializes an HTML editor. Several HTML editors can be run in
  * parallell on a single page.
  *
@@ -68,6 +73,16 @@ function htmlEditInitialize(id, data, tabindex) {
     win.document.close();
     HTMLEDIT_FRAMES[count] = iframe;
     HTMLEDIT_INPUTS[count] = input;
+}
+
+/**
+ * Adds an image to all the HTML editors. The images are shared
+ * between all the editors on a single page.
+ *
+ * @param name               the image file name
+ */
+function htmlEditAddImage(name) {
+    HTMLEDIT_IMAGES[HTMLEDIT_IMAGES.length] = name;
 }
 
 /**
@@ -216,10 +231,37 @@ function htmlEditInternalCommandSelect(editor, command) {
  * @param editor             the editor number
  */
 function htmlEditInternalAddLink(editor) {
-    var  url;
+    var  html;
+    var  js;
 
-    url = prompt("Enter the link (URL) for the selection:", "");
-    if (url != null) {
+    html = "<tr>\n" +
+           "<th width='20%'>URL:</th>\n" +
+           "<td width='80%'>\n" +
+           "<input name='url' size='40' />\n" + 
+           "<script type='text/javascript'>\n" +
+           "document.getElementsByName('url').item(0).focus();\n" +
+           "</script>\n" +
+           "</td>\n" +
+           "</tr>\n";
+    js = "var url = document.getElementsByName('url').item(0).value;\n" +
+         "opener.htmlEditInternalInsertLink(" + editor + ", url);\n" +
+         "window.close();\n";
+    utilCreateDialog("Insert Link",
+                     "Enter link URL.",
+                     html,
+                     js,
+                     380,
+                     150);
+}
+
+/**
+ * Inserts a link.
+ *
+ * @param editor             the editor number
+ * @param url                the URL
+ */
+function htmlEditInternalInsertLink(editor, url) {
+    if (url != "") {
         htmlEditInternalExecCommand(editor, "createlink", url);
     }
 }
@@ -230,10 +272,41 @@ function htmlEditInternalAddLink(editor) {
  * @param editor             the editor number
  */
 function htmlEditInternalAddImage(editor) {
-    var  url;
+    var  html;
+    var  js;
 
-    url = prompt("Enter image location (URL):", "");
-    if (url != null) {
+    html = "<tr>\n" +
+           "<th width='50%'>Image:</th>\n" +
+           "<td width='50%'><select name='url'>\n";
+    for (var i = 0; i < HTMLEDIT_IMAGES.length; i++) {
+        html += "<option>" + HTMLEDIT_IMAGES[i] + "</option>\n";
+    }
+    html += "</select>\n" +
+            "</td>\n" +
+            "</tr>\n";
+    js = "var url = document.getElementsByName('url').item(0).value;\n" +
+         "opener.htmlEditInternalInsertImage(" + editor + ", url);\n" +
+         "window.close();\n";
+    if (HTMLEDIT_IMAGES.length > 0) {
+        utilCreateDialog("Insert Image",
+                         "Choose image to insert.",
+                         html,
+                         js,
+                         300,
+                         150);
+    } else {
+        alert("No images available for insertion.");
+    }
+}
+
+/**
+ * Inserts an image.
+ *
+ * @param editor             the editor number
+ * @param url                the URL
+ */
+function htmlEditInternalInsertImage(editor, url) {
+    if (url != "") {
         htmlEditInternalExecCommand(editor, "insertimage", url);
     }
 }

@@ -9,6 +9,7 @@
     function initialize() {
 <#list files as file>
   <#if file.mimeType?index_of("image/") = 0>
+        htmlEditAddImage("${file.name}");
         tagEditAddImage("${file.name}");
   </#if>
 </#list>
@@ -22,23 +23,25 @@
     }
 
     function doUpload() {
+        htmlEditSubmit();
         utilGetElement("action").value = "upload";
         document.forms.item(0).submit();
     }
 
     function doSave() {
+        htmlEditSubmit();
         utilGetElement("action").value = "save";
         return true;
     }
 
     function doPublish() {
+        htmlEditSubmit();
         utilGetElement("action").value = "publish";
         return true;
     }
     </script>
 
-    <form method="post" enctype="multipart/form-data" accept-charset="UTF-8"
-          onsubmit="htmlEditSubmit()">
+    <form method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <#if startpage?has_content>
       <input type="hidden" name="liquidsite.startpage" value="${startpage}" />
 </#if>

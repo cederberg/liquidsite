@@ -39,9 +39,9 @@ var UTIL_REMOVE_LIST = new Array();
 /**
  * Opens a new dialog window.
  *
- * @param url                 the URL to visit
- * @param width               the dialog width
- * @param height              the dialog height
+ * @param url                the URL to visit
+ * @param width              the dialog width
+ * @param height             the dialog height
  *
  * @return the dialog window opened, or
  *         null if no window could be opened
@@ -54,6 +54,75 @@ function utilOpenDialog(url, width, height) {
                ",resizable=yes";
 
     return window.open(url, "", attr);
+}
+
+/**
+ * Creates a new dialog window. The contents will be created from a
+ * HTML template, inserting some specified code.
+ *
+ * @param title              the dialog title
+ * @param text               the dialog help text
+ * @param form               the dialog table HTML
+ * @param script             the JavaScript for the OK button
+ * @param width              the dialog width
+ * @param height             the dialog height
+ *
+ * @return the dialog window opened, or
+ *         null if no window could be opened
+ */
+function utilCreateDialog(title, text, form, script, width, height) {
+    var  win;
+    var  html;
+
+    html = "<html>\n" +
+           "<head>\n" +
+           "<title>" + title + "</title>\n" +
+           "<style type='text/css'>\n" +
+           "h1     { margin-bottom: 0.5em; padding-left: 5px;\n" +
+           "         font-size: 12pt; background: rgb(160,160,160);\n" +
+           "         color: white; }\n" +
+           "p      { margin-top: 0.5em; margin-bottom: 0.5em; }\n" +
+           "table  { font-size: 10pt; }\n" +
+           "th     { text-align: left; }\n" +
+           "button { margin: 7px; font-weight: bold; }\n" +
+           "</style>\n" +
+           "<script type='text/javascript'>\n" +
+           "function doCancel() {\n" +
+           "window.close();\n" +
+           "}\n" +
+           "function doOk() {\n" +
+           script +
+           "}\n" +
+           "</script>\n" +
+           "</head>\n" +
+           "<body>\n" +
+           "<form method='post' accept-charset='UTF-8'>\n" +
+           "<table width='100%'>\n" +
+           "<tr>\n" +
+           "<td colspan='2'>\n" +
+           "<h1>" + title + "</h1>\n" +
+           "<p>" + text + "</p>\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           form +
+           "<tr>\n" +
+           "<td colspan='2' style='text-align: right;'>\n" +
+           "<button type='button' onclick='doCancel();'>\n" +
+           "Cancel\n" +
+           "</button>\n" +
+           "<button type='submit' onclick='doOk(); return false;'>\n" +
+           "OK\n" +
+           "</button>\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "</table>\n" +
+           "</form>\n" +
+           "</body>\n" +
+           "</html>\n";
+    win = utilOpenDialog("", width, height);
+    win.document.write(html);
+    win.document.close();
+    return win;
 }
 
 /**

@@ -260,9 +260,9 @@ function tagEditInternalAddLink(editor) {
     var  js;
 
     html = "<tr>\n" +
-           "<th width='30%'>URL:</th>\n" +
-           "<td width='70%'>\n" +
-           "<input name='url' size='30' />\n" + 
+           "<th width='20%'>URL:</th>\n" +
+           "<td width='80%'>\n" +
+           "<input name='url' size='40' />\n" + 
            "</td>\n" +
            "</tr>\n" +
            "<tr>\n" +
@@ -278,10 +278,12 @@ function tagEditInternalAddLink(editor) {
          "var win = document.getElementsByName('window').item(0).value;\n" +
          "opener.tagEditInternalInsertLink(" + editor + ", url, win);\n" +
          "window.close();\n";
-    tagEditInternalCreateDialog("Insert Link",
-                                "Enter link URL and type.",
-                                html,
-                                js);
+    utilCreateDialog("Insert Link",
+                     "Enter link URL and type.",
+                     html,
+                     js,
+                     380,
+                     170);
 }
 
 /**
@@ -338,10 +340,12 @@ function tagEditInternalAddImage(editor) {
          "opener.tagEditInternalInsertImage(" + editor + ", url, layout);\n" +
          "window.close();\n";
     if (TAGEDIT_IMAGES.length > 0) {
-        tagEditInternalCreateDialog("Insert Image",
-                                    "Choose image to insert and it's layout.",
-                                    html,
-                                    js);
+        utilCreateDialog("Insert Image",
+                         "Choose image to insert and it's layout.",
+                         html,
+                         js,
+                         320,
+                         170);
     } else {
         alert("No images available for insertion.");
     }
@@ -651,66 +655,4 @@ function tagEditInternalMouseDown(event) {
  */
 function tagEditInternalMouseUp(event) {
     this.className = "buttonup";
-}
-
-/**
- * Creates a dialog.
- *
- * @param title              the dialog title
- * @param text               the dialog help text
- * @param form               the form HTML
- * @param script             the JavaScript for the insert button
- */
-function tagEditInternalCreateDialog(title, text, form, script) {
-    var  win;
-    var  html;
-
-    html = "<html>\n" +
-           "<head>\n" +
-           "<title>" + title + "</title>\n" +
-           "<style type='text/css'>\n" +
-           "h1     { margin-bottom: 0.5em; padding-left: 5px;\n" +
-           "         font-size: 12pt; background: rgb(160,160,160);\n" +
-           "         color: white; }\n" +
-           "p      { margin-top: 0.5em; margin-bottom: 0.5em; }\n" +
-           "table  { font-size: 10pt; }\n" +
-           "th     { text-align: left; }\n" +
-           "button { margin: 7px; font-weight: bold; }\n" +
-           "</style>\n" +
-           "<script type='text/javascript'>\n" +
-           "function doCancel() {\n" +
-           "window.close();\n" +
-           "}\n" +
-           "function doInsert() {\n" +
-           script +
-           "}\n" +
-           "</script>\n" +
-           "</head>\n" +
-           "<body>\n" +
-           "<form method='post' accept-charset='UTF-8'>\n" +
-           "<table width='100%'>\n" +
-           "<tr>\n" +
-           "<td colspan='2'>\n" +
-           "<h1>" + title + "</h1>\n" +
-           "<p>" + text + "</p>\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           form +
-           "<tr>\n" +
-           "<td colspan='2' style='text-align: right;'>\n" +
-           "<button type='button' onclick='doCancel();'>\n" +
-           "Cancel\n" +
-           "</button>\n" +
-           "<button type='button' onclick='doInsert()'>\n" +
-           "Insert\n" +
-           "</button>\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "</table>\n" +
-           "</form>\n" +
-           "</body>\n" +
-           "</html>\n";
-    win = utilOpenDialog("", 320, 170);
-    win.document.write(html);
-    win.document.close();
 }
