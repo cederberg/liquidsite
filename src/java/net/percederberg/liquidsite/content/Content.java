@@ -290,6 +290,21 @@ public abstract class Content extends PersistentObject implements Comparable {
     }
 
     /**
+     * Checks if this content object equals another object. This 
+     * method will only return true if the other object is a content
+     * object with the same id and revision.
+     * 
+     * @param obj            the object to compare with
+     * 
+     * @return true if the other object is identical, or
+     *         false otherwise 
+     */
+    public boolean equals(Content obj) {
+        return getId() == obj.getId()
+            && getRevisionNumber() == obj.getRevisionNumber();
+    }
+
+    /**
      * Compares this object with the specified object for order. 
      * Returns a negative integer, zero, or a positive integer as 
      * this object is less than, equal to, or greater than the 
@@ -329,21 +344,6 @@ public abstract class Content extends PersistentObject implements Comparable {
         } else {
             return getName().compareTo(content.getName());
         }
-    }
-
-    /**
-     * Checks if this content object equals another object. This 
-     * method will only return true if the other object is a content
-     * object with the same id and revision.
-     * 
-     * @param obj            the object to compare with
-     * 
-     * @return true if the other object is identical, or
-     *         false otherwise 
-     */
-    public boolean equals(Content obj) {
-        return getId() == obj.getId()
-            && getRevisionNumber() == obj.getRevisionNumber();
     }
 
     /**
