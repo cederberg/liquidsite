@@ -165,8 +165,13 @@
               Mozilla Disable Enter Submit
             </button>
             <button type="button" tabindex="103" onclick="doPrevious()">
+<#if isadd>
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
+<#else>
+              <img src="images/icons/24x24/cancel.png" />
+              Cancel
+</#if>
             </button>
             <button type="submit" tabindex="102" onclick="doSave()">
               <img src="images/icons/24x24/save.png" />

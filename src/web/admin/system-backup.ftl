@@ -49,8 +49,8 @@
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="103" onclick="doPrevious()">
-              <img src="images/icons/24x24/left_arrow.png" />
-              Previous
+              <img src="images/icons/24x24/cancel.png" />
+              Cancel
             </button>
             <button type="submit" tabindex="102" onclick="return doBackup();">
               <img src="images/icons/24x24/save.png" />

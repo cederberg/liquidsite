@@ -102,8 +102,13 @@
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="101" onclick="doPrevious()">
+<#if isadd>
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
+<#else>
+              <img src="images/icons/24x24/cancel.png" />
+              Cancel
+</#if>
             </button>
             <button type="submit" tabindex="100">
               <img src="images/icons/24x24/save.png" />

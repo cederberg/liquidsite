@@ -214,8 +214,8 @@
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="101" onclick="doPrevious()">
-              <img src="images/icons/24x24/left_arrow.png" />
-              Previous
+              <img src="images/icons/24x24/cancel.png" />
+              Cancel
             </button>
             <button tabindex="100" type="submit">
               Next
