@@ -83,14 +83,13 @@ public class Lock extends PersistentObject {
      * Creates a new lock with default values.
      * 
      * @param content        the content object
-     * @param user           the user
      */
-    public Lock(Content content, User user) {
+    public Lock(Content content) {
         super(false, false);
         this.data = new LockData();
         this.data.setString(LockData.DOMAIN, content.getDomainName());
         this.data.setInt(LockData.CONTENT, content.getId());
-        this.data.setString(LockData.USER, user.getName());
+        this.data.setString(LockData.USER, "");
         this.data.setDate(LockData.ACQUIRED, new Date());
     }
 
@@ -156,6 +155,20 @@ public class Lock extends PersistentObject {
         return buffer.toString();
     }
     
+    /**
+     * Checks if the specified user is the lock owner.
+     * 
+     * @param user           the user to check
+     * 
+     * @return true if the user is the lock owner, or
+     *         false otherwise
+     */
+    public boolean isOwner(User user) {
+        return user != null
+            && getDomainName().equals(user.getDomainName())
+            && getUserName().equals(user.getName()); 
+    }
+
     /**
      * Returns the content domain.
      * 
@@ -241,8 +254,6 @@ public class Lock extends PersistentObject {
                                        "'does not exist");
         } else if (getContentId() <= 0) {
             throw new ContentException("no content object set for lock");
-        } else if (getUserName().equals("")) {
-            throw new ContentException("no user set for lock object");
         }
     }
 
@@ -259,6 +270,7 @@ public class Lock extends PersistentObject {
         throws ContentException {
 
         validate();
+        data.setString(LockData.USER, user.getName());
         data.setDate(LockData.ACQUIRED, new Date());
         try {
             LockPeer.doInsert(data, con);
