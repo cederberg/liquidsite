@@ -241,10 +241,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
             } else if (action.equals("upload")) {
                 validateUpload(request);
             } else {
-                documentValidator.validate(request);
-                message = "Another object with identical name " +
-                          "already exists in the parent section";
-                validateParent(request, "section", message);
+                validateDocument(request);
             }
         } else if (category.equals("file")) {
             validateFile(request);
@@ -263,6 +260,49 @@ public class ContentEditFormHandler extends AdminFormHandler {
         }
     }
 
+    /**
+     * Validates a content document add or edit form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateDocument(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        Iterator  iter = request.getAllParameters().keySet().iterator();
+        String    id;
+        int       type;
+        String    str;
+
+        documentValidator.validate(request);
+        str = "Another object with identical name already exists in " +
+              "the parent section";
+        validateParent(request, "section", str);
+        while (iter.hasNext()) {
+            str = iter.next().toString();
+            if (str.startsWith("property.")) {
+                id = str.substring(9);
+                try {
+                    str = request.getParameter("propertytype." + id);
+                    type = Integer.parseInt(str);
+                } catch (NumberFormatException e) {
+                    type = DocumentProperty.STRING_TYPE;
+                }
+                str = request.getParameter("property." + id);
+                if (type == DocumentProperty.TAGGED_TYPE) {
+                    // TODO: validate tagged text
+                }
+            }
+        }
+    }
+    
     /**
      * Validates a content file edit form.
      *

@@ -31,8 +31,8 @@ package org.liquidsite.core.text;
 public class HtmlFormatter {
 
     /**
-     * Cleans and validates an HTML text string. Unneeded line feeds
-     * and space characters at the end will be removed.
+     * Cleans an HTML text string. Unneeded line feeds and space
+     * characters at the end will be removed.
      *
      * @param text           the tagged text string
      *

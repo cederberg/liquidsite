@@ -34,28 +34,42 @@ import java.util.HashMap;
 public class TaggedFormatter {
 
     /**
-     * Cleans and validates a tagged text string. Unneeded line feeds
-     * and space characters will be removed. All tags will be
-     * validated for possible errors.
+     * Cleans a tagged text string. Unneeded line feeds and space
+     * characters will be removed.
      *
      * @param text           the tagged text string
      *
-     * @return the adjusted tagged text string
+     * @return the cleaned tagged text string
      */
     public static String clean(String text) {
         StringBuffer  buffer = new StringBuffer();
-        char          c;
+        int           pos;
 
-        for (int i = 0; i < text.length(); i++) {
-            c = text.charAt(i);
-            if (c != '\r') {
-                buffer.append(c);
-            }
+        // Trim each line
+        while ((pos = text.indexOf("\n")) >= 0) {
+            buffer.append(text.substring(0, pos).trim());
+            buffer.append("\n");
+            text = text.substring(pos + 1);
         }
-        // TODO: validate tags and attributes
-        // TODO: remove excessive line feeds (except inside <pre>)
+        buffer.append(text.trim());
+
+        // Remove empty starting and ending lines
+        while (buffer.indexOf("\n") == 0) {
+            buffer.deleteCharAt(0);
+        }
+        while (buffer.lastIndexOf("\n") == buffer.length() - 1) {
+            buffer.setLength(buffer.length() - 1);
+        }
+
+        // Remove duplicate empty lines
+        pos = buffer.indexOf("\n\n\n");
+        while (pos > 0) {
+            buffer.deleteCharAt(pos);
+            pos = buffer.indexOf("\n\n\n");
+        }
+
         // TODO: reformat lists and list items
-        return buffer.toString().trim();
+        return buffer.toString();
     }
 
     /**
@@ -73,7 +87,7 @@ public class TaggedFormatter {
         StringBuffer  buffer = new StringBuffer();
         String        str;
 
-        // Trim and remove carriage return characters
+        // Clean formatted text
         text = clean(text);
 
         // Split into paragraphs
