@@ -322,7 +322,7 @@ public class DatabaseConnection {
             } catch (SQLException ignore) {
                 // Do nothing
             }
-            LOG.trace("done closing " + query + " resources...");
+            LOG.trace("done closing " + query + " resources");
         }
 
         return res;
