@@ -21,10 +21,16 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
@@ -53,6 +59,11 @@ import net.percederberg.liquidsite.web.Request.FileParameter;
  * @version  1.0
  */
 class SiteAddFormHandler extends AdminFormHandler {
+
+    /**
+     * The permitted ZIP file entry name characters.
+     */
+    private static final String ZIPENTRY_CHARS = CONTENT_CHARS + "/";
 
     /**
      * Creates a new site add request handler.
@@ -126,13 +137,24 @@ class SiteAddFormHandler extends AdminFormHandler {
                 throw new FormValidationException("category", message);
             }
         } else {
-            edit.validateStep(request, step);
             if (category.equals("file")) {
                 param = request.getFileParameter("upload");
                 if (param == null || param.getSize() <= 0) {
                     message = "No file upload specified";
                     throw new FormValidationException("upload", message);
                 }
+                if (!request.getParameter("unpack", "").equals("true")) {
+                    edit.validateStep(request, step);
+                } else if (request.getParameter("comment", "").equals("")) {
+                    message = "No comment specified";
+                    throw new FormValidationException("comment", message);
+                } else if (!param.getName().endsWith(".zip")) {
+                    message = "Uploaded file must have .zip extension " +
+                              "to be unpacked";
+                    throw new FormValidationException("upload", message);
+                }
+            } else {
+                edit.validateStep(request, step);
             }
         }
     }
@@ -355,18 +377,81 @@ class SiteAddFormHandler extends AdminFormHandler {
 
         try {
             param = request.getFileParameter("upload");
-            file = new ContentFile(manager, parent, param.getName());
-            file.setName(request.getParameter("name"));
-            file.setComment(request.getParameter("comment"));
-            if (request.getParameter("action", "").equals("publish")) {
-                file.setRevisionNumber(1);
-                file.setOnlineDate(new Date());
+            if (request.getParameter("unpack", "").equals("true")) {
+                handleAddZipFile(request, parent, param.write());
+            } else {
+                file = new ContentFile(manager, parent, param.getName());
+                file.setName(request.getParameter("name"));
+                file.setComment(request.getParameter("comment"));
+                if (request.getParameter("action", "").equals("publish")) {
+                    file.setRevisionNumber(1);
+                    file.setOnlineDate(new Date());
+                }
+                file.save(request.getUser());
+                param.write(file.getFile());
+                AdminView.SITE.setSiteTreeFocus(request, file);
             }
-            file.save(request.getUser());
-            param.write(file.getFile());
-            AdminView.SITE.setSiteTreeFocus(request, file);
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the add file form for ZIP file unpacking. The ZIP file
+     * will be removed by this method once processed.
+     *
+     * @param request        the request object
+     * @param parent         the parent content object
+     * @param file           the ZIP file to process
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly or if the ZIP file contained errors
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleAddZipFile(Request request, Content parent, File file)
+        throws ContentException, ContentSecurityException {
+
+        ZipFile      zip;
+        ZipEntry     entry;
+        Enumeration  entries;
+        boolean      publish;
+        Content      content;
+        String       name;
+        String       message;
+
+        try {
+            zip = new ZipFile(file);
+            entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                entry = (ZipEntry) entries.nextElement();
+                name = entry.getName();
+                for (int i = 0; i < name.length(); i++) {
+                    if (ZIPENTRY_CHARS.indexOf(name.charAt(i)) < 0) {
+                        message = "invalid character in ZIP file entry '" +
+                                  name + "': '" + name.charAt(i) + "'";
+                        throw new ContentException(message);
+                    }
+                }
+            }
+            publish = request.getParameter("action", "").equals("publish");
+            entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                entry = (ZipEntry) entries.nextElement();
+                content = zipCreateContent(entry,
+                                           parent,
+                                           request.getParameter("comment"),
+                                           publish,
+                                           request.getUser());
+                if (content instanceof ContentFile) {
+                    zipExtract(zip, entry, ((ContentFile) content).getFile());
+                }
+            }
+            zip.close();
+        } catch (IOException e) {
+            throw new ContentException(e.getMessage());
+        } finally {
+            file.delete();
         }
     }
 
@@ -447,5 +532,127 @@ class SiteAddFormHandler extends AdminFormHandler {
         }
         template.save(request.getUser());
         AdminView.SITE.setSiteTreeFocus(request, template);
+    }
+
+    /**
+     * Creates the content object for a ZIP archive entry. The content
+     * object will either be a new object or a new revision.  
+     *
+     * @param entry          the ZIP archive entry
+     * @param parent         the parent content object
+     * @param comment        the content comment
+     * @param publish        the publish flag
+     * @param user           the user performing the operation
+     *
+     * @return the content object created
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private Content zipCreateContent(ZipEntry entry,
+                                     Content parent,
+                                     String comment,
+                                     boolean publish,
+                                     User user)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        Content         content;
+        String          name;
+        int             pos;
+
+        name = entry.getName();
+        while (name.indexOf('/') >= 0) {
+            pos = name.indexOf('/');
+            if (pos == 0) {
+                name = name.substring(1);
+            } else {
+                content = manager.getContentChild(user,
+                                                  parent,
+                                                  name.substring(0, pos));
+                if (content == null) {
+                    content = new ContentFolder(manager, parent);
+                    content.setName(name.substring(0, pos));
+                    content.setComment(comment);
+                    if (publish) {
+                        content.setRevisionNumber(1);
+                        content.setOnlineDate(new Date());
+                    }
+                    content.save(user);
+                }
+                parent = content;
+                name = name.substring(pos + 1);
+            }
+        }
+        content = manager.getContentChild(user, parent, name);
+        if (content == null) {
+            if (entry.isDirectory()) {
+                content = new ContentFolder(manager, parent);
+            } else {
+                content = new ContentFile(manager, parent, name);
+            }
+            content.setName(name);
+            if (publish) {
+                content.setRevisionNumber(1);
+                content.setOnlineDate(new Date());
+            }
+        } else {
+            content.setRevisionNumber(0);
+            if (content instanceof ContentFile) {
+                ((ContentFile) content).setFileName(name);
+            }
+            if (publish) {
+                content.setRevisionNumber(content.getMaxRevisionNumber() + 1);
+                content.setOnlineDate(new Date());
+                content.setOfflineDate(null);
+            }
+        }
+        content.setComment(comment);
+        content.save(user);
+        return content;
+    }
+
+    /**
+     * Extracts a file from a ZIP archive. The contents of the file
+     * will be saved in the specified file.
+     *
+     * @param zip            the ZIP archive
+     * @param entry          the ZIP archive entry to extract
+     * @param dest           the destination file
+     *
+     * @throws IOException if the file date couldn't be extracted or
+     *             written correctly
+     */
+    private void zipExtract(ZipFile zip, ZipEntry entry, File dest)
+        throws IOException {
+
+        InputStream       in;
+        FileOutputStream  out;
+        byte[]            buffer = new byte[4096];
+        int               size;
+
+        in = zip.getInputStream(entry);
+        out = new FileOutputStream(dest);
+        try {
+            do {
+                size = in.read(buffer);
+                if (size > 0) {
+                    out.write(buffer, 0, size);
+                }
+            } while (size > 0);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ignore) {
+                // Do nothing
+            }
+            try {
+                out.close();
+            } catch (IOException ignore) {
+                // Do nothing
+            }
+        }
     }
 }

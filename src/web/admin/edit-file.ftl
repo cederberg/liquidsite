@@ -24,6 +24,15 @@
         utilGetElement("action").value = "publish";
         return true;
     }
+
+    function doEnableName(enabled) {
+        var  name = utilGetElement("name");
+        if (enabled) {
+            name.disabled = false;
+        } else {
+            name.disabled = true;
+        }
+    }
     </script>
 
     <form method="post" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -131,6 +140,24 @@
                       name="content">${content}</textarea>
             <p>The file content. The file data can either be edited
             here or being uploaded.</p>
+          </td>
+        </tr>
+<#elseif issite && isadd>
+        <tr>
+          <th>
+            Unpack:
+          </th>
+          <td class="field">
+            <input type="checkbox" tabindex="4"
+                   onchange="doEnableName(!this.checked)"
+                   name="unpack" value="true">
+            Unpack the file and add the contents.
+            <p>This will unpack the specified ZIP archive file and create
+            files and folders for the contents. Note that ZIP file processing
+            <strong>may take up to several minutes</strong> depending on the
+            file size. Also be aware that the files in the ZIP archive must
+            have names using only English alphabet characters or numbers
+            without any spaces.</p>
           </td>
         </tr>
 </#if>
