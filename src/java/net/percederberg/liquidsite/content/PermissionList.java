@@ -23,11 +23,12 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.PermissionData;
 import net.percederberg.liquidsite.dbo.PermissionPeer;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A content object permission list. All the permissions in the list

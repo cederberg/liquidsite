@@ -21,9 +21,10 @@
 
 package net.percederberg.liquidsite.template;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A document file bean. This class is used to access document files

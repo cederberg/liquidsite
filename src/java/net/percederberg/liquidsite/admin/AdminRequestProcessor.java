@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.RequestProcessor;
 import net.percederberg.liquidsite.admin.view.AdminView;
@@ -43,6 +42,8 @@ import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * The request processor for the administration site(s).

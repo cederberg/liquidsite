@@ -30,11 +30,12 @@ import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 
 import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A simple FreeMarker template manager. This class provides static

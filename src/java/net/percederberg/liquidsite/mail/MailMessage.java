@@ -32,7 +32,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import net.percederberg.liquidsite.Log;
+import org.liquidsite.util.log.Log;
 
 /**
  * An email message. This class is used for creating email messages

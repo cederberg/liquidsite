@@ -23,12 +23,13 @@ package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseException;
 import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * An abstract database peer. This class provides some of the

@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -32,6 +31,8 @@ import net.percederberg.liquidsite.web.FormHandler;
 import net.percederberg.liquidsite.web.FormHandlingException;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * The administration base form request handler. This class provides

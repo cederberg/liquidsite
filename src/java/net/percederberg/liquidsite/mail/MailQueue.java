@@ -33,7 +33,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 
 import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.Log;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * An outgoing email queue. This class is used for storing outgoing

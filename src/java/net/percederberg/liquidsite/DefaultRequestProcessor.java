@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite;
 
+import org.liquidsite.util.log.Log;
+
 import net.percederberg.liquidsite.admin.AdminRequestProcessor;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;

@@ -23,6 +23,8 @@ package net.percederberg.liquidsite;
 
 import java.util.Date;
 
+import org.liquidsite.util.log.Log;
+
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentException;

@@ -30,7 +30,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -41,6 +40,8 @@ import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.PermissionList;
 import net.percederberg.liquidsite.content.User;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A SAX XML handler for restoring backups. This class only restores

@@ -24,11 +24,12 @@ package net.percederberg.liquidsite.content;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.HostData;
 import net.percederberg.liquidsite.dbo.HostPeer;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A web site host.

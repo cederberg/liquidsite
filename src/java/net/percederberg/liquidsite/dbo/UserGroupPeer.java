@@ -23,11 +23,12 @@ package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A user group database peer. This class contains static methods

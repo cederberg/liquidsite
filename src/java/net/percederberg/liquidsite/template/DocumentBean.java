@@ -23,13 +23,14 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSelector;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A document template bean. This class is used to access document

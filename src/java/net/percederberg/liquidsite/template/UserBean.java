@@ -23,11 +23,12 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A user template bean. This class is used to insert the user object

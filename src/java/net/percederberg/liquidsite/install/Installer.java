@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseDataException;
@@ -37,6 +36,8 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.dbo.ContentPeer;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.PermissionPeer;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * The install helper class. This class handles all the installation

@@ -25,12 +25,13 @@ import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.text.HtmlFormatter;
 import net.percederberg.liquidsite.text.PlainFormatter;
 import net.percederberg.liquidsite.text.TaggedFormatter;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A document template bean. This class is used to access document

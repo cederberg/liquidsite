@@ -31,7 +31,6 @@ import java.util.HashMap;
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Configuration;
 import net.percederberg.liquidsite.ConfigurationException;
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.RequestProcessor;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -44,6 +43,8 @@ import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseException;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * The installation request processor. This processor differs from

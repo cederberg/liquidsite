@@ -23,11 +23,12 @@ package net.percederberg.liquidsite.content;
 
 import java.util.Date;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.LockData;
 import net.percederberg.liquidsite.dbo.LockPeer;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A content object lock.

@@ -21,13 +21,14 @@
 
 package net.percederberg.liquidsite.template;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.text.FormattingContext;
 import net.percederberg.liquidsite.web.RequestEnvironment;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A document formatting context. This class is used when formatting

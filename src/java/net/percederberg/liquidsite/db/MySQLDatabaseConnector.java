@@ -23,7 +23,7 @@ package net.percederberg.liquidsite.db;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
+import org.liquidsite.util.log.Log;
 
 /**
  * A MySQL database connector.

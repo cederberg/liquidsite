@@ -19,23 +19,29 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package org.liquidsite.util.log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
  * An error and debug log. This class encapsulates the standard
- * logging in JDK 1.4 to allow provide some convenience methods and
- * to defined the log levels more adequately for this application.
+ * logging in JDK 1.4 to provide some convenience methods and define
+ * the log levels more adequately for this application.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
 public class Log {
+
+    /**
+     * The fully qualified log class name.
+     */
+    private static final String CLASS_NAME = Log.class.getName();
 
     /**
      * The logger being used.
@@ -60,22 +66,13 @@ public class Log {
     }
 
     /**
-     * Creates a new log.
-     *
-     * @param name           the log name
-     */
-    public Log(String name) {
-        logger = Logger.getLogger(name);
-    }
-
-    /**
      * Creates a new log. The class name will be used as the log
      * name.
      *
      * @param cls            the class to log
      */
     public Log(Class cls) {
-        this(cls.getName());
+        this.logger = Logger.getLogger(cls.getName());
     }
 
     /**
@@ -96,8 +93,8 @@ public class Log {
      *
      * @param message        the log message
      */
-    public void error(String message) {
-        logger.severe(message);
+    public final void error(String message) {
+        log(Level.SEVERE, message);
     }
 
     /**
@@ -109,7 +106,7 @@ public class Log {
      * @param message        the log message
      * @param thrown         the throwable to log
      */
-    public void error(String message, Throwable thrown) {
+    public final void error(String message, Throwable thrown) {
         error(message + ": " + thrown.getMessage());
     }
 
@@ -121,8 +118,8 @@ public class Log {
      *
      * @param message        the log message
      */
-    public void warning(String message) {
-        logger.warning(message);
+    public final void warning(String message) {
+        log(Level.WARNING, message);
     }
 
     /**
@@ -134,7 +131,7 @@ public class Log {
      * @param message        the log message
      * @param thrown         the throwable to log
      */
-    public void warning(String message, Throwable thrown) {
+    public final void warning(String message, Throwable thrown) {
         warning(message + ": " + thrown.getMessage());
     }
 
@@ -147,8 +144,8 @@ public class Log {
      *
      * @param message        the log message
      */
-    public void info(String message) {
-        logger.info(message);
+    public final void info(String message) {
+        log(Level.INFO, message);
     }
 
     /**
@@ -161,7 +158,7 @@ public class Log {
      * @param message        the log message
      * @param thrown         the throwable to log
      */
-    public void info(String message, Throwable thrown) {
+    public final void info(String message, Throwable thrown) {
         info(message + ": " + thrown.getMessage());
     }
 
@@ -172,8 +169,8 @@ public class Log {
      *
      * @param message        the log message
      */
-    public void trace(String message) {
-        logger.finer(message);
+    public final void trace(String message) {
+        log(Level.FINER, message);
     }
 
     /**
@@ -184,7 +181,35 @@ public class Log {
      * @param message        the log message
      * @param thrown         the throwable to log
      */
-    public void trace(String message, Throwable thrown) {
+    public final void trace(String message, Throwable thrown) {
         trace(message + ": " + thrown.getMessage());
+    }
+
+    /**
+     * Logs a message on the specified log level. This method will
+     * search for the caller class and method names by creating a
+     * stack trace.
+     *
+     * @param level          the log level to use
+     * @param message        the log message
+     */
+    private final void log(Level level, String message) {
+        String               className = null;
+        String               methodName = null;
+        StackTraceElement[]  stackFrame;
+        int                  i = 0;
+
+        if (logger.isLoggable(level)) {
+            stackFrame = new Throwable().getStackTrace();
+            while (stackFrame != null && i < stackFrame.length) {
+                if (!stackFrame[i].getClassName().equals(CLASS_NAME)) {
+                    className = stackFrame[i].getClassName();
+                    methodName = stackFrame[i].getMethodName();
+                    break;
+                }
+                i++;
+            }
+            logger.logp(Level.FINER, className, methodName, message);
+        }
     }
 }

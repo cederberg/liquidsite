@@ -24,7 +24,7 @@ package net.percederberg.liquidsite.content;
 import java.util.Collection;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.Log;
+import org.liquidsite.util.log.Log;
 
 /**
  * A content cache manager. This class will be used to cache objects

@@ -27,7 +27,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.Log;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * The content manager. This class provides an interface for

@@ -32,7 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import net.percederberg.liquidsite.Log;
+import org.liquidsite.util.log.Log;
 
 /**
  * A database connection. This class encapsulates a JDBC database

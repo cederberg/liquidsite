@@ -23,13 +23,14 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.AttributePeer;
 import net.percederberg.liquidsite.dbo.ContentData;
 import net.percederberg.liquidsite.dbo.ContentPeer;
 import net.percederberg.liquidsite.dbo.ContentQuery;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A class with static helper methods for content objects. This class

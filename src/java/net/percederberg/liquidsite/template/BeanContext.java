@@ -24,7 +24,6 @@ package net.percederberg.liquidsite.template;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
@@ -42,6 +41,8 @@ import net.percederberg.liquidsite.mail.MailException;
 import net.percederberg.liquidsite.mail.MailMessage;
 import net.percederberg.liquidsite.mail.MailQueue;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A template bean context. This class holds contains references to

@@ -42,7 +42,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -57,6 +56,8 @@ import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.PermissionList;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * The request processor for the system view in the administration

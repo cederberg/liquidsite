@@ -23,7 +23,7 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
+import org.liquidsite.util.log.Log;
 
 /**
  * A LiquidSite template bean. This class is used to insert the

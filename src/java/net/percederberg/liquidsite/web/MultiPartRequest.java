@@ -38,7 +38,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
 import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.Log;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * An HTTP multi-part request and response.

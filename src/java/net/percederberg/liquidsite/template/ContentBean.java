@@ -23,13 +23,14 @@ package net.percederberg.liquidsite.template;
 
 import java.util.Date;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.User;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A content template bean. This class is used as the base class for

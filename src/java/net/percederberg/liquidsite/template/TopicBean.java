@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentPost;
@@ -31,6 +30,8 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.text.PlainFormatter;
+
+import org.liquidsite.util.log.Log;
 
 /**
  * A topic template bean. This class is used to access topics from
