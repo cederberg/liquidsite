@@ -139,18 +139,31 @@ class DeleteDialogHandler extends AdminDialogHandler {
     private void unfocus(Request request, Object ref) 
         throws ContentException {
 
-        Object  siteFocus = AdminView.SITE.getSiteTreeFocus(request);
+        Object  focus;
 
-        if (siteFocus.equals(ref)) {
+        focus = AdminView.SITE.getSiteTreeFocus(request);
+        if (focus != null && focus.equals(ref)) {
             if (ref instanceof Domain) {
-                siteFocus = null;
+                focus = null;
             } else {
-                siteFocus = ((Content) ref).getParent();
-                if (siteFocus == null) {
-                    siteFocus = ((Content) ref).getDomain();
+                focus = ((Content) ref).getParent();
+                if (focus == null) {
+                    focus = ((Content) ref).getDomain();
                 }
             }
-            AdminView.SITE.setSiteTreeFocus(request, siteFocus);
+            AdminView.SITE.setSiteTreeFocus(request, focus);
+        }
+        focus = AdminView.CONTENT.getContentTreeFocus(request);
+        if (focus != null && focus.equals(ref)) {
+            if (ref instanceof Domain) {
+                focus = null;
+            } else {
+                focus = ((Content) ref).getParent();
+                if (focus == null) {
+                    focus = ((Content) ref).getDomain();
+                }
+            }
+            AdminView.CONTENT.setContentTreeFocus(request, focus);
         }
     }
 }
