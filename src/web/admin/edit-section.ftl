@@ -11,7 +11,7 @@
         propertyAdd('${prop.id}', 
                     '${prop.name?replace("'","\\'")}', 
                     ${prop.type}, 
-                    '${prop.description?replace("'","\\'")}');
+                    '${prop.description?replace("'","\\'")?replace("\n","\\n")?replace("\r","\\r")}}');
 </#list>
         propertyDisplay();
         utilFocusElement("name");
