@@ -144,11 +144,7 @@ public abstract class RequestProcessor {
             content = locateChild(request, content, name);
             path = path.substring(name.length());
             if (path.startsWith("/")) {
-                if (content instanceof ContentSite
-                 || content instanceof ContentFolder
-                 || content instanceof ContentSection
-                 || content instanceof ContentDocument) {
-
+                if (isDirectory(content)) {
                     path = path.substring(1);
                 }
             }
@@ -336,28 +332,22 @@ public abstract class RequestProcessor {
         throws ContentException, ContentSecurityException,
                TemplateException, RequestException {
 
-        if (content instanceof ContentSite) {
+        if (isDirectory(content) && !request.getPath().endsWith("/")) {
+            request.sendRedirect(request.getPath() + "/");
+        } else if (content instanceof ContentSite) {
             content = locateIndexPage(request, content);
             sendContent(request, content);
         } else if (content instanceof ContentFolder) {
-            if (request.getPath().endsWith("/")) {
-                content = locateIndexPage(request, content);
-                sendContent(request, content);
-            } else {
-                request.sendRedirect(request.getPath() + "/");
-            }
+            content = locateIndexPage(request, content);
+            sendContent(request, content);
         } else if (content instanceof ContentPage) {
             request.getEnvironment().setPage((ContentPage) content);
             sendContentPage(request, (ContentPage) content);
         } else if (content instanceof ContentFile) {
             request.sendFile(((ContentFile) content).getFile());
         } else if (content instanceof ContentDocument) {
-            if (request.getPath().endsWith("/")) {
-                request.getEnvironment().setDocument((ContentDocument) content);
-                sendContent(request, request.getEnvironment().getPage());
-            } else {
-                request.sendRedirect(request.getPath() + "/");
-            }
+            request.getEnvironment().setDocument((ContentDocument) content);
+            sendContent(request, request.getEnvironment().getPage());
         } else {
             throw RequestException.RESOURCE_NOT_FOUND;
         }
@@ -382,5 +372,20 @@ public abstract class RequestProcessor {
         template = TemplateManager.getPageTemplate(user, page);
         template.process(request, getContentManager(), buffer);
         request.sendData("text/html", buffer.toString());
+    }
+
+    /**
+     * Checks if the specified content object represents a directory.
+     *
+     * @param content        the content object to check
+     *
+     * @return true if the content object is a directory, or
+     *         false otherwise
+     */
+    private boolean isDirectory(Content content) {
+        return content instanceof ContentSite
+            || content instanceof ContentFolder
+            || content instanceof ContentSection
+            || content instanceof ContentDocument;
     }
 }

@@ -67,15 +67,6 @@ public class ContentFolder extends Content {
     }
 
     /**
-     * Returns a string representation of this object.
-     *
-     * @return a string representation of this object
-     */
-    public String toString() {
-        return getName();
-    }
-
-    /**
      * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
      *
