@@ -44,6 +44,9 @@
       </not>
     </condition>
     <property name="build.date" value="${DSTAMP}" />
+    <taskdef name="afterdoc"
+             classname="net.percederberg.afterdoc.ant.AfterDocTask"
+             classpathref="project.class.path" />
   </target>  
 
 
@@ -84,20 +87,11 @@
   </target>
 
   <target name="compile-db">
-    <xslt style="${build.dir}/src/db/sql-create.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/sql/create-tables.sql">
-      <param name="date" expression="${build.printdate}" />
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/sql-drop.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/sql/drop-tables.sql">
-      <param name="date" expression="${build.printdate}" />
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-    </xslt>
+    <afterdoc sqlComments="no">
+      <in type="afterdoc" src="${build.dir}/src/db/liquidsite-schema.afterdoc" />
+      <out type="sql" dest="${build.dir}/sql" />
+    </afterdoc>
+    <delete file="${build.dir}/sql/CREATE_DATABASES.sql" />
   </target>
 
   <target name="compile-java">
@@ -172,77 +166,10 @@
   </target>
 
   <target name="doc-db">
-    <copy file="${build.dir}/src/db/style.css"
-          todir="${build.dir}/doc/db" />
-    <xslt style="${build.dir}/src/db/doc-overview-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/index.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_CONFIGURATION.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_CONFIGURATION" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_DOMAIN.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_DOMAIN" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_USER.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_USER" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_GROUP.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_GROUP" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_USER_GROUP.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_USER_GROUP" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_CONTENT.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_CONTENT" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_ATTRIBUTE.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_ATTRIBUTE" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_PERMISSION.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_PERMISSION" />
-    </xslt>
-    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
-          in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_LOCK.html">
-      <param name="name" expression="Liquid Site" />
-      <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_LOCK" />
-    </xslt>
+    <afterdoc>
+      <in type="afterdoc" src="${build.dir}/src/db/liquidsite-schema.afterdoc" />
+      <out type="html" dest="${build.dir}/doc/db" />
+    </afterdoc>
   </target>
 
   <target name="doc-java">

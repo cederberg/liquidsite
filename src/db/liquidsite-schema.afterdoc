@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<afterdoc>
+  <database name="liquidsite">
+    <description>
+      The Liquid Site database. All web content for the Liquid Site
+      system is stored in these tables, except for binary files that are
+      stored separately.
+    </description>
+
+    <table name="LS_CONFIGURATION">
+      <description>
+        The configuration parameter table. All parameters are stored
+        in this table except for the database connection parameters
+        that, by necessity, are all stored in a special config file.
+        The special configuration parameter 'liquidsite.version'
+        contains the Liquid Site version number corresponding to this
+        database.
+      </description>
+      <column name="NAME">
+        <description>
+          The configuration parameter name. The parameter names normally
+          consist of ASCII alphanumeric characters with optional '.'
+          characters separating different parts of the name. Please see
+          separate documentation on configuration for more details on
+          the configuration parameters available.
+        </description>
+        <type name="VARCHAR" size="50" required="true" />
+      </column>
+      <column name="VALUE">
+        <description>
+          The configuration parameter value. The parameter values are
+          strings, possibly representing numbers or other types. Please
+          see the separate documentation on configuration for the
+          allowed values for any specific configuration parameter.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The configuration parameters are indexed by name.
+        </description>
+        <ref column="NAME" />
+      </primarykey>
+    </table>
+
+    <table name="LS_DOMAIN">
+      <description>
+        The domain table. Each domain contains it's own pool of
+        resources, such as web sites, content, users, groups, etc. No
+        data can be shared across domains, making it useful to provide
+        hosting for several organizations with a single installation.
+        If a domain is removed, care must be taken to also remove all
+        referencing rows in other tables.
+      </description>
+      <column name="NAME">
+        <description>
+          The unique domain name. The domain name is the primary key, 
+          and is used to identify the domain in most other tables. The 
+          domain name SHOULD NOT be modified after creation, unless all
+          referencing tables also are updated. If a domain is removed, 
+          care must be taken to also remove all rows in referencing 
+          tables.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+      </column>
+      <column name="DESCRIPTION">
+        <description>
+          The domain description. The domain description normally 
+          contains the owner or organization name, complete with 
+          correct spacing and case. The domain description is used by
+          users to identify the domain. It is normally the domain name
+          with correct casing, spaceing and punctuation.
+        </description>
+        <type name="VARCHAR" size="100" required="true" />
+      </column>
+      <column name="COMMENT">
+        <description>
+          The domain comment. The domain comment can be used to add 
+          additional information about a domain.
+        </description>
+        <type name="VARCHAR" size="250" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The domains are indexed by the unique name.
+        </description>
+        <ref column="NAME" />
+      </primarykey>
+    </table>
+
+    <table name="LS_USER">
+      <description>
+        The user table. Each user belongs to a single domain and zero
+        or more groups in that domain. All users in the system and the
+        hosted sites are present in this table. I.e. site
+        administrator user names are present in the same table as the
+        normal users registered for using the site. If a user is
+        removed, care must be taken to also remove all referencing
+        rows in other tables.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain that the user belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+      </column>
+      <column name="NAME">
+        <description>
+          The unique user name. The user name is only unique within
+          the domain, and may overlap with other users in other
+          domains. The user name SHOULD NOT be modified after 
+          creation, unless all referencing tables also are updated. 
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+      </column>
+      <column name="REAL_NAME">
+        <description>
+          The real name of the user.
+        </description>
+        <type name="VARCHAR" size="100" required="true" />
+      </column>
+      <column name="EMAIL">
+        <description>
+          The user e-mail address. Users without a registered e-mail
+          address may have this field left blank.
+        </description>
+        <type name="VARCHAR" size="100" required="true" />
+      </column>
+      <column name="COMMENT">
+        <description>
+          The user comment. The user comment can be used to add 
+          additional information about a user.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The user is uniquely indexed by domain and name.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="NAME" />
+      </primarykey>
+    </table>
+
+    <table name="LS_GROUP">
+      <description>
+        The group table. Each group belongs to a single domain and 
+        contains zero or more users (from the same domain). If a 
+        group is removed, care must be taken to also remove all 
+        referencing rows in other tables.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain that the group belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+      </column>
+      <column name="NAME">
+        <description>
+          The unique group name. The group name is only unique within
+          the domain, and may overlap with other groups in other 
+          domains. The group name SHOULD NOT be modified after 
+          creation, unless all referencing tables also are updated. 
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+      </column>
+      <column name="DESCRIPTION">
+        <description>
+          The informative description of the group.
+        </description>
+        <type name="VARCHAR" size="100" required="true" />
+      </column>
+      <column name="COMMENT">
+        <description>
+          The group comment. The comment can be used to add 
+          additional information about a group.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The group is uniquely indexed by domain and name.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="NAME" />
+      </primarykey>
+    </table>
+
+    <table name="LS_USER_GROUP">
+      <description>
+        The group membership table. This table contains the 
+        many-to-many relationship between users and groups. Each user
+        may belong to multiple groups, and each group may contain 
+        multiple users. Each row in this table corresponds to a user
+        membership in a particular group.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain that the user and group belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+        <ref table="LS_USER" column="DOMAIN" />
+        <ref table="LS_GROUP" column="DOMAIN" />
+      </column>
+      <column name="USER">
+        <description>
+          The user name.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_USER" column="NAME" />
+      </column>
+      <column name="GROUP">
+        <description>
+          The group name.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_GROUP" column="NAME" />
+      </column>
+      <primarykey>
+        <description>
+          The group membership is uniquely indexed by domain, user 
+          and group.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="USER" />
+        <ref column="GROUP" />
+      </primarykey>
+      <index name="USER_GROUP_IDX1">
+        <description>
+          This index facilitates searches for the groups that a user
+          belongs to.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="USER" />
+      </index>
+      <index name="USER_GROUP_IDX2">
+        <description>
+          This index facilitates searches for the users belonging to 
+          a particular group.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="GROUP" />
+      </index>
+    </table>
+
+    <table name="LS_CONTENT">
+      <description>
+        The content object table. The content objects are all sites,
+        pages, aliases, articles, events, and similar in the system. 
+        In short, all objects with associated permissions and revision
+        handling are content objects. The content data is stored as
+        named attributes in the LS_ATTRIBUTE table. Binary data is
+        normally not stored directly in the database, but as files in
+        the file system (with the filename stored as an attribute).
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain the content object belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+      </column>
+      <column name="ID">
+        <description>
+          The content object identifier. Each object may exist in 
+          several revisions, making it possible to revert to old
+          versions if needed. The content identifier SHOULD NOT be 
+          modified after creation, unless all referencing tables  also 
+          are updated. If a content object is removed, care must be 
+          taken to also remove all rows in referencing tables.
+        </description>
+        <type name="INTEGER" required="true" />
+      </column>
+      <column name="REVISION">
+        <description>
+          The content object revision. Each published version of an
+          object is given a revision number, starting at one (1). The
+          revision number zero (0) is used for working revisions, i.e.
+          content versions that have not yet been published. When 
+          editing a published object, a new work revision is created.
+          When a work revision is published a new revision number is
+          incrementally assigned.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <column name="CATEGORY">
+        <description>
+          The content category (or class). All content objects belongs 
+          to a single class of objects, each having a minimum set of
+          attributes with a well-defined meaning. Examples of such 
+          categories are site, directory, page, article, etc. The
+          category number controls how the content object is 
+          interpreted by the system. The list of defined category 
+          numbers are present in the Content class.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <column name="NAME">
+        <description>
+          The content object name. The object name may not be left
+          blank and must comply with the specific naming rules for its
+          content category.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <column name="PARENT">
+        <description>
+          The parent content object. Depending on the category, the
+          parent object has a different meaning. Some categories
+          implies that the objects in the category has no parents,
+          such as sites. Other object categories imply that the parent
+          object has another category, such as pages having site or
+          folder objects as parents. If the parent value is set to
+          zero (0), this content object has no parent.
+        </description>
+        <type name="INTEGER" required="true" />
+        <ref column="ID" />
+      </column>
+      <column name="ONLINE">
+        <description>
+          The publishing online date. If this date is set to a date in
+          the future, the content object is not yet visible on the
+          site. If the date is set to all zeros (0), no online date
+          has been set.
+        </description>
+        <type name="DATETIME" required="true" />
+      </column>
+      <column name="OFFLINE">
+        <description>
+          The publishing offline date. If this date is set to a date
+          in the past, the content object is no longer visible on the
+          site. If the date is set to all zeros (0), no offline date
+          has been set and the object may thus be visible forever (if
+          an online date has been set).
+        </description>
+        <type name="DATETIME" required="true" />
+      </column>
+      <column name="MODIFIED">
+        <description>
+          The content modification date. This is the date of the last
+          modification to this content object revision. When
+          publishing a working revision, this date will be updated to
+          the current date and time.
+        </description>
+        <type name="DATETIME" required="true" />
+      </column>
+      <column name="AUTHOR">
+        <description>
+          The content modification user name. This is the name of the
+          user making the last modification to this content object
+          revision. When publishing a working revision, this date will
+          be updated to the current user.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_USER" column="NAME" />
+      </column>
+      <primarykey>
+        <description>
+          The content is uniquely indexed by the object identifier and
+          the revision number.
+        </description>
+        <ref column="ID" />
+        <ref column="REVISION" />
+      </primarykey>
+      <index name="CONTEXT_IDX_1">
+        <description>
+          The content is commonly searched by category. This is used to
+          find all object in a particular category in the domain, such
+          as all sites or events.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="CATEGORY" />
+      </index>
+      <index name="CONTEXT_IDX_2">
+        <description>
+          The content is commonly searched by identifier. This is used 
+          to find all revisions of an object.
+        </description>
+        <ref column="ID" />
+      </index>
+      <index name="CONTEXT_IDX_3">
+        <description>
+          The content is commonly searched by parent identifier. This
+          is used to find all objects in a directory or topic.
+        </description>
+        <ref column="PARENT" />
+      </index>
+    </table>
+
+    <table name="LS_ATTRIBUTE">
+      <description>
+        The content attribute table. The content attributes are the
+        data and attributes associated with a particular content
+        object revision. All attributes are identified by a name, and
+        contain text data values. Binary data is not stored directly
+        in this table, but rather in files in the filesystem. The file
+        names are stored in attributes in this table, however.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain the content object belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+        <ref table="LS_CONTENT" column="DOMAIN" />
+      </column>
+      <column name="CONTENT">
+        <description>
+          The content object identifier.
+        </description>
+        <type name="INTEGER" required="true" />
+        <ref table="LS_CONTENT" column="ID" />
+      </column>
+      <column name="REVISION">
+        <description>
+          The content object revision.
+        </description>
+        <type name="SMALLINT" required="true" />
+        <ref table="LS_CONTENT" column="REVISION" />
+      </column>
+      <column name="CATEGORY">
+        <description>
+          The content object category. This column is present in this
+          table to facilitate searches through a limited set of
+          categories. 
+        </description>
+        <type name="SMALLINT" required="true" />
+        <ref table="LS_CONTENT" column="CATEGORY" />
+      </column>
+      <column name="NAME">
+        <description>
+          The content attribute name. The attribute name must be
+          unique for the specific content object revision.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <column name="DATA">
+        <description>
+          The attribute text data. This may be set to blank if the
+          attribute has no data.
+        </description>
+        <type name="TEXT" required="true" />
+      </column>
+      <column name="SEARCHABLE">
+        <description>
+          The searchable attribute flag. This flag is set to one (1)
+          if the attribute data is searchable in content searches.
+          This is used to avoid matches in attributes that contain
+          data that is not visible to the user, such as file names and
+          similar.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The content attribute is uniquely indexed by the object 
+          identifier, revision number, and attribute name.
+        </description>
+        <ref column="CONTENT" />
+        <ref column="REVISION" />
+        <ref column="NAME" />
+      </primarykey>
+      <index name="ATTRIBUTE_IDX_1">
+        <description>
+          The attribute data is commonly searched. Only searchable
+          data in a particular domain is matched, however.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="SEARCHABLE" />
+      </index>
+    </table>
+
+    <table name="LS_PERMISSION">
+      <description>
+        The content object permission table. Each content object may
+        have an access control list associated with it, in the form of
+        one of more rows in this table. Each content object by default
+        also inherits all permissions from its parent object,
+        overriding only the ones with the same user and group name.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain the content object belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+        <ref table="LS_CONTENT" column="DOMAIN" />
+      </column>
+      <column name="CONTENT">
+        <description>
+          The content object identifier. The permissions are valid for
+          all revisions of a content object.
+        </description>
+        <type name="INTEGER" required="true" />
+        <ref table="LS_CONTENT" column="ID" />
+      </column>
+      <column name="USER">
+        <description>
+          The name of the user to which this permission row applies.
+          If set to an empty string, the user name is ignored and the
+          group name is used. If the group name is also blank, the
+          anonymous user is assigned the permissions. At least one of
+          the user and group fields should be blank.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_USER" column="NAME" />
+      </column>
+      <column name="GROUP">
+        <description>
+          The name of the group to which this permission row applies.
+          If set to an empty string, the group name is ignored and the
+          user name is used. If the user name is also blank, the
+          anonymous user is assigned the permissions. At least one of
+          the user and group fields should be blank.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_GROUP" column="NAME" />
+      </column>
+      <column name="READ">
+        <description>
+          The read permission flag. This flag is set to one (1) if the
+          user or group has permission to read the content object.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <column name="WRITE">
+        <description>
+          The write permission flag. This flag is set to one (1) if the
+          user or group has permission to edit the content object.
+          Note, however, that the changes may not be published unless
+          the user or group also has the publish permission.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <column name="PUBLISH">
+        <description>
+          The publish permission flag. This flag is set to one (1) if
+          the user or group has permission to change the publish
+          status of a content object. This implies the right to
+          publish work revisions, unpublish revisions, or delete
+          content objects.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <column name="ADMIN">
+        <description>
+          The admin permission flag. This flag is set to one (1) if
+          the user or group has permission to change the permissions
+          of the content object.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The content permission is uniquely indexed by the object 
+          identifier, user name, and group name.
+        </description>
+        <ref column="CONTENT" />
+        <ref column="USER" />
+        <ref column="GROUP" />
+      </primarykey>
+    </table>
+
+
+
+    <table name="LS_LOCK">
+      <description>
+        The content object lock table. The content locks are used when
+        an object is being edited by a user, in which case it is first
+        locked by adding a row to this table. By the use of a unique
+        index on the content object identifier, multiple locks of the
+        same object can be avoided.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain the content object belongs to.
+        </description>
+        <type name="VARCHAR" size="10" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+        <ref table="LS_CONTENT" column="DOMAIN" />
+      </column>
+      <column name="CONTENT">
+        <description>
+          The content object identifier. The lock is set on all
+          revisions of a content object.
+        </description>
+        <type name="INTEGER" required="true" />
+        <ref table="LS_CONTENT" column="ID" />
+      </column>
+      <column name="USER">
+        <description>
+          The name of the user that acquired the lock.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_USER" column="NAME" />
+      </column>
+      <column name="ACQUIRED">
+        <description>
+          The date and time that the lock was acquired.
+        </description>
+        <type name="DATETIME" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The content lock is uniquely indexed by the object 
+          identifier.
+        </description>
+        <ref column="CONTENT" />
+      </primarykey>
+    </table>
+  </database>
+</afterdoc>
