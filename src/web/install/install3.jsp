@@ -67,7 +67,7 @@ if (!isAdmin) {
 <% } else if (errorUsername || errorPassword || errorVerify) { %>
   <p class="incorrect">Insert information in the marked fields.</p>
 <% } else if (errorUserExists) { %>
-  <p class="incorrect">The username entered already exists. If you
+  <p class="incorrect">The username to create already exists. If you
     want to choose this user, select it from the list.</p>
 <% } else if (errorVerification && usersel.equals("")) { %>
   <p class="incorrect">The password could not be verified. Type your
