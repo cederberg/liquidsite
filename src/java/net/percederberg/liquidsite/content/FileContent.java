@@ -190,7 +190,22 @@ public class FileContent extends Content {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
+        Content[]  children;
+
         super.validate();
+        if (getParent() == null) {
+            throw new ContentException("no parent set for file");
+        }
+        children = Content.findByParent(getParent());
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].getId() != getId()
+             && children[i].getName().equals(getName())) {
+
+                throw new ContentException(
+                    "another object with the same name is already " +
+                    "present in the same folder");
+            }
+        }
     }
 
     /**
