@@ -14,6 +14,11 @@
     important of these terms.</p>
 
     <list>
+      <item id="alias" style="draft">
+        <title>Alias</title>
+        <text></text>
+      </item>
+
       <item id="css">
         <title>CSS</title>
         <text>The <ref url="http://www.w3.org/TR/REC-CSS2">Cascading
@@ -29,6 +34,11 @@
 
       <item id="directory" style="draft">
         <title>Directory</title>
+        <text></text>
+      </item>
+
+      <item id="group" style="draft">
+        <title>Group</title>
         <text></text>
       </item>
 
@@ -82,11 +92,21 @@
         <text>A web site consists of a collection of documents and
         files available from a single location on the world wide web.
         A web site is normally identified by a host name, for example
-        <code>www.liquidsite.org</code>. It is possible to have
-        several web sites separated by different directories on  a
-        single host. Web sites cannot share information, such as
-        files, users, or similar (but they can of course link to
-        public resources on other sites).</text>
+        <code>www.liquidsite.org</code>. It is also possible to share
+        a single host name and separate the sites by their base
+        directory. Web sites can only share information with other
+        sites in the same <ref id="site_group">Site Group</ref>, but
+        they can of course link to public resources on other
+        sites.</text>
+      </item>
+
+      <item id="site_group">
+        <title>Site Group</title>
+        <text>A site group is a set of <ref id="site">Sites</ref> that
+        share common resources. <ref id="user">Users</ref> and 
+        <ref id="group">Groups</ref> are always shared between the
+        sites in a site group. Files, templates, and pages may be
+        shared by using <ref id="alias">Aliases</ref>.</text>
       </item>
 
       <item id="template">
@@ -97,6 +117,11 @@
         as normal pages. Templates can inherit the page elements from
         other templates, creating a hierarchy of more refined
         templates.</text>
+      </item>
+
+      <item id="user" style="draft">
+        <title>User</title>
+        <text></text>
       </item>
 
       <item id="web_page">
