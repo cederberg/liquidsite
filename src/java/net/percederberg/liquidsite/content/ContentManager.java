@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.content;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Log;
@@ -123,6 +124,22 @@ public class ContentManager {
      */
     public Application getApplication() {
         return app; 
+    }
+
+    /**
+     * Returns an array of all domains. This method will only consult 
+     * the internal cache, and not the database.
+     * 
+     * @return an array of all domains
+     */
+    public Domain[] getDomains() {
+        Domain[]  res = new Domain[domains.size()];
+        Iterator  iter = domains.values().iterator();
+        
+        for (int i = 0; iter.hasNext(); i++) {
+            res[i] = (Domain) iter.next();
+        }
+        return res;
     }
 
     /**
