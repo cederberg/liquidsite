@@ -37,6 +37,7 @@ import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
+import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
@@ -408,6 +409,10 @@ public class AdminController extends Controller {
                 processPreview(request, (ContentSite) content, path);
             } else if (content instanceof ContentDocument) {
                 processPreview(request, (ContentDocument) content, path);
+            } else if (content instanceof ContentSection) {
+                processPreview(request, (ContentSection) content, path);
+            } else {
+                throw RequestException.FORBIDDEN;
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -500,6 +505,42 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Processes a preview request for a specific section.
+     * 
+     * @param request        the request object
+     * @param section        the content section object
+     * @param path           the preview path (within the document)
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws TemplateException if the page template couldn't be 
+     *             processed correctly 
+     */
+    private void processPreview(Request request,
+                                ContentSection section,
+                                String path)
+        throws RequestException, ContentException, TemplateException {
+
+        Content  content;
+        String   revision;
+
+        content = section;
+        revision = request.getParameter("revision");
+        if (content != null && revision != null) {
+            content = content.getRevision(Integer.parseInt(revision));
+        }
+        if (content == null) {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        } else if (!content.hasReadAccess(request.getUser())) {
+            throw RequestException.FORBIDDEN;
+        } else {
+            processPreview(request, content);
+        }
+    }
+
+    /**
      * Processes a preview request for a specific content object.
      * 
      * @param request        the request object
@@ -524,13 +565,14 @@ public class AdminController extends Controller {
             request.sendData("text/html", buffer.toString());
         } else if (content instanceof ContentFile) {
             request.sendFile(((ContentFile) content).getFile());
+        } else if (content instanceof ContentSection) {
+            AdminView.CONTENT.viewSectionPreview(request,
+                                                 (ContentSection) content);
         } else if (content instanceof ContentDocument) {
-            AdminView.CONTENT.viewPreviewDocument(request,
+            AdminView.CONTENT.viewDocumentPreview(request,
                                                   (ContentDocument) content);
         } else {
-            AdminView.BASE.viewError(request, 
-                                     "Cannot preview this object", 
-                                     null);
+            request.sendData("text/plain", "Cannot preview this object");
         }
     }
 }

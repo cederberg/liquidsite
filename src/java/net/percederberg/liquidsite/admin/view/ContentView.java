@@ -312,7 +312,23 @@ public class ContentView extends AdminView {
     }
 
     /**
-     * Shows the preview document page.
+     * Shows the section preview page.
+     * 
+     * @param request        the request object
+     * @param section        the section object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewSectionPreview(Request request, ContentSection section)
+        throws ContentException {
+
+        request.setAttribute("properties", findSectionProperties(section));
+        request.sendTemplate("admin/preview-section.ftl");
+    }
+
+    /**
+     * Shows the document preview page.
      * 
      * @param request        the request object
      * @param doc            the document object
@@ -320,7 +336,7 @@ public class ContentView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewPreviewDocument(Request request, ContentDocument doc)
+    public void viewDocumentPreview(Request request, ContentDocument doc)
         throws ContentException {
 
         request.setAttribute("properties", findSectionProperties(doc));

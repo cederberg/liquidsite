@@ -667,6 +667,8 @@ public class ScriptView {
         } else if (content instanceof ContentFile) {
             return getPreviewUrl(content.getParent()) +  
                    content.toString(); 
+        } else if (content instanceof ContentSection) {
+            return "preview/" + content.getId() + "/";
         } else if (content instanceof ContentDocument) {
             return "preview/" + content.getId() + "/";
         } else {
