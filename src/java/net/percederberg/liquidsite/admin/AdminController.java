@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -29,18 +28,15 @@ import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.form.FormHandlingException;
 import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
@@ -71,6 +67,16 @@ public class AdminController extends Controller {
      * The admin form validator.
      */
     private AdminValidator validator = new AdminValidator();
+
+    /**
+     * The temporary site add handler.
+     */
+    private SiteAddFormHandler siteAdd = new SiteAddFormHandler();
+
+    /**
+     * The temporary site edit handler.
+     */
+    private SiteEditFormHandler siteEdit = new SiteEditFormHandler();
 
     /**
      * Creates a new administration controller. 
@@ -132,9 +138,19 @@ public class AdminController extends Controller {
         } else if (path.equals("edit-home.html")) {
             processEditUser(request);
         } else if (path.equals("add-site.html")) {
-            processAddObject(request);
+            try {
+                siteAdd.process(request);
+            } catch (FormHandlingException e) {
+                // TODO: redirect to siteAdd.getStartPage()
+                view.pageError(request, e.getMessage());
+            }
         } else if (path.equals("edit-site.html")) {
-            processEditObject(request);
+            try {
+                siteEdit.process(request);
+            } catch (FormHandlingException e) {
+                // TODO: redirect to siteEdit.getStartPage()
+                view.pageError(request, e.getMessage());
+            }
         } else if (path.equals("delete-site.html")) {
             processDeleteObject(request);
         } else if (path.equals("publish-site.html")) {
@@ -296,372 +312,6 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
             view.pageError(request, e);
-        }
-    }
-
-    /**
-     * Processes the add object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processAddObject(Request request) throws RequestException {
-        String  step = request.getParameter("step", "");
-        String  category = request.getParameter("category", "");
-        Object  parent;
-        
-        try {
-            parent = view.getRequestReference(request);
-            if (request.getParameter("prev", "").equals("true")) {
-                if (step.equals("1")) {
-                    request.sendRedirect("site.html");
-                } else {
-                    view.pageAddObject(request, parent);
-                }
-            } else if (category.equals("domain")) {
-                if (step.equals("1")) {
-                    view.pageAddDomain(request, parent);
-                } else {
-                    processAddDomain(request, parent);
-                }
-            } else if (category.equals("site")) {
-                if (step.equals("1")) {
-                    view.pageEditSite(request, parent);
-                } else {
-                    processAddSite(request, parent);
-                }
-            } else if (category.equals("folder")) {
-                if (step.equals("1")) {
-                    view.pageEditFolder(request, parent, null);
-                } else {
-                    processAddFolder(request, parent);
-                }
-            } else if (category.equals("file")) {
-                if (step.equals("1")) {
-                    view.pageEditFile(request, parent);
-                } else {
-                    processAddFile(request, parent);
-                }
-            } else {
-                view.pageAddObject(request, parent);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.pageError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.pageError(request, e);
-        }
-    }
-
-    /**
-     * Processes the add domain requests for the site view. The 
-     * parent domain object must be specified in case the uses 
-     * chooses to go back to the preceeding step. 
-     * 
-     * @param request        the request object
-     * @param parent         the parent domain object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processAddDomain(Request request, Object parent) 
-        throws ContentException, ContentSecurityException {
-
-        Domain  domain;
-        Host    host;
-        
-        try {
-            validator.validateAddDomain(request);
-            domain = new Domain(request.getParameter("name"));
-            domain.setDescription(request.getParameter("description"));
-            domain.save(request.getUser());
-            host = new Host(domain, request.getParameter("host"));
-            host.setDescription("Default domain host");
-            host.save(request.getUser());
-            view.setSiteTreeFocus(request, domain);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageAddDomain(request, parent);
-        }
-    }
-
-    /**
-     * Processes the add site requests for the site view.
-     * 
-     * @param request        the request object
-     * @param parent         the parent domain object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processAddSite(Request request, Object parent) 
-        throws ContentException, ContentSecurityException {
-
-        User         user = request.getUser();
-        Domain       domain;
-        ContentSite  site;
-        
-        try {
-            validator.validateSite(request);
-            domain = (Domain) parent;
-            site = new ContentSite(domain);
-            site.setName(request.getParameter("name"));
-            site.setProtocol(request.getParameter("protocol"));
-            site.setHost(request.getParameter("host"));
-            site.setPort(Integer.parseInt(request.getParameter("port")));
-            site.setDirectory(request.getParameter("dir"));
-            site.setAdmin(request.getParameter("admin") != null);
-            site.setComment(request.getParameter("comment"));
-            site.save(user);
-            view.setSiteTreeFocus(request, site);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditSite(request, parent);
-        }
-    }
-
-    /**
-     * Processes the add folder requests for the site view.
-     * 
-     * @param request        the request object
-     * @param parent         the parent content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processAddFolder(Request request, Object parent) 
-        throws ContentException, ContentSecurityException {
-
-        User           user = request.getUser();
-        ContentFolder  folder;
-        
-        try {
-            validator.validateFolder(request);
-            folder = new ContentFolder((Content) parent);
-            folder.setName(request.getParameter("name"));
-            folder.setComment(request.getParameter("comment"));
-            folder.save(user);
-            view.setSiteTreeFocus(request, folder);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditFolder(request, parent, null);
-        }
-    }
-
-    /**
-     * Processes the add file requests for the site view.
-     * 
-     * @param request        the request object
-     * @param parent         the parent content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processAddFile(Request request, Object parent) 
-        throws ContentException, ContentSecurityException {
-
-        User           user = request.getUser();
-        FileParameter  param;
-        Content        content;
-        ContentFile    file;
-        
-        try {
-            validator.validateFile(request);
-            param = request.getFileParameter("content");
-            if (param == null || param.getSize() <= 0) {
-                throw new FormValidationException(
-                    "content", 
-                    "No file content specified");
-            }
-            content = (Content) parent;
-            file = new ContentFile(content, param.getName());
-            file.setName(request.getParameter("name"));
-            file.setComment(request.getParameter("comment"));
-            file.save(user);
-            param.write(file.getFile());
-            view.setSiteTreeFocus(request, file);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditFile(request, parent);
-        } catch (IOException e) {
-            throw new ContentException(e.getMessage());
-        }
-    }
-
-    /**
-     * Processes the edit object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processEditObject(Request request) throws RequestException {
-        String   step = request.getParameter("step");
-        Object   obj;
-        Content  content;
-        
-        try {
-            obj = view.getRequestReference(request);
-            if (obj instanceof Content) {
-                content = ((Content) obj).getRevision(0);
-                if (content != null) {
-                    obj = content;
-                }
-            }
-            if (request.getParameter("prev", "").equals("true")) {
-                if (obj instanceof Content) {
-                    removeLock((Content) obj, request.getUser(), false);
-                }
-                request.sendRedirect("site.html");
-            } else if (obj instanceof ContentSite) {
-                if (step == null) {
-                    checkLock((Content) obj, request.getUser(), true);
-                    view.pageEditSite(request, (ContentSite) obj);
-                } else {
-                    processEditSite(request, (ContentSite) obj);
-                }
-            } else if (obj instanceof ContentFolder) {
-                if (step == null) {
-                    checkLock((Content) obj, request.getUser(), true);
-                    view.pageEditFolder(request, null, (ContentFolder) obj);
-                } else {
-                    processEditFolder(request, (ContentFolder) obj);
-                }
-            } else if (obj instanceof ContentFile) {
-                if (step == null) {
-                    checkLock((Content) obj, request.getUser(), true);
-                    view.pageEditFile(request, obj);
-                } else {
-                    processEditFile(request, (ContentFile) obj);
-                }
-            } else {
-                request.sendRedirect("site.html");
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.pageError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.pageError(request, e);
-        }
-    }
-
-    /**
-     * Processes the edit site requests for the site view.
-     * 
-     * @param request        the request object
-     * @param site           the site object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processEditSite(Request request, ContentSite site) 
-        throws ContentException, ContentSecurityException {
-
-        try {
-            checkLock(site, request.getUser(), false);
-            validator.validateSite(request);
-            site.setRevisionNumber(0);
-            site.setName(request.getParameter("name"));
-            site.setProtocol(request.getParameter("protocol"));
-            site.setHost(request.getParameter("host"));
-            site.setPort(Integer.parseInt(request.getParameter("port")));
-            site.setDirectory(request.getParameter("dir"));
-            site.setComment(request.getParameter("comment"));
-            site.save(request.getUser());
-            removeLock(site, request.getUser(), false);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditSite(request, site);
-        }
-    }
-
-    /**
-     * Processes the edit folder requests for the site view.
-     * 
-     * @param request        the request object
-     * @param folder         the folder content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processEditFolder(Request request, ContentFolder folder) 
-        throws ContentException, ContentSecurityException {
-
-        User  user = request.getUser();
-        
-        try {
-            checkLock(folder, request.getUser(), false);
-            validator.validateFolder(request);
-            folder.setRevisionNumber(0);
-            folder.setName(request.getParameter("name"));
-            folder.setComment(request.getParameter("comment"));
-            folder.save(user);
-            removeLock(folder, request.getUser(), false);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditFolder(request, null, folder);
-        }
-    }
-
-    /**
-     * Processes the edit file requests for the site view.
-     * 
-     * @param request        the request object
-     * @param file           the file content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processEditFile(Request request, ContentFile file) 
-        throws ContentException, ContentSecurityException {
-
-        User           user = request.getUser();
-        FileParameter  param;
-        
-        try {
-            checkLock(file, request.getUser(), false);
-            validator.validateFile(request);
-            file.setRevisionNumber(0);
-            file.setName(request.getParameter("name"));
-            file.setComment(request.getParameter("comment"));
-            param = request.getFileParameter("content");
-            if (param != null && param.getSize() > 0) {
-                file.setFileName(param.getName());
-                param.write(file.getFile());
-            }
-            file.save(user);
-            removeLock(file, request.getUser(), false);
-            request.sendRedirect("site.html");
-        } catch (FormValidationException e) {
-            request.setAttribute("error", e.getMessage());
-            view.pageEditFile(request, file);
-        } catch (IOException e) {
-            throw new ContentException(e.getMessage());
         }
     }
 

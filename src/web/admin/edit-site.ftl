@@ -8,16 +8,20 @@
     }
 
     function previous() {
-        document.getElementsByName("prev").item(0).value = "true";
+        document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
     </script>
 
     <form method="post" accept-charset="UTF-8">
+<#if isadd>
+      <input type="hidden" name="liquidsite.step" value="2" />
+<#else>
+      <input type="hidden" name="liquidsite.step" value="1" />
+</#if>
+      <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
-      <input type="hidden" name="step" value="2" />
-      <input type="hidden" name="prev" value="" />
       <input type="hidden" name="category" value="site" />
       <table class="form">
         <tr>
