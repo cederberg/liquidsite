@@ -67,6 +67,13 @@ public class DocumentBean implements TemplateHashModel {
     private MetaDataBean metadata;
 
     /**
+     * Creates a new empty document template bean.
+     */
+    DocumentBean() {
+        this(null);
+    }
+
+    /**
      * Creates a new document template bean.
      * 
      * @param document       the content document, or null

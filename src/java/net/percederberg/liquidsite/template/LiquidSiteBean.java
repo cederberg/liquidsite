@@ -274,6 +274,34 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Returns the document corresponding to the specified path.
+     *
+     * @param path           the document (and section) path
+     *
+     * @return the document found, or
+     *         an empty document if not found
+     */
+    public DocumentBean findDocument(String path) {
+        Domain   domain;
+        Content  content;
+
+        try {
+            domain = request.getEnvironment().getDomain();
+            content = findContent(path, domain);
+            if (content instanceof ContentDocument) {
+                return new DocumentBean((ContentDocument) content);
+            } else {
+                LOG.error("failed to find document: " + path);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+        }
+        return new DocumentBean();
+    }
+
+    /**
      * Returns all document in the specified section path. All
      * documents in subsections will also be returned.
      *
@@ -286,16 +314,16 @@ public class LiquidSiteBean {
     public ArrayList findDocuments(String path, int offset, int count) {
         ArrayList       result = new ArrayList();
         Domain          domain;
+        Content         content;
         ContentSection  section;
 
         // TODO: add sorting (and remove the one that exists)
         // TODO: add filtering
         try {
             domain = request.getEnvironment().getDomain();
-            section = findSection(path, domain);
-            if (section == null) {
-                LOG.error("failed to find section: " + path);
-            } else {
+            content = findContent(path, domain);
+            if (content instanceof ContentSection) {
+                section = (ContentSection) content;
                 findDocuments(findSections(section), result);
                 // TODO: implement offset and count in SQL
                 while (offset > 0 && result.size() > 0) {
@@ -305,6 +333,8 @@ public class LiquidSiteBean {
                 while (result.size() > count) {
                     result.remove(result.size() - 1);
                 }
+            } else {
+                LOG.error("failed to find section: " + path);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -315,35 +345,37 @@ public class LiquidSiteBean {
     }
     
     /**
-     * Finds a specified section.
-     * 
-     * @param path           the section path
+     * Finds a specified content section or document.
+     *
+     * @param path           the content path
      * @param parent         the parent domain or section
-     * 
-     * @return the section found, or
+     *
+     * @return the section or document found, or
      *         null if not found
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the section couldn't be
+     * @throws ContentSecurityException if the content couldn't be
      *             read by the current user
      */
-    private ContentSection findSection(String path, Object parent)
+    private Content findContent(String path, Object parent)
         throws ContentException, ContentSecurityException {
 
         String  name;
         int     pos;
 
-        // Check for null parent
+        // Check for empty path or null parent
         if (path == null || path.equals("")) {
-            if (parent instanceof ContentSection) {
-                return (ContentSection) parent;
+            if (parent instanceof ContentSection
+             || parent instanceof ContentDocument) {
+
+                return (Content) parent;
             } else {
                 return null;
             }
         }
 
-        // Find first section name
+        // Find child name
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -356,17 +388,20 @@ public class LiquidSiteBean {
             path = "";
         }
 
-        // Find sub-section
-        return findSection(path, findSubSection(parent, name));
+        // Find child content
+        return findContent(path, findChild(parent, name));
     }
 
     /**
-     * Finds a specified sub section.
+     * Finds a named child object. The parent may be either a domain
+     * or a content section. The child returned can be either a 
+     * content section or some content object present directly in the
+     * section.
      *
      * @param parent         the parent domain or section
-     * @param name           the section name
+     * @param name           the child name
      *
-     * @return the section found, or
+     * @return the child content object found, or
      *         null if not found
      *
      * @throws ContentException if the database couldn't be accessed
@@ -374,7 +409,7 @@ public class LiquidSiteBean {
      * @throws ContentSecurityException if the section couldn't be
      *             read by the current user
      */
-    private Content findSubSection(Object parent, String name) 
+    private Content findChild(Object parent, String name) 
         throws ContentException, ContentSecurityException {
 
         Content[]  children;
