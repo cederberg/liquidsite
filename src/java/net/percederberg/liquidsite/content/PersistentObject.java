@@ -226,6 +226,74 @@ public abstract class PersistentObject {
     }
 
     /**
+     * Checks the read access for a user. 
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has read access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public final boolean hasReadAccess(User user)
+        throws ContentException {
+
+        return SecurityManager.getInstance().hasReadAccess(user, this);
+    }
+
+    /**
+     * Checks the write access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has write access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public final boolean hasWriteAccess(User user)
+        throws ContentException {
+
+        return SecurityManager.getInstance().hasWriteAccess(user, this);
+    }
+
+    /**
+     * Checks the publish access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has publish access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public final boolean hasPublishAccess(User user)
+        throws ContentException {
+
+        return SecurityManager.getInstance().hasPublishAccess(user, this);
+    }
+
+    /**
+     * Checks the admin access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has admin access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public final boolean hasAdminAccess(User user) 
+        throws ContentException {
+
+        return SecurityManager.getInstance().hasAdminAccess(user, this);
+    }
+
+    /**
      * Saves this object to the database.
      * 
      * @param user           the user performing the operation
