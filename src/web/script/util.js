@@ -253,6 +253,7 @@ function utilRemoveElements() {
     elem.parentNode.removeChild(elem);
     UTIL_REMOVE_LIST.length = UTIL_REMOVE_LIST.length - 1;
     if (tag == "textarea" || tag == "input" || tag == "select") {
+        elem.name = "";
         setTimeout("utilRemoveElements();", 1);
     } else {
         utilRemoveElements();
