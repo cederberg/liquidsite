@@ -124,6 +124,50 @@ public class ContentView extends AdminView {
     }
 
     /**
+     * Shows the add or edit section page. Either the parent or the
+     * section object must be specified.
+     * 
+     * @param request        the request object
+     * @param parent         the parent object, or null
+     * @param section        the section object, or null
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewEditSection(Request request, 
+                                Object parent, 
+                                ContentSection section) 
+        throws ContentException {
+
+        String     name;
+        String     comment;
+
+        // Find default values
+        if (parent != null) {
+            AdminUtils.setReference(request, parent);
+            name = "";
+            comment = "Created";
+        } else {
+            AdminUtils.setReference(request, section);
+            // TODO: section.getAllDocumentProperties();
+            name = section.getName();
+            comment = "";
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            comment = request.getParameter("comment", "");
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("comment", comment);
+// TODO:        request.setAttribute("parent", String.valueOf(inherited));
+        request.sendTemplate("admin/edit-section.ftl");
+    }
+    
+    /**
      * Shows the load content object JavaScript code.
      * 
      * @param request        the request object

@@ -64,6 +64,7 @@ public class AdminController extends Controller {
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
         workflows.add(new ContentAddFormHandler());
+        workflows.add(new ContentEditFormHandler());
         workflows.add(new PublishDialogHandler());
         workflows.add(new UnpublishDialogHandler());
         workflows.add(new RevertDialogHandler());

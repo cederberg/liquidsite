@@ -208,7 +208,8 @@ function treeInternalIsContainer(type) {
     return type == "domain" 
         || type == "site"
         || type == "folder"
-        || type == "template";
+        || type == "template"
+        || type == "section";
 }
 
 /**

@@ -174,6 +174,8 @@ public class AdminUtils {
                 return "file";
             case Content.TEMPLATE_CATEGORY:
                 return "template";
+            case Content.SECTION_CATEGORY:
+                return "section";
             default:
                 return null;
             }

@@ -1,5 +1,5 @@
 /*
- * ContentAddFormHandler.java
+ * ContentEditFormHandler.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -21,31 +21,67 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.form.FormValidator;
 
 /**
- * The content add request handler. This class handles the add 
+ * The content edit request handler. This class handles the edit 
  * workflow for the content view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ContentAddFormHandler extends AdminFormHandler {
+public class ContentEditFormHandler extends AdminFormHandler {
+
+    /***
+     * The latest object instance created.
+     */
+    private static ContentEditFormHandler instance = null;
 
     /**
-     * Creates a new content add request handler.
+     * The section form validator.
      */
-    public ContentAddFormHandler() {
-        super("content.html", "add-content.html", false);
+    private FormValidator section = new FormValidator();
+
+    /**
+     * Returns an instance of this class. If a prior instance has 
+     * been created, it will be returned instead of creating a new
+     * one. 
+     * 
+     * @return an instance of a content edit form handler
+     */
+    public static ContentEditFormHandler getInstance() {
+        if (instance == null) {
+            return new ContentEditFormHandler();
+        } else {
+            return instance;
+        }
+    }
+
+    /**
+     * Creates a new content edit request handler.
+     */
+    public ContentEditFormHandler() {
+        super("content.html", "edit-content.html", true);
+        instance = this;
+        initialize();
+    }
+
+    /**
+     * Initializes all the form validators.
+     */
+    private void initialize() {
+        String  error;
+        
+        // Add and edit section validator
+        section.addRequiredConstraint("name", "No section name specified");
+        error = "No revision comment specified";
+        section.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -63,15 +99,14 @@ public class ContentAddFormHandler extends AdminFormHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        String  category = request.getParameter("category", "");
-        Object  parent = AdminUtils.getReference(request);
+        Object  ref = AdminUtils.getReference(request);
 
-        if (step == 1) {
-            AdminView.CONTENT.viewAddObject(request, parent);
-        } else if (category.equals("section")) {
-            AdminView.CONTENT.viewEditSection(request, parent, null);
+        if (ref instanceof ContentSection) {
+            AdminView.CONTENT.viewEditSection(request, 
+                                              null, 
+                                              (ContentSection) ref);
         } else {
-            AdminView.CONTENT.viewAddObject(request, parent);
+            throw new ContentException("cannot edit this object");
         }
     }
 
@@ -90,17 +125,14 @@ public class ContentAddFormHandler extends AdminFormHandler {
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        ContentEditFormHandler  edit = ContentEditFormHandler.getInstance(); 
-        String                  category = request.getParameter("category", "");
-        String                  message;
+        String  category = request.getParameter("category", "");
+        String  message;
 
-        if (step == 1) {
-            if (category.equals("")) {
-                message = "No content category specified";
-                throw new FormValidationException("category", message);
-            }
+        if (category.equals("section")) {
+            section.validate(request);
         } else {
-            edit.validateStep(request, step);
+            message = "Unknown content category specified";
+            throw new FormValidationException("category", message);
         }
     }
 
@@ -129,54 +161,34 @@ public class ContentAddFormHandler extends AdminFormHandler {
     protected int handleStep(Request request, int step) 
         throws ContentException, ContentSecurityException {
 
-        String  category = request.getParameter("category", "");
-        Object  parent = AdminUtils.getReference(request);
+        Object  ref = AdminUtils.getReference(request);
 
-        if (step == 1) {
-            return 2;
-        } else if (category.equals("section")) {
-            handleAddSection(request, parent);
+        if (ref instanceof ContentSection) {
+            handleEditSection(request, (ContentSection) ref);
+        } else {
+            throw new ContentException("cannot edit this object");
         }
         return 0;
     }
 
     /**
-     * Handles the add section form.
+     * Handles the edit section form.
      * 
      * @param request        the request object
-     * @param parent         the parent domain or section object
+     * @param folder         the folder content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the 
      *             required permissions 
      */
-    private void handleAddSection(Request request, Object parent) 
+    private void handleEditSection(Request request, ContentSection section) 
         throws ContentException, ContentSecurityException {
 
-        ContentSection  section;
-        Map             params = request.getAllParameters();
-        Iterator        iter = params.keySet().iterator();
-        String          name;
-        String          value;
-        
-        if (parent instanceof Domain) {
-            section = new ContentSection((Domain) parent);
-        } else {
-            section = new ContentSection((ContentSection) parent);
-        }
+        section.setRevisionNumber(0);
         section.setName(request.getParameter("name"));
         section.setComment(request.getParameter("comment"));
-/* TODO: set document properties
-        while (iter.hasNext()) {
-            name = iter.next().toString();
-            if (name.startsWith("element.")) {
-                value = params.get(name).toString();
-                template.setElement(name.substring(8), value);
-            }
-        }
-*/
+        // TODO: add parent and properties
         section.save(request.getUser());
-        AdminView.CONTENT.setContentTreeFocus(request, section);
     }
 }
