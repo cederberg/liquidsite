@@ -119,12 +119,25 @@ public class ContentManager {
     }
 
     /**
+     * Returns a domain with the specified name. This method will 
+     * only consult the internal cache, and not the database. 
+     * 
+     * @param name           the domain name
+     * 
+     * @return the domain found, or
+     *         null if no such domain exists
+     */
+    public Domain getDomain(String name) {
+        return (Domain) domains.get(name);
+    }
+
+    /**
      * Adds a domain to the domain cache. This method also updates 
      * existing entries for the same domain.
      * 
      * @param domain         the domain to add or update
      */
-    public void addDomain(Domain domain) {
+    void addDomain(Domain domain) {
         removeDomain(domain);
         domains.put(domain.getName(), domain);
     }
@@ -134,8 +147,21 @@ public class ContentManager {
      * 
      * @param domain         the domain to remove
      */
-    public void removeDomain(Domain domain) {
+    void removeDomain(Domain domain) {
         domains.remove(domain.getName());
+    }
+
+    /**
+     * Returns a host with the specified name. This method will only 
+     * consult the internal cache, and not the database. 
+     * 
+     * @param name           the host name
+     * 
+     * @return the host found, or
+     *         null if no such host exists
+     */
+    public Host getHost(String name) {
+        return (Host) hosts.get(name);
     }
 
     /**
@@ -144,7 +170,7 @@ public class ContentManager {
      * 
      * @param host           the host to add or update
      */
-    public void addHost(Host host) {
+    void addHost(Host host) {
         removeHost(host);
         hosts.put(host.getName(), host);
     }
@@ -154,7 +180,7 @@ public class ContentManager {
      * 
      * @param host           the host to remove
      */
-    public void removeHost(Host host) {
+    void removeHost(Host host) {
         hosts.remove(host.getName());
     }
 

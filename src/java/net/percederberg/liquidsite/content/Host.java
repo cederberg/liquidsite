@@ -86,16 +86,36 @@ public class Host extends DataObject {
     }
 
     /**
-     * Returns the domain name
+     * Returns the host domain.
      * 
-     * @return the domain name
+     * @return the host domain
+     * 
+     * @throws ContentException if no content manager is available
+     */
+    public Domain getDomain() throws ContentException {
+        return ContentManager.getInstance().getDomain(domain);
+    }
+    
+    /**
+     * Sets the host domain.
+     * 
+     * @param domain         the new domain
+     */
+    public void setDomain(Domain domain) {
+        setDomainName(domain.getName());
+    }
+    
+    /**
+     * Returns the host domain name
+     * 
+     * @return the host domain name
      */
     public String getDomainName() {
         return domain;
     }
     
     /**
-     * Sets the domain name.
+     * Sets the host domain.
      * 
      * @param domain         the new domain name
      */
