@@ -37,6 +37,11 @@ import net.percederberg.liquidsite.dbo.ContentData;
 public class ContentSection extends Content {
 
     /**
+     * The description content attribute.
+     */
+    private static final String DESCRIPTION_ATTRIBUTE = "DESCRIPTION";
+
+    /**
      * The document property  content attribute prefix.
      */
     private static final String DOCUMENT_PREFIX = "DOCUMENT.";
@@ -55,6 +60,7 @@ public class ContentSection extends Content {
 
         super(manager, domain, Content.SECTION_CATEGORY);
         setParent(null);
+        setAttribute(DESCRIPTION_ATTRIBUTE, "");
     }
 
     /**
@@ -71,6 +77,7 @@ public class ContentSection extends Content {
 
         super(manager, parent.getDomain(), Content.SECTION_CATEGORY);
         setParent(parent);
+        setAttribute(DESCRIPTION_ATTRIBUTE, "");
     }
 
     /**
@@ -89,6 +96,27 @@ public class ContentSection extends Content {
         throws ContentException {
 
         super(manager, data, con);
+    }
+
+    /**
+     * Returns the section description.
+     *
+     * @return the section description, or
+     *         an empty string if not set
+     */
+    public String getDescription() {
+        String desc = getAttribute(DESCRIPTION_ATTRIBUTE);
+
+        return (desc == null) ? "" : desc;
+    }
+
+    /**
+     * Sets the section description.
+     *
+     * @param description     the new section description
+     */
+    public void setDescription(String description) {
+        setAttribute(DESCRIPTION_ATTRIBUTE, description);
     }
 
     /**

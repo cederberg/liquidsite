@@ -2,7 +2,12 @@
 <#assign hideadmin = true>
 <#include "header.ftl">
 
-    <h2>Document Properties</h2>
+    <h2>Section Description</h2>
+
+    <p>${description?xml}</p>
+
+
+    <h2>Section Properties</h2>
 
     <p>The properties for documents in this section.</p>
 

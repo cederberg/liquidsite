@@ -318,6 +318,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         section.setRevisionNumber(0);
         section.setName(request.getParameter("name"));
+        section.setDescription(request.getParameter("description"));
         section.setComment(request.getParameter("comment"));
         try {
             parent = Integer.parseInt(request.getParameter("parent"));

@@ -170,6 +170,7 @@ public class ContentView extends AdminView {
         throws ContentException {
 
         String            name;
+        String            description;
         String            comment;
         ArrayList         parents = null;
         int               parentId = 0;
@@ -186,12 +187,14 @@ public class ContentView extends AdminView {
         if (parent != null) {
             AdminUtils.setReference(request, parent);
             name = "";
+            description = "";
             comment = "Created";
             publish = parent.hasPublishAccess(request.getUser()) &&
                       AdminUtils.isOnline(parent);
         } else {
             AdminUtils.setReference(request, section);
             name = section.getName();
+            description = section.getDescription();
             parents = findSections(request.getUser(),
                                    section.getDomain(),
                                    section);
@@ -220,6 +223,7 @@ public class ContentView extends AdminView {
         // Adjust for incoming request
         if (request.getParameter("name") != null) {
             name = request.getParameter("name", "");
+            description = request.getParameter("description", "");
             str = request.getParameter("parent", "0");
             try {
                 parentId = Integer.parseInt(str);
@@ -255,6 +259,7 @@ public class ContentView extends AdminView {
 
         // Set request parameters
         request.setAttribute("name", name);
+        request.setAttribute("description", description);
         request.setAttribute("parents", parents);
         request.setAttribute("parent", String.valueOf(parentId));
         request.setAttribute("properties", properties);
@@ -670,6 +675,7 @@ public class ContentView extends AdminView {
     public void viewSectionPreview(Request request, ContentSection section)
         throws ContentException {
 
+        request.setAttribute("description", section.getDescription());
         request.setAttribute("properties", findSectionProperties(section));
         request.sendTemplate("admin/preview-section.ftl");
     }

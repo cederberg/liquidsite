@@ -109,6 +109,19 @@
 </#if>
         <tr>
           <th>
+            Description:
+          </th>
+          <td class="field">
+            <input type="text" tabindex="3" size="50"
+                   name="description" value="${description?xml}" />
+            <p>The section description normally contains the full
+            section name, including whitespace and other characters
+            not allowed in the name. It can be used instead of the
+            name to present the section in web pages.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
             Properties:
           </th>
           <td class="field">

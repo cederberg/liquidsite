@@ -223,6 +223,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
             section = new ContentSection(manager, (ContentSection) parent);
         }
         section.setName(request.getParameter("name"));
+        section.setDescription(request.getParameter("description"));
         section.setComment(request.getParameter("comment"));
         while (iter.hasNext()) {
             name = iter.next().toString();
