@@ -527,6 +527,19 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Returns the permissions applicable to this content object. 
+     * This method will not return the inherited permissions. 
+     * 
+     * @return an array of permissions for this object
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Permission[] getPermissions() throws ContentException {
+        return Permission.findByContent(this);
+    }
+
+    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 
