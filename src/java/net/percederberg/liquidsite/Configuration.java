@@ -338,7 +338,7 @@ public class Configuration {
         String           message;
 
         try {
-            res = con.execute("config.select");
+            res = con.execute("config.select.all");
             for (int i = 0; i < res.getRowCount(); i++) {
                 name = res.getRow(i).getString("NAME");
                 value = res.getRow(i).getString("VALUE");

@@ -42,40 +42,6 @@ public class DomainPeer extends Peer {
     private static final Log LOG = new Log(DomainPeer.class);
 
     /**
-     * Returns a domain with a specified name.
-     * 
-     * @param name           the domain name
-     * 
-     * @return the domain found, or
-     *         null if no matching domain existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    public static Domain doSelectByName(String name)
-        throws ContentException {
-
-        ArrayList        params = new ArrayList();
-        DatabaseResults  res;
-        Domain           domain;
-        
-        params.add(name);
-        res = execute("domain.select", "reading domain");
-        if (res.getRowCount() < 1) {
-            return null;
-        } else {
-            try {
-                domain = new Domain();
-                transfer(res.getRow(0), domain);
-            } catch (DatabaseDataException e) {
-                LOG.error("reading domain", e);
-                throw new ContentException("reading domain", e);
-            }
-        }
-        return domain;
-    }
-
-    /**
      * Returns a list of all domains in the database.
      * 
      * @return a list of all domains in the database
@@ -100,6 +66,40 @@ public class DomainPeer extends Peer {
             list.add(domain);
         }
         return list;
+    }
+
+    /**
+     * Returns a domain with a specified name.
+     * 
+     * @param name           the domain name
+     * 
+     * @return the domain found, or
+     *         null if no matching domain existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Domain doSelectByName(String name)
+        throws ContentException {
+
+        ArrayList        params = new ArrayList();
+        DatabaseResults  res;
+        Domain           domain;
+        
+        params.add(name);
+        res = execute("domain.select.name", "reading domain");
+        if (res.getRowCount() < 1) {
+            return null;
+        } else {
+            try {
+                domain = new Domain();
+                transfer(res.getRow(0), domain);
+            } catch (DatabaseDataException e) {
+                LOG.error("reading domain", e);
+                throw new ContentException("reading domain", e);
+            }
+        }
+        return domain;
     }
 
     /**
