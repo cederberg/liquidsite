@@ -267,7 +267,7 @@ public class LiquidSiteBean {
      * @return the path relative to the request path
      */
     public String linkTo(String path) {
-        if (path.startsWith("http:") || path.startsWith("https:")) {
+        if (path.indexOf(":") >= 0) {
             return path;
         } else if (path.startsWith("/")) {
             return getSitePath() + path.substring(1);

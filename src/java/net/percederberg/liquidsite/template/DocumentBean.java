@@ -485,7 +485,7 @@ public class DocumentBean implements TemplateHashModel {
      * @return the path relative to the request path
      */
     private String linkTo(String path) {
-        if (path.startsWith("http:") || path.startsWith("https:")) {
+        if (path.indexOf(":") >= 0) {
             return path;
         } else if (path.startsWith("/")) {
             return sitePath + path.substring(1);
