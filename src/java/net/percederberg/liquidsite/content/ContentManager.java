@@ -22,8 +22,8 @@
 package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
@@ -55,25 +55,6 @@ public class ContentManager {
     private Application app;
 
     /**
-     * The domain cache. This is a map of all domains known to the 
-     * content manager. The domains are indexed by their names.
-     */
-    private HashMap domains = new HashMap();
-
-    /**
-     * The host cache. This is a map of all hosts known to the 
-     * content manager. The hosts are indexed by their names.
-     */
-    private HashMap hosts = new HashMap();
-
-    /**
-     * The site cache. This is a map of site arrays, recently queried
-     * though this interface. The site arrays are indexed by their
-     * domain name.
-     */
-    private HashMap sites = new HashMap();
-
-    /**
      * Returns the content manager currently in use.
      * 
      * @return the content manager currently in use
@@ -100,23 +81,8 @@ public class ContentManager {
      *             initialized properly
      */
     public ContentManager(Application app) throws ContentException {
-        Domain[]  domains;
-        Host[]    hosts;
-
         instance = this;
         this.app = app;
-        if (app.getConfig().isInitialized()) {
-            LOG.trace("initializing content manager cache...");
-            domains = Domain.findAll();
-            for (int i = 0; i < domains.length; i++) {
-                cacheAdd(domains[i]);
-            }
-            hosts = Host.findAll();
-            for (int i = 0; i < hosts.length; i++) {
-                cacheAdd(hosts[i]);
-            }
-            LOG.trace("done initializing content manager cache");
-        }
     }
 
     /**
@@ -139,12 +105,22 @@ public class ContentManager {
      *             properly
      */
     public Domain[] getDomains(User user) throws ContentException {
-        Iterator   iter = domains.values().iterator();
-        ArrayList  list = new ArrayList();
-        Domain[]   res;
-        Domain     domain;
+        CacheManager  cache = CacheManager.getInstance();
+        Collection    domains;
+        Iterator      iter;
+        ArrayList     list = new ArrayList();
+        Domain[]      res;
+        Domain        domain;
         
+        // Retrieve domain collection
+        domains = cache.getAllDomains();
+        if (domains.isEmpty()) {
+            cache.addAll(Domain.findAll());
+            domains = cache.getAllDomains();
+        }
+
         // Find all readable domains
+        iter = domains.iterator();
         for (int i = 0; iter.hasNext(); i++) {
             domain = (Domain) iter.next();
             if (domain.hasReadAccess(user)) {
@@ -169,9 +145,19 @@ public class ContentManager {
      * 
      * @return the domain found, or
      *         null if no such domain exists
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    Domain getDomain(String name) {
-        return (Domain) domains.get(name);
+    Domain getDomain(String name) throws ContentException {
+        Domain  domain;
+        
+        domain = CacheManager.getInstance().getDomain(name);
+        if (domain == null) {
+            CacheManager.getInstance().addAll(Domain.findAll());
+            domain = CacheManager.getInstance().getDomain(name);
+        }
+        return domain;
     }
 
     /**
@@ -206,9 +192,19 @@ public class ContentManager {
      *
      * @return the host found, or
      *         null if no such host exists
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    Host getHost(String name) {
-        return (Host) hosts.get(name);
+    Host getHost(String name) throws ContentException {
+        Host  host;
+        
+        host = CacheManager.getInstance().getHost(name);
+        if (host == null) {
+            CacheManager.getInstance().addAll(Host.findAll());
+            host = CacheManager.getInstance().getHost(name);
+        }
+        return host;
     }
 
     /**
@@ -224,13 +220,12 @@ public class ContentManager {
     ContentSite[] getSites(Domain domain) throws ContentException {
         ContentSite[]  res;
         
-        if (sites.containsKey(domain.getName())) {
-            return (ContentSite[]) sites.get(domain.getName());
-        } else {
+        res = CacheManager.getInstance().getSites(domain);
+        if (res == null) {
             res = ContentSite.findByDomain(domain);
-            sites.put(domain.getName(), res);
-            return res;
+            CacheManager.getInstance().add(domain, res);
         }
+        return res;
     }
 
     /**
@@ -427,7 +422,7 @@ public class ContentManager {
         int            max = 0;
         int            match;
         
-        host = (Host) hosts.get(hostname);
+        host = getHost(hostname);
         if (host == null) {
             domain = getDomain("ROOT");
         } else {
@@ -558,33 +553,20 @@ public class ContentManager {
 
     /**
      * Adds a persistent object to the cache.
-     * 
+     *
      * @param obj            the object to add
      */
-    void cacheAdd(PersistentObject obj) { 
-        cacheRemove(obj);
-        if (obj instanceof Domain) {
-            domains.put(((Domain) obj).getName(), obj);
-        } else if (obj instanceof Host) {
-            hosts.put(((Host) obj).getName(), obj);
-        } else if (obj instanceof ContentSite) {
-            sites.remove(((ContentSite) obj).getDomainName());
-        }
+    void cacheAdd(PersistentObject obj) {
+        CacheManager.getInstance().add(obj);
     }
-    
+
     /**
      * Removes a persistent object from the cache.
-     * 
+     *
      * @param obj            the object to remove
      */
     void cacheRemove(PersistentObject obj) {
-        if (obj instanceof Domain) {
-            domains.remove(((Domain) obj).getName());
-        } else if (obj instanceof Host) {
-            hosts.remove(((Host) obj).getName());
-        } else if (obj instanceof ContentSite) {
-            sites.remove(((ContentSite) obj).getDomainName());
-        }
+        CacheManager.getInstance().remove(obj);
     }
 
     /**
@@ -593,12 +575,7 @@ public class ContentManager {
      * resources used by this manager.
      */
     public void close() {
-        domains.clear();
-        domains = null;
-        hosts.clear();
-        hosts = null;
-        sites.clear();
-        sites = null;
+        CacheManager.getInstance().removeAll();
         if (instance == this) {
             instance = null;
         }
