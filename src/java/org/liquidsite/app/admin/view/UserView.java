@@ -232,6 +232,8 @@ public class UserView extends AdminView {
         request.setAttribute("name", str);
         str = request.getParameter("password", "");
         request.setAttribute("password", str);
+        request.setAttribute("passwordSuggestion",
+                             User.generatePassword());
         str = request.getParameter("realname", defaultRealName);
         request.setAttribute("realname", str);
         str = request.getParameter("email", defaultEmail);

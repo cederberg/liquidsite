@@ -50,6 +50,12 @@ public class User extends PersistentObject {
     private static final Log LOG = new Log(User.class);
 
     /**
+     * The string containing suitable password characters.
+     */
+    private static final String PASSWORD_CHARS =
+        "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXYZ2346789#%=+";
+
+    /**
      * The user data.
      */
     private UserData data;
@@ -68,6 +74,26 @@ public class User extends PersistentObject {
      * The list of group names removed since the object was saved.
      */
     private ArrayList groupsRemoved = null;
+
+    /**
+     * Generates a password suggestion that should be sufficiently
+     * hard to crack.
+     *
+     * @return the generated password
+     */
+    public static String generatePassword() {
+        StringBuffer  result = new StringBuffer();
+        int           length = PASSWORD_CHARS.length();
+        char          c;
+
+        while (result.length() < 8) {
+            c = PASSWORD_CHARS.charAt((int) (Math.random() * length));
+            if (result.length() > 0 || Character.isLetter(c)) {
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
 
     /**
      * Returns the number of users in a specified domain. Only users

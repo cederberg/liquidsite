@@ -85,6 +85,8 @@
           <td class="field">
             <input type="password" tabindex="3" size="30"
                    name="password" value="${password}" />
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Suggestion: <strong>${passwordSuggestion?html}</strong>
 <#if isadd>
             <p>The user password. This can later be modified by the
             user.</p>
