@@ -111,7 +111,7 @@ public class AdminController extends Controller {
         } else if (path.equals("site.html")) {
             processViewSite(request);
         } else if (path.equals("content.html")) {
-            AdminView.CONTENT.viewContent(request);
+            processViewContent(request);
         } else if (path.equals("users.html")) {
             AdminView.USER.viewUsers(request);
         } else if (path.equals("system.html")) {
@@ -122,8 +122,12 @@ public class AdminController extends Controller {
             processView(request);
         } else if (path.equals("loadsite.js")) {
             processLoadSite(request);
+        } else if (path.equals("loadcontent.js")) {
+            processLoadContent(request);
         } else if (path.equals("opensite.js")) {
             processOpenSite(request);
+        } else if (path.equals("opencontent.js")) {
+            processOpenContent(request);
         } else if (path.equals("opentemplate.js")) {
             processOpenTemplate(request);
         } else {
@@ -208,6 +212,28 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Processes a view content request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processViewContent(Request request) 
+        throws RequestException {
+
+        try {
+            AdminView.CONTENT.viewContent(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "content.html");
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "content.html");
+        }
+    }
+
+    /**
      * Processes the view content object requests.
      * 
      * @param request        the request object
@@ -263,6 +289,28 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Processes a JavaScript load content tree item request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processLoadContent(Request request) throws RequestException {
+        Object  obj;
+
+        try {
+            obj = AdminUtils.getReference(request);
+            AdminView.CONTENT.viewLoadContentScript(request, obj);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
      * Processes a JavaScript open site tree item request.
      * 
      * @param request        the request object
@@ -276,6 +324,28 @@ public class AdminController extends Controller {
         try {
             obj = AdminUtils.getReference(request);
             AdminView.SITE.viewOpenSiteScript(request, obj);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
+     * Processes a JavaScript open content tree item request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processOpenContent(Request request) throws RequestException {
+        Object  obj;
+
+        try {
+            obj = AdminUtils.getReference(request);
+            AdminView.CONTENT.viewOpenContentScript(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;

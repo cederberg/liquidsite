@@ -524,10 +524,18 @@ public class SiteView extends AdminView {
         throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
-        Content[]       children; 
+        Content[]       children;
+        ArrayList       list = new ArrayList(); 
 
         if (content == null) {
             children = manager.getContentChildren(user, domain);
+            for (int i = 0; i < children.length; i++) {
+                if (isViewable(children[i])) {
+                    list.add(children[i]);
+                }
+            }
+            children = new Content[list.size()];
+            list.toArray(children);
             return SCRIPT.getTreeView(domain, children);
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
@@ -644,5 +652,22 @@ public class SiteView extends AdminView {
      */
     public void setSiteTreeFocus(Request request, Object obj) {
         request.setSessionAttribute("site.tree.focus", obj);
+    }
+
+    /**
+     * Checks if an object should be shown in the site view. 
+     * 
+     * @param obj            the object to check
+     * 
+     * @return true if the object should be shown, or
+     *         false otherwise
+     */
+    private boolean isViewable(Object obj) {
+        return obj instanceof Domain
+            || obj instanceof ContentSite
+            || obj instanceof ContentFolder
+            || obj instanceof ContentFile
+            || obj instanceof ContentPage
+            || obj instanceof ContentTemplate;
     }
 }
