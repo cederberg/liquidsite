@@ -34,7 +34,8 @@
             Name:
           </th>
           <td class="field">
-            <input type="text" name="name" value="${name}" size="20" />
+            <input type="text" tabindex="1" size="20"
+                   name="name" value="${name}" />
           </td>
         </tr>
         <tr>
@@ -42,16 +43,17 @@
             E-mail:
           </th>
           <td class="field">
-            <input type="text" name="email" value="${email}" size="30" />
+            <input type="text" tabindex="2" size="30"
+                   name="email" value="${email}" />
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="4" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="3">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

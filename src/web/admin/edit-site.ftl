@@ -48,7 +48,8 @@
             Site&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" name="name" value="${name}" size="30" />
+            <input type="text" tabindex="1" size="30"
+                   name="name" value="${name}" />
             <p>The site name is used to present the site in the admin
             application.</p>
           </td>
@@ -58,7 +59,7 @@
             Protocol:
           </th>
           <td class="field">
-            <select name="protocol">
+            <select name="protocol" tabindex="2">
               <option value="http">HTTP</option>
 <#if protocol?has_content && protocol = "https">
               <option value="https" selected="selected">Secure HTTP</option>
@@ -76,7 +77,7 @@
             Host&nbsp;Name:
           </th>
           <td class="field">
-            <select name="host">
+            <select name="host" tabindex="3">
               <option value="*">&lt;Any Host&gt;</option>
 <#list hostnames as hostname>
   <#if host?has_content && hostname = host>
@@ -95,7 +96,8 @@
             Port&nbsp;Number:
           </th>
           <td class="field">
-            <input type="text" name="port" value="${port}" size="10" />
+            <input type="text" tabindex="4" size="10"
+                   name="port" value="${port}" />
             <p>The site port number. The web server must be 
             configured for listening on this port. Normal HTTP 
             traffic uses port 80, and secure HTTP uses port 443.
@@ -107,7 +109,8 @@
             Directory:
           </th>
           <td class="field">
-            <input type="text" name="dir" value="${dir}" size="40" />
+            <input type="text" tabindex="5" size="40"
+                   name="dir" value="${dir}" />
             <p>The site base directory. If several sites are run on 
             the same protocol, host and port, the base directory must
             be used to distinguish between them.</p>
@@ -119,7 +122,8 @@
             Special&nbsp;Sites:
           </th>
           <td class="field">
-            <input type="checkbox" name="admin" value="true" /> 
+            <input type="checkbox" tabindex="6"
+                   name="admin" value="true" /> 
             <strong>Administration Site</strong>
             <p>The special site flags. Note that these flags cannot
             be changed after creation, as they determine the site
@@ -132,17 +136,18 @@
             Comment:
           </th>
           <td class="field">
-            <input type="text" name="comment" value="${comment}" size="40" />
+            <input type="text" tabindex="7" size="40"
+                   name="comment" value="${comment}" />
             <p>The revision comment.</p>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="9" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="8">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

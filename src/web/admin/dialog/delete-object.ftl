@@ -39,11 +39,11 @@
         </tr>
         <tr>
           <td class="buttons">
-            <button onclick="window.close();">
+            <button tabindex="2" onclick="window.close();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="1">
               <img src="images/icons/24x24/delete.png" />
               Delete
             </button>

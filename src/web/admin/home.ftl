@@ -46,11 +46,11 @@
 </#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" name="edituser">
+            <button type="submit" tabindex="1" name="edituser">
               <img src="images/icons/24x24/edit.png" />
               Edit
             </button>
-            <button type="submit" name="editpassword">
+            <button type="submit" tabindex="2" name="editpassword">
               <img src="images/icons/24x24/edit.png" />
               Change Password
             </button>

@@ -26,11 +26,12 @@
         <tr>
           <td class="buttons">
 <#assign cancel>revert-site.html?type=${type}&id=${id}&cancel=true</#assign>
-            <button type="button" onclick="window.location='${cancel}'">
+            <button type="button" tabindex="2"
+                    onclick="window.location='${cancel}'">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="1">
               <img src="images/icons/24x24/revert.png" />
               Revert
             </button>

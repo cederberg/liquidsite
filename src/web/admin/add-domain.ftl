@@ -37,7 +37,8 @@
             Domain&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" name="name" value="${name}" size="30" />
+            <input type="text" tabindex="1" size="30"
+                   name="name" value="${name}" />
             <p>The domain name uniquely identifies the domain in the 
             database. The domain name cannot be changed, and is 
             normally a short UPPERCASE word.</p>
@@ -48,8 +49,8 @@
             Description:
           </th>
           <td class="field">
-            <input type="text" name="description" value="${description}" 
-                   size="50" />
+            <input type="text" tabindex="2" size="50"
+                   name="description" value="${description}" />
             <p>The description of the domain. This description is 
             only visible in the administration application.</p>
           </td>
@@ -59,7 +60,8 @@
             Host&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" name="host" value="${host}" size="30" />
+            <input type="text" tabindex="3" size="30"
+                   name="host" value="${host}" />
             <p>The initial web host name connected to the domain. All
             domains but the ROOT domain must have at least one web 
             host name.</p>
@@ -67,11 +69,11 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="5" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="4">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

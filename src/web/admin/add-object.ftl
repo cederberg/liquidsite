@@ -35,7 +35,8 @@
 <#if enableDomain?exists>
         <tr>
           <th style="width: 7em;">
-            <input type="radio" name="category" value="domain" />
+            <input type="radio" tabindex="1" 
+                   name="category" value="domain" />
             Domain
           </th>
           <td>
@@ -51,7 +52,8 @@
 <#if enableSite?exists>
         <tr>
           <th style="width: 7em;">
-            <input type="radio" name="category" value="site" />
+            <input type="radio" tabindex="2"
+                   name="category" value="site" />
             Site
           </th>
           <td>
@@ -65,7 +67,8 @@
 <#if enableFolder?exists>
         <tr>
           <th style="width: 7em;">
-            <input type="radio" name="category" value="folder" />
+            <input type="radio" tabindex="3"
+                   name="category" value="folder" />
             Folder
           </th>
           <td>
@@ -78,7 +81,8 @@
 <#if enableFile?exists>
         <tr>
           <th style="width: 7em;">
-            <input type="radio" name="category" value="file" />
+            <input type="radio" tabindex="4" 
+                   name="category" value="file" />
             File
           </th>
           <td>
@@ -90,11 +94,11 @@
 </#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="6" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button tabindex="5" type="submit">
               Next
               <img src="images/icons/24x24/right_arrow.png" />
             </button>

@@ -48,7 +48,8 @@
             File&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" name="name" value="${name}" size="30" />
+            <input type="text" tabindex="1" size="30"
+                   name="name" value="${name}" />
             <p>The file name is part of the URL by which the user 
             will access the file contents. The file name should use
             only English alphabet characters or numbers without any 
@@ -60,7 +61,8 @@
             File&nbsp;Content:
           </th>
           <td class="field">
-            <input type="file" name="content" />
+            <input type="file" tabindex="2"
+                   name="content" />
             <p>The file content. This is the local file that contains
             the data. The file will be uploaded and inserted into the 
             system. Note that the file extension on the uploaded file
@@ -77,17 +79,18 @@
             Comment:
           </th>
           <td class="field">
-            <input type="text" name="comment" value="${comment}" size="40" />
+            <input type="text" tabindex="3" size="40"
+                   name="comment" value="${comment}" />
             <p>The revision comment.</p>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="5" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="4">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

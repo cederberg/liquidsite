@@ -17,18 +17,20 @@
         <tr>
           <th>Name:</th>
           <td>
-            <input type="text" name="liquidsite.login" size="20" />
+            <input type="text" tabindex="1" size="20"
+                   name="liquidsite.login" />
           </td>
         </tr>
         <tr>
           <th>Password:</th>
           <td>
-            <input type="password" name="liquidsite.password" size="20" />
+            <input type="password" tabindex="2" size="20"
+                   name="liquidsite.password" />
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit">
+            <button type="submit" tabindex="3">
               <img src="images/icons/24x24/ok.png" />
               Login
             </button>

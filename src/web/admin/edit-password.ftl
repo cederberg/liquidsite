@@ -34,7 +34,8 @@
             Current&nbsp;Password:
           </th>
           <td class="field">
-            <input type="password" name="password0" size="20" />
+            <input type="password" tabindex="1" size="20" 
+                   name="password0" />
             <p>Enter your current password.</p>
           </td>
         </tr>
@@ -43,7 +44,8 @@
             New&nbsp;Password:
           </th>
           <td class="field">
-            <input type="password" name="password1" size="20" />
+            <input type="password" tabindex="2" size="20"
+                   name="password1" />
             <p>Enter the new password.</p>
           </td>
         </tr>
@@ -52,17 +54,18 @@
             Verify&nbsp;Password:
           </th>
           <td class="field">
-            <input type="password" name="password2" size="20" />
+            <input type="password" tabindex="3" size="20"
+                   name="password2" />
             <p>Verify the new password by entering it again.</p>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="5" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="4">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

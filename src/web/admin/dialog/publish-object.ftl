@@ -28,7 +28,8 @@
             Date:
           </th>
           <td>
-            <input type="text" name="date" value="${date}" />
+            <input type="text" tabindex="1"
+                   name="date" value="${date}" />
           </td>
         </tr>
         <tr>
@@ -36,17 +37,19 @@
             Comment:
           </th>
           <td>
-            <textarea name="comment" rows="2" cols="30">${comment}</textarea>
+            <textarea tabindex="2" rows="2" cols="30"
+                      name="comment">${comment}</textarea>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
 <#assign cancel>publish-site.html?type=${type}&id=${id}&cancel=true</#assign>
-            <button type="button" onclick="window.location='${cancel}'">
+            <button type="button" tabindex="4" 
+                    onclick="window.location='${cancel}'">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="3">
               <img src="images/icons/24x24/online.png" />
               Publish
             </button>
