@@ -158,6 +158,15 @@ public class DatabaseQuery {
     }
     
     /**
+     * Adds an integer query parameter.
+     * 
+     * @param value          the query parameter value
+     */
+    public void addParameter(int value) {
+        addParameter(new Integer(value));
+    }
+    
+    /**
      * Returns a string representation of this object.
      * 
      * @return a string representation of this object
