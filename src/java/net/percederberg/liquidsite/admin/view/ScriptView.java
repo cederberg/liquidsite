@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentPage;
+import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
@@ -373,6 +374,12 @@ public class ScriptView {
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 } else if (content instanceof ContentTemplate) {
+                    buffer.append("objectAddNewButton('add-");
+                    buffer.append(view);
+                    buffer.append(".html");
+                    buffer.append(getLinkParameters(content));
+                    buffer.append("');\n");
+                } else if (content instanceof ContentSection) {
                     buffer.append("objectAddNewButton('add-");
                     buffer.append(view);
                     buffer.append(".html");
