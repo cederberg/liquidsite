@@ -192,17 +192,23 @@ public class DocumentBean implements TemplateHashModel {
 
         for (int i = 0; i < str.length(); i++) {
             c = str.charAt(i);
-            if (c == '<') {
+            switch (c) {
+            case '<':
                 buffer.append("&lt;");
-            } else if (c == '>') {
+                break;
+            case '>':
                 buffer.append("&gt;");
-            } else if (c == '&') {
+                break;
+            case '&':
                 buffer.append("&amp;");
-            } else if (c == '\n') {
+                break;
+            case '\n':
                 buffer.append("<br/>");
-            } else if (c == '\r') {
+                break;
+            case '\r':
                 // Discard
-            } else {
+                break;
+            default:
                 buffer.append(c);
             }
         }
@@ -214,37 +220,42 @@ public class DocumentBean implements TemplateHashModel {
      * paragraph and line breaks, while also adjusting links and other
      * special tags.
      *
-     * @param str            the string to process
+     * @param text           the text string to process
      *
      * @return the HTML encoded string
      */
-    private String processTaggedText(String str) {
+    private String processTaggedText(String text) {
         ArrayList     paragraphs = new ArrayList();
         StringBuffer  buffer = new StringBuffer();
+        String        str;
         char          c;
 
         // Trim and remove carriage return characters
-        for (int i = 0; i < str.length(); i++) {
-            c = str.charAt(i);
+        for (int i = 0; i < text.length(); i++) {
+            c = text.charAt(i);
             if (c != '\r') {
                 buffer.append(c);
             }
         }
-        str = buffer.toString().trim();
+        text = buffer.toString().trim();
 
         // Split into paragraphs
-        while (str.indexOf("\n\n") >= 0) {
-            paragraphs.add(str.substring(0, str.indexOf("\n\n")));
-            str = str.substring(str.indexOf("\n\n") + 2);
+        while (text.indexOf("\n\n") >= 0) {
+            str = text.substring(0, text.indexOf("\n\n")).trim();
+            if (str.length() > 0) {
+                paragraphs.add(str);
+            }
+            text = text.substring(text.indexOf("\n\n") + 2);
         }
-        if (str.length() > 0) {
-            paragraphs.add(str);
+        if (text.length() > 0) {
+            paragraphs.add(text);
         }
 
         // Process paragraphs
         buffer = new StringBuffer();
         for (int i = 0; i < paragraphs.size(); i++) {
-            buffer.append(processTaggedParagraph((String) paragraphs.get(i)));
+            str = (String) paragraphs.get(i);
+            buffer.append(processTaggedParagraph(str));
             buffer.append("\n\n");
         }
 
@@ -263,39 +274,40 @@ public class DocumentBean implements TemplateHashModel {
     private String processTaggedParagraph(String str) {
         StringBuffer  buffer = new StringBuffer();
         boolean       isBlock;
+        char          c;
         int           pos;
 
         isBlock = startsWithBlockTag(str);
         if (!isBlock) {
             buffer.append("<p>");
         }
-        while (str.length() > 0) {
-            pos = str.indexOf("<");
-            if (pos < 0) {
-                buffer.append(str);
-                str = "";
-            } else {
-                buffer.append(str.substring(0, pos));
-                str = str.substring(pos);
-            }
-            pos = str.indexOf(">");
-            if (str.startsWith("<link=")) {
-                buffer.append("<a href=\"");
-                buffer.append(str.substring(6, pos));
-                buffer.append("\">");
-                str = str.substring(pos + 1);
-            } else if (str.startsWith("</link>")) {
-                buffer.append("</a>");
-                str = str.substring(pos + 1);
-            } else if (str.startsWith("<image=")) {
-                buffer.append("<img src=\"");
-                buffer.append(str.substring(7, pos));
-                buffer.append("\" />");
-                str = str.substring(pos + 1);
-            } else if (str.startsWith("<")) {
-                // TODO: filter out illegal tags and errors
-                buffer.append(str.substring(0, pos + 1));
-                str = str.substring(pos + 1);
+        for (int i = 0; i < str.length(); i++) {
+            c = str.charAt(i);
+            switch (c) {
+            case '<':
+                pos = str.indexOf(">", i);
+                if (pos > 0) {
+                    buffer.append(processTag(str.substring(i, pos + 1)));
+                    i = pos;
+                } else {
+                    // Discard
+                    i = str.length();
+                }
+                break;
+            case '>':
+                // Discard
+                break;
+            case '&':
+                buffer.append("&amp;");
+                break;
+            case '\n':
+                buffer.append("<br/>");
+                break;
+            case '\r':
+                // Discard
+                break;
+            default:
+                buffer.append(c);
             }
         }
         if (!isBlock) {
@@ -303,6 +315,38 @@ public class DocumentBean implements TemplateHashModel {
         }
 
         return buffer.toString();
+    }
+
+    /**
+     * Processes a tag. This method will insert the HTML code
+     * corresponding to the tag.
+     *
+     * @param tag             the tag to process
+     *
+     * @return the HTML encoded result
+     */
+    private String processTag(String tag) {
+        if (tag.startsWith("<link=")) {
+            return "<a href=\"" + tag.substring(6, tag.length()) + "\">";
+        } else if (tag.equals("</link>")) {
+            return "</a>";
+        } else if (tag.startsWith("<image=")) {
+            return "<img src=\"" + tag.substring(7, tag.length()) + "\" />";
+        } else if (tag.equals("<p>") || tag.equals("</p>")) {
+            return tag;
+        } else if (tag.equals("<h1>") || tag.equals("</h1>")) {
+            return tag;
+        } else if (tag.equals("<h2>") || tag.equals("</h2>")) {
+            return tag;
+        } else if (tag.equals("<h3>") || tag.equals("</h3>")) {
+            return tag;
+        } else if (tag.equals("<b>") || tag.equals("</b>")) {
+            return tag;
+        } else if (tag.equals("<i>") || tag.equals("</i>")) {
+            return tag;
+        } else {
+            return "";
+        }
     }
 
     /**
