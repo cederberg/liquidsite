@@ -189,10 +189,31 @@
     </xslt>
     <xslt style="${build.dir}/src/db/doc-table-html.xsl"
           in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.LS_SITE.html">
+          out="${build.dir}/doc/db/table.LS_DOMAIN.html">
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
-      <param name="table" expression="LS_SITE" />
+      <param name="table" expression="LS_DOMAIN" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/doc/db/table.LS_USER.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="LS_USER" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/doc/db/table.LS_GROUP.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="LS_GROUP" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/doc/db/table.LS_USER_GROUP.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="LS_USER_GROUP" />
     </xslt>
     <xslt style="${build.dir}/src/db/doc-table-html.xsl"
           in="${build.dir}/src/db/schema.xml"
@@ -200,6 +221,27 @@
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
       <param name="table" expression="LS_CONTENT" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/doc/db/table.LS_ATTRIBUTE.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="LS_ATTRIBUTE" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/doc/db/table.LS_PERMISSION.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="LS_PERMISSION" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/schema.xml"
+          out="${build.dir}/doc/db/table.LS_LOCK.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="LS_LOCK" />
     </xslt>
   </target>
 
