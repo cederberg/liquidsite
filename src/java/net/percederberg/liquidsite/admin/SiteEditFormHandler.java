@@ -352,6 +352,12 @@ class SiteEditFormHandler extends AdminFormHandler {
         page.setRevisionNumber(0);
         page.setName(request.getParameter("name"));
         try {
+            id = Integer.parseInt(request.getParameter("parent"));
+            page.setParentId(id);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
+        try {
             id = Integer.parseInt(request.getParameter("template"));
         } catch (NumberFormatException ignore) {
             id = 0;

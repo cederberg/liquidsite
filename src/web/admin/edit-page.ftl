@@ -92,12 +92,33 @@
             spaces.</p>
           </td>
         </tr>
+<#if !isadd>
+        <tr>
+          <th>
+            Folder:
+          </th>
+          <td class="field">
+            <select tabindex="2" name="parent">
+  <#list folders as item>
+    <#if parent == item.id>
+              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+    <#else>
+              <option value="${item.id}">${item.name?xml}</option>
+    </#if>
+  </#list>
+            </select>
+            <p>The parent folder controls the location of the page.
+            Note that changing folder will also modify the page 
+            URL.</p>
+          </td>
+        </tr>
+</#if>
         <tr>
           <th>
             Template:
           </th>
           <td class="field">
-            <select tabindex="2" onchange="openTemplate(this.value)"
+            <select tabindex="3" onchange="openTemplate(this.value)"
                     name="template">
               <option value="0">&lt; None &gt;</option>
 <#list templateIds as id>
