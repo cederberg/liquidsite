@@ -107,10 +107,11 @@ function utilCreateDialog(title, text, form, script, width, height) {
            form +
            "<tr>\n" +
            "<td colspan='2' style='text-align: right;'>\n" +
-           "<button type='button' onclick='doCancel();'>\n" +
+           "<button type='button' tabindex='11' onclick='doCancel();'>\n" +
            "Cancel\n" +
            "</button>\n" +
-           "<button type='submit' onclick='doOk(); return false;'>\n" +
+           "<button type='submit' tabindex='10' " +
+           "onclick='doOk(); return false;'>\n" +
            "OK\n" +
            "</button>\n" +
            "</td>\n" +

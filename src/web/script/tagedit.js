@@ -262,7 +262,7 @@ function tagEditInternalAddLink(editor) {
     html = "<tr>\n" +
            "<th width='20%'>URL:</th>\n" +
            "<td width='80%'>\n" +
-           "<input name='url' size='40' />\n" + 
+           "<input name='url' size='40' tabindex='1' />\n" + 
            "<script type='text/javascript'>\n" +
            "document.getElementsByName('url').item(0).focus();\n" +
            "</script>\n" +
@@ -271,7 +271,7 @@ function tagEditInternalAddLink(editor) {
            "<tr>\n" +
            "<th>Type:</th>\n" +
            "<td>\n" +
-           "<select name='type'>\n" +
+           "<select name='type' tabindex='2'>\n" +
            "<option value=''>Normal</option>\n" +
            "<option value='new'>New Window</option>\n" +
            "<option value='mail'>Mail Address</option>\n" +
@@ -324,18 +324,21 @@ function tagEditInternalAddImage(editor) {
 
     html = "<tr>\n" +
            "<th width='50%'>Image:</th>\n" +
-           "<td width='50%'><select name='url'>\n";
+           "<td width='50%'><select name='url' tabindex='1'>\n";
     for (var i = 0; i < TAGEDIT_IMAGES.length; i++) {
         html += "<option value='" + TAGEDIT_IMAGES[i] + "'>" +
                 TAGEDIT_IMAGES[i] + "</option>\n";
     }
     html += "</select>\n" +
+            "<script type='text/javascript'>\n" +
+            "document.getElementsByName('url').item(0).focus();\n" +
+            "</script>\n" +
             "</td>\n" +
             "</tr>\n" +
             "<tr>\n" +
             "<th>Layout:</th>\n" +
             "<td>\n" +
-            "<select name='layout'>\n" +
+            "<select name='layout' tabindex='2'>\n" +
             "<option value=''>Normal</option>\n" +
             "<option value='left'>Floating Left</option>\n" +
             "<option value='right'>Floating Right</option>\n" +

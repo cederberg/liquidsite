@@ -237,7 +237,7 @@ function htmlEditInternalAddLink(editor) {
     html = "<tr>\n" +
            "<th width='20%'>URL:</th>\n" +
            "<td width='80%'>\n" +
-           "<input name='url' size='40' />\n" + 
+           "<input name='url' size='40' tabindex='1' />\n" + 
            "<script type='text/javascript'>\n" +
            "document.getElementsByName('url').item(0).focus();\n" +
            "</script>\n" +
@@ -277,12 +277,15 @@ function htmlEditInternalAddImage(editor) {
 
     html = "<tr>\n" +
            "<th width='50%'>Image:</th>\n" +
-           "<td width='50%'><select name='url'>\n";
+           "<td width='50%'><select name='url' tabindex='1'>\n";
     for (var i = 0; i < HTMLEDIT_IMAGES.length; i++) {
         html += "<option value='" + HTMLEDIT_IMAGES[i] + "'>" +
                 HTMLEDIT_IMAGES[i] + "</option>\n";
     }
     html += "</select>\n" +
+            "<script type='text/javascript'>\n" +
+            "document.getElementsByName('url').item(0).focus();\n" +
+            "</script>\n" +
             "</td>\n" +
             "</tr>\n";
     js = "var url = document.getElementsByName('url').item(0).value;\n" +
