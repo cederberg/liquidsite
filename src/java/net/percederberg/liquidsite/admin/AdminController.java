@@ -218,8 +218,7 @@ public class AdminController extends Controller {
             host = new Host(domain, request.getParameter("host"));
             host.setDescription("Default domain host");
             host.save(request.getUser());
-            request.setSessionAttribute("site.view.type", "domain");
-            request.setSessionAttribute("site.view.id", domain.getName());
+            setActiveDomain(request, domain);
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
@@ -263,9 +262,7 @@ public class AdminController extends Controller {
             site.setAdmin(request.getParameter("admin") != null);
             site.setComment("Created");
             site.save(user);
-            request.setSessionAttribute("site.view.type", "site");
-            request.setSessionAttribute("site.view.id", 
-                                        new Integer(site.getId()));
+            setActiveContent(request, site);
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
@@ -297,6 +294,12 @@ public class AdminController extends Controller {
             } else {
                 processDeleteDomain(request);
             }
+        } else if (type.equals("site")) {
+            if (request.getParameter("confirmed") == null) {
+                displayDialogDeleteSite(request);
+            } else {
+                processDeleteContent(request);
+            }
         }
     }
 
@@ -314,17 +317,45 @@ public class AdminController extends Controller {
             // TODO: check for request domain!
             domain = getActiveDomain(request);
             domain.delete(request.getUser());
-            request.setSessionAttribute("site.view.type", null);
-            request.setSessionAttribute("site.view.id", null);
+            setActiveDomain(request, null);
             displayDialogClose(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            error = "Failed to save to database, " + e.getMessage();
+            error = "Failed to write to database, " + e.getMessage();
             request.setAttribute("error", error);
             displayDialogError(request);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            error = "You don't have permission for adding sites";
+            error = "You don't have permission for removing domain";
+            request.setAttribute("error", error);
+            displayDialogError(request);
+        }
+    }
+
+    /**
+     * Processes the confirmed delete content requests for the site 
+     * view.
+     * 
+     * @param request        the request object
+     */
+    private void processDeleteContent(Request request) {
+        Content content;
+        String  error;
+        
+        try {
+            // TODO: check for request site!
+            content = getActiveContent(request);
+            content.delete(request.getUser());
+            setActiveContent(request, content.getParent());
+            displayDialogClose(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            error = "Failed to write to database, " + e.getMessage();
+            request.setAttribute("error", error);
+            displayDialogError(request);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            error = "You don't have permission for removing this object";
             request.setAttribute("error", error);
             displayDialogError(request);
         }
@@ -460,14 +491,14 @@ public class AdminController extends Controller {
         String          buffer;
 
         try {
-            request.setSessionAttribute("site.view.type", type);
-            request.setSessionAttribute("site.view.id", id);
             if (type.equals("domain")) {
                 domain = cm.getDomain(user, id);
                 buffer = script.getObjectView(user, domain);
+                setActiveDomain(request, domain);
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
                 buffer = script.getObjectView(user, content);
+                setActiveContent(request, content);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -580,6 +611,15 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Displays the delete site confirmation dialog.
+     * 
+     * @param request        the request object
+     */
+    private void displayDialogDeleteSite(Request request) {
+        request.sendTemplate("admin/dialog/delete-site.ftl");
+    }
+
+    /**
      * Displays the automatic close dialog.
      * 
      * @param request        the request object
@@ -623,7 +663,7 @@ public class AdminController extends Controller {
     /**
      * Returns the active content object. The active object is the 
      * one present in the session attributes "site.view.type" and
-     * "site.view.id". 
+     * "site.view.id".
      * 
      * @param request        the request
      * 
@@ -642,6 +682,44 @@ public class AdminController extends Controller {
 
         return cm.getContent(request.getUser(), 
                              Integer.parseInt(id.toString()));
+    }
+
+    /**
+     * Sets the active content domain. The active object is the one 
+     * present in the session attributes "site.view.type" and 
+     * "site.view.id".
+     * 
+     * @param request        the request
+     * @param domain         the active domain, or null for none
+     */
+    private void setActiveDomain(Request request, Domain domain) {
+        if (domain == null) {
+            request.setSessionAttribute("site.view.type", null);
+            request.setSessionAttribute("site.view.id", null);
+        } else {
+            request.setSessionAttribute("site.view.type", "domain");
+            request.setSessionAttribute("site.view.id", domain.getName());
+        }
+    }
+
+    /**
+     * Sets the active content object. The active object is the one 
+     * present in the session attributes "site.view.type" and 
+     * "site.view.id".
+     * 
+     * @param request        the request
+     * @param content        the active content, or null for none
+     */
+    private void setActiveContent(Request request, Content content) {
+        if (content == null) {
+            request.setSessionAttribute("site.view.type", null);
+            request.setSessionAttribute("site.view.id", null);
+        } else {
+            request.setSessionAttribute("site.view.type", 
+                                        script.getContentCategory(content));
+            request.setSessionAttribute("site.view.id", 
+                                        new Integer(content.getId()));
+        }
     }
 
     /**

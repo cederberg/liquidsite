@@ -292,6 +292,9 @@ class AdminScript {
         if (content.hasWriteAccess(user)) {
             buffer.append("objectAddNewButton('add-site.html');\n");
         }
+        if (content.hasPublishAccess(user)) {
+            buffer.append("objectAddDeleteButton('delete-site.html');\n");
+        }
         return buffer.toString();
     }
 
@@ -461,7 +464,7 @@ class AdminScript {
      * 
      * @return the JavaScript representation of a content category
      */
-    private String getContentCategory(Content content) {
+    public String getContentCategory(Content content) {
         switch (content.getCategory()) {
         case Content.SITE_CATEGORY:
             return "site";
