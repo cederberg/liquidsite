@@ -248,7 +248,7 @@ public abstract class Content extends PersistentObject implements Comparable {
         case SITE_CATEGORY:
             return new Site(data, latest, con);
         case FOLDER_CATEGORY:
-            return new Folder(data, latest, con);
+            return new ContentFolder(data, latest, con);
         case FILE_CATEGORY:
             return new ContentFile(data, latest, con);
         case TEMPLATE_CATEGORY:

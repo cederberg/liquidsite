@@ -29,10 +29,10 @@ import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
@@ -367,7 +367,7 @@ class AdminView {
                 request.setAttribute("enableSite", true);
             }
         }
-        if (parent instanceof Site || parent instanceof Folder) {
+        if (parent instanceof Site || parent instanceof ContentFolder) {
             content = (Content) parent;
             if (content.hasWriteAccess(user)) {
                 request.setAttribute("enableFolder", true);
@@ -487,7 +487,7 @@ class AdminView {
      */
     public void pageEditFolder(Request request, 
                                Object parent, 
-                               Folder folder) {
+                               ContentFolder folder) {
 
         String  name;
         String  comment;

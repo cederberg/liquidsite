@@ -1,5 +1,5 @@
 /*
- * Folder.java
+ * ContentFolder.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -30,7 +30,7 @@ import net.percederberg.liquidsite.dbo.ContentData;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Folder extends Content {
+public class ContentFolder extends Content {
 
     /**
      * Creates a new folder with default values.
@@ -40,7 +40,7 @@ public class Folder extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public Folder(Content parent) throws ContentException {
+    public ContentFolder(Content parent) throws ContentException {
         super(parent.getDomain(), Content.FOLDER_CATEGORY);
         setParent(parent);
     }
@@ -55,9 +55,9 @@ public class Folder extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected Folder(ContentData data, 
-                     boolean latest, 
-                     DatabaseConnection con) 
+    protected ContentFolder(ContentData data, 
+                            boolean latest, 
+                            DatabaseConnection con) 
         throws ContentException {
 
         super(data, latest, con);

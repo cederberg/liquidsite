@@ -34,9 +34,9 @@ import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Site;
@@ -442,12 +442,12 @@ public class AdminController extends Controller {
     private void processAddFolder(Request request, Object parent) 
         throws ContentException, ContentSecurityException {
 
-        User    user = request.getUser();
-        Folder  folder;
+        User           user = request.getUser();
+        ContentFolder  folder;
         
         try {
             validator.validateFolder(request);
-            folder = new Folder((Content) parent);
+            folder = new ContentFolder((Content) parent);
             folder.setName(request.getParameter("name"));
             folder.setComment(request.getParameter("comment"));
             folder.save(user);
@@ -534,12 +534,12 @@ public class AdminController extends Controller {
                 } else {
                     processEditSite(request, (Site) obj);
                 }
-            } else if (obj instanceof Folder) {
+            } else if (obj instanceof ContentFolder) {
                 if (step == null) {
                     checkLock((Content) obj, request.getUser(), true);
-                    view.pageEditFolder(request, null, (Folder) obj);
+                    view.pageEditFolder(request, null, (ContentFolder) obj);
                 } else {
-                    processEditFolder(request, (Folder) obj);
+                    processEditFolder(request, (ContentFolder) obj);
                 }
             } else if (obj instanceof ContentFile) {
                 if (step == null) {
@@ -604,7 +604,7 @@ public class AdminController extends Controller {
      * @throws ContentSecurityException if the user didn't have the 
      *             required permissions 
      */
-    private void processEditFolder(Request request, Folder folder) 
+    private void processEditFolder(Request request, ContentFolder folder) 
         throws ContentException, ContentSecurityException {
 
         User  user = request.getUser();

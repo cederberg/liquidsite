@@ -27,8 +27,8 @@ import java.util.Date;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
@@ -349,7 +349,7 @@ class AdminScript {
                     buffer.append("objectAddNewButton('add-site.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
-                } else if (content instanceof Folder) {
+                } else if (content instanceof ContentFolder) {
                     buffer.append("objectAddNewButton('add-site.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
@@ -617,7 +617,7 @@ class AdminScript {
     private String getContentUrl(Content content) throws ContentException {
         if (content instanceof Site) {
             return content.toString();
-        } else if (content instanceof Folder) {
+        } else if (content instanceof ContentFolder) {
             return getContentUrl(content.getParent()) +  
                    content.toString() + "/"; 
         } else if (content instanceof ContentFile) {

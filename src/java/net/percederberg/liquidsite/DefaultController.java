@@ -25,7 +25,7 @@ import net.percederberg.liquidsite.admin.AdminController;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
-import net.percederberg.liquidsite.content.Folder;
+import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
@@ -120,7 +120,7 @@ public class DefaultController extends Controller {
                 }
             } else {
                 page = getContentManager().findPage(site, path);
-                if (page instanceof Site || page instanceof Folder) {
+                if (page instanceof Site || page instanceof ContentFolder) {
                     page = getContentManager().findIndexPage(page);
                 }
                 if (page == null) {
