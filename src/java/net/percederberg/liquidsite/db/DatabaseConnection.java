@@ -204,6 +204,45 @@ public class DatabaseConnection {
     }
     
     /**
+     * Returns the current connection catalog.
+     * 
+     * @return the current connection catalog
+     * 
+     * @throws DatabaseConnectionException if the database connection 
+     *             couldn't be reestablished
+     */
+    public String getCatalog() throws DatabaseConnectionException {
+        try {
+            return con.getCatalog();
+        } catch (SQLException e) {
+            valid = false;
+            LOG.debug("failed to read catalog", e);
+            throw new DatabaseConnectionException(e);
+        }
+    }
+    
+    /**
+     * Sets the current connection catalog.
+     * 
+     * @param catalog        the new connection catalog
+     * 
+     * @throws DatabaseConnectionException if the database connection 
+     *             couldn't be reestablished
+     * @throws DatabaseException if the database catalog didn't exist
+     */
+    public void setCatalog(String catalog) 
+        throws DatabaseConnectionException, DatabaseException {
+
+        getCatalog();
+        try {
+            con.setCatalog(catalog);
+        } catch (SQLException e) {
+            LOG.debug("failed to set catalog to '" + catalog + "'", e);
+            throw new DatabaseException(e);
+        }
+    }
+    
+    /**
      * Resets the database connection to default values. This will 
      * reset the connection to the same state it had when first 
      * created. This method is used by the connection pool to 
