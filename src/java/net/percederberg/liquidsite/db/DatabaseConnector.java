@@ -251,7 +251,7 @@ public class DatabaseConnector {
      * @throws DatabaseException if the query or statement couldn't 
      *             be executed correctly
      */
-    public DatabaseResults execute(String sql) 
+    public DatabaseResults executeSql(String sql) 
         throws DatabaseConnectionException, DatabaseException { 
 
         DatabaseConnection  con;
@@ -259,7 +259,7 @@ public class DatabaseConnector {
         
         con = getConnection();
         try {
-            res = con.execute(sql);
+            res = con.executeSql(sql);
         } finally {
             returnConnection(con);
         }

@@ -246,7 +246,7 @@ public class Configuration {
 
         // TODO: change to use a database query pool
         try {
-            res = database.execute("SELECT * FROM CONFIGURATION");
+            res = database.executeSql("SELECT * FROM CONFIGURATION");
             for (int i = 0; i < res.getRowCount(); i++) {
                 name = res.getRow(i).getString("NAME");
                 value = res.getRow(i).getString("VALUE");
@@ -348,13 +348,13 @@ public class Configuration {
         String       name;
 
         // TODO: change to use a database query pool
-        con.execute("DELETE FROM CONFIGURATION");
+        con.executeSql("DELETE FROM CONFIGURATION");
         e = databaseProperties.propertyNames();
         while (e.hasMoreElements()) {
             name = (String) e.nextElement();
             sql = "INSERT INTO CONFIGURATION (NAME, VALUE) VALUES ('" +
                   name + "', '" + get(name, "") + "')";
-            con.execute(sql);
+            con.executeSql(sql);
         }
     }
 }

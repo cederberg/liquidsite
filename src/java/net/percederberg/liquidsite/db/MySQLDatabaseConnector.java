@@ -103,7 +103,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         
         // Retrieve basic privileges
         try {
-            res = execute("SHOW GRANTS FOR " + getDatabaseUser());
+            res = executeSql("SHOW GRANTS FOR " + getDatabaseUser());
             str = res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
             LOG.debug("failed to read user privileges", e);
@@ -136,7 +136,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         DatabaseResults  res;
 
         try {
-            res = execute("SELECT USER()");
+            res = executeSql("SELECT USER()");
             return res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
             LOG.debug("failed to read database user name", e);
@@ -161,7 +161,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         DatabaseResults  res;
         
         try {
-            res = execute("SHOW DATABASES");
+            res = executeSql("SHOW DATABASES");
             for (int i = 0; i < res.getRowCount(); i++) {
                 list.add(res.getRow(i).getString(0));
             }
@@ -193,7 +193,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         DatabaseResults  res;
         
         try {
-            res = execute("SHOW TABLES IN " + database);
+            res = executeSql("SHOW TABLES IN " + database);
             for (int i = 0; i < res.getRowCount(); i++) {
                 list.add(res.getRow(i).getString(0));
             }
@@ -224,7 +224,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String           str;
         
         try {
-            res = execute("SELECT DISTINCT user FROM mysql.user");
+            res = executeSql("SELECT DISTINCT user FROM mysql.user");
             for (int i = 0; i < res.getRowCount(); i++) {
                 str = res.getRow(i).getString(0);
                 if (str != null && !str.equals("")) {
@@ -253,7 +253,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void createDatabase(String database) 
         throws DatabaseConnectionException, DatabaseException {
 
-        execute("CREATE DATABASE " + database);
+        executeSql("CREATE DATABASE " + database);
     }
 
     /**
@@ -271,7 +271,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void deleteDatabase(String database) 
         throws DatabaseConnectionException, DatabaseException {
 
-        execute("DROP DATABASE " + database);
+        executeSql("DROP DATABASE " + database);
     }
 
     /**
@@ -295,7 +295,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String  host = getDatabaseUser();
         
         host = host.substring(host.indexOf("@"));
-        execute("GRANT USAGE ON *.* TO " + user + host +
+        executeSql("GRANT USAGE ON *.* TO " + user + host +
                 " IDENTIFIED BY '" + password + "'");
     }
 
@@ -317,9 +317,9 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String  host = getDatabaseUser();
         
         host = host.substring(host.indexOf("@"));
-        execute("REVOKE USAGE ON *.* FROM " + user + host);
-        execute("DELETE FROM mysql.user WHERE user = '" + user + "'");
-        execute("FLUSH PRIVILEGES");
+        executeSql("REVOKE USAGE ON *.* FROM " + user + host);
+        executeSql("DELETE FROM mysql.user WHERE user = '" + user + "'");
+        executeSql("FLUSH PRIVILEGES");
     }
 
     /**
@@ -344,7 +344,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String  host = getDatabaseUser();
         
         host = host.substring(host.indexOf("@"));
-        execute("GRANT SELECT,INSERT,UPDATE,DELETE ON " + database +
+        executeSql("GRANT SELECT,INSERT,UPDATE,DELETE ON " + database +
                 ".* TO " + user + host);
     }
 
@@ -370,7 +370,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String  host = getDatabaseUser();
         
         host = host.substring(host.indexOf("@"));
-        execute("REVOKE SELECT,INSERT,UPDATE,DELETE ON " + database +
+        executeSql("REVOKE SELECT,INSERT,UPDATE,DELETE ON " + database +
                 ".* FROM " + user + host);
     }
 }

@@ -1013,7 +1013,7 @@ public class InstallController extends Controller {
         MySQLDatabaseConnector  con;
 
         con = new MySQLDatabaseConnector(host, username, password);
-        return con.execute(sql);
+        return con.executeSql(sql);
     }
 
     /**
@@ -1044,7 +1044,7 @@ public class InstallController extends Controller {
         MySQLDatabaseConnector  con;
 
         con = new MySQLDatabaseConnector(host, database, username, password);
-        return con.execute(sql);
+        return con.executeSql(sql);
     }
 
     // TODO: rewrite this method to NOT use resource properties
