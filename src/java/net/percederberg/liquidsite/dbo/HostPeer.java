@@ -115,6 +115,7 @@ public class HostPeer extends AbstractPeer {
 
         DatabaseQuery  query = new DatabaseQuery("host.insert");
 
+        query.addParameter(data.getString(HostData.DOMAIN));
         query.addParameter(data.getString(HostData.NAME));
         query.addParameter(data.getString(HostData.DESCRIPTION));
         query.addParameter(data.getString(HostData.OPTIONS));
