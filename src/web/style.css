@@ -374,6 +374,7 @@ table.border {
         border-width: 1px;
         border-color: black; 
         border-collapse: collapse;
+        background: white;
 }
 table.border th {
         border-style: solid;
