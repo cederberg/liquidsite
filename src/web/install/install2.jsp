@@ -36,12 +36,15 @@ String crenabled = "";
 String nextenabled = "";
 if (!isAdmin) {
     crenabled = " disabled";
-	crColor = " class=\"unimportant\"";
+    crColor = " class=\"unimportant\"";
 } else if (dbsel.equals("")) {
     crchecked = " checked";
 }
 if (!isAdmin && dbsInfo.size() == 0) {
     nextenabled = " disabled";
+}
+if (error && !errorConnection && !errorDbExists) {
+    crColor = " class=\"incorrect\"";
 }
 %>
 <%@ include file="header.jsp" %>
@@ -56,12 +59,10 @@ if (!isAdmin && dbsInfo.size() == 0) {
     database. You may be experiencing errors with your database
     server.</p>
 <% } else if (errorDbExists) { %>
-  <p class="incorrect">The database entered already exists. If you
+  <p class="incorrect">The database to create already exists. If you
     want to choose this database, select it from the list.</p>
 <% } else if (error) { %>
-  <p class="incorrect">Select the radio button according to your
-    preferences, and either select a database from the list, or enter
-    a new database name.</p>
+  <p class="incorrect">Enter the database name.</p>
 <% } else if (!isAdmin && dbsInfo.size() == 0) { %>
   <p class="incorrect">There are no available databases. Either go back
     to the previous step and enter the information of a database user
