@@ -50,6 +50,19 @@ var TREE_SELECT_FUNCTION = null;
 var treeSelected = null;
 
 /**
+ * The last opened tree view item. This object should contain the
+ * unique id of the tree item.
+ */
+var treeLastOpened = 0;
+
+/**
+ * The list of tree items to load in the background. This list is
+ * cleared when a new subtree is opened and then filled with items
+ * when a new subtree is loaded.
+ */
+var treeAutoLoad = new Array();
+
+/**
  * Initializes the tree view.
  *
  * @param id                  the root element id
@@ -79,6 +92,7 @@ function treeAddItem(parent, id, type, name, desc, status) {
         var img = document.createElement("img");
         var a = document.createElement("a");
         var text = document.createTextNode(" " + name);
+        var item;
 
         desc = type.substring(0, 1).toUpperCase() +
                type.substring(1) + ": " + desc;
@@ -97,6 +111,12 @@ function treeAddItem(parent, id, type, name, desc, status) {
             TREE_ROOT.appendChild(p);
         } else {
             container.appendChild(p);
+        }
+        if (parent == treeLastOpened && treeInternalIsContainer(type)) {
+            item = new Object();
+            item.id = id;
+            item.type = type;
+            treeAutoLoad[treeAutoLoad.length] = item;
         }
     }
 }
@@ -122,6 +142,7 @@ function treeAddContainer(id) {
             parent.appendChild(div);
         }
     }
+    setTimeout("treeInternalAutoLoad();", 100);
 }
 
 /**
@@ -172,7 +193,9 @@ function treeOpen(type, id) {
     var div = document.getElementById("treegroup" + id);
     var img  = document.getElementById("treeicon" + id);
 
+    treeLastOpened = id;
     if (div == null) {
+        treeAutoLoad = new Array();
         TREE_LOAD_FUNCTION(type, id, "true");
     } else {
         div.style.display = "block";
@@ -254,5 +277,20 @@ function treeInternalGetStatusClass(status) {
         return "modified";
     } else {
         return "offline";
+    }
+}
+
+/**
+ * Loads one item off the automatic tree loading list. The next item
+ * will be loaded after the results from the first loading has been
+ * received. This in effect creates a background tree loading thread.
+ */
+function treeInternalAutoLoad() {
+    var  item;
+
+    if (treeAutoLoad.length > 0) {
+        item = treeAutoLoad[treeAutoLoad.length - 1];
+        treeAutoLoad.length = treeAutoLoad.length - 1;
+        TREE_LOAD_FUNCTION(item.type, item.id, "false");
     }
 }
