@@ -158,7 +158,7 @@ public class DatabaseConnector {
     public void setPoolSize(int size) {
         if (pool == null) {
             pool = new DatabaseConnectionPool(url, properties);
-            pool.setTimeout(DEFAULT_TIMEOUT);
+            pool.setTimeout(DEFAULT_POOL_TIMEOUT);
         }
         if (size < 1) {
             pool.setMinimumSize(0);
