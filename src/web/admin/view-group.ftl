@@ -2,7 +2,7 @@
 
     <div style="margin-left: 10%">
 
-      <h1>Group Members</h2>
+      <h1>Group Members</h1>
 
       <table class="compact">
         <tr>
