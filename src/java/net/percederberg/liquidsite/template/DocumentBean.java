@@ -71,19 +71,25 @@ public class DocumentBean implements TemplateHashModel {
     private MetaDataBean metadata;
 
     /**
+     * The request site path.
+     */
+    private String sitePath;
+
+    /**
      * Creates a new empty document template bean.
      */
     DocumentBean() {
-        this(null);
+        this(null, "");
     }
 
     /**
      * Creates a new document template bean.
      *
      * @param document       the content document, or null
+     * @param sitePath       the request site path
      */
-    DocumentBean(ContentDocument document) {
-        this(document, null);
+    DocumentBean(ContentDocument document, String sitePath) {
+        this(document, null, sitePath);
     }
 
     /**
@@ -91,11 +97,16 @@ public class DocumentBean implements TemplateHashModel {
      *
      * @param document       the content document, or null
      * @param baseSection    the base section for the document
+     * @param sitePath       the request site path
      */
-    DocumentBean(ContentDocument document, ContentSection baseSection) {
+    DocumentBean(ContentDocument document,
+                 ContentSection baseSection,
+                 String sitePath) {
+
         this.document = document;
         this.baseSection = baseSection;
         this.metadata = new MetaDataBean(document);
+        this.sitePath = sitePath;
     }
 
     /**
@@ -359,22 +370,25 @@ public class DocumentBean implements TemplateHashModel {
         } else if (name.equals("link")) {
             str = (String) attrs.get("window");
             if (str != null && str.equals("new")) {
-                return "<a href=\"" + attrs.get("url") + "\" target=\"_new\">";
+                return "<a href=\"" + linkTo((String) attrs.get("url")) +
+                       "\" target=\"_new\">";
             } else {
-                return "<a href=\"" + attrs.get("url") + "\">";
+                return "<a href=\"" + linkTo((String) attrs.get("url")) +
+                       "\">";
             }
         } else if (name.equals("/link")) {
             return "</a>";
         } else if (name.equals("image")) {
             str = (String) attrs.get("layout");
             if (str != null && str.equals("right")) {
-                return "<img src=\"" + attrs.get("url") + 
+                return "<img src=\"" + linkTo((String) attrs.get("url")) + 
                        "\" style=\"float: right;\" />";
             } else if (str != null && str.equals("left")) {
-                return "<img src=\"" + attrs.get("url") + 
+                return "<img src=\"" + linkTo((String) attrs.get("url")) + 
                        "\" style=\"float: left;\" />";
             } else {
-                return "<img src=\"" + attrs.get("url") + "\" />";
+                return "<img src=\"" + linkTo((String) attrs.get("url")) +
+                       "\" />";
             }
         } else if (name.equals("list")) {
             str = (String) attrs.get("type");
@@ -402,6 +416,15 @@ public class DocumentBean implements TemplateHashModel {
         }
     }
 
+    /**
+     * Processes a tag attribute string. This method extracts all the
+     * attributes and their values from the string and returns the
+     * mappings in a hash map.
+     *
+     * @param attrs          the tag attribute string
+     *
+     * @return the hash map with attribute names and values
+     */
     private HashMap processTagAttributes(String attrs) {
         HashMap  result = new HashMap();
         String   name;
@@ -449,6 +472,30 @@ public class DocumentBean implements TemplateHashModel {
             || str.startsWith("<h1>")
             || str.startsWith("<h2>")
             || str.startsWith("<h3>");
+    }
+
+    /**
+     * Returns a relative link to an object. If the specified path
+     * starts with '/' it is assumed to be relative to the site root
+     * directory, otherwise it is assumed to be relative to the
+     * document directory.
+     *
+     * @param path           the site- or document-relative link path
+     *
+     * @return the path relative to the request path
+     */
+    private String linkTo(String path) {
+        if (path.startsWith("http:") || path.startsWith("https:")) {
+            return path;
+        } else if (path.startsWith("/")) {
+            return sitePath + path.substring(1);
+        } else if (baseSection == null) {
+            return path;
+        } else {
+            // TODO: use translator path if possible
+            return sitePath + "liquidsite.obj/" + document.getId() +
+                   "/" + path;
+        }
     }
 
 

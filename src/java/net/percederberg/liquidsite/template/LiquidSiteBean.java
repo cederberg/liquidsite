@@ -140,7 +140,8 @@ public class LiquidSiteBean {
      */
     public DocumentBean getDoc() {
         if (docBean == null) {
-            docBean = new DocumentBean(request.getEnvironment().getDocument());
+            docBean = new DocumentBean(request.getEnvironment().getDocument(),
+                                       getSitePath());
         }
         return docBean;
     }
@@ -266,7 +267,9 @@ public class LiquidSiteBean {
      * @return the path relative to the request path
      */
     public String linkTo(String path) {
-        if (path.startsWith("/")) {
+        if (path.startsWith("http:") || path.startsWith("https:")) {
+            return path;
+        } else if (path.startsWith("/")) {
             return getSitePath() + path.substring(1);
         } else {
             return getPagePath() + path;
@@ -289,7 +292,9 @@ public class LiquidSiteBean {
             domain = request.getEnvironment().getDomain();
             content = findContent(path, domain);
             if (content instanceof ContentDocument) {
-                return new DocumentBean((ContentDocument) content);
+                return new DocumentBean((ContentDocument) content,
+                                        (ContentSection) content.getParent(),
+                                        getSitePath());
             } else {
                 LOG.error("failed to find document: " + path);
             }
@@ -529,7 +534,8 @@ public class LiquidSiteBean {
         for (int i = 0; i < children.length; i++) {
             if (children[i] instanceof ContentDocument) {
                 doc = new DocumentBean((ContentDocument) children[i],
-                                       sections[0]);
+                                       sections[0],
+                                       getSitePath());
                 results.add(doc);
             }
         }
