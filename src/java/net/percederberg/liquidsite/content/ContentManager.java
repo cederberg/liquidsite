@@ -460,6 +460,95 @@ public class ContentManager {
     }
 
     /**
+     * Finds the page content corresponding to a request path. This 
+     * method does NOT control access permissions and should thus 
+     * ONLY be used internally in the request processing. Also note
+     * that any content category matching the request path may be 
+     * returned including the parent content object, if the path was
+     * empty. 
+     * 
+     * @param parent         the content parent
+     * @param path           the request path after the parent
+     * 
+     * @return the content object corresponding to the path, or
+     *         null if no matching content was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     */
+    public Content findPage(Content parent, String path) 
+        throws ContentException {
+
+        Content[]  children;
+        Content    page = parent;
+        String     match;
+        String     str;
+
+        while (path.length() > 0) {
+            children = Content.findByParent(parent);
+            match = "";
+            for (int i = 0; i < children.length; i++) {
+                str = findPageMatch(children[i], path);
+                if (str != null && str.length() > match.length()) {
+                    page = children[i];
+                    match = str;
+                }
+            }
+            if (match.length() <= 0) {
+                return null;
+            }
+            path = path.substring(match.length());
+            parent = page;
+        }
+        return page;
+    }
+
+    /**
+     * Finds the index page for a content parent. This method does 
+     * NOT control access permissions and should thus ONLY be used 
+     * internally in the request processing.
+     * 
+     * @param parent         the content parent
+     * 
+     * @return the index content object, or
+     *         null if no matching content was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     */
+    public Content findIndexPage(Content parent) 
+        throws ContentException {
+            
+        // TODO: support more and/or configurable index pages
+        return findPage(parent, "index.html");
+    }
+
+    /**
+     * Finds the page match to a specified request path.
+     * 
+     * @param page           the content object
+     * @param path           the request path to check
+     * 
+     * @return the matching initial sequence of the path, or
+     *         an empty string if no match was found
+     */
+    private String findPageMatch(Content page, String path) {
+        if (!page.isOnline() || page.getRevisionNumber() < 1) {
+            return ""; 
+        }
+        switch (page.getCategory()) {
+        case Content.FILE_CATEGORY:
+            if (path.startsWith(((FileContent) page).getName())) {
+                return ((FileContent) page).getName();
+            } else {
+                return "";
+            }
+        default:
+            return "";
+        }
+    }
+
+    /**
      * Adds a persistent object to the cache.
      * 
      * @param obj            the object to add

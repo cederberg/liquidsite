@@ -22,7 +22,9 @@
 package net.percederberg.liquidsite;
 
 import net.percederberg.liquidsite.admin.AdminController;
+import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
@@ -70,10 +72,11 @@ public class DefaultController extends Controller {
      * @throws RequestException if the request couldn't be processed
      */
     public void process(Request request) throws RequestException {
-        Site    site;
-        User    user;
-        String  path = request.getPath();
-        boolean access;
+        String   path = request.getPath();
+        User     user;
+        Site     site;
+        Content  page;
+        boolean  access;
 
         // Find domain & site
         try {
@@ -94,21 +97,39 @@ public class DefaultController extends Controller {
         path = path.substring(site.getDirectory().length());
         if (request.getParameter("liquidsite.login") != null) {
             processLogin(request, site, path);
-            return;
+            if (request.hasResponse()) {
+                return;
+            }
         }
         user = request.getUser();
 
-        // Process site request
+        // Find page and create response
         try {
-            access = site.hasReadAccess(user);
+            if (site.isAdmin()) {
+                access = site.hasReadAccess(user);
+                if (access) {
+                    admin.processAuthorized(request, path);
+                } else {
+                    admin.processUnauthorized(request, path);
+                }
+            } else {
+                page = getContentManager().findPage(site, path);
+                if (page instanceof Site) {
+                    page = getContentManager().findIndexPage(page);
+                }
+                if (page == null) {
+                    throw RequestException.RESOURCE_NOT_FOUND;
+                }
+                access = page.hasReadAccess(user);
+                if (access) {
+                    processAuthorized(request, page);
+                } else {
+                    processUnauthorized(request, page);
+                }
+            }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
-        }
-        if (access) {
-            processAuthorized(request, site, path);
-        } else { 
-            processUnauthorized(request, site, path);
         }
     }
     
@@ -116,18 +137,25 @@ public class DefaultController extends Controller {
      * Processes an authorized request.
      *
      * @param request        the request object
-     * @param site           the site
-     * @param path           the request path
+     * @param page           the page requested
      * 
      * @throws RequestException if the request couldn't be processed
      */
-    private void processAuthorized(Request request, Site site, String path)
+    private void processAuthorized(Request request, Content page)
         throws RequestException {
 
-        if (site.isAdmin()) {
-            admin.processAuthorized(request, path);
+        if (page instanceof FileContent) {
+            try {
+                request.sendFile(((FileContent) page).getFile());
+            } catch (ContentException e) {
+                LOG.error("couldn't find content file for " + 
+                          page.getId() + ": " + e.getMessage());
+                throw RequestException.INTERNAL_ERROR;
+            }
         } else {
-            throw RequestException.RESOURCE_NOT_FOUND;
+            LOG.error("unrecognized page content category " + 
+                      page.getCategory());
+            throw RequestException.INTERNAL_ERROR;
         }
     }
 
@@ -135,23 +163,22 @@ public class DefaultController extends Controller {
      * Processes an unauthorized request.
      *
      * @param request        the request object
-     * @param site           the site
-     * @param path           the request path
+     * @param page           the page requested
      * 
      * @throws RequestException if the request couldn't be processed
      */
-    private void processUnauthorized(Request request, Site site, String path)
+    private void processUnauthorized(Request request, Content page)
         throws RequestException {
 
-        if (site.isAdmin()) {
-            admin.processUnauthorized(request, path);
-        } else {
-            throw RequestException.UNAUTHORIZED;
-        }
+        throw RequestException.UNAUTHORIZED;
     }
 
     /**
-     * Processes a login request.
+     * Processes a login request. This will set the request user if
+     * successful, and send a redirect to the requested page. If 
+     * unsuccessful, a request error attribute is set. Note that the
+     * request must be further processed in the case of an 
+     * unsuccessful login, as the login page must be displayed again.
      *
      * @param request        the request object
      * @param site           the site
@@ -178,7 +205,6 @@ public class DefaultController extends Controller {
         } else {
             request.setUser(null);
             request.setAttribute("error", "Invalid user name or password");
-            processUnauthorized(request, site, path);
         }
     }
 }
