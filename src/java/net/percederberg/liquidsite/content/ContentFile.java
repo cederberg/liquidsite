@@ -45,6 +45,22 @@ public class ContentFile extends Content {
     private static final String FILE_NAME_ATTRIBUTE = "FILENAME";
 
     /**
+     * Returns the MIME type of a file. The MIME types are configured
+     * in the application servlet context.
+     *
+     * @param app            the application object
+     * @param fileName       the file name
+     *
+     * @return the MIME type of the file, or
+     *         a default binary MIME type if unknown
+     */
+    public static String getMimeType(Application app, String fileName) {
+        String  type = app.getServletContext().getMimeType(fileName);
+
+        return (type == null) ? "application/octet-stream" : type;
+    }
+
+    /**
      * Creates a new file with default values.
      *
      * @param manager        the content manager to use
@@ -187,11 +203,8 @@ public class ContentFile extends Content {
      *         a default binary MIME type if unknown
      */
     public String getMimeType() {
-        Application  app = getContentManager().getApplication();
-        String       name = getFileName();
-        String       type = app.getServletContext().getMimeType(name);
-
-        return (type == null) ? "application/octet-stream" : type;
+        return getMimeType(getContentManager().getApplication(),
+                           getFileName());
     }
 
     /**

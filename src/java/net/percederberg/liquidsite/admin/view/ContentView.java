@@ -957,7 +957,7 @@ public class ContentView extends AdminView {
             map.put("name", name);
             map.put("fileSize",
                     AdminUtils.formatFileSize(file.length()));
-            map.put("mimeType", app.getServletContext().getMimeType(name));
+            map.put("mimeType", ContentFile.getMimeType(app, name));
             list.add(map);
         }
     }
