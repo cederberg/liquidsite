@@ -309,7 +309,7 @@ class AdminScript {
             buffer.append("');\n");
         }
         if (user.isSuperUser()) {
-            buffer.append("objectAddDeleteButton('delete-site.html");
+            buffer.append("objectAddDeleteButton('delete.html");
             buffer.append(getLinkParameters(domain));
             buffer.append("');\n");
         }
@@ -378,7 +378,7 @@ class AdminScript {
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 }
-                buffer.append("objectAddDeleteButton('delete-site.html");
+                buffer.append("objectAddDeleteButton('delete.html");
                 buffer.append(getLinkParameters(content));
                 buffer.append("');\n");
             }

@@ -81,7 +81,7 @@ public class AdminController extends Controller {
         super(app);
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
-        workflows.add(new SiteDeleteFormHandler());
+        workflows.add(new DeleteDialogHandler());
     }
 
     /**

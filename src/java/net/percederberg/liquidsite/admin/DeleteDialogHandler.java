@@ -1,5 +1,5 @@
 /*
- * SiteDeleteFormHandler.java
+ * DeleteDialogHandler.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -28,19 +28,19 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 
 /**
- * The site delete request handler. This class handles the delete 
- * workflow for the site view.
+ * The delete request handler. This class handles the delete dialog 
+ * workflow for domain and content objects.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class SiteDeleteFormHandler extends AdminDialogHandler {
+class DeleteDialogHandler extends AdminDialogHandler {
 
     /**
-     * Creates a new site delete request handler.
+     * Creates a new delete request handler.
      */
-    public SiteDeleteFormHandler() {
-        super("site.html", "delete-site.html", true);
+    public DeleteDialogHandler() {
+        super("site.html", "delete.html", true);
     }
 
     /**
