@@ -60,7 +60,36 @@ public class TemplateException extends Exception {
      * @param cause          the root cause to the error
      */
     public TemplateException(String message, Exception cause) {
-        super(message + ": " + cause.getMessage());
+        super(message);
         this.rootCause = cause;
+    }
+    
+    /**
+     * Returns the detailed error message. This error message will 
+     * include any messages from the root errors.
+     * 
+     * @return the detailed error message
+     */
+    public String getMessage() {
+        StringBuffer  message = new StringBuffer();
+        Throwable     cause = rootCause;
+
+        message.append(super.getMessage());
+        while (cause != null) {
+            message.append(": ");
+            message.append(cause.getMessage());
+            cause = cause.getCause();
+        }
+        return message.toString();
+    }
+    
+    /**
+     * Returns the root exception cause.
+     * 
+     * @return the root exception cause, or
+     *         null for none
+     */
+    public Throwable getCause() {
+        return rootCause;
     }
 }
