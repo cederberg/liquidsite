@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
  
 <!-- ### ENTITY DECLARATIONS ### -->
-<!DOCTYPE stylesheet [
+<!DOCTYPE xsl:stylesheet [
 <!ENTITY newline "<xsl:text>
 </xsl:text>">
 <!ENTITY indent "<xsl:text>  </xsl:text>">

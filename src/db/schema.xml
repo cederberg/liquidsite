@@ -8,7 +8,7 @@
   </description>
 
 
-  <table name="CONFIGURATION">
+  <table name="LS_CONFIGURATION">
     <description>
       The configuration parameter table. All parameters are stored
       here except for the database connection parameters that are all
@@ -48,7 +48,7 @@
 
 
 
-  <table name="SITE">
+  <table name="LS_SITE">
     <description>
       The web site table. A web site consists of a pages and content
       that can be served from a single web location. Each site is
@@ -131,7 +131,7 @@
 
 
 
-  <table name="CONTENT">
+  <table name="LS_CONTENT">
     <description>
       The page content table. This table contains all texual page
       content for all the sites. Binary data is not stored in this
@@ -155,7 +155,7 @@
         single web site that determines how it can be accessed.
       </description>
       <type name="SMALLINT" required="true" />
-      <reference table="SITE" column="ID" />
+      <reference table="LS_SITE" column="ID" />
     </column>
 
     <column name="CATEGORY">
@@ -172,7 +172,7 @@
       <description>
       </description>
       <type name="INTEGER" required="true" />
-      <reference table="CONTENT" column="ID" />
+      <reference table="LS_CONTENT" column="ID" />
     </column>
 
     <column name="ONLINE">

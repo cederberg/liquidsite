@@ -167,24 +167,24 @@
     </xslt>
     <xslt style="${build.dir}/src/db/doc-table-html.xsl"
           in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.CONFIGURATION.html">
+          out="${build.dir}/doc/db/table.LS_CONFIGURATION.html">
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
-      <param name="table" expression="CONFIGURATION" />
+      <param name="table" expression="LS_CONFIGURATION" />
     </xslt>
     <xslt style="${build.dir}/src/db/doc-table-html.xsl"
           in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.SITE.html">
+          out="${build.dir}/doc/db/table.LS_SITE.html">
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
-      <param name="table" expression="SITE" />
+      <param name="table" expression="LS_SITE" />
     </xslt>
     <xslt style="${build.dir}/src/db/doc-table-html.xsl"
           in="${build.dir}/src/db/schema.xml"
-          out="${build.dir}/doc/db/table.CONTENT.html">
+          out="${build.dir}/doc/db/table.LS_CONTENT.html">
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
-      <param name="table" expression="CONTENT" />
+      <param name="table" expression="LS_CONTENT" />
     </xslt>
   </target>
 
