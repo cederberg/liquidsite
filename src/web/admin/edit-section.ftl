@@ -67,8 +67,8 @@
                    name="name" value="${name}" />
             <p>The section name is used to identify the section
             when listing or searching for documents. The name may 
-            contain any character, but the English alphabet is 
-            recommended.</p>
+            only contain English alphabet characters or numbers 
+            without any spaces.</p>
           </td>
         </tr>
 <#if !isadd>

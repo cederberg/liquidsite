@@ -87,8 +87,9 @@
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
             <p>The template name is used to identify the template 
-            when creating web pages. The names may contain any 
-            character, but the English alphabet is recommended.</p>
+            when creating web pages. The template name should use
+            only English alphabet characters or numbers without any 
+            spaces.</p>
           </td>
         </tr>
 <#if !isadd>

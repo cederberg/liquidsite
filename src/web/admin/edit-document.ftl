@@ -57,9 +57,9 @@
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
             <p>The document name is used to identify the document.
-            The name may also be part of a URL and in those cases
-            it should only contain English alphabet characters or
-            numbers without spaces.</p>
+            As the name may form part of a URL it may only contain
+            English alphabet characters or numbers without any 
+            spaces.</p>
           </td>
         </tr>
 <#if !isadd>

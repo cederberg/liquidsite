@@ -113,7 +113,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         String  upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String  lowerCase = "abcdefghijklmonpqrstuvwxyz";
         String  numbers = "0123456789";
-        String  domainChars = upperCase + numbers;
+        String  domainChars = upperCase + numbers + ".-_";
         String  hostChars = lowerCase + numbers + ".-_";
         String  nameChars = upperCase + lowerCase + numbers + ".-_";
         String  error;
@@ -166,6 +166,8 @@ class SiteEditFormHandler extends AdminFormHandler {
 
         // Add and edit template validator
         template.addRequiredConstraint("name", "No template name specified");
+        error = "Template name contains invalid character";
+        template.addCharacterConstraint("name", nameChars, error);
         template.addRequiredConstraint("comment", "No comment specified");
     }
 
