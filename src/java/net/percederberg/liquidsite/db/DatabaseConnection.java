@@ -26,7 +26,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 import net.percederberg.liquidsite.Log;
 
@@ -50,20 +49,22 @@ public class DatabaseConnection {
     private static final Log LOG = new Log(DatabaseConnection.class);
 
     /**
-     * The default query timeout in seconds. No queries are allowed
-     * to run longer than this timout value.
+     * The database connector.
      */
-    public static final int DEFAULT_QUERY_TIMEOUT = 5;
-
-    /**
-     * The JDBC database URL.
-     */
-    private String url;
+    private DatabaseConnector db;
 
     /**
      * The JDBC database connection.
      */
     private Connection con;
+
+    /**
+     * The initial connection catalog (database). This is used to be
+     * able to reset the connection to it's initial state.
+     * 
+     * @see #reset
+     */
+    private String catalog;
 
     /**
      * The valid connection flag. This flag is set to false if an 
@@ -74,8 +75,8 @@ public class DatabaseConnection {
     private boolean valid = true;
 
     /**
-     * The reserved connection flag. This flag is set to true before
-     * the connection is being used. 
+     * The reserved connection flag. This flag is used by the 
+     * connection pool to determine if the connection is being used.
      */
     private boolean reserved = false;
 
@@ -85,34 +86,34 @@ public class DatabaseConnection {
     private long creationTime = System.currentTimeMillis(); 
 
     /**
-     * The connection expiration timeout in milliseconds. If this 
-     * value is negative the database connection will never expire.
+     * The query execution timeout in seconds. If this value is 
+     * negative the queries can run without limitation.
      */
-    private long timeout = -1;
+    private int queryTimeout = DatabaseConnector.DEFAULT_QUERY_TIMEOUT;
 
     /**
      * Creates a new database connection. The database JDBC driver 
      * must have been previously loaded, or a connection exception
      * will be thrown.
      * 
-     * @param url            the JDBC url to use
-     * @param properties     the JDBC properties to use
+     * @param db             the database connector to use
      * 
      * @throws DatabaseConnectionException if the database connection 
      *             couldn't be created
      */
-    DatabaseConnection(String url, Properties properties) 
+    DatabaseConnection(DatabaseConnector db) 
         throws DatabaseConnectionException {
 
-        this.url = url;
+        this.db = db;
         try {
-            LOG.trace("creating connection to " + url + "...");
-            con = DriverManager.getConnection(url, properties);
-            con.setAutoCommit(true);
-            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            LOG.trace("created connection to " + url);
+            LOG.trace("creating connection to " + db + "...");
+            con = DriverManager.getConnection(db.getUrl(), 
+                                              db.getProperties());
+            catalog = con.getCatalog();
+            reset();
+            LOG.trace("created connection to " + db);
         } catch (SQLException e) {
-            LOG.debug("failed to create connection to " + url, e);
+            LOG.debug("failed to create connection to " + db, e);
             throw new DatabaseConnectionException(e);
         }
     }
@@ -131,13 +132,27 @@ public class DatabaseConnection {
     }
 
     /**
+     * Checks if this connection has expired. A connection expires 
+     * when the connection age is more than the timeout.
+     * 
+     * @return true if the connection has expired, or
+     *         false otherwise
+     */
+    public boolean isExpired() {
+        long  timeout = db.getConnectionTimeout();
+        
+        return timeout >= 0 && 
+               timeout < (System.currentTimeMillis() - creationTime);
+    }
+
+    /**
      * Checks if this connection is reserved. A connection is 
      * reserved when it is being used.
      * 
      * @return true if this connection is reserved, or
      *         false otherwise
      */
-    public boolean isReserved() {
+    boolean isReserved() {
         return reserved;
     }
     
@@ -151,25 +166,54 @@ public class DatabaseConnection {
     }
     
     /**
-     * Checks if this connection has expired. A connection expires 
-     * when the connection age is more than the timeout.
+     * Returns the query execution timeout. If this value is negative
+     * the queries can run without limitation. New connections and
+     * connections returned from a connection pool always have a 
+     * default timeout value.
      * 
-     * @return true if the connection has expired, or
-     *         false otherwise
+     * @return the query execution timeout in seconds, or
+     *         a negative value for unlimited
+     * 
+     * @see #setQueryTimeout
+     * @see DatabaseConnector#DEFAULT_QUERY_TIMEOUT
      */
-    public boolean isExpired() {
-        return timeout >= 0 && 
-               timeout < (System.currentTimeMillis() - creationTime);
+    public int getQueryTimeout() {
+        return queryTimeout;
     }
-
+    
     /**
-     * Sets the connection timeout value. By default a connection has
-     * no timeout.
+     * Sets the query execution timeout. If this value is negative
+     * the queries can run without limitation.
      * 
-     * @param timeout        the new connection timeout (in millisec)
+     * @param timeout        the query execution timeout in seconds, or
+     *                       a negative value for unlimited
+     * 
+     * @see #getQueryTimeout
      */
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    public void setQueryTimeout(int timeout) {
+        this.queryTimeout = timeout;
+    }
+    
+    /**
+     * Resets the database connection to default values. This will 
+     * reset the connection to the same state it had when first 
+     * created. This method is used by the connection pool to 
+     * guarantee that all connections are returned identical. 
+     * 
+     * @throws DatabaseConnectionException if the database connection 
+     *             couldn't be reestablished
+     */
+    public void reset() throws DatabaseConnectionException {
+        this.queryTimeout = DatabaseConnector.DEFAULT_QUERY_TIMEOUT;
+        try {
+            con.setCatalog(catalog);
+            con.setAutoCommit(true);
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        } catch (SQLException e) {
+            valid = false;
+            LOG.debug("failed to reset connection to " + db, e);
+            throw new DatabaseConnectionException(e);
+        }
     }
 
     /**
@@ -187,29 +231,45 @@ public class DatabaseConnection {
 
         Statement        stmt;
         ResultSet        set;
-        DatabaseResults  res;
 
-        // Execute query
         try {
             LOG.trace("executing SQL '" + sql + "'...");
             stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
                                        ResultSet.CONCUR_READ_ONLY,
                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
-            stmt.setQueryTimeout(DEFAULT_QUERY_TIMEOUT);
+            stmt.setQueryTimeout(queryTimeout);
             set = stmt.executeQuery(sql);
-            LOG.trace("executed SQL '" + sql);
+            LOG.trace("executed SQL '" + sql + "'");
         } catch (SQLException e) {
             LOG.debug("failed to execute SQL '" + sql + "'", e);
             throw new DatabaseException(e);
         }
 
-        // Extract results
+        return extractResults(set);
+    }
+
+    /**
+     * Extracts the result from a JDBC result set. The result set 
+     * will be closed after all the results have been extracted. 
+     * 
+     * @param set            the result set to extract data from
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseException if the results couldn't be extracted 
+     *             properly
+     */
+    private DatabaseResults extractResults(ResultSet set) 
+        throws DatabaseException {
+            
+        DatabaseResults  res;
+
         try {
-            LOG.trace("extracting results from SQL '" + sql + "'...");
+            LOG.trace("extracting database results...");
             res = new DatabaseResults(set);
-            LOG.trace("extracted results from SQL '" + sql);
+            LOG.trace("extracted database results");
         } catch (SQLException e) {
-            LOG.debug("failed to extract results from SQL '" + sql, e);
+            LOG.debug("failed to extract database results", e);
             throw new DatabaseException(e);
         } finally {
             try {
@@ -227,7 +287,7 @@ public class DatabaseConnection {
      * Closes the connection.
      */
     public void close() {
-        LOG.trace("closing connection to " + url + "...");
+        LOG.trace("closing connection to " + db + "...");
         valid = false;
         try {
             if (!con.isClosed()) {
@@ -236,6 +296,6 @@ public class DatabaseConnection {
         } catch (SQLException ignore) {
             // Ignore this error
         }
-        LOG.trace("closed connection to " + url);
+        LOG.trace("closed connection to " + db);
     }
 }

@@ -26,7 +26,10 @@ import java.util.Properties;
 import net.percederberg.liquidsite.Log;
 
 /**
- * A database connector. 
+ * A database connector. The database connector manages all 
+ * connections to the database, pooling resources as desired. By 
+ * default connection pooling is not used, but is may be activated by
+ * modifying the pool size.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -39,19 +42,18 @@ public class DatabaseConnector {
     private static final Log LOG = new Log(DatabaseConnector.class);
 
     /**
-     * The default minimum connection pool size (0).
+     * The default connection timeout in milliseconds. By default 
+     * this is set to 14400000 ms (4 h).
      */
-    private static final int DEFAULT_POOL_MINSIZE = 1;
-    
-    /**
-     * The default maximum connection pool size (10).
-     */
-    private static final int DEFAULT_POOL_MAXSIZE = 10;
+    public static final long DEFAULT_CONNECTION_TIMEOUT = 14400000L;
 
     /**
-     * The default connection pool timeout (4 h = 14400000 ms).
+     * The default query timeout in seconds. By default this is set
+     * to 5 seconds.
+     * 
+     * @see DatabaseConnection#setQueryTimeout
      */
-    private static final long DEFAULT_POOL_TIMEOUT = 14400000L;
+    public static final int DEFAULT_QUERY_TIMEOUT = 5;
 
     /**
      * The JDBC database URL.
@@ -70,6 +72,14 @@ public class DatabaseConnector {
     private DatabaseConnectionPool pool = null;
 
     /**
+     * The connection expiration timeout in milliseconds. If this 
+     * value is negative the database connections will never expire.
+     * 
+     * @see #DEFAULT_CONNECTION_TIMEOUT
+     */
+    private long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+
+    /**
      * Loads the specified JDBC database driver. This method must be
      * called once before attempting to connect with the specified 
      * driver. Calling this method several times has no effect.
@@ -83,6 +93,7 @@ public class DatabaseConnector {
         throws DatabaseConnectionException {
 
         String  message;
+
         try {
             Class.forName(driver).newInstance();
         } catch (Exception e) {
@@ -115,6 +126,24 @@ public class DatabaseConnector {
     }
     
     /**
+     * Returns a string representation of this object.
+     * 
+     * @return a string representation of this object
+     */
+    public String toString() {
+        return url;
+    }
+
+    /**
+     * Returns the JDBC database URL.
+     * 
+     * @return the JDBC database URL
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
      * Returns a specified database connector property.
      * 
      * @param name           the property name
@@ -127,6 +156,15 @@ public class DatabaseConnector {
     }
 
     /**
+     * Returns the database connector properties.
+     * 
+     * @return the database properties
+     */
+    public Properties getProperties() {
+        return properties;
+    }
+
+    /**
      * Sets the specified database connector property.
      * 
      * @param name           the property name
@@ -134,6 +172,37 @@ public class DatabaseConnector {
      */
     public void setProperty(String name, String value) {
         properties.setProperty(name, value);
+    }
+
+    /**
+     * Returns the database connection expiration timeout. If this 
+     * value is negative the database connections will never expire.
+     * 
+     * @return the connection expiration timeout (in milliseconds), or
+     *         a negative value for unlimited
+     * 
+     * @see #setConnectionTimeout
+     * @see #DEFAULT_CONNECTION_TIMEOUT
+     */
+    public long getConnectionTimeout() {
+        return connectionTimeout;
+    } 
+
+    /**
+     * Sets the database connection expiration timeout. If this value 
+     * is negative the database connections will never expire. By
+     * modifying this value already open connections may be caused to
+     * expire.
+     * 
+     * @param timeout        the new connection timeout (in milliseconds), or
+     *                       a negative value for unlimited
+     * 
+     * @see #getConnectionTimeout
+     */
+    public void setConnectionTimeout(long timeout) {
+        LOG.trace("new connection timeout: " + timeout +
+                  ", was: " + connectionTimeout + ", for " + this);
+        this.connectionTimeout = timeout;
     }
 
     /**
@@ -166,8 +235,7 @@ public class DatabaseConnector {
      */
     public void setPoolSize(int size) {
         if (pool == null) {
-            pool = new DatabaseConnectionPool(url, properties);
-            pool.setTimeout(DEFAULT_POOL_TIMEOUT);
+            pool = new DatabaseConnectionPool(this);
         }
         if (size < 1) {
             pool.setMinimumSize(0);
@@ -194,9 +262,9 @@ public class DatabaseConnector {
     public DatabaseConnection getConnection() 
         throws DatabaseConnectionException {
 
-        LOG.trace("database connection requested for " + url);
+        LOG.trace("database connection requested for " + this);
         if (pool == null) {
-            return new DatabaseConnection(url, properties);
+            return new DatabaseConnection(this);
         } else {
             return pool.getConnection();
         }
@@ -212,7 +280,7 @@ public class DatabaseConnector {
      * @see #getConnection
      */
     public void returnConnection(DatabaseConnection con) {
-        LOG.trace("database connection returned for " + url);
+        LOG.trace("database connection returned for " + this);
         if (pool == null) {
             con.close();
         } else {
