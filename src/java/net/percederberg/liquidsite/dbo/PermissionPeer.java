@@ -44,7 +44,7 @@ public class PermissionPeer extends AbstractPeer {
      * Returns a list of all permission objects with the specified 
      * content id.
      * 
-     * @param id             the content id
+     * @param content        the content id
      * @param con            the database connection to use
      * 
      * @return the list of permission objects found
@@ -52,12 +52,13 @@ public class PermissionPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static ArrayList doSelectById(int id, DatabaseConnection con)
+    public static ArrayList doSelectByContent(int content, 
+                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery  query = new DatabaseQuery("permission.select.id");
+        DatabaseQuery  query = new DatabaseQuery("permission.select.content");
         
-        query.addParameter(id);
+        query.addParameter(content);
         return PEER.selectList(query, con);
     }
 
