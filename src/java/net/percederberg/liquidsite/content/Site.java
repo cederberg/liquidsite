@@ -138,10 +138,13 @@ public class Site extends Content {
         int           port = getPort();
         String        dir = getDirectory();
         
-        buffer.append("Site: ");
         buffer.append(getProtocol());
         buffer.append("://");
-        buffer.append(getHost());
+        if (getHost().equals("*")) {
+            buffer.append("<any>");
+        } else {
+            buffer.append(getHost());
+        }
         if (port != 0 && port != 80) {
             buffer.append(":");
             buffer.append(port); 
