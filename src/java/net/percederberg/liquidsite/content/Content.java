@@ -501,7 +501,6 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
-        // TODO: this is not security-wise correct
         return getContentManager().getDomain(getDomainName());
     }
     
@@ -592,7 +591,6 @@ public abstract class Content extends PersistentObject implements Comparable {
     public Content getParent() throws ContentException {
         int  parent = getParentId();
         
-        // TODO: this is not security-wise correct
         if (parent <= 0) {
             return null;
         } else {
