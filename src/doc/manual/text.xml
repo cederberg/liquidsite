@@ -1,0 +1,196 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>HTML &amp; Tagged Text</h1>
+
+    <h2>Text, Formatting &amp; Markup</h2>
+
+    <p>All document properties have a type, specifying the format of
+    the property values. Currently Liquid Site supports three document
+    property types; plain text, HTML and tagged text. All three are
+    used for storing text and both the HTML and tagged text types
+    allow storing formatting along with the text.</p>
+
+    <p>The plain text type is used for storing unformatted text. That
+    means that any linebreaks or special characters in the text will
+    be converted before displaying the text on a web page (i.e. in
+    HTML). Plain text is often used for simple data, such as titles,
+    author names, keywords and similar.</p>
+
+    <p>The other two text types maintain text formatting alongside the
+    text. They do this by marking the specially formatted text with
+    special <em>tags</em>, like "<code>&lt;b&gt;word&lt;/b&gt;</code>"
+    for a word in boldface. There are several different tags
+    available, and they vary between the HTML and tagged text
+    formats.</p>
+
+    <p>The HTML text editor allows editing the text with markup in a
+    visal manner, showing the results rather than the tags themselves.
+    This editor is built into the web browsers Internet Explorer and
+    Mozilla, but does not work in other web browsers such as Opera or
+    Safari. The HTML text editor is also known for behaving strangely
+    from time to time, something Liquid Site has no control over. For
+    these reasons, it is recommended to use tagged text instead of
+    HTML in most situations.</p>
+
+    <h2>Tagged Text</h2>
+
+    <p>Tagged text looks somewhat similar to HTML, but has been
+    simplified in several aspects. The most important difference
+    compared to HTML is probably that linebreaks are conserved to the
+    output, making it simple to separate paragraphs by a blank line.
+    Many of the tags in the tagged text are also different from HTML,
+    making them easier to remember and use.</p>
+
+    <p>In order to create tagged text it is not necessary to remember
+    all the tags available. The tagged text editor provides buttons
+    and helper dialogs to make the creation of the tags much easier.
+    The text to format is just selected, whereafter the appropriate
+    button in the editor toolbar is pressed. See the figure below for
+    an example of a text being edited in the tagged text editor.</p>
+
+    <figure>
+      <caption>The tagged text editor. At the top is the editor
+      toolbar with buttons for nearly all types of formatting
+      available in the tagged text format.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="text-tagged.png"
+                  description="The tagged text editor" />
+        </p>
+      </content>
+    </figure>
+
+    <p>A description of the tags in the tagged text format is
+    available in the online help that is opened by pressing the
+    rightmost button in the editor toolbar.</p>
+
+    <h2>HTML Text</h2>
+
+    <p>The HTML text editor allows editing HTML either directly as it
+    will be shown or in source mode. In the former mode, none of the
+    HTML tags are visible and all formatting is done with the help of
+    the editor toolbar. The HTML editor toolbar is mostly similar to
+    the toolbar for the tagged text editor, which can be seen in the
+    figure below.</p>
+
+    <figure>
+      <caption>The HTML text editor in direct formatting mode. All
+      formatting is done by marking text and using the appropriate
+      toolbar buttons.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="text-html.png"
+                  description="The HTML text editor" />
+        </p>
+      </content>
+    </figure>
+
+    <p>As an alternative to using the toolbar buttons, the HTML editor
+    source mode is available. While in this mode the HTML editor
+    displays the actual HTML source code and allows direct
+    manipulation of it. The HTMl source mode is activated by pressing
+    the rightmost button in the toolbar, as seen in the figure
+    below.</p>
+
+    <figure>
+      <caption>The HTML text editor in source view mode. No formatting
+      toolbar buttons are available in this mode, but all HTML code
+      must be entered manually.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="text-htmlsource.png"
+                  description="The HTML text editor in source mode" />
+        </p>
+      </content>
+    </figure>
+
+    <p>The HTML editor is problematic in that it is not supported in
+    all web browsers, has certains quirks in the formatting mode, and
+    requires detailed knowledge of HTML to be able to control the
+    formatting exactly. Also, the HTML layout mode is not able to
+    properly display images or links. For these reasons the tagged
+    text format is recommended over HTML for most cases.</p>
+
+    <h2>Linking &amp; Images</h2>
+
+    <p>Both the tagged text and HTML support hyperlinking to attached
+    files, web pages in the same site or to external web sites. The
+    easiest way to add a link is to select the link button in the
+    editor toolbar. This will bring up a dialog similar to the one in
+    the figure below.</p>
+
+    <figure>
+      <caption>The tagged text add link dialog. The link type field
+      allows selecting between normal links, links opening in a new
+      window, and mail address links. In the link dialog for the HTML
+      dialog, only normal links are available.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="text-link.png"
+                  description="The add link dialog" />
+        </p>
+      </content>
+    </figure>
+
+    <p>The link URLs entered will be processed differently depending
+    on their type. The three different types of links are:</p>
+
+    <list>
+      <item>
+        <title>Absolute links (to other sites)</title>
+        <text>Links starting with <code>http://</code>,
+        <code>https://</code> or another web protocol are considered
+        absolute links and will not be processed.</text>
+      </item>
+
+      <item>
+        <title>Root-relative links (within the same site)</title>
+        <text>Links starting with <code>/</code> are treated as
+        relative to the web site root, and will be converted to
+        normal relative links upon display.</text>
+      </item>
+
+      <item>
+        <title>Relative links (to attached files)</title>
+        <text>Other links are treated as relative to the document
+        itself and will be converted by adding the path to the
+        document when needed. To link to an attached file, simply
+        enter the name of the attached file as the URL.</text>
+      </item>
+    </list>
+
+    <p>Images are considered a special type of attached files. By
+    attaching image files to a document, the images will become
+    available for insertion in the tagged text or HTML. Pressing the
+    add image button an image dialog like in the figure below will be
+    shown.</p>
+
+    <figure>
+      <caption>The add image dialog. The image layout allows placing
+      an image floating to the left or the right. In the HTML editor
+      version of this dialog, no layout option is available.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="text-image.png"
+                  description="The add image dialog" />
+        </p>
+      </content>
+    </figure>
+
+  </body>
+</doc>

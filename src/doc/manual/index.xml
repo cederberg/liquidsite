@@ -36,7 +36,7 @@
       <item>
         <title><ref file="admin.xml">The Administration
         Application</ref></title>
-        <text>An introduction to the administration application that
+        <text>Introduction to the administration application that
         is used for managing everything in Liquid Site.</text>
       </item>
     </list>
@@ -90,19 +90,16 @@
         structured and arranged in hierarchies.</text>
       </item>
 
-      <item style="draft">
+      <item>
         <title><ref file="document.xml">Documents</ref></title>
-        <text></text>
+        <text>Explains the concept of a document and how it can be
+        used.</text>
       </item>
 
-      <item style="draft">
-        <title><ref file="linking.xml">Files &amp; Linking</ref></title>
-        <text></text>
-      </item>
-
-      <item style="draft">
-        <title><ref file="tagged.xml">The Tagged Text Format</ref></title>
-        <text></text>
+      <item>
+        <title><ref file="text.xml">HTML &amp; Tagged Text</ref></title>
+        <text>Details the HTML and tagged text formats and how to use
+        the editors in the document form.</text>
       </item>
     </list>
 

@@ -91,7 +91,7 @@
 
     <h2>Creating &amp; Editing Sections</h2>
 
-    <p>Sections are created and editing just like any other objects in
+    <p>Sections are created and edited just like any other objects in
     the <ref file="admin.xml">Administration Application</ref>, i.e.
     by choosing the "<strong>Add</strong>" and "<strong>Edit</strong>"
     buttons respectively. Both eventually lead to the same section

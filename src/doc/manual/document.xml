@@ -1,0 +1,137 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>Documents</h1>
+
+    <h2>The Concept of a Document</h2>
+
+    <p>Everyone knows what a document is. You hold it in your hand,
+    read it, print it... But beware, in Liquid Site the concept of a
+    document is a little bit different from what you're probably used
+    to.</p>
+
+    <p>A document in Liquid Site is little more than a set of document
+    property values. That is, the content of a document is whatever
+    values it sets for the document properties defined in the section.
+    In a way, a document can be compared to a filled-out form, though
+    some of the fields will probably contain longer texts.</p>
+
+    <p>Most documents in this model will have a number of smaller
+    property values, and then finally one property value containing
+    the full text of the document. But the document model also lends
+    itself to storing plain data or list entries, such as items in a
+    todo-list, products in a web shop or similar.</p>
+
+    <h2>Editing Documents</h2>
+
+    <p>Documents are created and edited in the <ref
+    file="admin.xml">Administration Application</ref> by choosing the
+    "<strong>Add</strong>" or "<strong>Edit</strong>" buttons
+    respectively. Both eventually lead to the same document editing
+    form, except for minor differences. In the figure below the
+    document being edited has the same properties as in figure 2 in
+    the previous section.</p>
+
+    <figure>
+      <caption>Editing a document. The document properties from the
+      section show up as normal fields in the form, in this case the
+      "Title", "Author" and "Text" fields. The editing form also
+      allows attaching files to the document and changing the document
+      name and parent section.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="document-edit.png"
+                  description="Editing a document" />
+        </p>
+      </content>
+    </figure>
+
+    <p>Just as the sections, the document editing forms contain a
+    <strong>Name</strong> field. It identifies the document inside the
+    section and can be used to retrieve the document from web pages.
+    When mapping documents to a web site with a <ref
+    file="terminology.xml" id="translator">Translator</ref>, the
+    document name will be used as a folder name inside the URLs. It is
+    desireable to choose document names that are meaningful and convey
+    information about their content, but they should also be
+    relatively short and written using only the English alphabet and
+    numbers. As a rule of thumb, documents should be named with all
+    lower-case letters.</p>
+
+    <p>Other fields that are always available when editing documents
+    are the parent section, the attached files, and the revision
+    comment. By changing the <strong>Section</strong>, a document can
+    be moved around in the content tree. Doing so may break pages
+    and/or URLs depending on the structure so it should be used with
+    care. The <strong>Files</strong> field allows attaching files to
+    the document, which further described below. Finally, a revision
+    <strong>Comment</strong> must be specified when modifying a
+    document, as for all other objects.</p>
+
+    <p>When editing documents, fields for all the document properties
+    from the parent section are also displayed. These fields are
+    displayed with the title and description from the section, and the
+    actual input control depends on the type of the document property.
+    In the figure above, the controls for plain text and tagged text
+    are shown.</p>
+
+    <h2>Attaching Files &amp; Images</h2>
+
+    <p>Documents can have any number of files or images attached. This
+    makes it possible to embed links and images in the document texts
+    in an easy way. It also means that these resources can be managed
+    together with the document in terms of permissions, location in
+    the content tree, etc.</p>
+
+    <p>The attached files are stored separately from the document but
+    the document editing form contains a simple way to attach new
+    files. The figure below shows the part of the document editing
+    form that allows attaching new files. Note that the file must
+    first be selected (using the "Browse.." button) before the
+    "<strong>Add</strong>" button can be used.</p>
+
+    <figure>
+      <caption>Attaching a file to a document. The previously attached
+      files are shown along with their size and MIME types. To add a
+      new file, it should first be selected with the "Browse..."
+      button and then added with the "Add" button.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="document-attach.png"
+                  description="Attaching a file to a document" />
+        </p>
+      </content>
+    </figure>
+
+    <p>Attached files are seen in the content view under the document,
+    as if it was a folder containing the files. When using a <ref
+    file="terminology.xml" id="translator">Translator</ref> the files
+    are present in the virtual document folder, making it possible to
+    link to them using their names directly without any path. See the
+    figure below for an example of how attached files can look in the
+    content tree.</p>
+
+    <figure>
+      <caption>Attached files in the content tree. The files are
+      attached to a document, showing the document as the parent
+      object to the files.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="document-tree.png"
+                  description="Attached files in the content tree" />
+        </p>
+      </content>
+    </figure>
+
+  </body>
+</doc>
