@@ -311,7 +311,8 @@ class SecurityManager {
         } else if (access == WRITE && user != null) {
             return user.isSuperUser()
                 || user.equals(obj)
-                || hasAccess(user, obj.getDomain(), ADMIN);
+                || (obj.getDomain() != null && 
+                    hasAccess(user, obj.getDomain(), ADMIN));
         } else {
             return false;
         }

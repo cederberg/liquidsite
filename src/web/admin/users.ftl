@@ -27,7 +27,9 @@
           <th>
             Domain:<br/>
             <select name="domain" onchange="refresh()">
+<#if liquidsite.user.superuser>
               <option>&lt;None&gt;</option>
+</#if>
 <#list domains as item>
   <#if domain = item>
               <option selected="selected">${item}</option>
