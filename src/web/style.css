@@ -491,7 +491,7 @@ a.modified:link,
 a.modified:active,
 a.modified:visited {
         font-weight: bold;
-        color: green;
+        color: rgb(0, 180, 0);
 }
 .inherited {
         background: rgb(235, 235, 235);
