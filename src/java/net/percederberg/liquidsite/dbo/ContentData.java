@@ -42,7 +42,7 @@ public class ContentData extends AbstractData implements Comparable {
      * The id parameter.
      */
     public static final Parameter ID = 
-        new IntegerParameter(ContentData.class, "ID", 0);
+        new IntegerParameter(ContentData.class, "ID", -1);
 
     /**
      * The revision parameter.
