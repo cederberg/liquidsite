@@ -17,13 +17,13 @@
     }
 
     function doSave() {
-        utilGetElement("publish").value = "false";
-        return false;
+        utilGetElement("action").value = "save";
+        return true;
     }
 
     function doPublish() {
-        utilGetElement("publish").value = "true";
-        return false;
+        utilGetElement("action").value = "publish";
+        return true;
     }
     </script>
 
@@ -34,10 +34,10 @@
       <input type="hidden" name="liquidsite.step" value="1" />
 </#if>
       <input type="hidden" name="liquidsite.prev" value="" />
+      <input type="hidden" name="action" value="save" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="category" value="document" />
-      <input type="hidden" name="publish" value="false" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">

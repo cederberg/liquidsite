@@ -276,6 +276,11 @@ public class ContentEditFormHandler extends AdminFormHandler {
                 section.setDocumentProperty(id, null);
             }
         }
+        if (request.getParameter("action", "").equals("publish")) {
+            section.setRevisionNumber(section.getMaxRevisionNumber() + 1);
+            section.setOnlineDate(new Date());
+            section.setOfflineDate(null);
+        }
         section.save(request.getUser());
     }
 
@@ -295,12 +300,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         Map       params = request.getAllParameters();
         Iterator  iter = params.keySet().iterator();
-        Content[] revisions;
         int       section;
         String    id;
         int       type;
         String    str;
-        int       max;
 
         doc.setRevisionNumber(0);
         doc.setName(request.getParameter("name"));
@@ -336,15 +339,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
                 doc.setProperty(id, null);
             }
         }
-        if (request.getParameter("publish", "").equals("true")) {
-            max = 0;
-            revisions = doc.getAllRevisions();
-            for (int i = 0; i < revisions.length; i++) {
-                if (max < revisions[i].getRevisionNumber()) {
-                    max = revisions[i].getRevisionNumber();
-                }
-            }
-            doc.setRevisionNumber(max + 1);
+        if (request.getParameter("action", "").equals("publish")) {
+            doc.setRevisionNumber(doc.getMaxRevisionNumber() + 1);
             doc.setOnlineDate(new Date());
             doc.setOfflineDate(null);
         }
@@ -386,6 +382,11 @@ public class ContentEditFormHandler extends AdminFormHandler {
                     file.setFileName(name);
                 }
                 file.setTextContent(request.getParameter("content"));
+            }
+            if (request.getParameter("action", "").equals("publish")) {
+                file.setRevisionNumber(file.getMaxRevisionNumber() + 1);
+                file.setOnlineDate(new Date());
+                file.setOfflineDate(null);
             }
             file.save(request.getUser());
         } catch (IOException e) {

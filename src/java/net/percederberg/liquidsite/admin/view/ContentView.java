@@ -153,6 +153,7 @@ public class ContentView extends AdminView {
         int               parentId = 0;
         ArrayList         properties = new ArrayList();
         DocumentProperty  property;
+        boolean           publish;
         HashMap           map;
         int               position;
         Iterator          iter;
@@ -164,6 +165,8 @@ public class ContentView extends AdminView {
             AdminUtils.setReference(request, parent);
             name = "";
             comment = "Created";
+            publish = parent.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(parent);
         } else {
             AdminUtils.setReference(request, section);
             name = section.getName();
@@ -188,6 +191,8 @@ public class ContentView extends AdminView {
                 map.put("description", AdminUtils.getScriptString(str));
                 properties.add(map);
             }
+            publish = section.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(section.getParent());
         }
 
         // Adjust for incoming request
@@ -232,6 +237,7 @@ public class ContentView extends AdminView {
         request.setAttribute("parent", String.valueOf(parentId));
         request.setAttribute("properties", properties);
         request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-section.ftl");
     }
 
@@ -352,6 +358,7 @@ public class ContentView extends AdminView {
         String       name;
         String       content = null;
         String       comment;
+        boolean      publish;
 
         // Find default values
         AdminUtils.setReference(request, reference);
@@ -364,9 +371,13 @@ public class ContentView extends AdminView {
             } else {
                 comment = "";
             }
+            publish = file.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(file.getParent());
         } else {
             name = "";
             comment = "Created";
+            publish = reference.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(reference);
         }
 
         // Adjust for incoming request
@@ -384,6 +395,7 @@ public class ContentView extends AdminView {
             request.setAttribute("content", content);
         }
         request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-file.ftl");
     }
 

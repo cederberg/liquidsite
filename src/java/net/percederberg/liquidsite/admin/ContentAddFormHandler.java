@@ -220,6 +220,10 @@ public class ContentAddFormHandler extends AdminFormHandler {
                 section.setDocumentProperty(id, property);
             }
         }
+        if (request.getParameter("action", "").equals("publish")) {
+            section.setRevisionNumber(1);
+            section.setOnlineDate(new Date());
+        }
         section.save(request.getUser());
         AdminView.CONTENT.setContentTreeFocus(request, section);
     }
@@ -267,7 +271,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
                 doc.setProperty(id, str);
             }
         }
-        if (request.getParameter("publish", "").equals("true")) {
+        if (request.getParameter("action", "").equals("publish")) {
             doc.setRevisionNumber(1);
             doc.setOnlineDate(new Date());
         }
@@ -298,6 +302,10 @@ public class ContentAddFormHandler extends AdminFormHandler {
             file = new ContentFile(manager, parent, param.getName());
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
+            if (request.getParameter("action", "").equals("publish")) {
+                file.setRevisionNumber(1);
+                file.setOnlineDate(new Date());
+            }
             file.save(request.getUser());
             param.write(file.getFile());
             AdminView.CONTENT.setContentTreeFocus(request, file);
