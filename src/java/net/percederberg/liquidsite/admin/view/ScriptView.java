@@ -373,6 +373,11 @@ public class ScriptView {
             buffer.append("');\n");
         }
         if (user.isSuperUser()) {
+            if (view.equals("site")) {
+                buffer.append("objectAddEditButton('edit-site.html");
+                buffer.append(getLinkParameters(domain));
+                buffer.append("');\n");
+            }
             buffer.append("objectAddDeleteButton('delete.html");
             buffer.append(getLinkParameters(domain));
             buffer.append("');\n");

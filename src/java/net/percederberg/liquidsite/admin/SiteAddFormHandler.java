@@ -82,7 +82,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         if (step == 1) {
             AdminView.SITE.viewAddObject(request, parent);
         } else if (category.equals("domain")) {
-            AdminView.SITE.viewAddDomain(request, parent);
+            AdminView.SITE.viewEditDomain(request, parent, null);
         } else if (category.equals("site")) {
             AdminView.SITE.viewEditSite(request, parent);
         } else if (category.equals("folder")) {
@@ -204,13 +204,25 @@ class SiteAddFormHandler extends AdminFormHandler {
         ContentManager  manager = AdminUtils.getContentManager();
         Domain          domain;
         Host            host;
+        Iterator        iter;
+        String          param;
+        String          str;
 
         domain = new Domain(manager, request.getParameter("name"));
         domain.setDescription(request.getParameter("description"));
         domain.save(request.getUser());
-        host = new Host(manager, domain, request.getParameter("host"));
-        host.setDescription("Default domain host");
-        host.save(request.getUser());
+        iter = request.getAllParameters().keySet().iterator();
+        while (iter.hasNext()) {
+            param = iter.next().toString();
+            if (param.startsWith("host.") && param.endsWith(".name")) {
+                param = param.substring(0, param.length() - 5);
+                str = request.getParameter(param + ".name");
+                host = new Host(manager, domain, str);
+                str = request.getParameter(param + ".description");
+                host.setDescription(str);
+                host.save(request.getUser());
+            }
+        }
         AdminView.SITE.setSiteTreeFocus(request, domain);
     }
 

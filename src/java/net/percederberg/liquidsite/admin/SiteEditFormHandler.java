@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -30,11 +31,14 @@ import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.ContentTranslator;
+import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.FormValidator;
 import net.percederberg.liquidsite.web.Request;
@@ -133,9 +137,12 @@ class SiteEditFormHandler extends AdminFormHandler {
         domain.addCharacterConstraint("name", domainChars, error);
         error = "No description specified";
         domain.addRequiredConstraint("description", error);
-        domain.addRequiredConstraint("host", "No host name specified");
         error = "Host name must be lower-case, invalid character";
-        domain.addCharacterConstraint("host", hostChars, error);
+        domain.addCharacterConstraint("host.0.name", hostChars, error);
+        domain.addCharacterConstraint("host.1.name", hostChars, error);
+        domain.addCharacterConstraint("host.2.name", hostChars, error);
+        domain.addCharacterConstraint("host.3.name", hostChars, error);
+        domain.addCharacterConstraint("host.4.name", hostChars, error);
 
         // Add and edit site validator
         site.addRequiredConstraint("name", "No site name specified");
@@ -204,7 +211,9 @@ class SiteEditFormHandler extends AdminFormHandler {
 
         Object  ref = AdminUtils.getReference(request);
 
-        if (ref instanceof ContentSite) {
+        if (ref instanceof Domain) {
+            AdminView.SITE.viewEditDomain(request, null, (Domain) ref);
+        } else if (ref instanceof ContentSite) {
             AdminView.SITE.viewEditSite(request, (ContentSite) ref);
         } else if (ref instanceof ContentFolder) {
             AdminView.SITE.viewEditFolder(request,
@@ -246,6 +255,12 @@ class SiteEditFormHandler extends AdminFormHandler {
 
         if (category.equals("domain")) {
             domain.validate(request);
+            if (!request.getParameter("name").equals("ROOT")
+             && request.getParameter("host.0.name", "").length() <= 0) {
+
+                message = "No host name specified";
+                throw new FormValidationException("host.0.name", message);
+            }
         } else if (category.equals("site")) {
             site.validate(request);
         } else if (category.equals("folder")) {
@@ -291,7 +306,9 @@ class SiteEditFormHandler extends AdminFormHandler {
 
         Object  ref = AdminUtils.getReference(request);
 
-        if (ref instanceof ContentSite) {
+        if (ref instanceof Domain) {
+            handleEditDomain(request, (Domain) ref);
+        } else if (ref instanceof ContentSite) {
             handleEditSite(request, (ContentSite) ref);
         } else if (ref instanceof ContentFolder) {
             handleEditFolder(request, (ContentFolder) ref);
@@ -307,6 +324,58 @@ class SiteEditFormHandler extends AdminFormHandler {
             throw new ContentException("cannot edit this object");
         }
         return 0;
+    }
+
+    /**
+     * Handles the edit domain form.
+     *
+     * @param request        the request object
+     * @param domain         the domain object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleEditDomain(Request request, Domain domain)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        Host[]          hosts;
+        Host            host;
+        HashMap         unprocessed = new HashMap();
+        Iterator        iter;
+        String          param;
+        String          str;
+
+        domain.setDescription(request.getParameter("description"));
+        domain.save(request.getUser());
+        hosts = domain.getHosts();
+        for (int i = 0; i < hosts.length; i++) {
+            unprocessed.put(hosts[i].getName(), hosts[i]);
+        }
+        iter = request.getAllParameters().keySet().iterator();
+        while (iter.hasNext()) {
+            param = iter.next().toString();
+            if (param.startsWith("host.") && param.endsWith(".name")) {
+                param = param.substring(0, param.length() - 5);
+                str = request.getParameter(param + ".name");
+                host = (Host) unprocessed.get(str);
+                if (host == null) {
+                    host = new Host(manager, domain, str);
+                } else {
+                    unprocessed.remove(str);
+                }
+                str = request.getParameter(param + ".description");
+                host.setDescription(str);
+                host.save(request.getUser());
+            }
+        }
+        iter = unprocessed.values().iterator();
+        while (iter.hasNext()) {
+            host = (Host) iter.next();
+            host.delete(request.getUser());
+        }
     }
 
     /**

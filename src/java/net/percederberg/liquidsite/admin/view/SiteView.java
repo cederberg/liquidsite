@@ -156,18 +156,74 @@ public class SiteView extends AdminView {
     }
 
     /**
-     * Shows the add domain page.
+     * Shows the add or edit domain page.
      *
      * @param request        the request object
-     * @param parent         the "parent" object, used on cancel
+     * @param parent         the parent object for adding
+     * @param domain         the domain object for editing
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void viewAddDomain(Request request, PersistentObject parent) {
-        AdminUtils.setReference(request, parent);
-        request.setAttribute("name", request.getParameter("name", ""));
-        request.setAttribute("description",
-                             request.getParameter("description", ""));
-        request.setAttribute("host", request.getParameter("host", ""));
-        request.sendTemplate("admin/add-domain.ftl");
+    public void viewEditDomain(Request request,
+                               PersistentObject parent,
+                               Domain domain)
+        throws ContentException {
+
+        String     name;
+        String     description;
+        ArrayList  hosts = new ArrayList();
+        Host[]     hostArray;
+        Iterator   iter;
+        HashMap    map;
+        String     param;
+        String     value;
+
+        // Find default values
+        if (parent == null) {
+            AdminUtils.setReference(request, domain);
+            name = domain.getName();
+            description = domain.getDescription();
+            hostArray = domain.getHosts();
+            for (int i = 0; i < hostArray.length; i++) {
+                map = new HashMap(2);
+                value = hostArray[i].getName();
+                map.put("name", AdminUtils.getScriptString(value));
+                value = hostArray[i].getDescription();
+                map.put("description", AdminUtils.getScriptString(value));
+                hosts.add(map);
+            }
+        } else {
+            AdminUtils.setReference(request, parent);
+            name = "";
+            description = "";
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            description = request.getParameter("description", "");
+            hosts.clear();
+            iter = request.getAllParameters().keySet().iterator();
+            while (iter.hasNext()) {
+                param = iter.next().toString();
+                if (param.startsWith("host.") && param.endsWith(".name")) {
+                    param = param.substring(0, param.length() - 5);
+                    map = new HashMap(2);
+                    value = request.getParameter(param + ".name");
+                    map.put("name", AdminUtils.getScriptString(value));
+                    value = request.getParameter(param + ".description");
+                    map.put("description", AdminUtils.getScriptString(value));
+                    hosts.add(map);
+                }
+            }
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("description", description);
+        request.setAttribute("hosts", hosts);
+        request.sendTemplate("admin/edit-domain.ftl");
     }
 
     /**
