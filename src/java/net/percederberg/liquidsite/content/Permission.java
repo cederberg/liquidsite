@@ -524,7 +524,11 @@ public class Permission extends PersistentObject {
     protected void doInsert(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        // TODO: check admin permissions on content object
+        if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        } else if (!getDomain().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        }
         validate();
         try {
             PermissionPeer.doInsert(data, con);
@@ -548,7 +552,11 @@ public class Permission extends PersistentObject {
     protected void doUpdate(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        // TODO: check admin permissions on content object
+        if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        } else if (!getDomain().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        }
         validate();
         try {
             PermissionPeer.doUpdate(data, con);
@@ -572,7 +580,11 @@ public class Permission extends PersistentObject {
     protected void doDelete(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        // TODO: check admin permissions on content object
+        if (getContentId() > 0 && !getContent().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
+        } else if (!getDomain().hasAdminAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
+        }
         try {
             PermissionPeer.doDelete(data, con);
         } catch (DatabaseObjectException e) {

@@ -73,6 +73,18 @@ public class ContentSecurityException extends Exception {
      * @param op             the operation name
      * @param obj            the object accessed
      */
+    public ContentSecurityException(User user, String op, Permission obj) {
+        super(user.getName() + " cannot " + op + 
+              " content permission for " +  obj.getContentId());
+    }
+
+    /**
+     * Creates a new content security exception.
+     * 
+     * @param user           the user attempting the operation
+     * @param op             the operation name
+     * @param obj            the object accessed
+     */
     public ContentSecurityException(User user, String op, Lock obj) {
         super(user.getName() + " cannot " + op + 
               " content lock for " +  obj.getContentId());

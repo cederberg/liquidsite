@@ -664,10 +664,7 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Checks the read access for a user. If no content permissions 
-     * are set for this object, the parent permissions will be 
-     * checked instead. In the absence of a content parent, the 
-     * domain permissions will be checked. 
+     * Checks the read access for a user. 
      *
      * @param user           the user to check, or null for none
      * 
@@ -677,39 +674,12 @@ public abstract class Content extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean hasReadAccess(User user) 
-        throws ContentException {
-
-        Permission[]  perms = getPermissions();
-        Group[]       groups = null;
-        
-        // Check for superuser or inherited permissions
-        if (user != null && user.isSuperUser()) {
-            return true;
-        } else if (perms.length == 0 && getParentId() <= 0) {
-            return getDomain().hasReadAccess(user);
-        } else if (perms.length == 0) {
-            return getParent().hasReadAccess(user); 
-        }
-
-        // Check content permissions
-        if (user != null) {
-            groups = user.getGroups();
-        }
-        for (int i = 0; i < perms.length; i++) {
-            if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
-                return true;
-            }
-        }
-
-        return false;
+    public boolean hasReadAccess(User user) throws ContentException {
+        return getSecurityManager().canRead(user, this);
     }
 
     /**
-     * Checks the write access for a user. If no content permissions 
-     * are set for this object, the parent permissions will be 
-     * checked instead. In the absence of a content parent, the 
-     * domain permissions will be checked.
+     * Checks the write access for a user.
      *
      * @param user           the user to check, or null for none
      * 
@@ -719,32 +689,38 @@ public abstract class Content extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean hasWriteAccess(User user) 
-        throws ContentException {
+    public boolean hasWriteAccess(User user) throws ContentException {
+        return getSecurityManager().canWrite(user, this);
+    }
 
-        Permission[]  perms = getPermissions();
-        Group[]       groups = null;
-        
-        // Check for superuser or inherited permissions
-        if (user != null && user.isSuperUser()) {
-            return true;
-        } else if (perms.length == 0 && getParentId() <= 0) {
-            return getDomain().hasReadAccess(user);
-        } else if (perms.length == 0) {
-            return getParent().hasReadAccess(user); 
-        }
+    /**
+     * Checks the publish access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has publish access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasPublishAccess(User user) throws ContentException {
+        return getSecurityManager().canPublish(user, this);
+    }
 
-        // Check content permissions
-        if (user != null) {
-            groups = user.getGroups();
-        }
-        for (int i = 0; i < perms.length; i++) {
-            if (perms[i].isMatch(user, groups) && perms[i].getWrite()) {
-                return true;
-            }
-        }
-
-        return false;
+    /**
+     * Checks the admin access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has admin access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasAdminAccess(User user) throws ContentException {
+        return getSecurityManager().canAdmin(user, this);
     }
 
     /**
@@ -778,9 +754,11 @@ public abstract class Content extends PersistentObject {
     protected void doInsert(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        // TODO: check publish access when writing revision > 0
         if (!hasWriteAccess(user)) {
             throw new ContentSecurityException(user, "write", this);
+        }
+        if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
+            throw new ContentSecurityException(user, "publish", this);
         }
         validate();
         data.setString(ContentData.AUTHOR, user.getName());
@@ -808,9 +786,11 @@ public abstract class Content extends PersistentObject {
     protected void doUpdate(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        // TODO: check publish access when writing revision > 0
         if (!hasWriteAccess(user)) {
             throw new ContentSecurityException(user, "write", this);
+        }
+        if (getRevisionNumber() > 0 && !hasPublishAccess(user)) {
+            throw new ContentSecurityException(user, "publish", this);
         }
         validate();
         data.setString(ContentData.AUTHOR, user.getName());
@@ -838,8 +818,7 @@ public abstract class Content extends PersistentObject {
     protected void doDelete(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
-        // TODO: check publish access instead of write access
-        if (!hasWriteAccess(user)) {
+        if (!hasPublishAccess(user)) {
             throw new ContentSecurityException(user, "delete", this);
         }
         try {

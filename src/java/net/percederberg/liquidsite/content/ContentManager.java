@@ -55,6 +55,12 @@ public class ContentManager {
     private Application app;
 
     /**
+     * The content security manager.
+     */
+    private ContentSecurityManager securityManager = 
+        new ContentSecurityManager();
+
+    /**
      * The domain cache. This is a map of all domains known to the 
      * content manager. The domains are indexed by their names.
      */
@@ -126,6 +132,15 @@ public class ContentManager {
      */
     public Application getApplication() {
         return app; 
+    }
+
+    /**
+     * Returns the content security manager.
+     * 
+     * @return the content security manager
+     */
+    public ContentSecurityManager getSecurityManager() {
+        return securityManager;
     }
 
     /**

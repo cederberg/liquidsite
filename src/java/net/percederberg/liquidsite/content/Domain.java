@@ -258,8 +258,7 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Checks the read access for a user. In the absence of 
-     * permissions, false is returned.
+     * Checks the read access for a user.
      *
      * @param user           the user to check, or null for none
      * 
@@ -270,32 +269,11 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasReadAccess(User user) throws ContentException {
-        Permission[]  perms = getPermissions();
-        Group[]       groups = null;
-        
-        // Check for superuser and empty permission list
-        if (user != null && user.isSuperUser()) {
-            return true;
-        } else if (perms.length == 0) {
-            return false; 
-        }
-
-        // Check content permissions
-        if (user != null) {
-            groups = user.getGroups();
-        }
-        for (int i = 0; i < perms.length; i++) {
-            if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
-                return true;
-            }
-        }
-
-        return false;
+        return getSecurityManager().canRead(user, this);
     }
 
     /**
-     * Checks the write access for a user. In the absence of 
-     * permissions, false is returned.
+     * Checks the write access for a user.
      *
      * @param user           the user to check, or null for none
      * 
@@ -306,27 +284,37 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public boolean hasWriteAccess(User user) throws ContentException {
-        Permission[]  perms = getPermissions();
-        Group[]       groups = null;
-        
-        // Check for superuser and empty permission list
-        if (user != null && user.isSuperUser()) {
-            return true;
-        } else if (perms.length == 0) {
-            return false; 
-        }
+        return getSecurityManager().canWrite(user, this);
+    }
 
-        // Check content permissions
-        if (user != null) {
-            groups = user.getGroups();
-        }
-        for (int i = 0; i < perms.length; i++) {
-            if (perms[i].isMatch(user, groups) && perms[i].getWrite()) {
-                return true;
-            }
-        }
+    /**
+     * Checks the publish access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has publish access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasPublishAccess(User user) throws ContentException {
+        return getSecurityManager().canPublish(user, this);
+    }
 
-        return false;
+    /**
+     * Checks the admin access for a user.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has admin access, or
+     *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public boolean hasAdminAccess(User user) throws ContentException {
+        return getSecurityManager().canAdmin(user, this);
     }
 
     /**
