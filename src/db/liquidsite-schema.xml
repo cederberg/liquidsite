@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE database SYSTEM
+    "http://jakarta.apache.org/turbine/dtd/database_3_1.dtd">
+
+<database name="liquidsite" 
+          defaultIdMethod="idbroker">
+
+  <table name="CONFIGURATION" 
+         idMethod="none" 
+         description="Configuration Table">
+    <column name="NAME"
+            required="true"
+            primaryKey="true"
+            type="VARCHAR"
+            size="255"
+            description="Configuration parameter name"/>
+    <column name="VALUE"
+            required="true"
+            type="VARCHAR"
+            size="255"
+            description="Configuration parameter value"/>
+  </table>
+
+</database>

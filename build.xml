@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  build.xml
+
+  This work is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published
+  by the Free Software Foundation; either version 2 of the License,
+  or (at your option) any later version.
+
+  This work is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software 
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+  USA
+
+  Copyright (c) 2003 Per Cederberg. All rights reserved.
+-->
+
+<project name="liquidsite" default="package" basedir=".">
+
+
+<!-- INITIALIZATION -->
+  <property name="build.dir"
+            value="${basedir}" />
+
+  <path id="project.class.path">
+    <pathelement location="${build.dir}/lib/servlet.jar" />
+  </path>
+
+  <target name="init">
+    <tstamp>
+      <format property="build.printdate" 
+              pattern="yyyy-MM-dd" />
+    </tstamp>
+    <condition property="build.version" value="${DSTAMP}">
+      <not>
+        <isset property="build.version" />
+      </not>
+    </condition>
+    <property name="build.date" value="${DSTAMP}" />
+  </target>  
+
+
+<!-- COMPILATION TARGETS -->
+  <target name="compile" 
+          depends="init,compile-clean,compile-java">
+    <jar jarfile="${build.dir}/lib/liquidsite-${build.version}.jar"
+         includesfile="${build.dir}/LICENSE.txt">
+      <fileset dir="${build.dir}" includes="*.txt" />
+      <fileset dir="${build.dir}/classes" />
+    </jar>
+    <war destfile="${build.dir}/liquidsite.war"
+         webxml="${build.dir}/src/metainf/web.xml"
+         basedir="${build.dir}/src/jsp">
+      <webinf dir="${build.dir}/src/metainf"
+              excludes="web.xml" />
+      <lib dir="${build.dir}/lib">
+        <include name="liquidsite*.jar" />
+      </lib>
+    </war>
+  </target>
+
+  <target name="compile-clean">
+    <delete>
+      <fileset dir="${build.dir}/classes" />
+      <fileset dir="${build.dir}/lib" 
+               includes="liquidsite*.jar" />
+      <fileset dir="${build.dir}" 
+               includes="liquidsite.war" />
+    </delete>
+    <mkdir dir="${build.dir}/classes" />
+    <mkdir dir="${build.dir}/lib" />
+  </target>
+
+  <target name="compile-java">
+    <javac srcdir="${build.dir}/src/java"
+           destdir="${build.dir}/classes"
+           classpathref="project.class.path"
+           target="1.1"
+           debug="on"
+           deprecation="on" />
+  </target>
+
+
+<!-- TEST TARGETS -->
+  <target name="test" depends="compile">
+  </target>
+
+
+<!-- DOCUMENTATION TARGETS -->
+  <target name="doc" depends="init,doc-clean,doc-java">
+  </target>
+
+  <target name="doc-clean">
+    <delete dir="${build.dir}/doc" />
+    <mkdir dir="${build.dir}/doc" />
+    <mkdir dir="${build.dir}/doc/api/java" />
+  </target>
+
+  <target name="doc-text">
+    <xslt style="${build.dir}/src/doc/txt.xsl"
+          basedir="${build.dir}/src/doc/release"
+          destdir="${build.dir}/doc"
+          extension=".txt"
+          includes="*.xml">
+      <param name="version" expression="${build.version}" />
+      <param name="date" expression="${build.printdate}" />
+    </xslt>
+  </target>
+
+  <target name="doc-html">
+    <copy file="${build.dir}/src/doc/style.css"
+          todir="${build.dir}/doc" />
+    <xslt style="${build.dir}/src/doc/html.xsl"
+          basedir="${build.dir}/src/doc/release"
+          destdir="${build.dir}/doc"
+          extension=".html"
+          includes="*.xml">
+      <param name="version" expression="${build.version}" />
+      <param name="date" expression="${build.printdate}" />
+      <param name="style" expression="style.css" />
+    </xslt>
+  </target>
+
+  <target name="doc-java">
+    <javadoc packagenames="net.percederberg.liquidsite.*"
+             sourcepath="${build.dir}/src/java"
+             destdir="${build.dir}/doc/api/java"
+             classpath="${build.dir}/classes"
+             classpathref="project.class.path"
+             version="false"
+             use="true"
+             author="false"
+             windowtitle="Liquid Site ${build.version} Documentation" 
+             failonerror="true" />
+  </target>
+
+
+<!-- PACKAGING TARGETS -->
+  <target name="package" depends="init,compile,test,doc">
+    <delete>
+      <fileset dir="${build.dir}" includes="liquidsite-*.tar.gz" />
+    </delete>
+    <tar tarfile="${build.dir}/liquidsite-${build.version}.tar.gz"
+         longfile="gnu"
+         compression="gzip">
+      <tarfileset dir="${build.dir}"
+                  prefix="liquidsite-${build.version}">
+        <include name="*.txt" />
+        <include name="*.xml" />
+        <include name="*.war" />
+        <include name="lib/**" />
+        <include name="src/**" />
+        <include name="doc/**" />
+      </tarfileset>
+    </tar>
+  </target>
+
+</project>
