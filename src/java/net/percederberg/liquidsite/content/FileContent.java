@@ -53,6 +53,7 @@ public class FileContent extends Content {
         throws ContentException {
 
         super(parent.getDomain(), Content.FILE_CATEGORY);
+        setParent(parent);
         setAttribute(FILE_NAME_ATTRIBUTE, name);
     }
 
@@ -155,7 +156,6 @@ public class FileContent extends Content {
     private File getDirectory() throws ContentException {
         Configuration  config;
         String         basedir;
-        String         filedir;
         File           dir;
         
         config = getContentManager().getApplication().getConfig();
@@ -168,8 +168,8 @@ public class FileContent extends Content {
             throw new ContentException(
                 "content file hasn't got a valid content id");
         }
-        filedir = getDomainName() + "/" + getId();
-        dir = new File(basedir, filedir);
+        dir = new File(new File(basedir, getDomainName()), 
+                       String.valueOf(getId()));
         try {
             if (!dir.exists() && !dir.mkdirs()) {
                 throw new ContentException(
