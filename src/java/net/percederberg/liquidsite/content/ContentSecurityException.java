@@ -31,6 +31,11 @@ package net.percederberg.liquidsite.content;
 public class ContentSecurityException extends Exception {
 
     /**
+     * The user the security error covers.
+     */
+    private User user = null;
+
+    /**
      * Creates a new content security exception.
      * 
      * @param message        the error message
@@ -47,8 +52,8 @@ public class ContentSecurityException extends Exception {
      * @param obj            the object accessed
      */
     public ContentSecurityException(User user, String op, Domain obj) {
-        super(user.getName() + " cannot " + op + " domain " + 
-              obj.getName());
+        super("cannot " + op + " domain " + obj.getName());
+        this.user = user;
     }
 
     /**
@@ -59,7 +64,20 @@ public class ContentSecurityException extends Exception {
      * @param obj            the object accessed
      */
     public ContentSecurityException(User user, String op, Content obj) {
-        super(user.getName() + " cannot " + op + " content " + 
-              obj.getId());
+        super("cannot " + op + " content " + obj.getId());
+        this.user = user;
+    }
+
+    /**
+     * Returns the detailed error message.
+     * 
+     * @return the detailed error message
+     */
+    public String getMessage() {
+        if (user == null) {
+            return "<anonymous> " + super.getMessage();
+        } else {
+            return user.getName() + " " + super.getMessage();
+        }
     }
 }
