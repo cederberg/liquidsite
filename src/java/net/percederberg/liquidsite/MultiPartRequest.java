@@ -115,7 +115,7 @@ public class MultiPartRequest extends Request {
             if (item.isFormField()) {
                 parameters.put(item.getFieldName(), item.getString());
             } else {
-                files.put(item.getFieldName(), new FileParameter(item));
+                files.put(item.getFieldName(), new MultiPartFile(item));
             }
         }
     }
@@ -157,7 +157,7 @@ public class MultiPartRequest extends Request {
 
         super.dispose();
         while (iter.hasNext()) {
-            ((FileParameter) iter.next()).dispose();
+            ((MultiPartFile) iter.next()).dispose();
         }
         parameters.clear();
         files.clear();
@@ -172,7 +172,7 @@ public class MultiPartRequest extends Request {
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
      */
-    public class FileParameter { 
+    private class MultiPartFile implements FileParameter { 
 
         /**
          * The file item.
@@ -184,14 +184,14 @@ public class MultiPartRequest extends Request {
          * 
          * @param item           the file item
          */
-        FileParameter(FileItem item) {
+        MultiPartFile(FileItem item) {
             this.item = item;
         }
 
         /**
-         * Returns the base file name including the extension. This 
-         * method will remove any file path attached to the name, 
-         * however.
+         * Returns the base file name including the extension. The
+         * file name returned is guaranteed to not contain any file
+         * path or directory name.
          * 
          * @return the base file name (with extension)
          */
@@ -208,22 +208,6 @@ public class MultiPartRequest extends Request {
         }
         
         /**
-         * Returns the file name extension.
-         * 
-         * @return the file name extension, or
-         *         null if the name doesn't have an extension 
-         */
-        public String getExtension() {
-            String  name = getName();
-            
-            if (name.lastIndexOf(".") >= 0) {
-                return name.substring(name.lastIndexOf(".") + 1);
-            } else {
-                return null;
-            }
-        }
-
-        /**
          * Returns the file size.
          * 
          * @return the file size
@@ -234,8 +218,8 @@ public class MultiPartRequest extends Request {
         
         /**
          * Writes this file to the specified destination file. After
-         * calling this method, the file parameter should no longer
-         * be used.
+         * calling this method, only the dispose() method can be
+         * called.
          * 
          * @param dest           the destination file
          * 

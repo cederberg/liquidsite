@@ -28,9 +28,8 @@ import java.text.SimpleDateFormat;
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.MultiPartRequest;
-import net.percederberg.liquidsite.MultiPartRequest.FileParameter;
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -344,21 +343,14 @@ public class AdminController extends Controller {
     private void processAddFile(Request request, Object parent) 
         throws ContentException, ContentSecurityException {
 
-        MultiPartRequest  multi;
-        FileParameter     param;
-        User              user = request.getUser();
-        Content           content;
-        FileContent       file;
+        User           user = request.getUser();
+        FileParameter  param;
+        Content        content;
+        FileContent    file;
         
         try {
             validator.validateFile(request);
-            if (request instanceof MultiPartRequest) {
-                multi = (MultiPartRequest) request;
-            } else {
-                throw new FormException("content", 
-                                        "No file content specified");
-            }
-            param = multi.getFileParameter("content");
+            param = request.getFileParameter("content");
             if (param == null || param.getSize() <= 0) {
                 throw new FormException("content", 
                                         "No file content specified");

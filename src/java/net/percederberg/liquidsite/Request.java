@@ -338,6 +338,22 @@ public class Request {
     }
     
     /**
+     * Returns the specified file request parameter. The default 
+     * request container doesn't support file parameters, and will
+     * return null on each call. Other request containers may 
+     * override this method, however, if they are able to handle 
+     * incoming files.
+     * 
+     * @param name           the request parameter name
+     *
+     * @return the request file parameter, or
+     *         null if no such file parameter was found
+     */
+    public FileParameter getFileParameter(String name) {
+        return null;
+    }
+
+    /**
      * Returns the value of a session attribute. This method will not
      * create a new session if one didn't already exist.
      * 
@@ -580,5 +596,43 @@ public class Request {
     private void commitRedirect() throws IOException {
         LOG.debug("Redirecting request for " + this + " to " + responseData);
         response.sendRedirect(responseData);
+    }
+
+
+    /**
+     * A request file parameter.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    public interface FileParameter { 
+
+        /**
+         * Returns the base file name including the extension. The
+         * file name returned is guaranteed to not contain any file
+         * path or directory name.
+         * 
+         * @return the base file name (with extension)
+         */
+        String getName();
+
+        /**
+         * Returns the file size.
+         * 
+         * @return the file size
+         */
+        long getSize();
+        
+        /**
+         * Writes this file to the specified destination file. After
+         * calling this method, no other methods in this interface
+         * should be called.
+         * 
+         * @param dest           the destination file
+         * 
+         * @throws IOException if the file parameter couldn't be 
+         *             written to the specified file
+         */
+        void write(File dest) throws IOException;
     }
 }
