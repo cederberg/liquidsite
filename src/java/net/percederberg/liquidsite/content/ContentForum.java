@@ -33,9 +33,9 @@ import net.percederberg.liquidsite.dbo.ContentData;
 public class ContentForum extends Content {
 
     /**
-     * The title content attribute.
+     * The real name content attribute.
      */
-    private static final String TITLE_ATTRIBUTE = "TITLE";
+    private static final String REAL_NAME_ATTRIBUTE = "REALNAME";
 
     /**
      * The description content attribute.
@@ -56,7 +56,7 @@ public class ContentForum extends Content {
 
         super(manager, parent.getDomain(), Content.FORUM_CATEGORY);
         setParent(parent);
-        setAttribute(TITLE_ATTRIBUTE, "");
+        setAttribute(REAL_NAME_ATTRIBUTE, "");
         setAttribute(DESCRIPTION_ATTRIBUTE, "");
     }
 
@@ -79,21 +79,21 @@ public class ContentForum extends Content {
     }
 
     /**
-     * Returns the forum title.
+     * Returns the real forum name.
      *
-     * @return the forum title
+     * @return the real forum name
      */
-    public String getTitle() {
-        return getAttribute(TITLE_ATTRIBUTE);
+    public String getRealName() {
+        return getAttribute(REAL_NAME_ATTRIBUTE);
     }
 
     /**
-     * Sets the forum title.
+     * Sets the real forum name.
      *
-     * @param title          the new forum title
+     * @param name           the new forum name
      */
-    public void setTitle(String title) {
-        setAttribute(TITLE_ATTRIBUTE, title);
+    public void setRealName(String name) {
+        setAttribute(REAL_NAME_ATTRIBUTE, name);
     }
 
     /**
@@ -125,8 +125,8 @@ public class ContentForum extends Content {
         super.doValidate();
         if (getParent() == null) {
             throw new ContentException("no parent set for forum");
-        } else if (getTitle().equals("")) {
-            throw new ContentException("no title set for forum");
+        } else if (getRealName().equals("")) {
+            throw new ContentException("no real name set for forum");
         }
         children = InternalContent.findByParent(getContentManager(),
                                                 getParent());

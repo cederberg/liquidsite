@@ -5,7 +5,7 @@
     <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
     function initialize() {
-        utilGetElement("name").focus();
+        utilGetElement("title").focus();
         utilSessionKeepAlive();
     }
 
@@ -26,9 +26,6 @@
     </script>
 
     <form method="post" accept-charset="UTF-8">
-<#if startpage?has_content>
-      <input type="hidden" name="liquidsite.startpage" value="${startpage}" />
-</#if>
 <#if isadd>
       <input type="hidden" name="liquidsite.step" value="2" />
 <#else>
@@ -38,7 +35,7 @@
       <input type="hidden" name="action" value="save" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
-      <input type="hidden" name="category" value="forum" />
+      <input type="hidden" name="category" value="topic" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">
@@ -50,13 +47,13 @@
           </td>
           <td colspan="2">
 <#if isadd>
-            <h2>Enter Forum Details (Step 2 of 2)</h2>
+            <h2>Enter Topic Details (Step 2 of 2)</h2>
 
-            <p>Enter the details of the forum you wish to add.</p>
+            <p>Enter the details of the topic you wish to add.</p>
 <#else>
-            <h2>Enter Forum Details (Step 1 of 1)</h2>
+            <h2>Enter Topic Details (Step 1 of 1)</h2>
 
-            <p>Edit the details of the forum.</p>
+            <p>Edit the details of the topic.</p>
 </#if>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
@@ -65,57 +62,60 @@
         </tr>
         <tr>
           <th>
-            Name:
+            Subject:
           </th>
           <td class="field">
-            <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
-            <p>The forum name is used to identify the forum as part of
-            a URL. The name may only contain English alphabet
-            characters or numbers without any spaces.</p>
+            <input type="text" tabindex="1" size="60"
+                   name="subject" value="${subject}" />
+            <p>The topic subject is normally the same as the subject
+            of the first post.</p>
           </td>
         </tr>
-<#if !isadd>
+<#if isadd>
         <tr>
           <th>
-            Parent&nbsp;Section:
+            Post:
           </th>
           <td class="field">
-            <select tabindex="2" name="section">
-  <#list sections as item>
-    <#if section == item.id>
+            <textarea tabindex="2" rows="20" cols="60"
+                      name="post">${post?xml}</textarea>
+            <p>The text of the first post to add to the topic.</p>
+          </td>
+        </tr>
+<#else>
+        <tr>
+          <th>
+            Parent&nbsp;Forum:
+          </th>
+          <td class="field">
+            <select tabindex="3" name="forum">
+  <#list forums as item>
+    <#if forum == item.id>
               <option value="${item.id}" selected="selected">${item.name?xml}</option>
     <#else>
               <option value="${item.id}">${item.name?xml}</option>
     </#if>
   </#list>
             </select>
-            <p>The parent section controls the location of this
-            forum in the content tree.</p>
+            <p>The parent forum controls the location of this topic in
+            the content tree.</p>
           </td>
         </tr>
 </#if>
         <tr>
           <th>
-            Real Name:
+            Locked:
           </th>
           <td class="field">
-            <input type="text" tabindex="3" size="30"
-                   name="realname" value="${realname}" />
-            <p>The real forum nane is the full name of the forum,
-            complete with correct casing, spacing and similar. It can
-            be used to present the forum in lists of several forums.</p>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Description:
-          </th>
-          <td class="field">
-            <textarea tabindex="4" rows="6" cols="60"
-                      name="description">${description?xml}</textarea>
-            <p>The forum description contains a longer text describing
-            the topics discussed in the forum.</p>
+<#if locked = "true">
+            <input type="checkbox" tabindex="4" checked="checked"
+                   name="locked" value="true" />
+<#else>
+            <input type="checkbox" tabindex="4"
+                   name="locked" value="true" />
+</#if>
+            <p>The topic locked flag. If this flag is set it may not
+            be possible for ordinary users to post to this topic.</p>
           </td>
         </tr>
         <tr>

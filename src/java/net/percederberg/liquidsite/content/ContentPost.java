@@ -182,8 +182,11 @@ public class ContentPost extends Content {
     protected void doValidate() throws ContentException {
         Content  parent;
 
-        super.doValidate();
         parent = getParent();
+        if (getName().equals("")) {
+            setName(createName(parent));
+        }
+        super.doValidate();
         if (parent == null) {
             throw new ContentException("no parent set for post");
         } else if (parent.getCategory() != Content.TOPIC_CATEGORY) {
@@ -205,14 +208,8 @@ public class ContentPost extends Content {
 
         ContentTopic  parent;
 
-        parent = (ContentTopic) getParent();
-        if (getName().equals("")) {
-            setName(createName(parent));
-        }
-        if (getName().equals("1")) {
-            parent.setTitle(getSubject());
-        }
         super.doInsert(user, con);
+        parent = (ContentTopic) getParent();
         parent.doUpdate(user, con);
     }
 
@@ -227,7 +224,7 @@ public class ContentPost extends Content {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String createName(ContentTopic parent)
+    private String createName(Content parent)
         throws ContentException {
 
         ContentSelector  selector;

@@ -28,8 +28,10 @@ import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
+import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.ContentTranslator;
@@ -392,6 +394,44 @@ public class AdminView {
                 findSections(user, baseName, children[i], exclude, result);
             }
         }
+    }
+
+    /**
+     * Finds all content forums in a domain. The forums will not
+     * be added directly to the result list, but rather a simplified
+     * hash map containing only the id and name of each forum will
+     * be added.
+     *
+     * @param user           the user
+     * @param domain         the domain
+     *
+     * @return the list of sections found (in maps)
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected ArrayList findForums(User user, Domain domain)
+        throws ContentException {
+
+        ContentManager   manager = AdminUtils.getContentManager();
+        ContentSelector  selector;
+        Content[]        forums;
+        ContentForum     forum;
+        HashMap          values;
+        ArrayList        result = new ArrayList();
+
+        selector = new ContentSelector(domain);
+        selector.requireCategory(Content.FORUM_CATEGORY);
+        selector.sortByName(true);
+        forums = manager.getContentObjects(user, selector);
+        for (int i = 0; i < forums.length; i++) {
+            forum = (ContentForum) forums[i];
+            values = new HashMap(2);
+            values.put("id", String.valueOf(forum.getId()));
+            values.put("name", forum.getRealName());
+            result.add(values);
+        }
+        return result;
     }
 
     /**

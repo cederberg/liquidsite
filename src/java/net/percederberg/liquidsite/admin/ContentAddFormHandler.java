@@ -33,8 +33,10 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.PersistentObject;
@@ -87,6 +89,10 @@ public class ContentAddFormHandler extends AdminFormHandler {
             AdminView.CONTENT.viewEditFile(request, (Content) parent);
         } else if (category.equals("forum")) {
             AdminView.CONTENT.viewEditForum(request, (Content) parent);
+        } else if (category.equals("topic")) {
+            AdminView.CONTENT.viewEditTopic(request, (Content) parent);
+        } else if (category.equals("post")) {
+            AdminView.CONTENT.viewEditPost(request, (Content) parent);
         } else {
             AdminView.CONTENT.viewAddObject(request, parent);
         }
@@ -125,6 +131,11 @@ public class ContentAddFormHandler extends AdminFormHandler {
                 if (param == null || param.getSize() <= 0) {
                     message = "No file upload specified";
                     throw new FormValidationException("upload", message);
+                }
+            } else if (category.equals("topic")) {
+                if (request.getParameter("post", "").length() <= 0) {
+                    message = "No first post message specified";
+                    throw new FormValidationException("post", message);
                 }
             }
         }
@@ -175,6 +186,10 @@ public class ContentAddFormHandler extends AdminFormHandler {
             handleAddFile(request, (ContentDocument) parent);
         } else if (category.equals("forum")) {
             handleAddForum(request, (ContentSection) parent);
+        } else if (category.equals("topic")) {
+            handleAddTopic(request, (ContentForum) parent);
+        } else if (category.equals("post")) {
+            handleAddPost(request, (ContentTopic) parent);
         }
         return 0;
     }
@@ -349,7 +364,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
 
         forum = new ContentForum(manager, parent);
         forum.setName(request.getParameter("name"));
-        forum.setTitle(request.getParameter("title"));
+        forum.setRealName(request.getParameter("realname"));
         forum.setDescription(request.getParameter("description"));
         forum.setComment(request.getParameter("comment"));
         if (request.getParameter("action", "").equals("publish")) {
@@ -358,6 +373,76 @@ public class ContentAddFormHandler extends AdminFormHandler {
         }
         forum.save(request.getUser());
         AdminView.CONTENT.setContentTreeFocus(request, forum);
+    }
+
+    /**
+     * Handles the add topic form.
+     *
+     * @param request        the request object
+     * @param parent         the parent forum object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleAddTopic(Request request, ContentForum parent)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ContentTopic    topic;
+        ContentPost     post;
+
+        topic = new ContentTopic(manager, parent);
+        topic.setSubject(request.getParameter("subject"));
+        topic.setLocked(request.getParameter("locked", "").equals("true"));
+        topic.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            topic.setRevisionNumber(1);
+            topic.setOnlineDate(new Date());
+        }
+        topic.save(request.getUser());
+        post = new ContentPost(manager, topic);
+        post.setSubject(topic.getSubject());
+        post.setTextType(ContentPost.PLAIN_TEXT_TYPE);
+        post.setText(request.getParameter("post"));
+        post.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            post.setRevisionNumber(1);
+            post.setOnlineDate(new Date());
+        }
+        post.save(request.getUser());
+        AdminView.CONTENT.setContentTreeFocus(request, topic);
+    }
+
+    /**
+     * Handles the add post form.
+     *
+     * @param request        the request object
+     * @param parent         the parent topic object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleAddPost(Request request, ContentTopic parent)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ContentPost     post;
+
+        post = new ContentPost(manager, parent);
+        post.setSubject(request.getParameter("subject"));
+        post.setTextType(ContentPost.PLAIN_TEXT_TYPE);
+        post.setText(request.getParameter("text"));
+        post.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            post.setRevisionNumber(1);
+            post.setOnlineDate(new Date());
+        }
+        post.save(request.getUser());
+        AdminView.CONTENT.setContentTreeFocus(request, post);
     }
 
     /**

@@ -33,9 +33,9 @@ import net.percederberg.liquidsite.dbo.ContentData;
 public class ContentTopic extends Content {
 
     /**
-     * The title content attribute.
+     * The subject content attribute.
      */
-    private static final String TITLE_ATTRIBUTE = "TITLE";
+    private static final String SUBJECT_ATTRIBUTE = "SUBJECT";
 
     /**
      * The locked content attribute.
@@ -56,7 +56,7 @@ public class ContentTopic extends Content {
 
         super(manager, parent.getDomain(), Content.TOPIC_CATEGORY);
         setParent(parent);
-        setAttribute(TITLE_ATTRIBUTE, "");
+        setAttribute(SUBJECT_ATTRIBUTE, "");
         setAttribute(LOCKED_ATTRIBUTE, "0");
     }
 
@@ -96,21 +96,21 @@ public class ContentTopic extends Content {
     }
 
     /**
-     * Returns the topic title.
+     * Returns the topic subject.
      *
-     * @return the topic title
+     * @return the topic subject
      */
-    public String getTitle() {
-        return getAttribute(TITLE_ATTRIBUTE);
+    public String getSubject() {
+        return getAttribute(SUBJECT_ATTRIBUTE);
     }
 
     /**
-     * Sets the topic title.
+     * Sets the topic subject.
      *
-     * @param title          the new topic title
+     * @param subject        the new topic subject
      */
-    public void setTitle(String title) {
-        setAttribute(TITLE_ATTRIBUTE, title);
+    public void setSubject(String subject) {
+        setAttribute(SUBJECT_ATTRIBUTE, subject);
     }
 
     /**
@@ -144,33 +144,18 @@ public class ContentTopic extends Content {
     protected void doValidate() throws ContentException {
         Content  parent;
 
+        if (getName().equals("")) {
+            setName(createName());
+        }
         super.doValidate();
         parent = getParent();
         if (parent == null) {
             throw new ContentException("no parent set for topic");
         } else if (parent.getCategory() != Content.FORUM_CATEGORY) {
             throw new ContentException("topic parent must be forum");
-        } else if (getTitle().equals("")) {
+        } else if (getSubject().equals("")) {
             throw new ContentException("no topic title set");
         }
-    }
-
-    /**
-     * Inserts the object data into the database.
-     *
-     * @param user           the user performing the operation
-     * @param con            the database connection to use
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    protected void doInsert(User user, DatabaseConnection con)
-        throws ContentException {
-
-        if (getName().equals("")) {
-            setName(createName());
-        }
-        super.doInsert(user, con);
     }
 
     /**

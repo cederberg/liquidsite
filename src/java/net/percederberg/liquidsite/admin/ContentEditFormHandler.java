@@ -34,8 +34,10 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.web.FormHandlingException;
 import net.percederberg.liquidsite.web.FormValidationException;
@@ -72,6 +74,16 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * The forum form validator.
      */
     private FormValidator forum = new FormValidator();
+
+    /**
+     * The topic form validator.
+     */
+    private FormValidator topic = new FormValidator();
+
+    /**
+     * The post form validator.
+     */
+    private FormValidator post = new FormValidator();
 
     /**
      * Returns an instance of this class. If a prior instance has
@@ -125,11 +137,23 @@ public class ContentEditFormHandler extends AdminFormHandler {
         forum.addRequiredConstraint("name", "No forum name specified");
         error = "Forum name contains invalid character";
         forum.addCharacterConstraint("name", nameChars, error);
-        forum.addRequiredConstraint("title", "No forum title specified");
+        forum.addRequiredConstraint("realname",
+                                    "No real forum name specified");
         forum.addRequiredConstraint("description",
                                     "No forum description specified");
         error = "No revision comment specified";
         forum.addRequiredConstraint("comment", error);
+
+        // Add and edit topic validator
+        topic.addRequiredConstraint("subject", "No topic subject specified");
+        error = "No revision comment specified";
+        topic.addRequiredConstraint("comment", error);
+
+        // Add and edit post validator
+        post.addRequiredConstraint("subject", "No post subject specified");
+        post.addRequiredConstraint("text", "No post text specified");
+        error = "No revision comment specified";
+        post.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -160,6 +184,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
             AdminView.CONTENT.viewEditFile(request, (ContentFile) ref);
         } else if (ref instanceof ContentForum) {
             AdminView.CONTENT.viewEditForum(request, (ContentForum) ref);
+        } else if (ref instanceof ContentTopic) {
+            AdminView.CONTENT.viewEditTopic(request, (ContentTopic) ref);
+        } else if (ref instanceof ContentPost) {
+            AdminView.CONTENT.viewEditPost(request, (ContentPost) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -205,6 +233,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
             SiteEditFormHandler.getInstance().validateStep(request, step);
         } else if (category.equals("forum")) {
             forum.validate(request);
+        } else if (category.equals("topic")) {
+            topic.validate(request);
+        } else if (category.equals("post")) {
+            post.validate(request);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
@@ -251,6 +283,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
             handleEditFile(request, (ContentFile) ref);
         } else if (ref instanceof ContentForum) {
             handleEditForum(request, (ContentForum) ref);
+        } else if (ref instanceof ContentTopic) {
+            handleEditTopic(request, (ContentTopic) ref);
+        } else if (ref instanceof ContentPost) {
+            handleEditPost(request, (ContentPost) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -458,7 +494,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         forum.setRevisionNumber(0);
         forum.setName(request.getParameter("name"));
-        forum.setTitle(request.getParameter("title"));
+        forum.setRealName(request.getParameter("realname"));
         forum.setDescription(request.getParameter("description"));
         forum.setComment(request.getParameter("comment"));
         try {
@@ -473,6 +509,67 @@ public class ContentEditFormHandler extends AdminFormHandler {
             forum.setOfflineDate(null);
         }
         forum.save(request.getUser());
+    }
+
+    /**
+     * Handles the edit topic form.
+     *
+     * @param request        the request object
+     * @param topic          the topic content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleEditTopic(Request request, ContentTopic topic)
+        throws ContentException, ContentSecurityException {
+
+        int  forum;
+
+        topic.setRevisionNumber(0);
+        topic.setSubject(request.getParameter("subject"));
+        topic.setLocked(request.getParameter("action", "").equals("true"));
+        topic.setComment(request.getParameter("comment"));
+        try {
+            forum = Integer.parseInt(request.getParameter("forum"));
+            topic.setParentId(forum);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
+        if (request.getParameter("action", "").equals("publish")) {
+            topic.setRevisionNumber(topic.getMaxRevisionNumber() + 1);
+            topic.setOnlineDate(new Date());
+            topic.setOfflineDate(null);
+        }
+        topic.save(request.getUser());
+    }
+
+    /**
+     * Handles the edit post form.
+     *
+     * @param request        the request object
+     * @param post           the post content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleEditPost(Request request, ContentPost post)
+        throws ContentException, ContentSecurityException {
+
+        post.setRevisionNumber(0);
+        post.setSubject(request.getParameter("subject"));
+        post.setTextType(ContentPost.PLAIN_TEXT_TYPE);
+        post.setText(request.getParameter("text"));
+        post.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            post.setRevisionNumber(post.getMaxRevisionNumber() + 1);
+            post.setOnlineDate(new Date());
+            post.setOfflineDate(null);
+        }
+        post.save(request.getUser());
     }
 
     /**
