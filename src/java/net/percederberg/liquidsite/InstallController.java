@@ -713,6 +713,9 @@ public class InstallController extends Controller {
         config.set(Configuration.DATABASE_PASSWORD, databasePassword);
         config.set(Configuration.DATABASE_POOL_SIZE, 10);
         config.set(Configuration.FILE_DIRECTORY, dataDir);
+        config.set(Configuration.UPLOAD_DIRECTORY, 
+                   getApplication().getBaseDir() + "tmp");
+        config.set(Configuration.UPLOAD_MAX_SIZE, 1000000);
         config.write(con);
     }
 
