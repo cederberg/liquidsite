@@ -106,16 +106,19 @@ public class DefaultController extends Controller {
         }
 
         // Find and validate user
-        path = path.substring(site.getDirectory().length());
         if (request.getParameter("liquidsite.login") != null) {
-            processLogin(request, site, path);
+            processLogin(request, site);
             if (request.hasResponse()) {
                 return;
             }
+        } else if (request.getParameter("liquidsite.logout") != null) {
+            processLogout(request);
+            return;
         }
         user = request.getUser();
 
         // Find page and create response
+        path = path.substring(site.getDirectory().length());
         try {
             if (site.isAdmin()) {
                 access = site.hasReadAccess(user);
@@ -198,11 +201,10 @@ public class DefaultController extends Controller {
      *
      * @param request        the request object
      * @param site           the site
-     * @param path           the request path
      * 
      * @throws RequestException if the request couldn't be processed
      */
-    private void processLogin(Request request, ContentSite site, String path)
+    private void processLogin(Request request, ContentSite site)
         throws RequestException {
 
         String  name = request.getParameter("liquidsite.login");
@@ -227,6 +229,18 @@ public class DefaultController extends Controller {
             request.setUser(null);
             request.setAttribute("error", "Invalid user name or password");
         }
+    }
+
+    /**
+     * Processes a logout request. This will set the request user to
+     * null, which invalidates the user session. The request will be
+     * redirected to the requested page.
+     *
+     * @param request        the request object
+     */
+    private void processLogout(Request request) {
+        request.setUser(null);
+        request.sendRedirect(request.getPath());
     }
 
     /**
