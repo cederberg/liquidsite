@@ -1,7 +1,7 @@
 <#assign onload = "document.getElementsByName('liquidsite.login').item(0).focus()">
 <#include "header.ftl">
 
-    <form method="post">
+    <form method="post" accept-charset="UTF-8">
       <table class="form">
         <tr>
           <td class="decoration" rowspan="4">

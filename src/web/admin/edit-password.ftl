@@ -12,7 +12,7 @@
     }
     </script>
 
-    <form method="post">
+    <form method="post" accept-charset="UTF-8">
       <input type="hidden" name="editpassword" value="true" />
       <input type="hidden" name="step" value="1" />
       <input type="hidden" name="prev" value="" />

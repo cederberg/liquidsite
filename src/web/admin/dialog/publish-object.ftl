@@ -8,7 +8,7 @@
     }
     </script>
 
-    <form method="post">
+    <form method="post" accept-charset="UTF-8">
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <table class="dialog">

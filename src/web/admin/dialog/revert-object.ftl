@@ -1,7 +1,7 @@
 <#assign title>Delete ${type?cap_first} Revision</#assign>
 <#include "header.ftl">
 
-    <form method="post">
+    <form method="post" accept-charset="UTF-8">
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="confirmed" value="true" />

@@ -13,7 +13,7 @@
     }
     </script>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" accept-charset="UTF-8">
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="step" value="2" />

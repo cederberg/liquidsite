@@ -1,7 +1,7 @@
 <#assign title = "Error">
 <#include "header.ftl">
 
-    <form method="post">
+    <form method="post" accept-charset="UTF-8">
       <table class="dialog">
         <tr>
           <td class="decoration" rowspan="4">

@@ -1,6 +1,6 @@
 <#include "header.ftl">
 
-    <form method="post" action="edit-home.html">
+    <form method="post" action="edit-home.html" accept-charset="UTF-8">
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">

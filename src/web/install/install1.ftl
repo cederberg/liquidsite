@@ -6,7 +6,7 @@
     }
     </script>
 
-    <form method="post" action="install.html">
+    <form method="post" action="install.html" accept-charset="UTF-8">
       <input type="hidden" name="step" value="1" />
       <table class="form">
         <tr>
