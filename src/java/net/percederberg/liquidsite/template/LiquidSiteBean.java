@@ -278,10 +278,12 @@ public class LiquidSiteBean {
      * documents in subsections will also be returned.
      *
      * @param path           the section path
+     * @param offset         the number of documents to skip
+     * @param count          the maximum number of documents
      *
      * @return a list of the documents found (as document beans)
      */
-    public ArrayList findDocuments(String path) {
+    public ArrayList findDocuments(String path, int offset, int count) {
         ArrayList       result = new ArrayList();
         Domain          domain;
         ContentSection  section;
@@ -295,6 +297,14 @@ public class LiquidSiteBean {
                 LOG.error("failed to find section: " + path);
             } else {
                 findDocuments(findSections(section), result);
+                // TODO: implement offset and count in SQL
+                while (offset > 0 && result.size() > 0) {
+                    result.remove(0);
+                    offset--;
+                }
+                while (result.size() > count) {
+                    result.remove(result.size() - 1);
+                }
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
