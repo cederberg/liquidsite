@@ -61,7 +61,7 @@ public class HomeView {
         request.setAttribute("name", str);
         str = request.getParameter("email", user.getEmail());
         request.setAttribute("email", str);
-        request.sendTemplate("admin/edit-user.ftl");
+        request.sendTemplate("admin/edit-account.ftl");
     }
 
     /**
