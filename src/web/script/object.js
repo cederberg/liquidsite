@@ -238,38 +238,26 @@ function objectAddUnlockButton(url) {
  * @param user                the revision creator user name
  * @param comment             the revision comment
  * @param viewurl             the URL to view the revision (or null)
- * @param removeurl           the URL to remove the revision (or null)
  */
-function objectAddRevision(revision, date, user, comment, viewurl, removeurl) {
+function objectAddRevision(revision, date, user, comment, viewurl) {
     var tbody = objectInternalGetRevisionTable();
     var tr = document.createElement("tr");
-    var a1 = document.createElement("a");
-    var a2 = null;
+    var a = document.createElement("a");
     var img;
 
     if (viewurl != null) {
-        a1.href = viewurl;
+        a.href = viewurl;
     }
     if (revision == 0) {
-        a1.className = "modified";
-        a1.appendChild(document.createTextNode("Work"));
+        a.className = "modified";
+        a.appendChild(document.createTextNode("Work"));
     } else {
-        a1.appendChild(document.createTextNode(revision));
+        a.appendChild(document.createTextNode(revision));
     }
-    if (removeurl != null) {
-        a2 = document.createElement("a");
-        a2.href = "javascript:objectInternalOpenDialog('" + removeurl +
-                  "',550,300)";
-        img = document.createElement("img");
-        img.src = OBJECT_SMALL_ICON_PATH + "delete.png";
-        img.alt = "Delete Revision";
-        a2.appendChild(img);
-    }
-    objectInternalAddElement(tr, "td", a1);
+    objectInternalAddElement(tr, "td", a);
     objectInternalAddElement(tr, "td", date);
     objectInternalAddElement(tr, "td", user);
     objectInternalAddElement(tr, "td", comment);
-    objectInternalAddElement(tr, "td", a2);
     tbody.appendChild(tr);
 }
 
@@ -438,7 +426,6 @@ function objectInternalGetRevisionTable() {
         objectInternalAddElement(tr, "th", "Date");
         objectInternalAddElement(tr, "th", "User");
         objectInternalAddElement(tr, "th", "Comment");
-        objectInternalAddElement(tr, "th", "");
     }
     return tbody;
 }

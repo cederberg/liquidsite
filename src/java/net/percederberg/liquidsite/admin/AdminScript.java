@@ -354,7 +354,7 @@ class AdminScript {
         buffer.append(getString(revision.getAuthorName()));
         buffer.append(", ");
         buffer.append(getString(revision.getComment()));
-        buffer.append(", null, null);\n");
+        buffer.append(", null);\n");
         return buffer.toString();
     }
 
