@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.liquidsite.app.admin.view.AdminView;
+import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentFile;
@@ -277,20 +278,34 @@ public class ContentEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException,
                FormValidationException {
 
-        RequestSession   session = request.getSession();
-        FileParameter    param;
-        String           message;
+        ContentManager  manager = AdminUtils.getContentManager();
+        RequestSession  session = request.getSession();
+        FileParameter   param;
+        String          name;
+        Content         content;
+        String          message;
 
         param = request.getFileParameter("upload");
         if (param == null || param.getSize() <= 0) {
             message = "No file to add specified";
             throw new FormValidationException("upload", message);
-        } else if (session.getFile(param.getName()) != null) {
-            message = "Another file named '" + param.getName() +
-                      "' already exists";
+        }
+        name = convertFileName(param.getName());
+        if (session.getFile(name) != null) {
+            message = "Another file named '" + name + "' already exists";
             throw new FormValidationException("upload", message);
         }
-        // TODO: validate name for parent conflicts
+        content = (Content) AdminUtils.getReference(request);
+        if (content instanceof ContentDocument) {
+            content = manager.getContentChild(request.getUser(),
+                                              content,
+                                              name);
+            if (content != null) {
+                message = "Another file named '" + name +
+                          "' already exists";
+                throw new FormValidationException("upload", message);
+            }
+        }
     }
 
     /**
@@ -508,7 +523,6 @@ public class ContentEditFormHandler extends AdminFormHandler {
             file.setRevisionNumber(0);
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
-
             param = request.getFileParameter("upload");
             if (param != null && param.getSize() > 0) {
                 file.setFileName(param.getName());
@@ -645,25 +659,13 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         FileParameter   param;
         String          name;
-        StringBuffer    buffer = new StringBuffer();
         File            file;
-        char            c;
 
         try {
             param = request.getFileParameter("upload");
-            name = param.getName();
+            name = convertFileName(param.getName());
             file = param.write();
-            for (int i = 0; i < name.length(); i++) {
-                c = name.charAt(i);
-                if (c == ' ') {
-                    buffer.append("_");
-                } else if (CONTENT_CHARS.indexOf(c) >= 0) {
-                    buffer.append(c);
-                } else {
-                    buffer.append("-");
-                }
-            }
-            request.getSession().addFile(buffer.toString(), file);
+            request.getSession().addFile(name, file);
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
@@ -738,5 +740,31 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         super.workflowExited(request);
         request.getSession().removeAllFiles();
+    }
+
+    /**
+     * Converts a file name to a valid file name. All space
+     * characters and non-ASCII letters will be converted to '_' or
+     * '-'.
+     *
+     * @param name           the file name to convert
+     *
+     * @return the converted file name
+     */
+    private String convertFileName(String name) {
+        StringBuffer  buffer = new StringBuffer();
+        char          c;
+
+        for (int i = 0; i < name.length(); i++) {
+            c = name.charAt(i);
+            if (c == ' ') {
+                buffer.append("_");
+            } else if (CONTENT_CHARS.indexOf(c) >= 0) {
+                buffer.append(c);
+            } else {
+                buffer.append("-");
+            }
+        }
+        return buffer.toString();
     }
 }
