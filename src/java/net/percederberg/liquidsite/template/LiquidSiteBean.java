@@ -43,6 +43,11 @@ public class LiquidSiteBean {
     private RequestBean requestBean = null;
 
     /**
+     * The user session bean.
+     */
+    private SessionBean sessionBean = null;
+
+    /**
      * The section bean.
      */
     private SectionBean sectionBean = null;
@@ -99,6 +104,18 @@ public class LiquidSiteBean {
             requestBean = new RequestBean(context);
         }
         return requestBean;
+    }
+
+    /**
+     * Returns the user session bean.
+     *
+     * @return the user session bean
+     */
+    public SessionBean getSession() {
+        if (sessionBean == null) {
+            sessionBean = new SessionBean(context);
+        }
+        return sessionBean;
     }
 
     /**
