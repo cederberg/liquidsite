@@ -390,6 +390,11 @@ public class ScriptView {
             buffer.append(getLinkParameters(domain));
             buffer.append("');\n");
         }
+        if (domain.hasAdminAccess(user)) {
+            buffer.append("objectAddPermissionsButton('permissions.html");
+            buffer.append(getLinkParameters(domain));
+            buffer.append("');\n");
+        }
         return buffer.toString();
     }
 
@@ -455,6 +460,11 @@ public class ScriptView {
                     buffer.append("');\n");
                 }
                 buffer.append("objectAddDeleteButton('delete.html");
+                buffer.append(getLinkParameters(content));
+                buffer.append("');\n");
+            }
+            if (content.hasAdminAccess(user)) {
+                buffer.append("objectAddPermissionsButton('permissions.html");
                 buffer.append(getLinkParameters(content));
                 buffer.append("');\n");
             }

@@ -243,6 +243,17 @@ function objectAddRevertButton(url) {
 }
 
 /**
+ * Adds a permissions button to the object view.
+ *
+ * @param url                 the URL to visit
+ */
+function objectAddPermissionsButton(url) {
+    var script = "utilOpenDialog('" + url + "',600,500)";
+
+    objectInternalAddButton("Permissions", "permissions.png", script);
+}
+
+/**
  * Adds an unlock button to the object view.
  *
  * @param url                 the URL to visit
