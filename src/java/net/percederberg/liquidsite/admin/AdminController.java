@@ -474,7 +474,9 @@ public class AdminController extends Controller {
         FileParameter  param;
         
         try {
+            checkLock(file, request.getUser(), false);
             validator.validateFile(request);
+            file.setRevisionNumber(0);
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
             param = request.getFileParameter("content");
