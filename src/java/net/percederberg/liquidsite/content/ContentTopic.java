@@ -73,14 +73,19 @@ public class ContentTopic extends Content {
     }
 
     /**
-     * This method does nothing. It has be overridded to prohibit
-     * setting the post object name. The name is set automatically
-     * upon insertion.
+     * Sets the topic name. The topic name must be numeric and
+     * strictly increasing. If no name is set one will be assigned
+     * automatically upon insertion in the database. Topic names
+     * should NEVER be changed.
      *
      * @param name           the new name
      */
     public void setName(String name) {
-        // Do nothing
+        try {
+            super.setName(String.valueOf(Integer.parseInt(name)));
+        } catch (NumberFormatException e) {
+            // Do nothing
+        }
     }
 
     /**
@@ -118,7 +123,7 @@ public class ContentTopic extends Content {
             throw new ContentException("no parent set for topic");
         }
         if (getName().equals("")) {
-            super.setName(createName());
+            setName(createName());
         }
     }
 

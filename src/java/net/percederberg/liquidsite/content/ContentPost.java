@@ -99,14 +99,19 @@ public class ContentPost extends Content {
     }
 
     /**
-     * This method does nothing. It has be overridded to prohibit
-     * setting the post object name. The name is set automatically
-     * upon insertion.
+     * Sets the post name. The post name must be numeric and strictly
+     * increasing. If no name is set one will be assigned
+     * automatically upon insertion in the database. Post names should
+     * NEVER be changed.
      *
      * @param name           the new name
      */
     public void setName(String name) {
-        // Do nothing
+        try {
+            super.setName(String.valueOf(Integer.parseInt(name)));
+        } catch (NumberFormatException e) {
+            // Do nothing
+        }
     }
 
     /**
@@ -176,12 +181,23 @@ public class ContentPost extends Content {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
+        Content  parent;
+
         super.validate();
-        if (getParent() == null) {
-            throw new ContentException("no parent set for forum");
+        parent = getParent();
+        if (parent == null) {
+            throw new ContentException("no parent topic set for post");
+        } else if (parent.getCategory() != Content.TOPIC_CATEGORY) {
+            throw new ContentException("post parent must be topic");
+        }
+        parent = parent.getParent();
+        if (parent == null) {
+            throw new ContentException("no parent forum set for topic");
+        } else if (parent.getCategory() != Content.FORUM_CATEGORY) {
+            throw new ContentException("topic parent must be forum");
         }
         if (getName().equals("")) {
-            super.setName(createName());
+            setName(createName());
         }
     }
 
