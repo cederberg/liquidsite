@@ -95,6 +95,24 @@ public class DatabaseResults {
     }
     
     /**
+     * Returns the column position, starting from zero (0).
+     * 
+     * @param name           the column name
+     * 
+     * @return the column position, or
+     *         -1 if the column name wasn't recognized
+     */
+    public int getColumnPosition(String name) {
+        Integer  pos = (Integer) columnName.get(name);
+        
+        if (pos == null) {
+            return -1;
+        } else {
+            return pos.intValue();
+        }
+    }
+    
+    /**
      * Returns the number of rows in the result.
      * 
      * @return the number of rows in the result
@@ -140,7 +158,7 @@ public class DatabaseResults {
         /**
          * Creates a new empty row.
          */
-        private Row() {
+        Row() {
         }
 
         /**
@@ -148,7 +166,7 @@ public class DatabaseResults {
          * 
          * @param elem       the element to add
          */
-        private void add(Object elem) {
+        void add(Object elem) {
             elements.add(elem); 
         }
 
@@ -193,13 +211,13 @@ public class DatabaseResults {
          *             present in the results
          */
         public Object get(String column) throws DatabaseDataException {
-            Integer  pos = (Integer) columnName.get(column);
+            int  pos = getColumnPosition(column);
             
-            if (pos == null) {
+            if (pos < 0) {
                 throw new DatabaseDataException(
                     "no column named '" + column + "' in results");
             }
-            return elements.get(pos.intValue());
+            return elements.get(pos);
         }
         
         /**
