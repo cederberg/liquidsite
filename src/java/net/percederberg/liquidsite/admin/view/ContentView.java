@@ -340,6 +340,10 @@ public class ContentView extends AdminView {
         request.setAttribute("data", data);
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
+        if (request.getParameter("liquidsite.startpage") != null) {
+            request.setAttribute("startpage", 
+                                 request.getParameter("liquidsite.startpage"));
+        }
         request.sendTemplate("admin/edit-document.ftl");
     }
 

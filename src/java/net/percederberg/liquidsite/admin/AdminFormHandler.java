@@ -48,8 +48,9 @@ abstract class AdminFormHandler extends FormHandler {
     private static final Log LOG = new Log(AdminFormHandler.class);
 
     /**
-     * The start page for the workflow. This is where redirects go
-     * when the workflow is finished.
+     * The default start page for the workflow. This is where
+     * redirects go when the workflow is finished unless another url
+     * is specified in the form.
      */
     private String startPage;
 
@@ -84,8 +85,9 @@ abstract class AdminFormHandler extends FormHandler {
     }
 
     /**
-     * Returns the start page for the workflow. This is where
-     * redirects go when the workflow is finished.
+     * Returns the default start page for the workflow. This is where
+     * redirects go when the workflow is finished, unless a start page
+     * is specified in the form.
      *
      * @return the start page for the workflow
      */
@@ -155,7 +157,10 @@ abstract class AdminFormHandler extends FormHandler {
      * @param request        the request object
      */
     protected void displayDone(Request request) {
-        request.sendRedirect(startPage);
+        String  url;
+
+        url = request.getParameter("liquidsite.startpage", startPage);
+        request.sendRedirect(url);
     }
 
     /**
@@ -167,7 +172,10 @@ abstract class AdminFormHandler extends FormHandler {
      * @param message        the error message
      */
     protected void displayError(Request request, String message) {
-        AdminView.BASE.viewError(request, message, startPage);
+        String  url;
+
+        url = request.getParameter("liquidsite.startpage", startPage);
+        AdminView.BASE.viewError(request, message, url);
     }
 
     /**

@@ -28,6 +28,9 @@
     </script>
 
     <form method="post" accept-charset="UTF-8" onsubmit="htmlEditSubmit()">
+<#if startpage?has_content>
+      <input type="hidden" name="liquidsite.startpage" value="${startpage}" />
+</#if>
 <#if isadd>
       <input type="hidden" name="liquidsite.step" value="2" />
 <#else>
