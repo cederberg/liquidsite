@@ -23,9 +23,9 @@
         </td>
         <td>
   <#if prop.type == 1>
-          Single-line Text
+          Plain Text
   <#elseif prop.type == 2>
-          Multi-line Text
+          Formatted Text (Tags)
   <#else>
           Formatted Text (HTML)
   </#if>

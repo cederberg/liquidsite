@@ -16,10 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
+
+import java.util.ArrayList;
 
 import freemarker.template.SimpleDate;
 import freemarker.template.SimpleNumber;
@@ -115,6 +117,7 @@ public class DocumentBean implements TemplateHashModel {
      */
     public TemplateModel get(String id) {
         String  str;
+        int     type;
 
         if (id.equals("meta")) {
             return metadata;
@@ -129,8 +132,13 @@ public class DocumentBean implements TemplateHashModel {
             }
         } else {
             str = document.getProperty(id);
-            if (document.getPropertyType(id) != DocumentProperty.HTML_TYPE) {
-                str = createHtmlText(str);
+            type = document.getPropertyType(id);
+            if (type == DocumentProperty.TAGGED_TYPE) {
+                str = processTaggedText(str);
+            } else if (type == DocumentProperty.HTML_TYPE) {
+                // Do nothing
+            } else {
+                str = processPlainText(str);
             }
             return new SimpleScalar(str);
         }
@@ -170,15 +178,15 @@ public class DocumentBean implements TemplateHashModel {
     }
 
     /**
-     * Creates an HTML escaped version of a string. This method will
-     * escape any occurencies of special HTML characters while also
-     * inserting HTML linebreaks instead of normal line breaks.
+     * Processes a plain text string. This method will escape any
+     * occurencies of special HTML characters while also inserting
+     * HTML linebreaks instead of normal line breaks.
      *
      * @param str            the string to process
      *
      * @return the HTML encoded string
      */
-    private String createHtmlText(String str) {
+    private String processPlainText(String str) {
         StringBuffer  buffer = new StringBuffer();
         char          c;
         
@@ -199,6 +207,112 @@ public class DocumentBean implements TemplateHashModel {
             }
         }
         return buffer.toString();
+    }
+
+    /**
+     * Processes a tagged text string. This method will insert HTML
+     * paragraph and line breaks, while also adjusting links and other
+     * special tags.
+     *
+     * @param str            the string to process
+     *
+     * @return the HTML encoded string
+     */
+    private String processTaggedText(String str) {
+        ArrayList     paragraphs = new ArrayList();
+        StringBuffer  buffer = new StringBuffer();
+        char          c;
+
+        // Trim and remove carriage return characters
+        for (int i = 0; i < str.length(); i++) {
+            c = str.charAt(i);
+            if (c != '\r') {
+                buffer.append(c);
+            }
+        }
+        str = buffer.toString().trim();
+
+        // Split into paragraphs
+        while (str.indexOf("\n\n") >= 0) {
+            paragraphs.add(str.substring(0, str.indexOf("\n\n")));
+            str = str.substring(str.indexOf("\n\n") + 2);
+        }
+        paragraphs.add(str);
+
+        // Process paragraphs
+        buffer = new StringBuffer();
+        for (int i = 0; i < paragraphs.size(); i++) {
+            buffer.append(processTaggedParagraph((String) paragraphs.get(i)));
+            buffer.append("\n\n");
+        }
+
+        return buffer.toString();
+    }
+
+    /**
+     * Processes a tagged paragraph string. This method will insert
+     * HTML paragraph and line breaks, while also adjusting links and
+     * other special tags.
+     *
+     * @param str            the string to process
+     *
+     * @return the HTML encoded string
+     */
+    private String processTaggedParagraph(String str) {
+        StringBuffer  buffer = new StringBuffer();
+        boolean       isBlock;
+        int           pos;
+
+        isBlock = startsWithBlockTag(str);
+        if (!isBlock) {
+            buffer.append("<p>");
+        }
+        while (str.length() > 0) {
+            pos = str.indexOf("<");
+            if (pos < 0) {
+                buffer.append(str);
+                str = "";
+            } else {
+                buffer.append(str.substring(0, pos));
+                str = str.substring(pos);
+            }
+            pos = str.indexOf(">");
+            if (str.startsWith("<link=")) {
+                buffer.append("<a href=\"");
+                buffer.append(str.substring(6, pos));
+                buffer.append("\">");
+                str = str.substring(pos + 1);
+            } else if (str.startsWith("</link>")) {
+                buffer.append("</a>");
+                str = str.substring(pos + 1);
+            } else if (str.startsWith("<image=")) {
+                buffer.append("<img src=\"");
+                buffer.append(str.substring(7, pos));
+                buffer.append("\" />");
+                str = str.substring(pos + 1);
+            } else if (str.startsWith("<")) {
+                buffer.append(str.substring(0, pos + 1));
+                str = str.substring(pos + 1);
+            }
+        }
+        if (!isBlock) {
+            buffer.append("</p>");
+        }
+
+        return buffer.toString();
+    }
+        
+    /**
+     * Checks if a string starts with an HTML block tag.
+     *
+     * @return true if the string starts with a block tag, or
+     *         false otherwise
+     */
+    private boolean startsWithBlockTag(String str) {
+        return str.startsWith("<p>")
+            || str.startsWith("<h1>")
+            || str.startsWith("<h2>")
+            || str.startsWith("<h3>");
     }
 
 

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -38,11 +38,11 @@ public class DocumentProperty implements Comparable {
     public static final int STRING_TYPE = 1;
 
     /**
-     * The text type constant. The text type represents document
-     * properties that are input using a textarea HTML input field,
-     * i.e. plain text with possible newlines.
+     * The tagged type constant. The tagged type represents document
+     * properties that are input using a textarea HTML input field
+     * and contains special tags for formatting.
      */
-    public static final int TEXT_TYPE = 2;
+    public static final int TAGGED_TYPE = 2;
 
     /**
      * The HTML type constant. The HTML type represents document
@@ -174,7 +174,7 @@ public class DocumentProperty implements Comparable {
      * @return the document property type
      *
      * @see #STRING_TYPE
-     * @see #TEXT_TYPE
+     * @see #TAGGED_TYPE
      * @see #HTML_TYPE
      */
     public int getType() {
@@ -187,7 +187,7 @@ public class DocumentProperty implements Comparable {
      * @param type           the new type
      *
      * @see #STRING_TYPE
-     * @see #TEXT_TYPE
+     * @see #TAGGED_TYPE
      * @see #HTML_TYPE
      */
     public void setType(int type)  {

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -140,7 +140,7 @@ public class ContentDocument extends Content {
      *         STRING_TYPE if not set
      * 
      * @see DocumentProperty#STRING_TYPE
-     * @see DocumentProperty#TEXT_TYPE
+     * @see DocumentProperty#TAGGED_TYPE
      * @see DocumentProperty#HTML_TYPE
      */
     public int getPropertyType(String id) {

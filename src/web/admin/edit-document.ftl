@@ -4,6 +4,7 @@
 
     <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript" src="script/htmledit.js"></script>
+    <script type="text/javascript" src="script/tagedit.js"></script>
     <script type="text/javascript">
     function initialize() {
         utilFocusElement("name");
@@ -92,19 +93,24 @@
           <input type="hidden" 
                  name="propertytype.${prop.id}" value="${prop.type}" />
   <#if prop.type == 1>
-            <input type="text" tabindex="3" size="50"
-                   name="property.${prop.id}" value="${data[prop.id]}" />
-            <p>${prop.description}</p>
+            ${prop.description}<br/><br/>
+            <textarea tabindex="10" rows="6" cols="60"
+                      name="property.${prop.id}">${data[prop.id]?xml}</textarea>
   <#elseif prop.type == 2>
             ${prop.description}<br/><br/>
-            <textarea tabindex="3" rows="6" cols="60"
+            <div id="property.${prop.id}.toolbar"></div>
+            <textarea id="property.${prop.id}.editor"
+                      tabindex="10" rows="25" cols="60"
                       name="property.${prop.id}">${data[prop.id]?xml}</textarea>
+            <script type="text/javascript">
+            tagEditInitialize('property.${prop.id}');
+            </script>
   <#elseif prop.type == 3>
             ${prop.description}<br/><br/>
             <div id="property.${prop.id}.toolbar"></div>
             <div id="property.${prop.id}.editor"></div>
             <script type="text/javascript">
-            htmlEditInitialize('property.${prop.id}', ${data[prop.id]}, 3);
+            htmlEditInitialize('property.${prop.id}', ${data[prop.id]}, 10);
             </script>
   </#if>
           </td>

@@ -229,9 +229,9 @@ function propertyInternalDisplayProperty(position, property) {
     select.name = "property." + property.id + ".type";
     select.onchange = new Function("PROPERTY_VALUES[" + position + 
                                    "].type = this.value");
-	option = utilAddElement(select, "option", "Single-line Text");
+	option = utilAddElement(select, "option", "Plain Text");
 	option.value = 1;
-	option = utilAddElement(select, "option", "Multi-line Text");
+	option = utilAddElement(select, "option", "Formatted Text (Tags)");
 	option.value = 2;
 	if (property.type == 2) {
 	    option.selected = "selected";
