@@ -19,22 +19,28 @@
   <body>
 </#if>
 
-<#if liquidsite.user?has_content>
     <table class="menu">
       <tr>
         <td class="logo" rowspan="2">
           <img src="images/liquidsite.jpeg" alt="Liquid Site" />
         </td>
-        <td clsss="title" colspan="12">
+        <td class="title" colspan="12">
           <h1>Liquid Site Administration</h1>
         </td>
-        <td class="extra">
+        <td class="end" rowspan="2">
           Version&nbsp;${liquidsite.version}<br />
-          ${liquidsite.date}
+          ${liquidsite.date}<br />
+          <br />
+<#if liquidsite.user?has_content>
+          <a href="logout.html">Logout</a>
+<#else>
+          &nbsp;
+</#if>
         </td>
       </tr>
       <tr>
         <td class="space">&nbsp;</td>
+<#if liquidsite.user?has_content>
         <td class="space">&nbsp;</td>
         <td class="active"
             onclick="window.location='home.html'"
@@ -70,34 +76,14 @@
             onmouseout="this.className='inactive'">
           <a href="system.html">System</a>
         </td>
-        <td class="filler">&nbsp;</td>
-        <td class="end"><a href="logout.html">Logout</a></td>
-      </tr>
-    </table>
 <#else>
-    <table class="menu">
-      <tr>
-        <td class="logo" rowspan="2">
-          <img src="images/liquidsite.jpeg" alt="Liquid Site" />
-        </td>
-        <td clsss="title" colspan="4">
-          <h1>Liquid Site Administration</h1>
-        </td>
-        <td class="extra">
-          Version&nbsp;${liquidsite.version}<br />
-          ${liquidsite.date}
-        </td>
-      </tr>
-      <tr>
-        <td class="space">&nbsp;</td>
         <td class="space">&nbsp;</td>
         <td class="active"
             onmouseover="this.className='hoover'"
             onmouseout="this.className='active'">
           <strong>Login</strong>
         </td>
+</#if>
         <td class="filler">&nbsp;</td>
-        <td class="end">&nbsp;</td>
       </tr>
     </table>
-</#if>

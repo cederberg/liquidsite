@@ -200,12 +200,13 @@ table.menu td.title {
         padding-left: 10px;
         padding-right: 10px;
 }
-table.menu td.extra {
+table.menu td.end {
+        border-bottom: 1px solid black;
         padding-left: 10px;
         padding-right: 10px;
         font-size: 10pt;
         text-align: right;
-        vertical-align: top;
+        vertical-align: middle;
 }
 table.menu td.active {
         height: 10pt;
@@ -229,14 +230,6 @@ table.menu td.hoover {
         padding-left: 10px;
         padding-right: 10px;
         background: rgb(250, 248, 246);
-}
-table.menu td.end {
-        border-bottom: 1px solid black;
-        padding-left: 10px;
-        padding-right: 10px;
-        font-size: 10pt;
-        text-align: right;
-        vertical-align: middle;
 }
 table.menu td.space {
         width: 5px;
