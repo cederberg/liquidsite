@@ -34,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
+import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
@@ -417,7 +418,7 @@ public class AdminController extends Controller {
         try {
             content = (Content) view.getRequestReference(request);
             if (request.getParameter("date") == null) {
-                // TODO: acquire lock
+                checkLock(content, request.getUser(), true);
                 view.dialogPublish(request, content);
             } else {
                 processPublishContent(request, content);
@@ -448,9 +449,10 @@ public class AdminController extends Controller {
         String   date = request.getParameter("date");
         String   comment = request.getParameter("comment");
         Content  work = content.getRevision(0);
+        Lock     lock = content.getLock();
 
         try {
-            // TODO: check for acquired lock
+            checkLock(content, request.getUser(), false);
             validator.validatePublish(request);
             if (work != null) {
                 work.setRevisionNumber(content.getRevisionNumber() + 1);
@@ -463,7 +465,7 @@ public class AdminController extends Controller {
             content.setOfflineDate(null);
             content.setComment(comment);
             content.save(request.getUser());
-            // TODO: unlock content
+            lock.delete(request.getUser());
             view.dialogClose(request);
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
@@ -491,7 +493,7 @@ public class AdminController extends Controller {
         try {
             content = (Content) view.getRequestReference(request);
             if (request.getParameter("date") == null) {
-                // TODO: acquire lock
+                checkLock(content, request.getUser(), true);
                 view.dialogUnpublish(request, content);
             } else {
                 processUnpublishContent(request, content);
@@ -521,15 +523,16 @@ public class AdminController extends Controller {
 
         String   date = request.getParameter("date");
         String   comment = request.getParameter("comment");
+        Lock     lock = content.getLock();
 
         try {
-            // TODO: check for acquired lock
+            checkLock(content, request.getUser(), false);
             validator.validatePublish(request);
             content.setRevisionNumber(content.getRevisionNumber() + 1);
             content.setOfflineDate(DATE_FORMAT.parse(date));
             content.setComment(comment);
             content.save(request.getUser());
-            // TODO: unlock content
+            lock.delete(request.getUser());
             view.dialogClose(request);
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
@@ -582,6 +585,37 @@ public class AdminController extends Controller {
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
+        }
+    }
+    
+    /**
+     * Checks or acquires a content lock. This method will verify 
+     * that any existing lock is owned by the correct user.
+     * 
+     * @param content        the content object
+     * @param user           the user owning the lock
+     * @param acquire        the acquire lock flag
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't own and
+     *             couldn't acquire the lock 
+     */
+    private void checkLock(Content content, User user, boolean acquire) 
+        throws ContentException, ContentSecurityException {
+
+        Lock  lock = content.getLock();
+
+        if (lock == null && acquire) {
+            lock = new Lock(content);
+            lock.save(user);
+        } else if (lock == null) {
+            throw new ContentSecurityException(
+                "no lock on object, changes not allowed");
+        } else if (!lock.isOwner(user)) {
+            throw new ContentSecurityException(
+                "object locked by " + lock.getUserName() +
+                " since " + DATE_FORMAT.format(lock.getAcquiredDate()));
         }
     }
 }
