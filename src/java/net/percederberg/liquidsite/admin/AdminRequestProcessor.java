@@ -409,6 +409,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             content = getContentManager().getContent(request.getUser(), id);
             if (content instanceof ContentSite) {
                 processPreview(request, (ContentSite) content, path);
+            } else if (content instanceof ContentTemplate) {
+                processPreview(request, (ContentTemplate) content);
             } else if (content instanceof ContentDocument) {
                 processPreview(request, (ContentDocument) content, path);
             } else if (content instanceof ContentSection) {
@@ -466,6 +468,36 @@ public class AdminRequestProcessor extends RequestProcessor {
         site.setDirectory(dir);
         request.getEnvironment().setSite(site);
         sendContent(request, content);
+    }
+
+    /**
+     * Processes a preview request for a content template.
+     * 
+     * @param request        the request object
+     * @param template       the content template object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void processPreview(Request request, ContentTemplate template)
+        throws RequestException, ContentException {
+
+        Content  content;
+        String   revision;
+
+        content = template;
+        revision = request.getParameter("revision");
+        if (content != null && revision != null) {
+            content = content.getRevision(Integer.parseInt(revision));
+        }
+        if (content instanceof ContentTemplate) {
+            AdminView.SITE.viewTemplatePreview(request,
+                                               (ContentTemplate) content);
+        } else {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        }
     }
 
     /**

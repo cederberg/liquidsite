@@ -544,6 +544,41 @@ public class SiteView extends AdminView {
     }
     
     /**
+     * Shows the template preview page.
+     * 
+     * @param request        the request object
+     * @param template       the template object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewTemplatePreview(Request request,
+                                    ContentTemplate template)
+        throws ContentException {
+
+        HashMap   locals = new HashMap();
+        HashMap   inherited = new HashMap();
+        Iterator  iter;
+        String    name;
+
+        iter = template.getLocalElementNames().iterator();
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            locals.put(name, template.getElement(name));
+        }
+        iter = template.getAllElementNames().iterator();
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (!locals.containsKey(name)) {
+                inherited.put(name, template.getElement(name));
+            }
+        }
+        request.setAttribute("locals", locals);
+        request.setAttribute("inherited", inherited);
+        request.sendTemplate("admin/preview-template.ftl");
+    }
+
+    /**
      * Shows the load site object JavaScript code.
      * 
      * @param request        the request object
