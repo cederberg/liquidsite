@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
@@ -66,9 +67,10 @@ public final class DomainPeer extends Peer {
     public static ArrayList doSelectAll(DatabaseConnection con) 
         throws ContentException {
 
+        DatabaseQuery    query = new DatabaseQuery("domain.select.all");
         DatabaseResults  res;
         
-        res = execute("domain.select.all", null, "reading domains", con);
+        res = execute("reading domains", query, con);
         return PEER.createObjectList(res);
     }
 
@@ -105,11 +107,11 @@ public final class DomainPeer extends Peer {
                                         DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("domain.select.name");
         DatabaseResults  res;
         
-        params.add(name);
-        res = execute("domain.select.name", params, "reading domain", con);
+        query.addParameter(name);
+        res = execute("reading domain", query, con);
         return (Domain) PEER.createObject(res);
     }
 
@@ -139,13 +141,13 @@ public final class DomainPeer extends Peer {
     public static void doInsert(Domain domain, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("domain.insert");
 
         domain.validate();
-        params.add(domain.getName());
-        params.add(domain.getDescription());
-        params.add(domain.getOptions());
-        execute("domain.insert", params, "inserting domain", con);
+        query.addParameter(domain.getName());
+        query.addParameter(domain.getDescription());
+        query.addParameter(domain.getOptions());
+        execute("inserting domain", query, con);
         getContentManager().addDomain(domain);
     }
     
@@ -175,13 +177,13 @@ public final class DomainPeer extends Peer {
     public static void doUpdate(Domain domain, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("domain.update");
 
         domain.validate();
-        params.add(domain.getDescription());
-        params.add(domain.getOptions());
-        params.add(domain.getName());
-        execute("domain.update", params, "updating domain", con);
+        query.addParameter(domain.getDescription());
+        query.addParameter(domain.getOptions());
+        query.addParameter(domain.getName());
+        execute("updating domain", query, con);
         getContentManager().addDomain(domain);
     }
     
@@ -211,10 +213,10 @@ public final class DomainPeer extends Peer {
     public static void doDelete(Domain domain, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("domain.delete");
 
-        params.add(domain.getName());
-        execute("domain.delete", params, "deleting domain", con);
+        query.addParameter(domain.getName());
+        execute("deleting domain", query, con);
         getContentManager().removeDomain(domain);
     }
     

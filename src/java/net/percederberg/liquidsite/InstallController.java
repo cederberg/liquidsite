@@ -679,7 +679,7 @@ public class InstallController extends Controller {
             con = connector.getConnection();
             con.setCatalog(database);
             sqlFile = getFile("WEB-INF/sql/CREATE_LIQUIDSITE_TABLES.sql");
-            con.executeSql(sqlFile);
+            con.execute(sqlFile);
         } finally {
             if (con != null) {
                 connector.returnConnection(con);

@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
@@ -71,41 +72,40 @@ abstract class Peer {
     }
 
     /**
-     * Executes a database function with parameters.
+     * Executes a database query or statement.
      * 
-     * @param name           the database function name
-     * @param params         the database function parameters, or null
-     * @param log            the log message on error
+     * @param log            the log message
+     * @param query          the database query
      * @param con            the database connection to use, or null
      * 
-     * @return the database results
+     * @return the database results for a query, or
+     *         null for database statements
      * 
      * @throws ContentException if the query or statement couldn't 
      *             be executed correctly
      */
-    protected static DatabaseResults execute(String name, 
-                                             ArrayList params,
-                                             String log,
+    protected static DatabaseResults execute(String log,
+                                             DatabaseQuery query, 
                                              DatabaseConnection con)
         throws ContentException {
 
         DatabaseConnector  db = null;
+        DatabaseResults    res;
              
-        if (params == null) {
-            params = new ArrayList(0);
-        }
         if (con == null) {
             db = getContentManager().getApplication().getDatabase();
         }
         try {
+            LOG.debug(log);
             if (db != null) {
-                return db.execute(name, params);
+                res = db.execute(query);
             } else if (con != null) {
-                return con.execute(name, params);
+                res = con.execute(query);
             } else {
                 LOG.error(log + ": no database available");
                 throw new ContentException(log + ": no database available");
             }
+            LOG.debug("done " + log);
         } catch (DatabaseConnectionException e) {
             LOG.error(log, e);
             throw new ContentException(log, e);
@@ -113,6 +113,8 @@ abstract class Peer {
             LOG.error(log, e);
             throw new ContentException(log, e);
         }
+        
+        return res;
     }
 
     /**

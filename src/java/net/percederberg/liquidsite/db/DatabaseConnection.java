@@ -31,7 +31,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
 
@@ -267,108 +266,82 @@ public class DatabaseConnection {
     }
 
     /**
-     * Executes a database function with no parameters. 
+     * Executes a database query or statement. 
      * 
-     * @param name           the database function name
+     * @param query          the database query
      * 
-     * @return the database results
-     * 
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
-     */
-    public DatabaseResults execute(String name)
-        throws DatabaseException {
-
-        return execute(name, new ArrayList(0));
-    }
-
-    /**
-     * Executes a database function with parameters. 
-     * 
-     * @param name           the database function name
-     * @param params         the database function parameters
-     * 
-     * @return the database results
+     * @return the database query results, or
+     *         null for database statements
      * 
      * @throws DatabaseException if the query or statement couldn't 
      *             be executed correctly
      */
-    public DatabaseResults execute(String name, ArrayList params)
+    public DatabaseResults execute(DatabaseQuery query)
         throws DatabaseException {
 
+        DatabaseResults    res = null;
         PreparedStatement  stmt;
-        String             id = "function '" + name + "'";
-        String             sql;
+        ResultSet          set = null;
+        String             message;
         
         // Find SQL
-        sql = db.getFunction(name);
-        if (sql == null) {
-            sql = "no database function '" + name + "' exists";
-            LOG.debug(sql);
-            throw new DatabaseException(sql);
+        if (!query.hasSql() && query.getName() == null) {
+            throw new DatabaseException("attempt to execute empty query");
+        } else if (!query.hasSql()) {
+            query.setSql(db.getFunction(query.getName()));
+            if (!query.hasSql()) {
+                message = "no database function '" + query.getName() + 
+                          "' exists";
+                LOG.debug(message);
+                throw new DatabaseException(message);
+            }
         }
 
         // Prepare SQL
         try {
-            LOG.trace("preparing " + id + "...");
-            stmt = con.prepareStatement(sql,
+            LOG.trace("preparing " + query + "...");
+            stmt = con.prepareStatement(query.getSql(),
                                         ResultSet.TYPE_FORWARD_ONLY,
                                         ResultSet.CONCUR_READ_ONLY,
                                         ResultSet.CLOSE_CURSORS_AT_COMMIT);
             stmt.setQueryTimeout(queryTimeout);
             stmt.clearParameters();
-            for (int i = 0; i < params.size(); i++) {
-                stmt.setObject(i + 1, params.get(i));
+            for (int i = 0; i < query.getParameterCount(); i++) {
+                stmt.setObject(i + 1, query.getParameter(i));
             }
         } catch (SQLException e) {
-            LOG.debug("failed to prepare " + id, e);
-            throw new DatabaseException("couldn't prepare " + id, e);
+            LOG.debug("failed to prepare " + query, e);
+            throw new DatabaseException("couldn't prepare " + query, e);
         }
 
         // Execute SQL
-        if (isQuery(sql)) {
-            return executeQuery(id, stmt);
-        } else {
-            return executeStatement(id, stmt);
-        }
-    }
-
-    /**
-     * Executes an SQL query or statement.
-     * 
-     * @param sql            the SQL query or statement to execute
-     * 
-     * @return the database results
-     * 
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
-     */
-    public DatabaseResults executeSql(String sql) 
-        throws DatabaseException {
-
-        PreparedStatement  stmt;
-        String             id = "SQL '" + sql + "'";
-
-        // Prepare SQL
         try {
-            LOG.trace("preparing " + id + "...");
-            stmt = con.prepareStatement(sql,
-                                        ResultSet.TYPE_FORWARD_ONLY,
-                                        ResultSet.CONCUR_READ_ONLY,
-                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
-            stmt.setQueryTimeout(queryTimeout);
-            stmt.clearParameters();
+            LOG.trace("executing " + query + "...");
+            if (query.hasResults()) {
+                set = stmt.executeQuery();
+                LOG.trace("extracting results from " + query + "...");
+                res = new DatabaseResults(set);
+            } else {
+                stmt.executeUpdate();
+            }
+            LOG.trace("done executing " + query);
         } catch (SQLException e) {
-            LOG.debug("failed to prepare " + id, e);
-            throw new DatabaseException("couldn't prepare " + id, e);
+            LOG.debug("failed to execute " + query, e);
+            throw new DatabaseException("couldn't execute " + query, e);
+        } finally {
+            LOG.trace("closing " + query + " resources...");
+            try {
+                if (set != null) {
+                    set.close();
+                }
+                stmt.close();
+            } catch (SQLException ignore) {
+                // Do nothing
+            }
+            LOG.trace("done closing " + query + " resources...");
         }
 
-        // Execute SQL
-        if (isQuery(sql)) {
-            return executeQuery(id, stmt);
-        } else {
-            return executeStatement(id, stmt);
-        }
+        return res;
     }
 
     /**
@@ -382,9 +355,10 @@ public class DatabaseConnection {
      * @throws DatabaseException if some statement couldn't be 
      *             executed correctly
      */
-    public void executeSql(File file) 
+    public void execute(File file) 
         throws FileNotFoundException, IOException, DatabaseException {
 
+        DatabaseQuery   query;
         BufferedReader  input;
         StringBuffer    sql = new StringBuffer();
         String          line;
@@ -397,8 +371,10 @@ public class DatabaseConnection {
                     // Do nothing
                 } else if (line.endsWith(";")) {
                     sql.append(line.substring(0, line.length() - 1));
-                    executeSql(sql.toString());
+                    query = new DatabaseQuery();
+                    query.setSql(sql.toString());
                     sql.setLength(0);
+                    execute(query);
                 } else {
                     sql.append(line);
                     sql.append(" ");
@@ -412,100 +388,6 @@ public class DatabaseConnection {
             }
         }
     }
-
-    /**
-     * Executes an SQL statement. This method closes the statement 
-     * after execution.
-     * 
-     * @param name           the statement name (used in logs)
-     * @param stmt           the statement to execute
-     * 
-     * @return an empty database results object
-     * 
-     * @throws DatabaseException if the statement couldn't be 
-     *             executed correctly
-     */
-    private DatabaseResults executeStatement(String name, 
-                                             PreparedStatement stmt) 
-        throws DatabaseException {
-            
-        try {
-            LOG.trace("executing " + name + "...");
-            stmt.executeUpdate();
-            LOG.trace("done executing " + name);
-        } catch (SQLException e) {
-            LOG.debug("failed to execute " + name, e);
-            throw new DatabaseException("couldn't execute " + name, e);
-        } finally {
-            try {
-                LOG.trace("closing " + name + " resources...");
-                stmt.close();
-                LOG.trace("done closing " + name + " resources...");
-            } catch (SQLException ignore) {
-                // Do nothing
-            }
-        }
-
-        return new DatabaseResults();
-    }
-
-    /**
-     * Executes an SQL query. This method closes the statement object
-     * after extracting the results from the result set.
-     * 
-     * @param name           the query name (used in logs)
-     * @param stmt           the statement to execute
-     * 
-     * @return the database results
-     * 
-     * @throws DatabaseException if the query couldn't be executed 
-     *             correctly
-     */
-    private DatabaseResults executeQuery(String name, 
-                                         PreparedStatement stmt) 
-        throws DatabaseException {
-            
-        DatabaseResults  res;
-        ResultSet        set = null;
-
-        try {
-            LOG.trace("executing " + name + "...");
-            set = stmt.executeQuery();
-            LOG.trace("extracting results from " + name + "...");
-            res = new DatabaseResults(set);
-            LOG.trace("done executing " + name);
-        } catch (SQLException e) {
-            LOG.debug("failed to execute " + name, e);
-            throw new DatabaseException("couldn't execute " + name, e);
-        } finally {
-            try {
-                LOG.trace("closing " + name + " resources...");
-                if (set != null) {
-                    set.close();
-                }
-                stmt.close();
-                LOG.trace("done closing " + name + " resources...");
-            } catch (SQLException ignore) {
-                // Do nothing
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * Checks if an SQL string is a query or a statement. The 
-     * analysis is made depending on the first word in the string.
-     * 
-     * @param sql            the SQL command to analyze
-     * 
-     * @return true if the SQL command is a query, or
-     *         false otherwise
-     */
-    private boolean isQuery(String sql) {
-        sql = sql.trim().toUpperCase();
-        return sql.startsWith("SELECT ") || sql.startsWith("SHOW ");
-    }    
 
     /**
      * Closes the connection.

@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -35,6 +34,7 @@ import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
@@ -332,13 +332,14 @@ public class Configuration {
     private void readDatabase(DatabaseConnection con) 
         throws ConfigurationException {
 
+        DatabaseQuery    query = new DatabaseQuery("config.select.all");
         DatabaseResults  res;
         String           name;
         String           value;
         String           message;
 
         try {
-            res = con.execute("config.select.all");
+            res = con.execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 name = res.getRow(i).getString("NAME");
                 value = res.getRow(i).getString("VALUE");
@@ -452,20 +453,21 @@ public class Configuration {
     private void writeDatabase(DatabaseConnection con) 
         throws ConfigurationException {
 
-        Enumeration  iter;
-        ArrayList    params;
-        String       name;
-        String       message;
+        DatabaseQuery  query;
+        Enumeration    iter;
+        String         name;
+        String         message;
 
         try {
-            con.execute("config.delete");
+            query = new DatabaseQuery("config.delete");
+            con.execute(query);
             iter = databaseProperties.propertyNames();
             while (iter.hasMoreElements()) {
                 name = (String) iter.nextElement();
-                params = new ArrayList(2);
-                params.add(name);
-                params.add(get(name, ""));
-                con.execute("config.insert", params);
+                query = new DatabaseQuery("config.insert");
+                query.addParameter(name);
+                query.addParameter(get(name, ""));
+                con.execute(query);
             }
         } catch (DatabaseException e) {
             message = "couldn't write configuration database table"; 

@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -354,37 +353,19 @@ public class DatabaseConnector {
     }
     
     /**
-     * Executes a database function with no parameters. 
+     * Executes a database query or statement. 
      * 
-     * @param name           the database function name
+     * @param query          the database query
      * 
-     * @return the database results
-     * 
-     * @throws DatabaseConnectionException if a database connection 
-     *             couldn't be established
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
-     */
-    public DatabaseResults execute(String name)
-        throws DatabaseConnectionException, DatabaseException { 
-
-        return execute(name, new ArrayList(0));
-    }
-
-    /**
-     * Executes a database function with parameters. 
-     * 
-     * @param name           the database function name
-     * @param params         the database function parameters
-     * 
-     * @return the database results
+     * @return the database query results, or
+     *         null for database statements
      * 
      * @throws DatabaseConnectionException if a database connection 
      *             couldn't be established
      * @throws DatabaseException if the query or statement couldn't 
      *             be executed correctly
      */
-    public DatabaseResults execute(String name, ArrayList params)
+    public DatabaseResults execute(DatabaseQuery query)
         throws DatabaseConnectionException, DatabaseException { 
 
         DatabaseConnection  con;
@@ -392,35 +373,7 @@ public class DatabaseConnector {
         
         con = getConnection();
         try {
-            res = con.execute(name, params);
-        } finally {
-            returnConnection(con);
-        }
-
-        return res;
-    }
-
-    /**
-     * Executes an SQL query or statement. 
-     * 
-     * @param sql            the SQL query or statement to execute
-     * 
-     * @return the database results
-     * 
-     * @throws DatabaseConnectionException if a database connection 
-     *             couldn't be established
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
-     */
-    public DatabaseResults executeSql(String sql) 
-        throws DatabaseConnectionException, DatabaseException { 
-
-        DatabaseConnection  con;
-        DatabaseResults     res;
-        
-        con = getConnection();
-        try {
-            res = con.executeSql(sql);
+            res = con.execute(query);
         } finally {
             returnConnection(con);
         }
@@ -441,7 +394,7 @@ public class DatabaseConnector {
      * @throws DatabaseException if some statement couldn't be 
      *             executed correctly
      */
-    public void executeSql(File file) 
+    public void execute(File file) 
         throws FileNotFoundException, IOException, 
                DatabaseConnectionException, DatabaseException {
 
@@ -449,7 +402,7 @@ public class DatabaseConnector {
         
         con = getConnection();
         try {
-            con.executeSql(file);
+            con.execute(file);
         } finally {
             returnConnection(con);
         }

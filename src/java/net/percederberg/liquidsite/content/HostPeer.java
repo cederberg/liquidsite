@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
@@ -66,9 +67,10 @@ public class HostPeer extends Peer {
     public static ArrayList doSelectAll(DatabaseConnection con)
         throws ContentException {
 
+        DatabaseQuery    query = new DatabaseQuery("host.select.all");
         DatabaseResults  res;
         
-        res = execute("host.select.all", null, "reading hosts", con);
+        res = execute("reading hosts", query, con);
         return PEER.createObjectList(res);
     }
 
@@ -103,11 +105,11 @@ public class HostPeer extends Peer {
                                              DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("host.select.domain");
         DatabaseResults  res;
         
-        params.add(domain.getName());
-        res = execute("host.select.domain", params, "reading hosts", con);
+        query.addParameter(domain.getName());
+        res = execute("reading hosts", query, con);
         return PEER.createObjectList(res);
     }
 
@@ -143,11 +145,11 @@ public class HostPeer extends Peer {
     public static Host doSelectByName(String name, DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("host.select.name");
         DatabaseResults  res;
         
-        params.add(name);
-        res = execute("host.select.name", params, "reading host", con);
+        query.addParameter(name);
+        res = execute("reading host", query, con);
         return (Host) PEER.createObject(res);
     }
 
@@ -177,13 +179,13 @@ public class HostPeer extends Peer {
     public static void doInsert(Host host, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("host.insert");
 
         host.validate();
-        params.add(host.getName());
-        params.add(host.getDescription());
-        params.add(host.getOptions());
-        execute("host.insert", params, "inserting host", con);
+        query.addParameter(host.getName());
+        query.addParameter(host.getDescription());
+        query.addParameter(host.getOptions());
+        execute("inserting host", query, con);
         ContentManager.getInstance().addHost(host);
     }
     
@@ -213,13 +215,13 @@ public class HostPeer extends Peer {
     public static void doUpdate(Host host, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("host.update");
 
         host.validate();
-        params.add(host.getDescription());
-        params.add(host.getOptions());
-        params.add(host.getName());
-        execute("host.update", params, "updating host", con);
+        query.addParameter(host.getDescription());
+        query.addParameter(host.getOptions());
+        query.addParameter(host.getName());
+        execute("updating host", query, con);
         ContentManager.getInstance().addHost(host);
     }
     
@@ -249,10 +251,10 @@ public class HostPeer extends Peer {
     public static void doDelete(Host host, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("host.delete");
 
-        params.add(host.getName());
-        execute("host.delete", params, "deleting host", con);
+        query.addParameter(host.getName());
+        execute("deleting host", query, con);
         ContentManager.getInstance().removeHost(host);
     }
     

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
@@ -74,15 +75,12 @@ public class UserGroupPeer extends Peer {
                                            DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("usergroup.select.user");
         DatabaseResults  res;
         
-        params.add(user.getDomainName());
-        params.add(user.getName());
-        res = execute("usergroup.select.user", 
-                      params, 
-                      "reading user groups", 
-                      con);
+        query.addParameter(user.getDomainName());
+        query.addParameter(user.getName());
+        res = execute("reading user groups", query, con);
         return createGroupList(res, con);
     }
 
@@ -117,15 +115,12 @@ public class UserGroupPeer extends Peer {
                                             DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("usergroup.select.group");
         DatabaseResults  res;
         
-        params.add(group.getDomainName());
-        params.add(group.getName());
-        res = execute("usergroup.select.group", 
-                      params, 
-                      "reading group users", 
-                      con);
+        query.addParameter(group.getDomainName());
+        query.addParameter(group.getName());
+        res = execute("reading group users", query, con);
         return createUserList(res, con);
     }
 
@@ -159,7 +154,7 @@ public class UserGroupPeer extends Peer {
                                 DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("usergroup.insert");
         String     domain;
         String     message;
 
@@ -172,10 +167,10 @@ public class UserGroupPeer extends Peer {
             LOG.error(message);
             throw new ContentException(message);
         }
-        params.add(domain);
-        params.add(user.getName());
-        params.add(group.getName());
-        execute("usergroup.insert", params, "inserting user group", con);
+        query.addParameter(domain);
+        query.addParameter(user.getName());
+        query.addParameter(group.getName());
+        execute("inserting user group", query, con);
     }
     
     /**
@@ -202,11 +197,11 @@ public class UserGroupPeer extends Peer {
     public static void doDelete(User user, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("usergroup.delete.user");
 
-        params.add(user.getDomainName());
-        params.add(user.getName());
-        execute("usergroup.delete.user", params, "deleting user", con);
+        query.addParameter(user.getDomainName());
+        query.addParameter(user.getName());
+        execute("deleting user", query, con);
     }
     
     /**
@@ -233,11 +228,11 @@ public class UserGroupPeer extends Peer {
     public static void doDelete(Group group, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("usergroup.delete.group");
 
-        params.add(group.getDomainName());
-        params.add(group.getName());
-        execute("usergroup.delete.group", params, "deleting group", con);
+        query.addParameter(group.getDomainName());
+        query.addParameter(group.getName());
+        execute("deleting group", query, con);
     }
     
 

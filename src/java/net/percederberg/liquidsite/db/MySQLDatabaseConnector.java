@@ -98,12 +98,14 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public boolean isAdministrator() 
         throws DatabaseConnectionException, DatabaseException {
 
+        DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
         String           str;
         
         // Retrieve basic privileges
         try {
-            res = executeSql("SHOW GRANTS FOR " + getDatabaseUser());
+            query.setSql("SHOW GRANTS FOR " + getDatabaseUser());
+            res = execute(query);
             str = res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
             LOG.debug("failed to read user privileges", e);
@@ -133,10 +135,12 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public String getDatabaseUser() 
         throws DatabaseConnectionException, DatabaseException {
 
+        DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
 
         try {
-            res = executeSql("SELECT USER()");
+            query.setSql("SELECT USER()");
+            res = execute(query);
             return res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
             LOG.debug("failed to read database user name", e);
@@ -158,10 +162,12 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         throws DatabaseConnectionException, DatabaseException {
 
         ArrayList        list = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
         
         try {
-            res = executeSql("SHOW DATABASES");
+            query.setSql("SHOW DATABASES");
+            res = execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 list.add(res.getRow(i).getString(0));
             }
@@ -190,10 +196,12 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         throws DatabaseConnectionException, DatabaseException {
 
         ArrayList        list = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
         
         try {
-            res = executeSql("SHOW TABLES IN " + database);
+            query.setSql("SHOW TABLES IN " + database);
+            res = execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 list.add(res.getRow(i).getString(0));
             }
@@ -220,11 +228,13 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         throws DatabaseConnectionException, DatabaseException {
 
         ArrayList        list = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
         String           str;
         
         try {
-            res = executeSql("SELECT DISTINCT user FROM mysql.user");
+            query.setSql("SELECT DISTINCT user FROM mysql.user");
+            res = execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 str = res.getRow(i).getString(0);
                 if (str != null && !str.equals("")) {
@@ -253,7 +263,10 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void createDatabase(String database) 
         throws DatabaseConnectionException, DatabaseException {
 
-        executeSql("CREATE DATABASE " + database);
+        DatabaseQuery  query = new DatabaseQuery();
+
+        query.setSql("CREATE DATABASE " + database);
+        execute(query);
     }
 
     /**
@@ -271,7 +284,10 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void deleteDatabase(String database) 
         throws DatabaseConnectionException, DatabaseException {
 
-        executeSql("DROP DATABASE " + database);
+        DatabaseQuery  query = new DatabaseQuery();
+
+        query.setSql("DROP DATABASE " + database);
+        execute(query);
     }
 
     /**
@@ -292,11 +308,13 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void createUser(String user, String password)
         throws DatabaseConnectionException, DatabaseException {
 
-        String  host = getDatabaseUser();
+        String         host = getDatabaseUser();
+        DatabaseQuery  query = new DatabaseQuery();
         
         host = host.substring(host.indexOf("@"));
-        executeSql("GRANT USAGE ON *.* TO " + user + host +
-                " IDENTIFIED BY '" + password + "'");
+        query.setSql("GRANT USAGE ON *.* TO " + user + host +
+                     " IDENTIFIED BY '" + password + "'");
+        execute(query);
     }
 
     /**
@@ -314,12 +332,26 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void deleteUser(String user)
         throws DatabaseConnectionException, DatabaseException {
 
-        String  host = getDatabaseUser();
+        String         host = getDatabaseUser();
+        DatabaseQuery  query;
         
         host = host.substring(host.indexOf("@"));
-        executeSql("REVOKE USAGE ON *.* FROM " + user + host);
-        executeSql("DELETE FROM mysql.user WHERE user = '" + user + "'");
-        executeSql("FLUSH PRIVILEGES");
+        
+        // Revoke user privileges
+        // TODO: privileges must be revoked by using SHOW PRIVILEGES
+        //       and then revoking every single statement
+        query = new DatabaseQuery();
+        query.setSql("REVOKE USAGE ON *.* FROM " + user + host);
+        execute(query);
+
+        // Delete user
+        query = new DatabaseQuery();
+        query.setSql("DELETE FROM mysql.user WHERE user = '" + user + 
+                     "' AND host = '" + host + "'");
+        execute(query);
+        query = new DatabaseQuery();
+        query.setSql("FLUSH PRIVILEGES");
+        execute(query);
     }
 
     /**
@@ -341,11 +373,13 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void addAccessPrivileges(String database, String user)
         throws DatabaseConnectionException, DatabaseException {
 
-        String  host = getDatabaseUser();
+        String         host = getDatabaseUser();
+        DatabaseQuery  query = new DatabaseQuery();
         
         host = host.substring(host.indexOf("@"));
-        executeSql("GRANT SELECT,INSERT,UPDATE,DELETE ON " + database +
-                ".* TO " + user + host);
+        query.setSql("GRANT SELECT,INSERT,UPDATE,DELETE ON " + 
+                     database + ".* TO " + user + host);
+        execute(query);
     }
 
     /**
@@ -367,10 +401,12 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void removeAccessPrivilege(String database, String user)
         throws DatabaseConnectionException, DatabaseException {
 
-        String  host = getDatabaseUser();
+        String         host = getDatabaseUser();
+        DatabaseQuery  query = new DatabaseQuery();
         
         host = host.substring(host.indexOf("@"));
-        executeSql("REVOKE SELECT,INSERT,UPDATE,DELETE ON " + database +
-                ".* FROM " + user + host);
+        query.setSql("REVOKE SELECT,INSERT,UPDATE,DELETE ON " + 
+                     database + ".* FROM " + user + host);
+        execute(query);
     }
 }

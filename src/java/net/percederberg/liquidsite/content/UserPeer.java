@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseDataException;
+import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
@@ -72,11 +73,11 @@ public class UserPeer extends Peer {
                                              DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("user.select.domain");
         DatabaseResults  res;
         
-        params.add(domain.getName());
-        res = execute("user.select.domain", params, "reading users", con);
+        query.addParameter(domain.getName());
+        res = execute("reading users", query, con);
         return PEER.createObjectList(res);
     }
 
@@ -116,12 +117,12 @@ public class UserPeer extends Peer {
                                       DatabaseConnection con)
         throws ContentException {
 
-        ArrayList        params = new ArrayList();
+        DatabaseQuery    query = new DatabaseQuery("user.select.name");
         DatabaseResults  res;
         
-        params.add(domain.getName());
-        params.add(name);
-        res = execute("user.select.name", params, "reading user", con);
+        query.addParameter(domain.getName());
+        query.addParameter(name);
+        res = execute("reading user", query, con);
         return (User) PEER.createObject(res);
     }
 
@@ -149,16 +150,16 @@ public class UserPeer extends Peer {
     public static void doInsert(User user, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("user.insert");
 
         user.validate();
-        params.add(user.getDomainName());
-        params.add(user.getName());
-        params.add(user.getPassword());
-        params.add(user.getRealName());
-        params.add(user.getEmail());
-        params.add(user.getComment());
-        execute("user.insert", params, "inserting user", con);
+        query.addParameter(user.getDomainName());
+        query.addParameter(user.getName());
+        query.addParameter(user.getPassword());
+        query.addParameter(user.getRealName());
+        query.addParameter(user.getEmail());
+        query.addParameter(user.getComment());
+        execute("inserting user", query, con);
     }
     
     /**
@@ -185,16 +186,16 @@ public class UserPeer extends Peer {
     public static void doUpdate(User user, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("user.update");
 
         user.validate();
-        params.add(user.getPassword());
-        params.add(user.getRealName());
-        params.add(user.getEmail());
-        params.add(user.getComment());
-        params.add(user.getDomainName());
-        params.add(user.getName());
-        execute("user.update", params, "updating user", con);
+        query.addParameter(user.getPassword());
+        query.addParameter(user.getRealName());
+        query.addParameter(user.getEmail());
+        query.addParameter(user.getComment());
+        query.addParameter(user.getDomainName());
+        query.addParameter(user.getName());
+        execute("updating user", query, con);
     }
     
     /**
@@ -223,11 +224,11 @@ public class UserPeer extends Peer {
     public static void doDelete(User user, DatabaseConnection con) 
         throws ContentException {
 
-        ArrayList  params = new ArrayList();
+        DatabaseQuery  query = new DatabaseQuery("user.delete");
 
-        params.add(user.getDomainName());
-        params.add(user.getName());
-        execute("user.delete", params, "deleting user", con);
+        query.addParameter(user.getDomainName());
+        query.addParameter(user.getName());
+        execute("deleting user", query, con);
         UserGroupPeer.doDelete(user, con);
     }
     
