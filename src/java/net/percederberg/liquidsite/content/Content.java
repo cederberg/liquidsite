@@ -40,7 +40,7 @@ import net.percederberg.liquidsite.dbo.DatabaseObjectException;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public abstract class Content extends PersistentObject {
+public abstract class Content extends PersistentObject implements Comparable {
 
     /**
      * The class logger.
@@ -296,6 +296,48 @@ public abstract class Content extends PersistentObject {
             return equals((Content) obj);
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Compares this object with the specified object for order. 
+     * Returns a negative integer, zero, or a positive integer as 
+     * this object is less than, equal to, or greater than the 
+     * specified object.
+     * 
+     * @param obj            the object to compare to
+     * 
+     * @return a negative integer, zero, or a positive integer as 
+     *         this object is less than, equal to, or greater than 
+     *         the specified object
+     * 
+     * @throws ClassCastException if the object isn't a Content
+     *             object
+     */
+    public int compareTo(Object obj) throws ClassCastException {
+        return compareTo((Content) obj);
+    }
+
+    /**
+     * Compares this object with the specified content object for 
+     * order. Returns a negative integer, zero, or a positive integer 
+     * as this object is less than, equal to, or greater than the 
+     * specified object. The ordering is based primarily on category
+     * and secondarily on name.
+     * 
+     * @param content        the content object to compare to
+     * 
+     * @return a negative integer, zero, or a positive integer as 
+     *         this object is less than, equal to, or greater than 
+     *         the specified object
+     */
+    public int compareTo(Content content) {
+        int category = content.getCategory() - getCategory();
+        
+        if (category != 0) {
+            return category;
+        } else {
+            return getName().compareTo(content.getName());
         }
     }
 
