@@ -73,29 +73,31 @@ function treeInitialize(id, loadFunc, selectFunc) {
  * @param status              the item status
  */
 function treeAddItem(parent, id, type, name, desc, status) {
-    var container = document.getElementById("treegroup" + parent);
-    var p = document.createElement("p");
-    var img = document.createElement("img");
-    var a = document.createElement("a");
-    var text = document.createTextNode(" " + name);
+    if (document.getElementById("treeitem" + id) == null) {
+        var container = document.getElementById("treegroup" + parent);
+        var p = document.createElement("p");
+        var img = document.createElement("img");
+        var a = document.createElement("a");
+        var text = document.createTextNode(" " + name);
 
-    desc = type.substring(0, 1).toUpperCase() +
-           type.substring(1) + ": " + desc;
-    img.id = "treeicon" + id;
-    img.src = TREE_ICON_PATH + treeInternalGetIcon(type, false);
-    img.alt = desc;
-    img.onclick = new Function("treeToggle('" + type + "','" + id + "')");
-    a.href = "javascript:treeSelect('" + type + "','" + id + "')";
-    a.title = desc;
-    a.className = treeInternalGetStatusClass(status);
-    a.appendChild(text);
-    p.id = "treeitem" + id;
-    p.appendChild(img);
-    p.appendChild(a);
-    if (container == null) {
-        TREE_ROOT.appendChild(p);
-    } else {
-        container.appendChild(p);
+        desc = type.substring(0, 1).toUpperCase() +
+               type.substring(1) + ": " + desc;
+        img.id = "treeicon" + id;
+        img.src = TREE_ICON_PATH + treeInternalGetIcon(type, false);
+        img.alt = desc;
+        img.onclick = new Function("treeToggle('" + type + "','" + id + "')");
+        a.href = "javascript:treeSelect('" + type + "','" + id + "')";
+        a.title = desc;
+        a.className = treeInternalGetStatusClass(status);
+        a.appendChild(text);
+        p.id = "treeitem" + id;
+        p.appendChild(img);
+        p.appendChild(a);
+        if (container == null) {
+            TREE_ROOT.appendChild(p);
+        } else {
+            container.appendChild(p);
+        }
     }
 }
 
@@ -107,16 +109,18 @@ function treeAddItem(parent, id, type, name, desc, status) {
  * @param id                  the container item id
  */
 function treeAddContainer(id) {
-    var p = document.getElementById("treeitem" + id);
-    var parent = p.parentNode;
-    var div = document.createElement("div");
+    if (document.getElementById("treegroup" + id) == null) {
+        var p = document.getElementById("treeitem" + id);
+        var parent = p.parentNode;
+        var div = document.createElement("div");
 
-    div.id = "treegroup" + id;
-    div.style.display = "none";
-    if (p.nextSibling != null) {
-        parent.insertBefore(div, p.nextSibling);
-    } else {
-        parent.appendChild(div);
+        div.id = "treegroup" + id;
+        div.style.display = "none";
+        if (p.nextSibling != null) {
+            parent.insertBefore(div, p.nextSibling);
+        } else {
+            parent.appendChild(div);
+        }
     }
 }
 
