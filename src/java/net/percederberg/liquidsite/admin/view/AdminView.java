@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
@@ -148,13 +149,15 @@ public class AdminView {
 
     /**
      * Finds all content folders in a site. The folders will not be
-     * added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each folder will
-     * be added.
+     * added directly to the result list, but rather a simplified hash
+     * map containing only the id and name of each folder will be
+     * added. This method will return the site as the base folder and
+     * may also include translators if the corresponding flag is set.
      *
      * @param user           the user
      * @param site           the content site
      * @param exclude        the folder to exclude, or null
+     * @param translators    the include translators flag
      *
      * @return the list of folders found (in maps)
      *
@@ -163,11 +166,12 @@ public class AdminView {
      */
     protected ArrayList findFolders(User user,
                                     ContentSite site,
-                                    ContentFolder exclude)
+                                    ContentFolder exclude,
+                                    boolean translators)
         throws ContentException {
 
         ArrayList  result = new ArrayList();
-        findFolders(user, "", site, exclude, result);
+        findFolders(user, "", site, exclude, translators, result);
         return result;
     }
 
@@ -181,6 +185,7 @@ public class AdminView {
      * @param baseName       the base name
      * @param parent         the parent site or folder
      * @param exclude        the folder to exclude, or null
+     * @param translators    the include translators flag
      * @param result         the list of folders found (in maps)
      *
      * @throws ContentException if the database couldn't be accessed
@@ -190,6 +195,7 @@ public class AdminView {
                              String baseName,
                              Content parent,
                              ContentFolder exclude,
+                             boolean translators,
                              ArrayList result)
         throws ContentException {
 
@@ -209,15 +215,25 @@ public class AdminView {
             values.put("id", String.valueOf(parent.getId()));
             values.put("name", baseName);
             result.add(values);
+        } else if (translators && parent instanceof ContentTranslator) {
+            baseName = baseName + "*/ (" + parent.getName() + ")";
+            values = new HashMap(2);
+            values.put("id", String.valueOf(parent.getId()));
+            values.put("name", baseName);
+            result.add(values);
+            return;
         } else {
             return;
         }
-        children = manager.getContentChildren(user,
-                                              parent,
-                                              Content.FOLDER_CATEGORY);
+        children = manager.getContentChildren(user, parent);
         for (int i = 0; i < children.length; i++) {
             if (!children[i].equals(exclude)) {
-                findFolders(user, baseName, children[i], exclude, result);
+                findFolders(user,
+                            baseName,
+                            children[i],
+                            exclude,
+                            translators,
+                            result);
             }
         }
     }

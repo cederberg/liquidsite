@@ -35,6 +35,7 @@ import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.PersistentObject;
@@ -135,6 +136,14 @@ public class SiteView extends AdminView {
                 request.setAttribute("enableFolder", true);
                 request.setAttribute("enablePage", true);
                 request.setAttribute("enableFile", true);
+                request.setAttribute("enableTranslator", true);
+            }
+        }
+        if (parent instanceof ContentTranslator) {
+            content = (Content) parent;
+            if (content.hasWriteAccess(user)) {
+                request.setAttribute("enablePage", true);
+                request.setAttribute("enableFile", true);
             }
         }
         if (parent instanceof ContentTemplate) {
@@ -232,6 +241,87 @@ public class SiteView extends AdminView {
     }
 
     /**
+     * Shows the add or edit translator page. Either the parent or the
+     * translator object must be specified.
+     *
+     * @param request        the request object
+     * @param reference      the parent or translator object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    public void viewEditTranslator(Request request, Content reference)
+        throws ContentException, ContentSecurityException {
+
+        User               user = request.getUser();
+        ContentTranslator  translator;
+        String             name;
+        int                parent;
+        ArrayList          folders = null;
+        int                section;
+        ArrayList          sections;
+        String             comment;
+        boolean            publish;
+        String             str;
+
+        // Find default values
+        AdminUtils.setReference(request, reference);
+        if (reference instanceof ContentTranslator) {
+            translator = (ContentTranslator) reference;
+            name = translator.getName();
+            parent = translator.getParentId();
+            folders = findFolders(user, findSite(translator), null, false);
+            section = translator.getSectionId();
+            sections = findSections(user, translator.getDomain(), null);
+            if (translator.getRevisionNumber() == 0) {
+                comment = translator.getComment();
+            } else {
+                comment = "";
+            }
+            publish = translator.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(translator.getParent());
+        } else {
+            name = "";
+            parent = 0;
+            section = 0;
+            sections = findSections(user, reference.getDomain(), null);
+            comment = "Created";
+            publish = reference.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(reference);
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            try {
+                str = request.getParameter("parent", "0");
+                parent = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                parent = 0;
+            }
+            try {
+                str = request.getParameter("section", "0");
+                section = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                section = 0;
+            }
+            comment = request.getParameter("comment", "");
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("parent", String.valueOf(parent));
+        request.setAttribute("folders", folders);
+        request.setAttribute("section", String.valueOf(section));
+        request.setAttribute("sections", sections);
+        request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
+        request.sendTemplate("admin/edit-translator.ftl");
+    }
+
+    /**
      * Shows the add or edit page page. Either the parent or the page
      * object must be specified.
      *
@@ -240,8 +330,8 @@ public class SiteView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have read
-     *             access to the template
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     public void viewEditPage(Request request, Content reference)
         throws ContentException, ContentSecurityException {
@@ -270,7 +360,7 @@ public class SiteView extends AdminView {
             name = page.getName();
             parent = page.getParentId();
             site = findSite(page);
-            folders = findFolders(user, site, null);
+            folders = findFolders(user, site, null, true);
             template = String.valueOf(page.getTemplateId());
             templates = findTemplates(user, page.getDomain(), null);
             section = page.getSectionId();
@@ -374,7 +464,7 @@ public class SiteView extends AdminView {
             name = file.getName();
             parent = file.getParentId();
             site = findSite(file);
-            folders = findFolders(request.getUser(), site, null);
+            folders = findFolders(request.getUser(), site, null, true);
             content = file.getTextContent();
             if (file.getRevisionNumber() == 0) {
                 comment = file.getComment();
@@ -460,7 +550,7 @@ public class SiteView extends AdminView {
             name = folder.getName();
             parentId = folder.getParentId();
             site = findSite(folder);
-            folders = findFolders(request.getUser(), site, folder);
+            folders = findFolders(request.getUser(), site, folder, false);
             if (folder.getRevisionNumber() == 0) {
                 comment = folder.getComment();
             } else {

@@ -111,10 +111,24 @@
           </td>
         </tr>
 </#if>
-<#if enableTemplate?exists>
+<#if enableTranslator?exists>
         <tr>
           <th style="width: 8em;">
             <input type="radio" tabindex="6"
+                   name="category" value="translator" />
+            Translator
+          </th>
+          <td>
+            A translator maps URLs to other URLs, content sections or
+            error pages. Only URLs not matching anything else are
+            passed to the translator.
+          </td>
+        </tr>
+</#if>
+<#if enableTemplate?exists>
+        <tr>
+          <th style="width: 8em;">
+            <input type="radio" tabindex="7"
                    name="category" value="template" />
             Template
           </th>
@@ -129,7 +143,7 @@
 <#if enableSection?exists>
         <tr>
           <th style="width: 8em;">
-            <input type="radio" tabindex="7"
+            <input type="radio" tabindex="8"
                    name="category" value="section" />
             Section
           </th>
@@ -143,7 +157,7 @@
 <#if enableDocument?exists>
         <tr>
           <th style="width: 8em;">
-            <input type="radio" tabindex="8"
+            <input type="radio" tabindex="9"
                    name="category" value="document" />
             Document
           </th>

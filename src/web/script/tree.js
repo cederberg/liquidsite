@@ -207,6 +207,7 @@ function treeClose(type, id) {
 function treeInternalIsContainer(type) {
     return type == "domain"
         || type == "site"
+        || type == "translator"
         || type == "folder"
         || type == "template"
         || type == "section"

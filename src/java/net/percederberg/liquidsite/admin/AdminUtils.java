@@ -280,6 +280,8 @@ public class AdminUtils {
             switch (((Content) obj).getCategory()) {
             case Content.SITE_CATEGORY:
                 return "site";
+            case Content.TRANSLATOR_CATEGORY:
+                return "translator";
             case Content.FOLDER_CATEGORY:
                 return "folder";
             case Content.PAGE_CATEGORY:

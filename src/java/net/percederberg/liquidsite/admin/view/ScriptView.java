@@ -34,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
@@ -691,6 +692,8 @@ public class ScriptView {
             } else {
                 return str;
             }
+        } else if (content instanceof ContentTranslator) {
+            return getContentUrl(content.getParent()) + "*/";
         } else {
             return "N/A";
         }
@@ -708,6 +711,8 @@ public class ScriptView {
      *             properly
      */
     private String getPreviewUrl(Content content) throws ContentException {
+        String  str;
+
         if (content instanceof ContentSite) {
             if (((ContentSite) content).isAdmin()) {
                 return null;
@@ -718,11 +723,19 @@ public class ScriptView {
             return getPreviewUrl(content.getParent()) +
                    content.toString() + "/";
         } else if (content instanceof ContentPage) {
-            return getPreviewUrl(content.getParent()) +
-                   content.toString();
+            str = getPreviewUrl(content.getParent());
+            if (str != null) {
+                return str + content.toString();
+            } else {
+                return null;
+            }
         } else if (content instanceof ContentFile) {
-            return getPreviewUrl(content.getParent()) +
-                   content.toString();
+            str = getPreviewUrl(content.getParent());
+            if (str != null) {
+                return str + content.toString();
+            } else {
+                return null;
+            }
         } else if (content instanceof ContentTemplate) {
             return "preview/" + content.getId() + "/";
         } else if (content instanceof ContentSection) {
@@ -848,7 +861,8 @@ public class ScriptView {
         if (content instanceof ContentSite) {
             return !((ContentSite) content).isAdmin();
         } else {
-            return content instanceof ContentFolder
+            return content instanceof ContentTranslator
+                || content instanceof ContentFolder
                 || content instanceof ContentTemplate
                 || content instanceof ContentSection
                 || content instanceof ContentDocument;

@@ -34,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.FormValidator;
 import net.percederberg.liquidsite.web.Request;
@@ -77,6 +78,11 @@ class SiteEditFormHandler extends AdminFormHandler {
      * The file form validator.
      */
     private FormValidator file = new FormValidator();
+
+    /**
+     * The translator form validator.
+     */
+    private FormValidator translator = new FormValidator();
 
     /**
      * The template form validator.
@@ -167,6 +173,13 @@ class SiteEditFormHandler extends AdminFormHandler {
         file.addCharacterConstraint("name", nameChars, error);
         file.addRequiredConstraint("comment", "No comment specified");
 
+        // Add and edit translator validator
+        error = "No translator name specified";
+        translator.addRequiredConstraint("name", error);
+        error = "File name contains invalid character";
+        translator.addCharacterConstraint("name", nameChars, error);
+        translator.addRequiredConstraint("comment", "No comment specified");
+
         // Add and edit template validator
         template.addRequiredConstraint("name", "No template name specified");
         error = "Template name contains invalid character";
@@ -201,6 +214,9 @@ class SiteEditFormHandler extends AdminFormHandler {
             AdminView.SITE.viewEditPage(request, (ContentPage) ref);
         } else if (ref instanceof ContentFile) {
             AdminView.SITE.viewEditFile(request, (ContentFile) ref);
+        } else if (ref instanceof ContentTranslator) {
+            AdminView.SITE.viewEditTranslator(request,
+                                              (ContentTranslator) ref);
         } else if (ref instanceof ContentTemplate) {
             AdminView.SITE.viewEditTemplate(request,
                                             null,
@@ -238,6 +254,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             page.validate(request);
         } else if (category.equals("file")) {
             file.validate(request);
+        } else if (category.equals("translator")) {
+            translator.validate(request);
         } else if (category.equals("template")) {
             template.validate(request);
         } else {
@@ -281,6 +299,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             handleEditPage(request, (ContentPage) ref);
         } else if (ref instanceof ContentFile) {
             handleEditFile(request, (ContentFile) ref);
+        } else if (ref instanceof ContentTranslator) {
+            handleEditTranslator(request, (ContentTranslator) ref);
         } else if (ref instanceof ContentTemplate) {
             handleEditTemplate(request, (ContentTemplate) ref);
         } else {
@@ -466,6 +486,48 @@ class SiteEditFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles the edit translator form.
+     *
+     * @param request        the request object
+     * @param translator     the translator content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleEditTranslator(Request request,
+                                      ContentTranslator translator)
+        throws ContentException, ContentSecurityException {
+
+        int  id;
+
+        translator.setRevisionNumber(0);
+        translator.setName(request.getParameter("name"));
+        try {
+            id = Integer.parseInt(request.getParameter("parent"));
+            translator.setParentId(id);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
+        try {
+            id = Integer.parseInt(request.getParameter("section"));
+        } catch (NumberFormatException ignore) {
+            id = 0;
+        }
+        translator.setType(ContentTranslator.SECTION_TYPE);
+        translator.setSectionId(id);
+        translator.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            id = translator.getMaxRevisionNumber() + 1;
+            translator.setRevisionNumber(id);
+            translator.setOnlineDate(new Date());
+            translator.setOfflineDate(null);
+        }
+        translator.save(request.getUser());
     }
 
     /**

@@ -36,6 +36,7 @@ import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.PersistentObject;
@@ -90,6 +91,8 @@ class SiteAddFormHandler extends AdminFormHandler {
             AdminView.SITE.viewEditPage(request, (Content) parent);
         } else if (category.equals("file")) {
             AdminView.SITE.viewEditFile(request, (Content) parent);
+        } else if (category.equals("translator")) {
+            AdminView.SITE.viewEditTranslator(request, (Content) parent);
         } else if (category.equals("template")) {
             AdminView.SITE.viewEditTemplate(request, parent, null);
         } else {
@@ -174,6 +177,8 @@ class SiteAddFormHandler extends AdminFormHandler {
             handleAddPage(request, (Content) parent);
         } else if (category.equals("file")) {
             handleAddFile(request, (Content) parent);
+        } else if (category.equals("translator")) {
+            handleAddTranslator(request, (Content) parent);
         } else if (category.equals("template")) {
             handleAddTemplate(request, parent);
         }
@@ -357,6 +362,42 @@ class SiteAddFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles the add translator form.
+     *
+     * @param request        the request object
+     * @param parent         the parent content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleAddTranslator(Request request, Content parent)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager     manager = AdminUtils.getContentManager();
+        ContentTranslator  translator;
+        int                id;
+
+        translator = new ContentTranslator(manager, parent);
+        translator.setName(request.getParameter("name"));
+        try {
+            id = Integer.parseInt(request.getParameter("section"));
+        } catch (NumberFormatException ignore) {
+            id = 0;
+        }
+        translator.setType(ContentTranslator.SECTION_TYPE);
+        translator.setSectionId(id);
+        translator.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            translator.setRevisionNumber(1);
+            translator.setOnlineDate(new Date());
+        }
+        translator.save(request.getUser());
+        AdminView.SITE.setSiteTreeFocus(request, translator);
     }
 
     /**
