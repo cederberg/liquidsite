@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentPage;
+import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
@@ -128,25 +129,24 @@ public class DefaultRequestProcessor extends RequestProcessor {
                     admin.processUnauthorized(request, path);
                 }
             } else {
-                page = getContentManager().findPage(site, path);
+                page = findPage(user, site, path);
+                // TODO: check for folder paths not ending with /
                 if (page instanceof ContentSite
                  || page instanceof ContentFolder) {
 
-                    page = getContentManager().findIndexPage(page);
+                    page = findIndexPage(user, page);
                 }
                 if (page == null) {
                     throw RequestException.RESOURCE_NOT_FOUND;
                 }
-                access = page.hasReadAccess(user);
-                if (access) {
-                    processAuthorized(request, page);
-                } else {
-                    processUnauthorized(request, page);
-                }
+                processAuthorized(request, page);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.debug(e.getMessage());
+            throw RequestException.FORBIDDEN;
         }
     }
     
@@ -176,20 +176,6 @@ public class DefaultRequestProcessor extends RequestProcessor {
                       page.getCategory());
             throw RequestException.INTERNAL_ERROR;
         }
-    }
-
-    /**
-     * Processes an unauthorized request.
-     *
-     * @param request        the request object
-     * @param page           the page requested
-     * 
-     * @throws RequestException if the request couldn't be processed
-     */
-    private void processUnauthorized(Request request, Content page)
-        throws RequestException {
-
-        throw RequestException.UNAUTHORIZED;
     }
 
     /**

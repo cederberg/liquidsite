@@ -23,7 +23,11 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 
+import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A request processor.
@@ -89,4 +93,80 @@ public abstract class RequestProcessor {
      * internal resources used by this processor.
      */
     public abstract void destroy();
+
+    /**
+     * Finds the page content corresponding to a request path. This 
+     * method does NOT control access permissions and should thus 
+     * ONLY be used internally in the request processing. Also note
+     * that any content category matching the request path may be 
+     * returned including the parent content object, if the path was
+     * empty. 
+     *
+     * @param user           the user requesting the page
+     * @param parent         the content parent
+     * @param path           the request path after the parent
+     * 
+     * @return the content object corresponding to the path, or
+     *         null if no matching content was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    protected Content findPage(User user, Content parent, String path) 
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = getContentManager();
+        Content         content = parent;
+        String          name;
+        int             pos;
+
+        while (content != null && path.length() > 0) {
+            pos = path.indexOf('/');
+            if (pos <= 0) {
+                name = path;
+            } else {
+                name = path.substring(0, pos);
+            }
+            path = path.substring(name.length());
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            content = manager.getContentChild(user, parent, name);
+            parent = content;
+        }
+        return content;
+    }
+
+    /**
+     * Finds the index page for a content parent. This method does 
+     * NOT control access permissions and should thus ONLY be used 
+     * internally in the request processing.
+     * 
+     * @param user           the user requesting the page
+     * @param parent         the content parent
+     * 
+     * @return the index content object, or
+     *         null if no matching content was found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly 
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    public Content findIndexPage(User user, Content parent) 
+        throws ContentException, ContentSecurityException {
+            
+        String[]  index = { "index.html", "index.htm" };
+        Content   page;
+
+        for (int i = 0; i < index.length; i++) {
+            page = findPage(user, parent, index[i]);
+            if (page != null) {
+                return page;
+            }
+        }
+        return null;
+    }
 }

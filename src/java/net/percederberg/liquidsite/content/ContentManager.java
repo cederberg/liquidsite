@@ -87,25 +87,53 @@ public class ContentManager {
     }
 
     /**
-     * Checks if the specified user can read a content object. This
-     * method will check that the object is online (unless the admin
-     * flag is set) and that the user has read permissions to the
-     * object.
+     * Checks if a content object is online. If the admin flag is set
+     * all objects are considered online.
+     *
+     * @param content        the content object
+     *
+     * @return true if the object is online, or
+     *         false otherwise
+     */
+    private boolean isOnline(Content content) {
+        return admin || content.isOnline();
+    }
+
+    /**
+     * Checks if a content object is readable by a user. This method
+     * will check the read permissions in the database.
      *
      * @param user           the user
      * @param content        the content object
      *
-     * @return true if the user can read the content object, or
+     * @return true if the object is readable, or
      *         false otherwise
      *
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    private boolean canRead(User user, Content content)
+    private boolean isReadable(User user, Content content)
         throws ContentException {
 
-        return (admin || content.isOnline())
-            && content.hasReadAccess(user);
+        return content.hasReadAccess(user);
+    }
+
+    /**
+     * Checks if a content object is online and readable by a user.
+     *
+     * @param user           the user
+     * @param content        the content object
+     *
+     * @return true if the object is online and readable, or
+     *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    private boolean isReadableOnline(User user, Content content)
+        throws ContentException {
+
+        return isOnline(content) && isReadable(user, content);
     }
 
     /**
@@ -287,10 +315,13 @@ public class ContentManager {
 
         Content  content = getContent(id);
 
-        if (content != null && !canRead(user, content)) {
+        if (content != null && !isReadable(user, content)) {
             throw new ContentSecurityException(user, "read", content);
+        } else if (content != null && !isOnline(content)) {
+            return null;
+        } else {
+            return content;
         }
-        return content;
     }
     
     /**
@@ -313,6 +344,42 @@ public class ContentManager {
     }
 
     /**
+     * Returns the child content object with the specified name and 
+     * highest revision readable by the user.
+     *
+     * @param user           the user requesting the content
+     * @param parent         the content parent
+     * @param name           the child name
+     *
+     * @return the content object found, or
+     *         null if no matching content existed
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    public Content getContentChild(User user, Content parent, String name) 
+        throws ContentException, ContentSecurityException {
+
+        Content[]  children = Content.findByParent(this, parent);
+
+        // TODO: implement this more efficiently with specific query
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].getName().equals(name)) {
+                if (!isReadable(user, children[i])) {
+                    throw new ContentSecurityException(user,
+                                                       "read",
+                                                       children[i]);
+                } else if (isOnline(children[i])) {
+                    return children[i];
+                }
+            }
+        } 
+        return null;                    
+    }
+    
+    /**
      * Returns the user readable domain root content objects. Only 
      * the highest revision of each object will be returned.
      * 
@@ -332,7 +399,7 @@ public class ContentManager {
         Content[]  res;
 
         for (int i = 0; i < children.length; i++) {
-            if (canRead(user, children[i])) {
+            if (isReadableOnline(user, children[i])) {
                 list.add(children[i]);
             }
         }
@@ -362,7 +429,7 @@ public class ContentManager {
         Content[]  res;
 
         for (int i = 0; i < children.length; i++) {
-            if (canRead(user, children[i])) {
+            if (isReadableOnline(user, children[i])) {
                 list.add(children[i]);
             }
         } 
@@ -463,119 +530,6 @@ public class ContentManager {
             }
         }
         return res;
-    }
-
-    /**
-     * Finds the page content corresponding to a request path. This 
-     * method does NOT control access permissions and should thus 
-     * ONLY be used internally in the request processing. Also note
-     * that any content category matching the request path may be 
-     * returned including the parent content object, if the path was
-     * empty. 
-     * 
-     * @param parent         the content parent
-     * @param path           the request path after the parent
-     * 
-     * @return the content object corresponding to the path, or
-     *         null if no matching content was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     */
-    public Content findPage(Content parent, String path) 
-        throws ContentException {
-
-        Content[]  children;
-        Content    page = parent;
-        String     match;
-        String     str;
-
-        while (path.length() > 0) {
-            children = Content.findByParent(this, parent);
-            match = "";
-            for (int i = 0; i < children.length; i++) {
-                str = findPageMatch(children[i], path);
-                if (str != null && str.length() > match.length()) {
-                    page = children[i];
-                    match = str;
-                }
-            }
-            if (match.length() <= 0) {
-                return null;
-            }
-            path = path.substring(match.length());
-            parent = page;
-        }
-        return page;
-    }
-
-    /**
-     * Finds the index page for a content parent. This method does 
-     * NOT control access permissions and should thus ONLY be used 
-     * internally in the request processing.
-     * 
-     * @param parent         the content parent
-     * 
-     * @return the index content object, or
-     *         null if no matching content was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     */
-    public Content findIndexPage(Content parent) 
-        throws ContentException {
-            
-        String[]  index = { "index.html", "index.htm" };
-        Content   page;
-
-        for (int i = 0; i < index.length; i++) {
-            page = findPage(parent, index[i]);
-            if (page != null) {
-                return page;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Finds the page match to a specified request path.
-     * 
-     * @param page           the content object
-     * @param path           the request path to check
-     * 
-     * @return the matching initial sequence of the path, or
-     *         an empty string if no match was found
-     */
-    private String findPageMatch(Content page, String path) {
-        // TODO: semantics should probably change, normal access
-        //       control should be used instead, see canRead()
-        if (admin) {
-            // Do nothing
-        } else if (!page.isOnline() || page.getRevisionNumber() < 1) {
-            return ""; 
-        }
-        switch (page.getCategory()) {
-        case Content.FOLDER_CATEGORY:
-            if (path.startsWith(page.getName() + "/")) {
-                return page.getName() + "/";
-            } else {
-                return "";
-            }
-        case Content.PAGE_CATEGORY:
-            if (path.startsWith(page.getName())) {
-                return page.getName();
-            } else {
-                return "";
-            }
-        case Content.FILE_CATEGORY:
-            if (path.startsWith(page.getName())) {
-                return page.getName();
-            } else {
-                return "";
-            }
-        default:
-            return "";
-        }
     }
 
     /**

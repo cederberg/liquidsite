@@ -432,30 +432,31 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the request referred to an 
+     *             object that wasn't readable by the user
      * @throws TemplateException if the page template couldn't be 
      *             processed correctly 
      */
     private void processPreview(Request request,
                                 ContentSite site,
                                 String path)
-        throws RequestException, ContentException, TemplateException {
+        throws RequestException, ContentException, 
+               ContentSecurityException, TemplateException {
 
-        ContentManager  manager = getContentManager();
-        Content         page;
-        String          revision;
+        Content  page;
+        String   revision;
 
-        page = manager.findPage(site, path);
+        page = findPage(request.getUser(), site, path);
         revision = request.getParameter("revision");
         if (page != null && revision != null) {
             page = page.getRevision(Integer.parseInt(revision));
         }
+        // TODO: check for folder paths not ending with /
         if (page instanceof ContentSite || page instanceof ContentFolder) {
-            page = manager.findIndexPage(page);
+            page = findIndexPage(request.getUser(), page);
         }
         if (page == null) {
             throw RequestException.RESOURCE_NOT_FOUND;
-        } else if (!page.hasReadAccess(request.getUser())) {
-            throw RequestException.FORBIDDEN;
         } else {
             request.setSite((ContentSite) site);
             processPreview(request, page);
