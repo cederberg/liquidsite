@@ -107,17 +107,29 @@ public class DialogView {
 
     /**
      * Shows the content publish dialog.
-     * 
+     *
      * @param request        the request object
      * @param content        the content object to publish
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void viewPublish(Request request, Content content) {
-        User    user = request.getUser();
-        String  dateStr = request.getParameter("date");
-        String  comment = request.getParameter("comment");
+    public void viewPublish(Request request, Content content)
+        throws ContentException {
+
+        User       user = request.getUser();
+        String     dateStr = request.getParameter("date");
+        String     comment = request.getParameter("comment");
+        Content[]  revisions;
+        Date       date;
 
         if (dateStr == null) {
-            dateStr = AdminUtils.formatDate(user, new Date());
+            revisions = content.getAllRevisions();
+            date = revisions[0].getOnlineDate();
+            if (date == null || date.after(new Date())) {
+                date = new Date();
+            }
+            dateStr = AdminUtils.formatDate(user, date);
         }
         if (comment == null) {
             if (content.getRevisionNumber() == 0) {
