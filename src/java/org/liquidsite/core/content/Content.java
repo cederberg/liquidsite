@@ -737,6 +737,10 @@ public class Content extends PersistentObject {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
+        AttributeData  attr;
+        Iterator       iter;
+        String         str;
+
         if (getDomain().equals("")) {
             throw new ContentException("no domain set for content object");
         } else if (getDomain() == null) {
@@ -744,6 +748,17 @@ public class Content extends PersistentObject {
                                        "'does not exist");
         } else if (getName().equals("")) {
             throw new ContentException("no name set for content object");
+        }
+        iter = attributes.values().iterator();
+        while (iter.hasNext()) {
+            attr = (AttributeData) iter.next();
+            str = attr.getString(AttributeData.DATA);
+            if (str.length() > 30000 && str.getBytes().length > 65535) {
+                str = "content attribute '" +
+                      attr.getString(AttributeData.NAME) +
+                      "' is too large, max 65536 bytes are allowed";
+                throw new ContentException(str);
+            }
         }
     }
 
