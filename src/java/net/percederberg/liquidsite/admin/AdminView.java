@@ -33,6 +33,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
@@ -353,6 +354,7 @@ class AdminView {
             content = (Content) parent;
             if (content.hasWriteAccess(user)) {
                 request.setAttribute("enableFolder", true);
+                request.setAttribute("enablePage", true);
                 request.setAttribute("enableFile", true);
             }
         }
@@ -443,6 +445,76 @@ class AdminView {
         request.sendTemplate("admin/edit-site.ftl");
     }
 
+    /**
+     * Shows the add or edit page page. Either the parent or the page 
+     * object must be specified.
+     * 
+     * @param request        the request object
+     * @param reference      the parent or page object 
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void pageEditPage(Request request, Object reference) 
+        throws ContentException {
+
+        ContentPage  page;
+
+        String     name;
+        String     template;
+        String     comment;
+        HashMap    locals = new HashMap();
+        Iterator   iter;
+        String     value;
+        String     str;
+
+        // Find default values
+        setRequestReference(request, reference);
+        if (reference instanceof ContentPage) {
+            page = (ContentPage) reference;
+            setRequestTemplates(request, page.getDomain(), 0);
+            name = page.getName();
+            template = String.valueOf(page.getTemplateId());
+            comment = "";
+            iter = page.getLocalElementNames().iterator();
+            while (iter.hasNext()) {
+                str = iter.next().toString();
+                value = page.getElement(str);
+                locals.put(str, script.getString(value));
+            }
+        } else {
+            setRequestTemplates(request, 
+                                ((Content) reference).getDomain(), 
+                                0);
+            name = "";
+            template = "0";
+            comment = "Created";
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            template = request.getParameter("template", "0");
+            comment = request.getParameter("comment", "");
+            locals.clear();
+            iter = request.getAllParameters().keySet().iterator();
+            while (iter.hasNext()) {
+                str = iter.next().toString();
+                if (str.startsWith("element.")) {
+                    value = request.getParameter(str);
+                    locals.put(str.substring(8), script.getString(value));
+                }
+            }
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("template", template);
+        request.setAttribute("comment", comment);
+        request.setAttribute("locals", locals);
+        request.sendTemplate("admin/edit-page.ftl");
+    }
+    
     /**
      * Shows the add or edit file page.
      * 

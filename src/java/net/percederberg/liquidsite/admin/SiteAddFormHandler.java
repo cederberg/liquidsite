@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
@@ -81,6 +82,8 @@ class SiteAddFormHandler extends AdminFormHandler {
             SITE_VIEW.pageEditSite(request, parent);
         } else if (category.equals("folder")) {
             SITE_VIEW.pageEditFolder(request, parent, null);
+        } else if (category.equals("page")) {
+            SITE_VIEW.pageEditPage(request, parent);
         } else if (category.equals("file")) {
             SITE_VIEW.pageEditFile(request, parent);
         } else if (category.equals("template")) {
@@ -120,6 +123,10 @@ class SiteAddFormHandler extends AdminFormHandler {
         } else if (category.equals("folder")) {
             if (step == 2) {
                 VALIDATOR.validateFolder(request);
+            }
+        } else if (category.equals("page")) {
+            if (step == 2) {
+                VALIDATOR.validatePage(request);
             }
         } else if (category.equals("file")) {
             if (step == 2) {
@@ -176,6 +183,8 @@ class SiteAddFormHandler extends AdminFormHandler {
             handleAddSite(request, (Domain) parent);
         } else if (category.equals("folder")) {
             handleAddFolder(request, (Content) parent);
+        } else if (category.equals("page")) {
+            handleAddPage(request, (Content) parent);
         } else if (category.equals("file")) {
             handleAddFile(request, (Content) parent);
         } else if (category.equals("template")) {
@@ -266,6 +275,47 @@ class SiteAddFormHandler extends AdminFormHandler {
     }
 
     /**
+     * Handles the add page form.
+     * 
+     * @param request        the request object
+     * @param parent         the parent content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleAddPage(Request request, Content parent) 
+        throws ContentException, ContentSecurityException {
+
+        ContentPage  page;
+        Map          params = request.getAllParameters();
+        Iterator     iter = params.keySet().iterator();
+        String       name;
+        String       value;
+        int          id;
+        
+        page = new ContentPage(parent);
+        page.setName(request.getParameter("name"));
+        try {
+            id = Integer.parseInt(request.getParameter("template"));
+        } catch (NumberFormatException ignore) {
+            id = 0;
+        }
+        page.setTemplateId(id);
+        page.setComment(request.getParameter("comment"));
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("element.")) {
+                value = params.get(name).toString();
+                page.setElement(name.substring(8), value);
+            }
+        }
+        page.save(request.getUser());
+        SITE_VIEW.setSiteTreeFocus(request, page);
+    }
+
+    /**
      * Handles the add file form.
      * 
      * @param request        the request object
@@ -333,5 +383,4 @@ class SiteAddFormHandler extends AdminFormHandler {
         template.save(request.getUser());
         SITE_VIEW.setSiteTreeFocus(request, template);
     }
-
 }

@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
@@ -613,6 +614,8 @@ class AdminScript {
             return "site";
         case Content.FOLDER_CATEGORY:
             return "folder";
+        case Content.PAGE_CATEGORY:
+            return "page";
         case Content.FILE_CATEGORY:
             return "file";
         case Content.TEMPLATE_CATEGORY:
@@ -638,6 +641,9 @@ class AdminScript {
         } else if (content instanceof ContentFolder) {
             return getContentUrl(content.getParent()) +  
                    content.toString() + "/"; 
+        } else if (content instanceof ContentPage) {
+            return getContentUrl(content.getParent()) +  
+                   content.toString(); 
         } else if (content instanceof ContentFile) {
             return getContentUrl(content.getParent()) +  
                    content.toString(); 

@@ -208,7 +208,6 @@ function treeInternalIsContainer(type) {
     return type == "domain" 
         || type == "site"
         || type == "folder"
-        || type == "page"
         || type == "template";
 }
 
@@ -221,28 +220,14 @@ function treeInternalIsContainer(type) {
  * @return the icon image file name
  */
 function treeInternalGetIcon(type, open) {
-    if (type == "domain" && open == true) {
-        return "domain_open.png";
-    } else if (type == "domain") {
-        return "domain_closed.png";
-    } else if (type == "site" && open == true) {
-        return "site_open.png";
-    } else if (type == "site") {
-        return "site_closed.png";
-    } else if (type == "folder" && open == true) {
-        return "folder_open.png";
-    } else if (type == "folder") {
-        return "folder_closed.png";
-    } else if (type == "page" && open == true) {
-        return "page_open.png";
-    } else if (type == "page") {
-        return "page_closed.png";
-    } else if (type == "template" && open == true) {
-        return "page_open.png";
-    } else if (type == "template") {
-        return "page_closed.png";
+    if (treeInternalIsContainer(type)) {
+        if (open == true) {
+            return type + "_open.png";
+        } else {
+            return type + "_closed.png";
+        }
     } else {
-        return "file.png";
+        return type + ".png";
     }
 }
 

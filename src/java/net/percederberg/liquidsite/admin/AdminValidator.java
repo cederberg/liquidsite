@@ -85,6 +85,11 @@ public class AdminValidator {
     private FormValidator folder = new FormValidator();
 
     /**
+     * The page form validator.
+     */
+    private FormValidator page = new FormValidator();
+
+    /**
      * The file form validator.
      */
     private FormValidator file = new FormValidator();
@@ -158,7 +163,7 @@ public class AdminValidator {
         error = "No revision comment specified";
         site.addRequiredConstraint("comment", error);
 
-        // Add and edit page validator
+        // Add and edit folder validator
         folder.addRequiredConstraint("name", "No folder name specified");
         chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
                 NUMBER_CHARACTERS + ".-_";
@@ -166,6 +171,14 @@ public class AdminValidator {
         folder.addCharacterConstraint("name", chars, error);
         folder.addRequiredConstraint("comment", "No comment specified");
     
+        // Add and edit page validator
+        page.addRequiredConstraint("name", "No page name specified");
+        chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
+                NUMBER_CHARACTERS + ".-_";
+        error = "Page name contains invalid character";
+        page.addCharacterConstraint("name", chars, error);
+        page.addRequiredConstraint("comment", "No comment specified");
+
         // Add and edit file validator
         file.addRequiredConstraint("name", "No file name specified");
         chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
@@ -255,6 +268,19 @@ public class AdminValidator {
         throws FormValidationException {
 
         folder.validate(request);
+    }
+
+    /**
+     * Validates the parameters in an add and edit page request.
+     * 
+     * @param request        the add or edit page request
+     * 
+     * @throws FormValidationException if the form validation failed
+     */
+    public void validatePage(Request request) 
+        throws FormValidationException {
+
+        page.validate(request);
     }
 
     /**

@@ -78,10 +78,25 @@
           </td>
         </tr>
 </#if>
-<#if enableFile?exists>
+<#if enablePage?exists>
         <tr>
           <th style="width: 7em;">
             <input type="radio" tabindex="4" 
+                   name="category" value="page" />
+            Page
+          </th>
+          <td>
+            A web page contains static or dynamic content. The page 
+            consists of page elements with HTML code. Each page 
+            element can be defined in the page or inherited from a 
+            template.
+          </td>
+        </tr>
+</#if>
+<#if enableFile?exists>
+        <tr>
+          <th style="width: 7em;">
+            <input type="radio" tabindex="5" 
                    name="category" value="file" />
             File
           </th>
@@ -95,7 +110,7 @@
 <#if enableTemplate?exists>
         <tr>
           <th style="width: 7em;">
-            <input type="radio" tabindex="5"
+            <input type="radio" tabindex="6"
                    name="category" value="template" />
             Template
           </th>

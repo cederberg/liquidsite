@@ -30,6 +30,7 @@ import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
@@ -72,6 +73,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             SITE_VIEW.pageEditSite(request, (ContentSite) ref);
         } else if (ref instanceof ContentFolder) {
             SITE_VIEW.pageEditFolder(request, null, (ContentFolder) ref);
+        } else if (ref instanceof ContentPage) {
+            SITE_VIEW.pageEditPage(request, (ContentPage) ref);
         } else if (ref instanceof ContentFile) {
             SITE_VIEW.pageEditFile(request, (ContentFile) ref);
         } else if (ref instanceof ContentTemplate) {
@@ -108,6 +111,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             VALIDATOR.validateSite(request);
         } else if (ref instanceof ContentFolder) {
             VALIDATOR.validateFolder(request);
+        } else if (ref instanceof ContentPage) {
+            VALIDATOR.validatePage(request);
         } else if (ref instanceof ContentFile) {
             VALIDATOR.validateFile(request);
         } else if (ref instanceof ContentTemplate) {
@@ -149,6 +154,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             handleEditSite(request, (ContentSite) ref);
         } else if (ref instanceof ContentFolder) {
             handleEditFolder(request, (ContentFolder) ref);
+        } else if (ref instanceof ContentPage) {
+            handleEditPage(request, (ContentPage) ref);
         } else if (ref instanceof ContentFile) {
             handleEditFile(request, (ContentFile) ref);
         } else if (ref instanceof ContentTemplate) {
@@ -201,6 +208,53 @@ class SiteEditFormHandler extends AdminFormHandler {
         folder.setName(request.getParameter("name"));
         folder.setComment(request.getParameter("comment"));
         folder.save(request.getUser());
+    }
+
+    /**
+     * Handles the edit page form.
+     * 
+     * @param request        the request object
+     * @param page           the page content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleEditPage(Request request, 
+                                ContentPage page) 
+        throws ContentException, ContentSecurityException {
+
+        Map              params = request.getAllParameters();
+        Iterator         iter = params.keySet().iterator();
+        String           name;
+        String           value;
+        int              id;
+
+        page.setRevisionNumber(0);
+        page.setName(request.getParameter("name"));
+        try {
+            id = Integer.parseInt(request.getParameter("template"));
+        } catch (NumberFormatException ignore) {
+            id = 0;
+        }
+        page.setTemplateId(id);
+        page.setComment(request.getParameter("comment"));
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("element.")) {
+                value = params.get(name).toString();
+                page.setElement(name.substring(8), value);
+            }
+        }
+        iter = page.getLocalElementNames().iterator();
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (!params.containsKey("element." + name)) {
+                page.setElement(name, null);
+            }
+        }
+        page.save(request.getUser());
     }
 
     /**

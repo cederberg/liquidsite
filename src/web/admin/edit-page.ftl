@@ -11,7 +11,7 @@
         templateAddLocal('${elem}', ${locals[elem]});
 </#list>
         templateDisplay();
-        openTemplate(${parent});
+        openTemplate(${template});
         document.getElementsByName("name").item(0).focus();
     }
 
@@ -54,7 +54,7 @@
       <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
-      <input type="hidden" name="category" value="template" />
+      <input type="hidden" name="category" value="page" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">
@@ -66,13 +66,13 @@
           </td>
           <td colspan="2">
 <#if isadd>
-            <h2>Enter Template Details (Step 2 of 2)</h2>
+            <h2>Enter Page Details (Step 2 of 2)</h2>
 
-            <p>Enter the details of the template you wish to add.</p>
+            <p>Enter the details of the page you wish to add.</p>
 <#else>
-            <h2>Enter Template Details (Step 1 of 1)</h2>
+            <h2>Enter Page Details (Step 1 of 1)</h2>
 
-            <p>Edit the details of the template.</p>
+            <p>Edit the details of the page.</p>
 </#if>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
@@ -86,34 +86,33 @@
           <td class="field">
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
-            <p>The template name is used to identify the template 
-            when creating web pages. The names may contain any 
-            character, but the English alphabet is recommended.</p>
+            <p>The page name is part of the URL by which the user 
+            will access the page contents. The page name should use
+            only English alphabet characters or numbers without any 
+            spaces.</p>
           </td>
         </tr>
-<#if !isadd>
         <tr>
           <th>
-            Base&nbsp;Template:
+            Template:
           </th>
           <td class="field">
             <select tabindex="2" onchange="openTemplate(this.value)"
-                    name="parent">
+                    name="template">
               <option value="0">&lt; None &gt;</option>
-  <#list templateIds as id>
-    <#if parent == id>
+<#list templateIds as id>
+  <#if template == id>
               <option value="${id}" selected="selected">${templateNames[id]?xml}</option>
-    <#else>
+  <#else>
               <option value="${id}">${templateNames[id]?xml}</option>
-    </#if>
-  </#list>
+  </#if>
+</#list>
             </select>
-            <p>The base template provides a set of inherited page 
+            <p>The template provides a set of inherited page 
             elements. Note that changing base template will modify
             the inherited page elements below.</p>
           </td>
         </tr>
-</#if>
         <tr>
           <th>
             Comment:

@@ -498,17 +498,7 @@ function objectInternalGetHostTable() {
  * @return the icon image file name
  */
 function objectInternalGetIcon(type) {
-    if (type == "domain") {
-        return "domain.png";
-    } else if (type == "site") {
-        return "site.png";
-    } else if (type == "folder") {
-        return "folder.png";
-    } else if (type == "page" || type == "template") {
-        return "page.png";
-    } else {
-        return "file.png";
-    }
+    return type + ".png";
 }
 
 /**
