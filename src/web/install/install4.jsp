@@ -2,19 +2,22 @@
 String host = (String) request.getAttribute("host");
 String rootUsername = (String) request.getAttribute("rootUsername");
 String rootPassword = (String) request.getAttribute("rootPassword");
-String database = (String) request.getAttribute("database");
 String dbsel = (String) request.getAttribute("dbsel");
+String database = (String) request.getAttribute("database");
 String usersel = (String) request.getAttribute("usersel");
 String username = (String) request.getAttribute("username");
 String password = (String) request.getAttribute("password");
 String verify = (String) request.getAttribute("verify");
+
+String db = (dbsel.equals("")) ? database : dbsel;
+String user = (usersel.equals("")) ? username : usersel;
 %>
 <%@ include file="header.jsp" %>
 
-  <h2>Liquid Site Installation (4 of 5)</h2>
+  <h2>Liquid Site Installation (Step 4 of 5)</h2>
 
   <form method="post" action="install.html">
-    <input type="hidden" name="step" value="5" />
+    <input type="hidden" name="step" value="4" />
     <input type="hidden" name="host" value="<%= host %>" />
     <input type="hidden" name="rootUsername" value="<%= rootUsername %>" />
     <input type="hidden" name="rootPassword" value="<%= rootPassword %>" />
@@ -37,18 +40,13 @@ String verify = (String) request.getAttribute("verify");
       </tr>
   
       <tr>
-        <td>Root password:</td>
-        <td><%= rootPassword %></td>
-      </tr>
-  
-      <tr>
         <td>Database:</td>
-        <td><%= database %></td>
+        <td><%= db %></td>
       </tr>
   
       <tr>
         <td>Username:</td>
-        <td><%= username %></td>
+        <td><%= user %></td>
       </tr>
 
       <tr>
