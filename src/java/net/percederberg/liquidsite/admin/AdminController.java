@@ -82,6 +82,7 @@ public class AdminController extends Controller {
         workflows.add(new SiteEditFormHandler());
         workflows.add(new PublishDialogHandler());
         workflows.add(new UnpublishDialogHandler());
+        workflows.add(new RevertDialogHandler());
         workflows.add(new DeleteDialogHandler());
     }
 
@@ -135,8 +136,6 @@ public class AdminController extends Controller {
             processLogout(request);
         } else if (path.equals("edit-home.html")) {
             processEditUser(request);
-        } else if (path.equals("revert-site.html")) {
-            processRevertObject(request);
         } else if (path.equals("unlock-site.html")) {
             processUnlockObject(request);
         } else if (path.equals("view.html")) {
@@ -316,48 +315,6 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Processes the revert object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processRevertObject(Request request) 
-        throws RequestException {
-
-        User     user = request.getUser();
-        Content  content;
-        Content  revision;
-        
-        try {
-            content = (Content) view.getRequestReference(request);
-            revision = content.getRevision(0);
-            if (revision != null) {
-                content = revision;
-            }
-            if (request.getParameter("cancel") != null) {
-                removeLock(content, user, false);
-                view.dialogClose(request);
-            } else if (request.getParameter("confirmed") == null) {
-                checkLock(content, user, true);
-                view.dialogRevert(request, content);
-            } else {
-                checkLock(content, user, false);
-                content.deleteRevision(user);
-                removeLock(content, user, false);
-                view.dialogClose(request);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.dialogError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.dialogError(request, e);
-        }
-    }
-
-    /**
      * Processes the unlock object requests for the site view.
      * 
      * @param request        the request object
@@ -461,37 +418,6 @@ public class AdminController extends Controller {
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
-        }
-    }
-    
-    /**
-     * Checks or acquires a content lock. This method will verify 
-     * that any existing lock is owned by the correct user.
-     * 
-     * @param content        the content object
-     * @param user           the user owning the lock
-     * @param acquire        the acquire lock flag
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't own and
-     *             couldn't acquire the lock 
-     */
-    private void checkLock(Content content, User user, boolean acquire) 
-        throws ContentException, ContentSecurityException {
-
-        Lock  lock = content.getLock();
-
-        if (lock == null && acquire) {
-            lock = new Lock(content);
-            lock.save(user);
-        } else if (lock == null) {
-            throw new ContentSecurityException(
-                "object is not locked by " + user.getName());
-        } else if (!lock.isOwner(user)) {
-            throw new ContentSecurityException(
-                "object locked by " + lock.getUserName() +
-                " since " + DATE_FORMAT.format(lock.getAcquiredDate()));
         }
     }
     
