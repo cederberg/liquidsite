@@ -465,20 +465,12 @@ public class AdminController extends Controller {
         
         try {
             obj = view.getRequestReference(request);
-            if (obj instanceof Domain) {
-                if (request.getParameter("confirmed") == null) {
-                    view.dialogDeleteDomain(request, (Domain) obj);
-                } else {
-                    processDeleteDomain(request, (Domain) obj);
-                }
-            } else if (obj instanceof Site) {
-                if (request.getParameter("confirmed") == null) {
-                    view.dialogDeleteSite(request, (Site) obj);
-                } else {
-                    processDeleteContent(request, (Site) obj);
-                }
+            if (request.getParameter("confirmed") == null) {
+                view.dialogDelete(request, obj);
+            } else if (obj instanceof Domain) {
+                processDeleteDomain(request, (Domain) obj);
             } else {
-                view.dialogClose(request);  
+                processDeleteContent(request, (Content) obj);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());

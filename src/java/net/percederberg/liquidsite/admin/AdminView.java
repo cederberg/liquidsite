@@ -110,27 +110,22 @@ class AdminView {
     }
 
     /**
-     * Shows the delete domain confirmation dialog.
+     * Shows the delete object confirmation dialog.
      * 
      * @param request        the request object
-     * @param domain         the domain to delete
+     * @param obj            the domain or content object to delete
      */
-    public void dialogDeleteDomain(Request request, Domain domain) {
-        setRequestReference(request, domain);
-        request.setAttribute("name", domain.getName());
-        request.sendTemplate("admin/dialog/delete-domain.ftl");
-    }
+    public void dialogDelete(Request request, Object obj) {
+        String  name;
 
-    /**
-     * Shows the delete site confirmation dialog.
-     * 
-     * @param request        the request object
-     * @param site           the site to delete
-     */
-    public void dialogDeleteSite(Request request, Site site) {
-        setRequestReference(request, site);
-        request.setAttribute("name", site.getName());
-        request.sendTemplate("admin/dialog/delete-site.ftl");
+        setRequestReference(request, obj);
+        if (obj instanceof Domain) {
+            name = ((Domain) obj).getName();
+        } else {
+            name = ((Content) obj).getName();
+        }
+        request.setAttribute("name", name);
+        request.sendTemplate("admin/dialog/delete-object.ftl");
     }
 
     /**

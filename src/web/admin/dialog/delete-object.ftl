@@ -1,4 +1,4 @@
-<#assign title = "Delete Site">
+<#assign title>Delete ${type?cap_first}</#assign>
 <#include "header.ftl">
 
     <form method="post">
@@ -11,17 +11,30 @@
             <img src="images/icons/48x48/delete.png" alt="Delete" />
           </td>
           <td>
-            <h2>Delete Site '${name}'</h2>
+            <h2>Delete ${type?cap_first} '${name}'</h2>
           </td>
         </tr>
         <tr>
           <td>
             <strong>Are you sure you wish to delete this
-            site?</strong>
+            ${type}?</strong>
 
-            <p>Deleting the site will remove all pages and files
-            in the site, without possibility to recover at a later 
-            date. Use "Unpublish" to only take the site offline.</p>
+<#if type = "domain">
+            <p>Deleting the domain will 
+            <span class="important">remove all sites, pages and 
+            content in the domain</span> from the system, without 
+            possibility to recover at a later date. Use "Unpublish" 
+            to only take sites or content offline.</p>
+<#elseif type = "site" || type = "folder">
+            <p>Deleting the ${type} will remove it and all child 
+            pages from the database, without possibility to recover
+            at a later date. Use "Unpublish" to only take the ${type}
+            offline.</p>
+<#else>
+            <p>Deleting the ${type} will remove it from the database, 
+            without possibility to recover at a later date. Use 
+            "Unpublish" to only take the ${type} offline.</p>
+</#if>
           </td>
         </tr>
         <tr>
