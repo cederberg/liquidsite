@@ -246,7 +246,7 @@ function tagEditInternalAddLink(editor) {
     url = prompt("Enter the link (URL) for the selection:", "");
     if (url != null) {
         tagEditInternalAdjustSelection(editor, false);
-        tagEditInternalInsert(editor, "<link=" + url + ">", "</link>");
+        tagEditInternalInsert(editor, "<link url=" + url + ">", "</link>");
         tagEditInternalStoreUndo(editor);
     }
 }
@@ -261,7 +261,7 @@ function tagEditInternalAddImage(editor) {
 
     url = prompt("Enter image location (URL):", "");
     if (url != null) {
-        tagEditInternalInsert(editor, "<image=" + url + ">", null);
+        tagEditInternalInsert(editor, "<image url=" + url + ">", null);
         tagEditInternalStoreUndo(editor);
     }
 }

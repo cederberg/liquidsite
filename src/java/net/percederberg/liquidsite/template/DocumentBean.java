@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import freemarker.template.SimpleDate;
 import freemarker.template.SimpleNumber;
@@ -333,47 +334,108 @@ public class DocumentBean implements TemplateHashModel {
      * @return the HTML encoded result
      */
     private String processTag(String tag) {
-        if (tag.equals("<p>") || tag.equals("</p>")) {
-            return tag;
-        } else if (tag.equals("<h1>") || tag.equals("</h1>")) {
-            return tag;
-        } else if (tag.equals("<h2>") || tag.equals("</h2>")) {
-            return tag;
-        } else if (tag.equals("<h3>") || tag.equals("</h3>")) {
-            return tag;
-        } else if (tag.equals("<b>") || tag.equals("</b>")) {
-            return tag;
-        } else if (tag.equals("<i>") || tag.equals("</i>")) {
-            return tag;
-        } else if (tag.startsWith("<link=")) {
-            return "<a href=\"" + tag.substring(6, tag.length() - 1) +
-                   "\">";
-        } else if (tag.equals("</link>")) {
+        String   name;
+        HashMap  attrs;
+        int      pos;
+        String   str;
+
+        // Parse tag
+        pos = tag.indexOf(" ");
+        if (pos > 0) {
+            name = tag.substring(1, pos);
+            attrs = processTagAttributes(tag.substring(pos, tag.length() - 1));
+        } else {
+            name = tag.substring(1, tag.length() - 1);
+            attrs = new HashMap(0);
+        }
+        if (name.equals("p") || name.equals("/p")
+         || name.equals("h1") || name.equals("/h1")
+         || name.equals("h2") || name.equals("/h2")
+         || name.equals("h3") || name.equals("/h3")
+         || name.equals("b") || name.equals("/b")
+         || name.equals("i") || name.equals("/i")) {
+
+            return "<" + name + ">";
+        } else if (name.equals("link")) {
+            str = (String) attrs.get("window");
+            if (str != null && str.equals("new")) {
+                return "<a href=\"" + attrs.get("url") + "\" target=\"_new\">";
+            } else {
+                return "<a href=\"" + attrs.get("url") + "\">";
+            }
+        } else if (name.equals("/link")) {
             return "</a>";
-        } else if (tag.startsWith("<image=")) {
-            return "<img src=\"" + tag.substring(7, tag.length() - 1) +
-                   "\" />";
-        } else if (tag.startsWith("<list")) {
-            if (tag.equals("<list=1>")) {
+        } else if (name.equals("image")) {
+            str = (String) attrs.get("layout");
+            if (str != null && str.equals("right")) {
+                return "<img src=\"" + attrs.get("url") + 
+                       "\" style=\"float: right;\" />";
+            } else if (str != null && str.equals("left")) {
+                return "<img src=\"" + attrs.get("url") + 
+                       "\" style=\"float: left;\" />";
+            } else {
+                return "<img src=\"" + attrs.get("url") + "\" />";
+            }
+        } else if (name.equals("list")) {
+            str = (String) attrs.get("type");
+            if (str != null && str.equals("*")) {
+                return "<ul style=\"list-style-type: disc;\">";
+            } else if (str != null && str.equals("1")) {
                 return "<ul style=\"list-style-type: decimal;\">";
-            } else if (tag.equals("<list=i>")) {
+            } else if (str != null && str.equals("i")) {
                 return "<ul style=\"list-style-type: lower-roman;\">";
-            } else if (tag.equals("<list=I>")) {
+            } else if (str != null && str.equals("I")) {
                 return "<ul style=\"list-style-type: upper-roman;\">";
-            } else if (tag.equals("<list=a>")) {
+            } else if (str != null && str.equals("a")) {
                 return "<ul style=\"list-style-type: lower-alpha;\">";
-            } else if (tag.equals("<list=A>")) {
+            } else if (str != null && str.equals("A")) {
                 return "<ul style=\"list-style-type: upper-alpha;\">";
             } else {
                 return "<ul>";
             }
-        } else if (tag.equals("</list>")) {
+        } else if (name.equals("/list")) {
             return "</ul>";
-        } else if (tag.equals("<item>")) {
+        } else if (name.equals("item")) {
             return "<li>";
         } else {
             return "";
         }
+    }
+
+    private HashMap processTagAttributes(String attrs) {
+        HashMap  result = new HashMap();
+        String   name;
+        String   value;
+        String   str;
+        int      pos;
+
+        attrs = attrs.trim();
+        while (attrs.length() > 0) {
+            pos = attrs.indexOf(" ");
+            if (pos > 0) {
+                str = attrs.substring(0, pos);
+                attrs = attrs.substring(pos).trim();
+            } else {
+                str = attrs;
+                attrs = "";
+            }
+            pos = str.indexOf("=");
+            if (pos > 0) {
+                name = str.substring(0, pos);
+                value = str.substring(pos + 1);
+            } else {
+                name = str;
+                value = "";
+            }
+            if (value.startsWith("\"")) {
+                value = value.substring(1);
+            }
+            if (value.endsWith("\"")) {
+                value = value.substring(0, value.length() - 1);
+            }
+            result.put(name, value);
+        }
+        return result;
     }
 
     /**
