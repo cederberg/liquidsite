@@ -547,7 +547,11 @@ public class ContentManager {
      *         an empty string if no match was found
      */
     private String findPageMatch(Content page, String path) {
-        if (!page.isOnline() || page.getRevisionNumber() < 1) {
+        // TODO: semantics should probably change, normal access
+        //       control should be used instead, see canRead()
+        if (admin) {
+            // Do nothing
+        } else if (!page.isOnline() || page.getRevisionNumber() < 1) {
             return ""; 
         }
         switch (page.getCategory()) {

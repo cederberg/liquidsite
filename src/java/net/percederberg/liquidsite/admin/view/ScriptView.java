@@ -445,6 +445,7 @@ public class ScriptView {
         StringBuffer  buffer = new StringBuffer();
         Content[]     revisions;
         Content       work = null;
+        String        previewUrl = getPreviewUrl(content);
         
         revisions = content.getAllRevisions();
         for (int i = 0; i < revisions.length; i++) {
@@ -453,11 +454,11 @@ public class ScriptView {
             }
         }
         if (work != null) {
-            buffer.append(getRevision(work));
+            buffer.append(getRevision(work, previewUrl));
         }
         for (int i = 0; i < revisions.length; i++) {
             if (revisions[i] != work) {
-                buffer.append(getRevision(revisions[i]));
+                buffer.append(getRevision(revisions[i], previewUrl));
             }
         }
         return buffer.toString();
@@ -467,10 +468,11 @@ public class ScriptView {
      * Returns the JavaScript for presenting a content revision.
      * 
      * @param revision       the content revison object
+     * @param previewUrl     the content preview URL, or null
      * 
      * @return the JavaScript for presenting a content revision
      */
-    private String getRevision(Content revision) {
+    private String getRevision(Content revision, String previewUrl) {
         StringBuffer  buffer = new StringBuffer();
         
         buffer.append("objectAddRevision(");
@@ -486,14 +488,14 @@ public class ScriptView {
         buffer.append(", ");
         buffer.append(AdminUtils.getScriptString(revision.getComment()));
         buffer.append(", ");
-        if (revision instanceof ContentFile) {
-            buffer.append("'view.html");
-            buffer.append(getLinkParameters(revision));
-            buffer.append("&revision=");
+        if (previewUrl == null) {
+            buffer.append("null");
+        } else {
+            buffer.append("'");
+            buffer.append(previewUrl);
+            buffer.append("?revision=");
             buffer.append(revision.getRevisionNumber());
             buffer.append("'");
-        } else {
-            buffer.append("null");
         }
         buffer.append(");\n");
         return buffer.toString();
@@ -634,6 +636,38 @@ public class ScriptView {
                    content.toString(); 
         } else {
             return "N/A";
+        }
+    }
+
+    /**
+     * Returns the preview URL for a content object.
+     *
+     * @param content        the content object
+     *
+     * @return the preview URL, or
+     *         null if the object cannot be previewed
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getPreviewUrl(Content content) throws ContentException {
+        if (content instanceof ContentSite) {
+            if (((ContentSite) content).isAdmin()) {
+                return null;
+            } else {
+                return "preview/" + content.getId() + "/";
+            }
+        } else if (content instanceof ContentFolder) {
+            return getPreviewUrl(content.getParent()) +  
+                   content.toString() + "/"; 
+        } else if (content instanceof ContentPage) {
+            return getPreviewUrl(content.getParent()) +  
+                   content.toString(); 
+        } else if (content instanceof ContentFile) {
+            return getPreviewUrl(content.getParent()) +  
+                   content.toString(); 
+        } else {
+            return null;
         }
     }
 
