@@ -251,12 +251,19 @@ table.menu td.filler {
 
 /* Form style */
 table.form {
+        margin-top: 1.5em;
+        margin-bottom: 1.5em;
+        margin-left: 10%;
+        margin-right: 10%;
         border: 1px solid black;
         padding: 10px;
         background: rgb(255, 255, 245);
 }
 table.form td.decoration {
         padding-top: 40px;
+}
+table.form td.field {
+        padding-bottom: 1em;
 }
 table.form td.buttons {
         text-align: right;
