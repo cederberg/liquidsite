@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite.admin.view;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -158,6 +157,8 @@ public class ContentView extends AdminView {
         int               parentId = 0;
         ArrayList         properties = new ArrayList();
         DocumentProperty  property;
+        HashMap           map;
+        int               position;
         Iterator          iter;
         String            param;
         String            str;
@@ -179,7 +180,18 @@ public class ContentView extends AdminView {
             } else {
                 comment = "";
             }
-            properties = findSectionProperties(section, false);
+            iter = findSectionProperties(section, false).iterator();
+            while (iter.hasNext()) {
+                property = (DocumentProperty) iter.next();
+                map = new HashMap();
+                map.put("id", property.getId());
+                str = property.getName();
+                map.put("name", AdminUtils.getScriptString(str));
+                map.put("type", "" + property.getType());
+                str = property.getDescription();
+                map.put("description", AdminUtils.getScriptString(str));
+                properties.add(map);
+            }
         }
 
         // Adjust for incoming request
@@ -200,19 +212,22 @@ public class ContentView extends AdminView {
                  && param.endsWith(".position")) {
 
                     param = param.substring(0, param.length() - 9);
-                    property = new DocumentProperty(param.substring(9));
+                    map = new HashMap();
+                    map.put("id", param.substring(9));
                     str = request.getParameter(param + ".name");
-                    property.setName(str);
-                    str = request.getParameter(param + ".position");
-                    property.setPosition(Integer.parseInt(str));
+                    map.put("name", AdminUtils.getScriptString(str));
                     str = request.getParameter(param + ".type");
-                    property.setType(Integer.parseInt(str));
+                    map.put("type", str);
                     str = request.getParameter(param + ".description");
-                    property.setDescription(str);
-                    properties.add(property);
+                    map.put("description", AdminUtils.getScriptString(str));
+                    str = request.getParameter(param + ".position");
+                    position = Integer.parseInt(str);
+                    while (position >= properties.size()) {
+                        properties.add(null);
+                    }
+                    properties.set(position, map);
                 }
             }
-            Collections.sort(properties);
         }
 
         // Set request parameters

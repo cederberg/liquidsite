@@ -9,9 +9,9 @@
         propertyInitialize("propertyedit");
 <#list properties as prop>
         propertyAdd('${prop.id}', 
-                    '${prop.name?replace("'","\\'")}', 
+                    ${prop.name}, 
                     ${prop.type}, 
-                    '${prop.description?replace("'","\\'")?replace("\n","\\n")?replace("\r","\\r")}}');
+                    ${prop.description});
 </#list>
         propertyDisplay();
         utilFocusElement("name");
