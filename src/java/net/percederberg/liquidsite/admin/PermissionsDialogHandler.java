@@ -50,7 +50,7 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
      * Creates a new permissions dialog handler.
      */
     public PermissionsDialogHandler() {
-        super("index.html", "permissions.html", true);
+        super("index.html", "permissions.html", false);
     }
 
     /**
