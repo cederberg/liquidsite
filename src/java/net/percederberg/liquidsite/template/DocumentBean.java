@@ -24,12 +24,11 @@ package net.percederberg.liquidsite.template;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import freemarker.template.SimpleDate;
-import freemarker.template.SimpleNumber;
+import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleScalar;
-import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
@@ -66,9 +65,9 @@ public class DocumentBean implements TemplateHashModel {
     private ContentSection baseSection;
 
     /**
-     * The document meta-data bean.
+     * The document meta-data template model.
      */
-    private MetaDataBean metadata;
+    private TemplateModel metadata = null;
 
     /**
      * The request site path.
@@ -105,7 +104,6 @@ public class DocumentBean implements TemplateHashModel {
 
         this.document = document;
         this.baseSection = baseSection;
-        this.metadata = new MetaDataBean(document);
         this.sitePath = sitePath;
     }
 
@@ -127,12 +125,20 @@ public class DocumentBean implements TemplateHashModel {
      *
      * @return the template model object, or
      *         null if the document property wasn't found
+     *
+     * @throws TemplateModelException if an appropriate template model
+     *             couldn't be created
      */
-    public TemplateModel get(String id) {
+    public TemplateModel get(String id) throws TemplateModelException {
+        Object  obj;
         String  str;
         int     type;
 
         if (id.equals("meta")) {
+            if (metadata == null) {
+                obj = new DocumentMetaDataBean(document);
+                metadata = ObjectWrapper.BEANS_WRAPPER.wrap(obj);
+            }
             return metadata;
         } else if (document == null) {
             return new SimpleScalar("");
@@ -449,10 +455,10 @@ public class DocumentBean implements TemplateHashModel {
         } else if (name.equals("image")) {
             str = (String) attrs.get("layout");
             if (str != null && str.equals("right")) {
-                return "<img src=\"" + linkTo((String) attrs.get("url")) + 
+                return "<img src=\"" + linkTo((String) attrs.get("url")) +
                        "\" style=\"float: right;\" />";
             } else if (str != null && str.equals("left")) {
-                return "<img src=\"" + linkTo((String) attrs.get("url")) + 
+                return "<img src=\"" + linkTo((String) attrs.get("url")) +
                        "\" style=\"float: left;\" />";
             } else {
                 return "<img src=\"" + linkTo((String) attrs.get("url")) +
@@ -563,70 +569,6 @@ public class DocumentBean implements TemplateHashModel {
             // TODO: use translator path if possible
             return sitePath + "liquidsite.obj/" + document.getId() +
                    "/" + path;
-        }
-    }
-
-
-    /**
-     * A document meta-data bean.
-     *
-     * @author   Per Cederberg, <per at percederberg dot net>
-     * @version  1.0
-     */
-    private class MetaDataBean implements TemplateHashModel {
-
-        /**
-         * The document being encapsulated.
-         */
-        private ContentDocument document;
-
-        /**
-         * Creates a new meta-data bean.
-         *
-         * @param document       the content document
-         */
-        public MetaDataBean(ContentDocument document) {
-            this.document = document;
-        }
-
-        /**
-         * Checks if the hash model is empty.
-         *
-         * @return false as the hash model is never empty
-         */
-        public boolean isEmpty() {
-            return false;
-        }
-
-        /**
-         * Returns a meta-data property as a template model.
-         *
-         * @param name           the property name
-         *
-         * @return the template model object, or
-         *         null if the property wasn't found
-         */
-        public TemplateModel get(String name) {
-            if (document == null) {
-                return new SimpleScalar("");
-            } else if (name.equals("id")) {
-                return new SimpleNumber(document.getId());
-            } else if (name.equals("revision")) {
-                return new SimpleNumber(document.getRevisionNumber());
-            } else if (name.equals("date")) {
-                return new SimpleDate(document.getModifiedDate(),
-                                      SimpleDate.DATETIME);
-            } else if (name.equals("online")) {
-                return new TemplateBooleanModel() {
-                    public boolean getAsBoolean() {
-                        return document.isOnline();
-                    }
-                };
-            } else if (name.equals("user")) {
-                return new SimpleScalar(document.getAuthorName());
-            } else {
-                return null;
-            }
         }
     }
 }
