@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
 <% 
-String  error = (String) request.getAttribute("error");
+    String  error = (String) request.getAttribute("error");
 %>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "DTD/xhtml1-strict.dtd">
 
@@ -15,7 +15,7 @@ String  error = (String) request.getAttribute("error");
     <title>Liquid Site Administration</title>
   </head>
 
-  <body>
+  <body onload="document.getElementsByName('liquidsite.login').item(0).focus()">
 
     <table class="menu">
       <tr>
@@ -44,7 +44,7 @@ String  error = (String) request.getAttribute("error");
       </tr>
     </table>
 
-    <form method="post" action="index.html">
+    <form method="post">
       <table class="form">
         <tr>
           <td class="decoration" rowspan="4">
