@@ -162,6 +162,9 @@ td {
 }
 
 /* Form style */
+input.disabled {
+        background: rgb(230, 230, 230);
+}
 button {
         height: 32px;
         margin-top: 8px;

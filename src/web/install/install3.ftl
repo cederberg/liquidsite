@@ -9,9 +9,13 @@
         if (user1.value == "") {
             user2.disabled = "";
             pwd2.disabled = "";
+            user2.className = "";
+            pwd2.className = "";
         } else {
             user2.disabled = "disabled";
             pwd2.disabled = "disabled";
+            user2.className = "disabled";
+            pwd2.className = "disabled";
         }
     }
 
