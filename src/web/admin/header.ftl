@@ -53,16 +53,17 @@
         <td class="space">&nbsp;</td>
   <#if url?ends_with(page)>
         <td class="active"
+            onclick="window.location='${page}'"
             onmouseover="this.className='hoover'"
             onmouseout="this.className='active'">
-          <strong>${name}</strong>
+          <a href="${page}">${name}</a>
         </td>
   <#elseif isindex && (url?ends_with("/") || url?ends_with("index.html"))>
         <td class="active"
             onclick="window.location='${page}'"
             onmouseover="this.className='hoover'"
             onmouseout="this.className='active'">
-          <strong>${name}</strong>
+          <a href="${page}">${name}</a>
         </td>
   <#else>
         <td class="inactive"
