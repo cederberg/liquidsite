@@ -106,7 +106,7 @@ public class MultiPartRequest extends Request {
 
         // Create multi-part parser
         dir = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
-        size = config.getInt(Configuration.UPLOAD_MAX_SIZE, 1000000);
+        size = config.getInt(Configuration.UPLOAD_MAX_SIZE, 10000000);
         parser.setRepositoryPath(dir);
         parser.setSizeMax(size);
         parser.setSizeThreshold(4096);

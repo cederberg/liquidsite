@@ -721,7 +721,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         config.set(Configuration.FILE_DIRECTORY, dataDir);
         config.set(Configuration.UPLOAD_DIRECTORY, 
                    application.getBaseDir() + "/tmp");
-        config.set(Configuration.UPLOAD_MAX_SIZE, 1000000);
+        config.set(Configuration.UPLOAD_MAX_SIZE, 10000000);
         config.write(con);
     }
 
