@@ -329,7 +329,23 @@ public class Site extends Content {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
+        Site[]  sites = findByDomain(getDomain());
+
         super.validate();
-        // TODO: implement validation controls
+        if (!getProtocol().equals("http") && !getProtocol().equals("https")) {
+            throw new ContentException("protocol must be 'http' or 'https'");
+        } else if (getHost().equals("")) {
+            throw new ContentException("no host name set for site");
+        }
+        for (int i = 0; i < sites.length; i++) {
+            if (sites[i].getProtocol().equals(getProtocol())
+             && sites[i].getHost().equals(getHost())
+             && sites[i].getPort() == getPort()
+             && sites[i].getDirectory().equals(getDirectory())) {
+
+                throw new ContentException("an identical site is already " +
+                                           "in the database");
+            }
+        }
     }
 }
