@@ -120,7 +120,14 @@
             File&nbsp;Content:
           </th>
           <td class="field">
-            <textarea tabindex="4" cols="70" rows="30"
+  <#assign rows = 10>
+  <#list content?split("\n") as str>
+    <#assign rows = rows + 1>
+    <#if (str?length > 70)>
+      <#assign rows = rows + 1>
+    </#if>
+  </#list>
+            <textarea tabindex="4" cols="70" rows="${rows}"
                       name="content">${content}</textarea>
             <p>The file content. The file data can either be edited
             here or being uploaded.</p>
