@@ -27,6 +27,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.form.FormValidator;
 
 /**
  * The home edit request handler. This class handles the edit user 
@@ -38,10 +39,40 @@ import net.percederberg.liquidsite.form.FormValidationException;
 class HomeEditFormHandler extends AdminFormHandler {
 
     /**
+     * The edit user form validator.
+     */
+    private FormValidator editUser = new FormValidator();
+
+    /**
+     * The edit password form validator.
+     */
+    private FormValidator editPassword = new FormValidator();
+
+    /**
      * Creates a new home edit request handler.
      */
     public HomeEditFormHandler() {
         super("home.html", "edit-home.html", false);
+        initialize();
+    }
+        
+    /**
+     * Initializes the form validators.
+     */
+    private void initialize() {
+        String  error;
+
+        // Edit user validator
+        error = "No user name specified";
+        editUser.addRequiredConstraint("name", error);
+
+        // Edit password validator
+        error = "Existing password not specified";
+        editPassword.addRequiredConstraint("password0", error);
+        error = "New password not specified";
+        editPassword.addRequiredConstraint("password1", error);
+        error = "Verification of new password not specified";
+        editPassword.addRequiredConstraint("password2", error);
     }
 
     /**
@@ -74,12 +105,20 @@ class HomeEditFormHandler extends AdminFormHandler {
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        User  user = request.getUser();
+        User    user = request.getUser();
+        String  pass1;
+        String  pass2;
 
         if (request.getParameter("edituser", "").equals("true")) {
-            VALIDATOR.validateEditUser(request);
+            editUser.validate(request);
         } else {
-            VALIDATOR.validateEditPassword(request);
+            editPassword.validate(request);
+            pass1 = request.getParameter("password1");
+            pass2 = request.getParameter("password2");
+            if (!pass1.equals(pass2)) {
+                pass1 = "The password verification doesn't match new password";
+                throw new FormValidationException("password2", pass1);
+            }
             if (!user.verifyPassword(request.getParameter("password0"))) {
                 throw new FormValidationException(
                     "password0",

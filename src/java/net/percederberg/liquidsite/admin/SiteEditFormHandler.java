@@ -36,6 +36,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.form.FormValidator;
 
 /**
  * The site edit request handler. This class handles the edit 
@@ -46,11 +47,126 @@ import net.percederberg.liquidsite.form.FormValidationException;
  */
 class SiteEditFormHandler extends AdminFormHandler {
 
+    /***
+     * The latest object instance created.
+     */
+    private static SiteEditFormHandler instance = null;
+
+    /**
+     * The domain form validator.
+     */
+    private FormValidator domain = new FormValidator();
+
+    /**
+     * The site form validator.
+     */
+    private FormValidator site = new FormValidator();
+
+    /**
+     * The folder form validator.
+     */
+    private FormValidator folder = new FormValidator();
+
+    /**
+     * The page form validator.
+     */
+    private FormValidator page = new FormValidator();
+
+    /**
+     * The file form validator.
+     */
+    private FormValidator file = new FormValidator();
+
+    /**
+     * The template form validator.
+     */
+    private FormValidator template = new FormValidator();
+
+    /**
+     * Returns an instance of this class. If a prior instance has 
+     * been created, it will be returned instead of creating a new
+     * one. 
+     * 
+     * @return an instance of a site edit form handler
+     */
+    public static SiteEditFormHandler getInstance() {
+        if (instance == null) {
+            return new SiteEditFormHandler();
+        } else {
+            return instance;
+        }
+    }
+
     /**
      * Creates a new site edit request handler.
      */
     public SiteEditFormHandler() {
         super("site.html", "edit-site.html", true);
+        instance = this;
+        initialize();
+    }
+
+    /**
+     * Initializes all the form validators.
+     */
+    private void initialize() {
+        String  upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String  lowerCase = "abcdefghijklmonpqrstuvwxyz";
+        String  numbers = "0123456789";
+        String  domainChars = upperCase + numbers;
+        String  hostChars = lowerCase + numbers + ".-_";
+        String  nameChars = upperCase + lowerCase + numbers + ".-_";
+        String  error;
+        
+        // Add and edit domain validator
+        domain.addRequiredConstraint("name", "No domain name specified");
+        error = "Domain name must be upper-case, invalid character";
+        domain.addCharacterConstraint("name", domainChars, error);
+        error = "No description specified";
+        domain.addRequiredConstraint("description", error);
+        domain.addRequiredConstraint("host", "No host name specified");
+        error = "Host name must be lower-case, invalid character";
+        domain.addCharacterConstraint("host", hostChars, error);
+
+        // Add and edit site validator
+        site.addRequiredConstraint("name", "No site name specified");
+        site.addRequiredConstraint("protocol", "No protocol specified");
+        error = "Protocol must be either 'http' or 'https', " +
+                "invalid character";
+        site.addCharacterConstraint("protocol", "https", error);
+        site.addRequiredConstraint("host", "No host name specified");
+        error = "Host name must be lower-case, invalid character";
+        site.addCharacterConstraint("host", hostChars + "*", error);
+        site.addRequiredConstraint("port", "No port number specified");
+        error = "Port number must be numeric, invalid character";
+        site.addCharacterConstraint("port", numbers, error);
+        site.addRequiredConstraint("dir", "No base directory specified");
+        error = "Base directory contains invalid character";
+        site.addCharacterConstraint("dir", nameChars + "/", error);
+        error = "No revision comment specified";
+        site.addRequiredConstraint("comment", error);
+
+        // Add and edit folder validator
+        folder.addRequiredConstraint("name", "No folder name specified");
+        error = "Folder name contains invalid character";
+        folder.addCharacterConstraint("name", nameChars, error);
+        folder.addRequiredConstraint("comment", "No comment specified");
+    
+        // Add and edit page validator
+        page.addRequiredConstraint("name", "No page name specified");
+        error = "Page name contains invalid character";
+        page.addCharacterConstraint("name", nameChars, error);
+        page.addRequiredConstraint("comment", "No comment specified");
+
+        // Add and edit file validator
+        file.addRequiredConstraint("name", "No file name specified");
+        error = "File name contains invalid character";
+        file.addCharacterConstraint("name", nameChars, error);
+        file.addRequiredConstraint("comment", "No comment specified");
+
+        // Add and edit template validator
+        template.addRequiredConstraint("name", "No template name specified");
+        template.addRequiredConstraint("comment", "No comment specified");
     }
 
     /**
@@ -98,32 +214,29 @@ class SiteEditFormHandler extends AdminFormHandler {
      * @param request        the request object
      * @param step           the workflow step
      * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
      * @throws FormValidationException if the form request data 
      *             validation failed
      */
     protected void validateStep(Request request, int step)
-        throws ContentException, ContentSecurityException, 
-               FormValidationException {
+        throws FormValidationException {
 
-        Object  ref = AdminUtils.getReference(request);
+        String  category = request.getParameter("category", "");
         String  message;
 
-        if (ref instanceof ContentSite) {
-            VALIDATOR.validateSite(request);
-        } else if (ref instanceof ContentFolder) {
-            VALIDATOR.validateFolder(request);
-        } else if (ref instanceof ContentPage) {
-            VALIDATOR.validatePage(request);
-        } else if (ref instanceof ContentFile) {
-            VALIDATOR.validateFile(request);
-        } else if (ref instanceof ContentTemplate) {
-            VALIDATOR.validateTemplate(request);
+        if (category.equals("domain")) {
+            domain.validate(request);
+        } else if (category.equals("site")) {
+            site.validate(request);
+        } else if (category.equals("folder")) {
+            folder.validate(request);
+        } else if (category.equals("page")) {
+            page.validate(request);
+        } else if (category.equals("file")) {
+            file.validate(request);
+        } else if (category.equals("template")) {
+            template.validate(request);
         } else {
-            message = "Cannot edit this object";
+            message = "Unknown content category specified";
             throw new FormValidationException("category", message);
         }
     }

@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.form.FormValidator;
 
 /**
  * The publish request handler. This class handles the publish dialog 
@@ -43,10 +44,28 @@ import net.percederberg.liquidsite.form.FormValidationException;
 class PublishDialogHandler extends AdminDialogHandler {
 
     /**
+     * The form validator.
+     */
+    private FormValidator validator = new FormValidator();
+
+    /**
      * Creates a new publish request handler.
      */
     public PublishDialogHandler() {
         super("index.html", "publish.html", true);
+        initialize();
+    }
+
+    /**
+     * Initializes the form validator.
+     */
+    private void initialize() {
+        String  error;
+        
+        validator.addRequiredConstraint("date", "No publish date specified");
+        error = "Date format should be 'YYYY-MM-DD HH:MM'";
+        validator.addDateConstraint("date", AdminUtils.DATE_FORMAT, error); 
+        validator.addRequiredConstraint("comment", "No comment specified");
     }
 
     /**
@@ -84,7 +103,7 @@ class PublishDialogHandler extends AdminDialogHandler {
     protected void validateStep(Request request, int step) 
         throws FormValidationException {
 
-        VALIDATOR.validatePublish(request);
+        validator.validate(request);
     }
 
     /**

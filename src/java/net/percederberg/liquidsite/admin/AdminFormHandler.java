@@ -48,11 +48,6 @@ abstract class AdminFormHandler extends FormHandler {
     private static final Log LOG = new Log(AdminFormHandler.class);
 
     /**
-     * The administration validator helper.
-     */
-    protected static final AdminValidator VALIDATOR = new AdminValidator();
-
-    /**
      * The start page for the workflow. This is where redirects go
      * when the workflow is finished.
      */

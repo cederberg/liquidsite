@@ -109,42 +109,25 @@ class SiteAddFormHandler extends AdminFormHandler {
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        String         category = request.getParameter("category", "");
-        FileParameter  param;
-        String         message;
+        SiteEditFormHandler  edit = SiteEditFormHandler.getInstance(); 
+        String               category = request.getParameter("category", "");
+        FileParameter        param;
+        String               message;
 
-        if (category.equals("domain")) {
-            if (step == 2) {
-                VALIDATOR.validateAddDomain(request);
+        if (step == 1) {
+            if (category.equals("")) {
+                message = "No content category specified";
+                throw new FormValidationException("category", message);
             }
-        } else if (category.equals("site")) {
-            if (step == 2) {
-                VALIDATOR.validateSite(request);
-            }
-        } else if (category.equals("folder")) {
-            if (step == 2) {
-                VALIDATOR.validateFolder(request);
-            }
-        } else if (category.equals("page")) {
-            if (step == 2) {
-                VALIDATOR.validatePage(request);
-            }
-        } else if (category.equals("file")) {
-            if (step == 2) {
-                VALIDATOR.validateFile(request);
+        } else {
+            edit.validateStep(request, step);
+            if (category.equals("file")) {
                 param = request.getFileParameter("content");
                 if (param == null || param.getSize() <= 0) {
                     message = "No file content specified"; 
                     throw new FormValidationException("content", message);
                 }
             }
-        } else if (category.equals("template")) {
-            if (step == 2) {
-                VALIDATOR.validateTemplate(request);
-            }
-        } else {
-            message = "No content category specified";
-            throw new FormValidationException("category", message);
         }
     }
 

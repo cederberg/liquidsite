@@ -30,6 +30,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.form.FormValidator;
 
 /**
  * The unpublish request handler. This class handles the unpublish 
@@ -41,10 +42,28 @@ import net.percederberg.liquidsite.form.FormValidationException;
 class UnpublishDialogHandler extends AdminDialogHandler {
 
     /**
+     * The form validator.
+     */
+    private FormValidator validator = new FormValidator();
+
+    /**
      * Creates a new unpublish request handler.
      */
     public UnpublishDialogHandler() {
         super("index.html", "unpublish.html", true);
+        initialize();
+    }
+
+    /**
+     * Initializes the form validator.
+     */
+    private void initialize() {
+        String  error;
+        
+        validator.addRequiredConstraint("date", "No unpublish date specified");
+        error = "Date format should be 'YYYY-MM-DD HH:MM'";
+        validator.addDateConstraint("date", AdminUtils.DATE_FORMAT, error); 
+        validator.addRequiredConstraint("comment", "No comment specified");
     }
 
     /**
@@ -82,7 +101,7 @@ class UnpublishDialogHandler extends AdminDialogHandler {
     protected void validateStep(Request request, int step) 
         throws FormValidationException {
 
-        VALIDATOR.validatePublish(request);
+        validator.validate(request);
     }
 
     /**
