@@ -376,8 +376,8 @@ public class Request {
      */
     public void setUser(User user) {
         if (user == null) {
-            if (session != null) {
-                session.invalidate();
+            if (request.getSession(false) != null) {
+                getSession().invalidate();
                 session = null;
             }
         } else {
