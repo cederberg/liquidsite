@@ -292,8 +292,6 @@ public class AdminUtils {
         User     user = request.getUser();
         String   type = request.getParameter("type");
         String   id = request.getParameter("id");
-        Content  content = null;
-        Content  revision = null;
         String   message;
         int      value;
         
@@ -308,8 +306,7 @@ public class AdminUtils {
                 message = "invalid content id: " + id;
                 throw new ContentSecurityException(message);
             }
-            content = getContentManager().getContent(user, value);
-            return (revision == null) ? content : revision;
+            return getContentManager().getContent(user, value);
         }
     }
     
