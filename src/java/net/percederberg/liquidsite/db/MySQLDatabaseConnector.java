@@ -64,9 +64,8 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         super("jdbc:mysql://" + host + "/");
         setProperty("user", user);
         setProperty("password", password);
-        // TODO: enable UTF-8 encoded Unicode strings?
-        //setProperty("useUnicode", "true");
-        //setProperty("characterEncoding", "UTF-8");
+        setProperty("useUnicode", "true");
+        setProperty("characterEncoding", "UTF-8");
     }
 
     /**
@@ -85,9 +84,8 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         super("jdbc:mysql://" + host + "/" + database);
         setProperty("user", user);
         setProperty("password", password);
-        // TODO: enable UTF-8 encoded Unicode strings?
-        //setProperty("useUnicode", "true");
-        //setProperty("characterEncoding", "UTF-8");
+        setProperty("useUnicode", "true");
+        setProperty("characterEncoding", "UTF-8");
     }
 
     /**
