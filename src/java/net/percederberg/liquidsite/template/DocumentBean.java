@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import freemarker.template.SimpleDate;
 import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
+import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 
@@ -438,6 +439,12 @@ public class DocumentBean implements TemplateHashModel {
             } else if (name.equals("date")) {
                 return new SimpleDate(document.getModifiedDate(),
                                       SimpleDate.DATETIME);
+            } else if (name.equals("online")) {
+                return new TemplateBooleanModel() {
+                    public boolean getAsBoolean() {
+                        return document.isOnline();
+                    }
+                };
             } else if (name.equals("user")) {
                 return new SimpleScalar(document.getAuthorName());
             } else {
