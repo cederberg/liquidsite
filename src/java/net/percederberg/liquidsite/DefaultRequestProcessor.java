@@ -64,7 +64,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
      * @param app            the application context
      */
     public DefaultRequestProcessor(Application app) {
-        super(app);
+        super(app.getContentManager(), app.getBaseDir());
         admin = new AdminRequestProcessor(app);
     }
 

@@ -59,11 +59,6 @@ public class AdminRequestProcessor extends RequestProcessor {
     private static final Log LOG = new Log(AdminRequestProcessor.class);
 
     /**
-     * The administration application content manager.
-     */
-    private ContentManager manager;
-
-    /**
      * The admin form handlers (workflows).
      */
     private ArrayList workflows = new ArrayList();
@@ -74,9 +69,8 @@ public class AdminRequestProcessor extends RequestProcessor {
      * @param app            the application context
      */
     public AdminRequestProcessor(Application app) {
-        super(app);
-        manager = new ContentManager(app, true);
-        AdminUtils.setContentManager(manager);
+        super(new ContentManager(app, true), app.getBaseDir());
+        AdminUtils.setContentManager(getContentManager());
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
@@ -366,7 +360,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
         try {
             id = Integer.parseInt(request.getParameter("id", "0"));
-            content = manager.getContent(request.getUser(), id);
+            content = getContentManager().getContent(request.getUser(), id);
             if (content instanceof ContentTemplate) {
                 template = (ContentTemplate) content;
                 AdminView.SITE.viewOpenTemplateScript(request, template);
@@ -404,7 +398,7 @@ public class AdminRequestProcessor extends RequestProcessor {
             pos = path.indexOf("/");
             id = Integer.parseInt(path.substring(0, pos));
             path = path.substring(pos + 1);
-            content = manager.getContent(request.getUser(), id);
+            content = getContentManager().getContent(request.getUser(), id);
             if (content instanceof ContentSite) {
                 processPreview(request, (ContentSite) content, path);
             } else if (content instanceof ContentDocument) {
@@ -446,8 +440,9 @@ public class AdminRequestProcessor extends RequestProcessor {
                                 String path)
         throws RequestException, ContentException, TemplateException {
 
-        Content  page;
-        String   revision;
+        ContentManager  manager = getContentManager();
+        Content         page;
+        String          revision;
 
         page = manager.findPage(site, path);
         revision = request.getParameter("revision");
@@ -486,9 +481,10 @@ public class AdminRequestProcessor extends RequestProcessor {
                                 String path)
         throws RequestException, ContentException, TemplateException {
 
-        Content[]  children;
-        Content    content = null;
-        String     revision;
+        ContentManager  manager = getContentManager();
+        Content[]       children;
+        Content         content = null;
+        String          revision;
 
         if (path.equals("")) {
             content = doc;
@@ -570,7 +566,7 @@ public class AdminRequestProcessor extends RequestProcessor {
             buffer = new StringWriter();
             template = TemplateManager.getPageTemplate(request.getUser(),
                                                        (ContentPage) content);
-            template.process(request, manager, buffer);
+            template.process(request, getContentManager(), buffer);
             request.sendData("text/html", buffer.toString());
         } else if (content instanceof ContentFile) {
             request.sendFile(((ContentFile) content).getFile());

@@ -58,6 +58,11 @@ public class InstallRequestProcessor extends RequestProcessor {
     private static final Log LOG = new Log(InstallRequestProcessor.class);
 
     /**
+     * The application context.
+     */
+    private Application application;
+
+    /**
      * The description of the last error encountered. If this 
      * variable is set to null, no error has ocurred.
      */
@@ -130,7 +135,8 @@ public class InstallRequestProcessor extends RequestProcessor {
      * @param app            the application context
      */
     public InstallRequestProcessor(Application app) {
-        super(app);
+        super(app.getContentManager(), app.getBaseDir());
+        this.application = app;
     }
 
     /**
@@ -353,7 +359,7 @@ public class InstallRequestProcessor extends RequestProcessor {
             }
             createTables();
             writeConfiguration();
-            getApplication().restart();
+            application.restart();
             writeDefaultData(request.getServletPath());
         } catch (DatabaseConnectionException e) {
             LOG.error("couldn't finish installation", e);
@@ -705,9 +711,8 @@ public class InstallRequestProcessor extends RequestProcessor {
         con.loadFunctions(getFile("WEB-INF/database.properties"));
         
         // Write configuration
-        config = getApplication().getConfig();
-        config.set(Configuration.VERSION, 
-                   getApplication().getBuildVersion());
+        config = application.getConfig();
+        config.set(Configuration.VERSION, application.getBuildVersion());
         config.set(Configuration.DATABASE_HOSTNAME, host);
         config.set(Configuration.DATABASE_NAME, database);
         config.set(Configuration.DATABASE_USER, databaseUser);
@@ -715,7 +720,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         config.set(Configuration.DATABASE_POOL_SIZE, 10);
         config.set(Configuration.FILE_DIRECTORY, dataDir);
         config.set(Configuration.UPLOAD_DIRECTORY, 
-                   getApplication().getBaseDir() + "/tmp");
+                   application.getBaseDir() + "/tmp");
         config.set(Configuration.UPLOAD_MAX_SIZE, 1000000);
         config.write(con);
     }
@@ -728,7 +733,7 @@ public class InstallRequestProcessor extends RequestProcessor {
      * @param path           the servlet path 
      */
     private void writeDefaultData(String path) {
-        ContentManager  manager = getApplication().getContentManager();
+        ContentManager  manager = application.getContentManager();
         Domain          domain = new Domain(manager, "ROOT");
         User            user = new User(manager, null, adminUser);
         ContentSite     site = new ContentSite(manager, domain);

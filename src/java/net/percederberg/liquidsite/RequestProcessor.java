@@ -34,24 +34,46 @@ import net.percederberg.liquidsite.content.ContentManager;
 public abstract class RequestProcessor {
 
     /**
-     * The application context.
+     * The content manager to use.
      */
-    private Application application;
+    private ContentManager manager;
+
+    /**
+     * The base directory for application files.
+     */
+    private File baseDir;
 
     /**
      * Creates a new request processor.
      * 
-     * @param app            the application context
+     * @param manager        the content manager to use
+     * @param baseDir        the base directory for application files
      */
-    public RequestProcessor(Application app) {
-        this.application = app;
+    public RequestProcessor(ContentManager manager, File baseDir) {
+        this.manager = manager;
+        this.baseDir = baseDir;
     }
     
     /**
-     * Destroys this request processor. This method frees all
-     * internal resources used by this processor.
+     * Returns the content manager used by this processor.
+     * 
+     * @return the content manager used by this processor
      */
-    public abstract void destroy();
+    protected ContentManager getContentManager() {
+        return manager;
+    }
+
+    /**
+     * Returns an application file. The file path should be specified
+     * relative to the base application directory.
+     * 
+     * @param path           the relative file path
+     * 
+     * @return the absolute file path
+     */
+    protected File getFile(String path) {
+        return new File(baseDir, path);
+    }
 
     /**
      * Processes a request.
@@ -63,32 +85,8 @@ public abstract class RequestProcessor {
     public abstract void process(Request request) throws RequestException;
 
     /**
-     * Returns the application context.
-     * 
-     * @return the application context
+     * Destroys this request processor. This method frees all
+     * internal resources used by this processor.
      */
-    protected Application getApplication() {
-        return application;
-    }
-    
-    /**
-     * Returns the application content manager.
-     * 
-     * @return the application content manager
-     */
-    protected ContentManager getContentManager() {
-        return getApplication().getContentManager();
-    }
-
-    /**
-     * Returns a file in the application context. The file path is
-     * specified relative to the application base directory.
-     * 
-     * @param path           the relative file path
-     * 
-     * @return the file in the application context
-     */
-    protected File getFile(String path) {
-        return new File(application.getBaseDir(), path);
-    }
+    public abstract void destroy();
 }
