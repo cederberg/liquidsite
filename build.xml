@@ -52,7 +52,7 @@
 <!-- COMPILATION TARGETS -->
   <target name="compile"
           depends="init,compile-clean,compile-db,compile-java">
-    <echo file="${build.dir}/classes/net/percederberg/liquidsite/build.properties">
+    <echo file="${build.dir}/classes/org/liquidsite/build.properties">
 build.version=${build.version}
 build.date=${build.printdate}
     </echo>
@@ -192,7 +192,7 @@ build.date=${build.printdate}
   </target>
 
   <target name="doc-java">
-    <javadoc packagenames="net.percederberg.liquidsite.*"
+    <javadoc packagenames="org.liquidsite.*"
              sourcepath="${build.dir}/src/java"
              destdir="${build.dir}/doc/api"
              classpath="${build.dir}/classes"
@@ -201,7 +201,11 @@ build.date=${build.printdate}
              use="true"
              author="false"
              windowtitle="Liquid Site ${build.version} Documentation"
-             failonerror="true" />
+             failonerror="true">
+      <group title="Application Layer" packages="org.liquidsite.app.*" />
+      <group title="Core Library Layer" packages="org.liquidsite.core.*" />
+      <group title="Utilities Layer" packages="org.liquidsite.util.*" />
+    </javadoc>
   </target>
 
 

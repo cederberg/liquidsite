@@ -17,7 +17,7 @@
       The Liquid Site servlet. This servlet acts as a front controller
       and processes all incoming HTTP requests.
     </description>
-    <servlet-class>net.percederberg.liquidsite.LiquidSiteServlet</servlet-class>
+    <servlet-class>org.liquidsite.app.servlet.LiquidSiteServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

@@ -154,7 +154,7 @@ public class LiquidSiteServlet extends HttpServlet
         }
 
         // Initialize build information
-        str = "net/percederberg/liquidsite/build.properties";
+        str = "org/liquidsite/build.properties";
         url = getClass().getClassLoader().getResource(str);
         try {
             build.load(url.openStream());
