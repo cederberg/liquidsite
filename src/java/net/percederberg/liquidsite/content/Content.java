@@ -63,6 +63,11 @@ public abstract class Content extends PersistentObject implements Comparable {
     public static final int FILE_CATEGORY = 3;
 
     /**
+     * The template content category.
+     */
+    public static final int TEMPLATE_CATEGORY = 4;
+
+    /**
      * The content data object.
      */
     private ContentData data;
@@ -84,6 +89,11 @@ public abstract class Content extends PersistentObject implements Comparable {
      * The names of content attributes added. 
      */
     private ArrayList attributesAdded = new ArrayList();
+
+    /**
+     * The content attribute data objects removed. 
+     */
+    private ArrayList attributesRemoved = new ArrayList();
 
     /**
      * Returns an array of content object revisions with the 
@@ -241,6 +251,8 @@ public abstract class Content extends PersistentObject implements Comparable {
             return new Folder(data, latest, con);
         case FILE_CATEGORY:
             return new FileContent(data, latest, con);
+        case TEMPLATE_CATEGORY:
+            return new ContentTemplate(data, latest, con);
         default:
             throw new ContentException(
                 "content category " + data.getInt(ContentData.CATEGORY) +
@@ -502,10 +514,14 @@ public abstract class Content extends PersistentObject implements Comparable {
     /**
      * Sets the content parent.
      * 
-     * @param parent         the new parent
+     * @param parent         the new parent, or null for none
      */
     public void setParent(Content parent) {
-        setParentId(parent.getId());
+        if (parent == null) {
+            setParentId(0);
+        } else {
+            setParentId(parent.getId());
+        }
     }
 
     /**
@@ -623,6 +639,15 @@ public abstract class Content extends PersistentObject implements Comparable {
     }
     
     /**
+     * Returns an iterator for all the attribute names.
+     * 
+     * @return an iterator for all the attribute names
+     */
+    protected Iterator getAttributeNames() {
+        return attributes.keySet().iterator();
+    }
+
+    /**
      * Returns a content attribute value.
      * 
      * @param name           the content attribute name
@@ -668,18 +693,25 @@ public abstract class Content extends PersistentObject implements Comparable {
         AttributeData  attr;
         
         attr = (AttributeData) attributes.get(name);
-        if (attr == null) {
-            attr = new AttributeData();
-            attr.setString(AttributeData.DOMAIN, getDomainName());
-            attr.setInt(AttributeData.CONTENT, getId());
-            attr.setInt(AttributeData.REVISION, getRevisionNumber());
-            attr.setInt(AttributeData.CATEGORY, getCategory());
-            attr.setString(AttributeData.NAME, name);
-            attributes.put(name, attr);
-            attributesAdded.add(name);
+        if (value == null) {
+            if (attr != null) {
+                attributesRemoved.add(attr);
+                attributes.remove(name);
+            }
+        } else {
+            if (attr == null) {
+                attr = new AttributeData();
+                attr.setString(AttributeData.DOMAIN, getDomainName());
+                attr.setInt(AttributeData.CONTENT, getId());
+                attr.setInt(AttributeData.REVISION, getRevisionNumber());
+                attr.setInt(AttributeData.CATEGORY, getCategory());
+                attr.setString(AttributeData.NAME, name);
+                attributes.put(name, attr);
+                attributesAdded.add(name);
+            }
+            attr.setString(AttributeData.DATA, value);
+            attr.setBoolean(AttributeData.SEARCHABLE, searchable);
         }
-        attr.setString(AttributeData.DATA, value);
-        attr.setBoolean(AttributeData.SEARCHABLE, searchable);
     }
 
     /**
@@ -985,6 +1017,13 @@ public abstract class Content extends PersistentObject implements Comparable {
                 AttributePeer.doUpdate(attr, con);
             }
         }
+        if (!insert) {
+            for (int i = 0; i < attributesRemoved.size(); i++) {
+                attr = (AttributeData) attributesRemoved.get(i);
+                AttributePeer.doDelete(attr, con);
+            }
+        }
         attributesAdded.clear();
+        attributesRemoved.clear();
     }
 }
