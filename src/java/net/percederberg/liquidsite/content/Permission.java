@@ -501,6 +501,8 @@ public class Permission extends PersistentObject {
             return true;
         } else if (user == null) {
             return false;
+        } else if (!getDomainName().equals(user.getDomainName())) {
+            return false;
         } else if (!getUserName().equals("")) {
             return getUserName().equals(user.getName());
         } else if (groups == null) {
