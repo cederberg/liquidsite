@@ -1,0 +1,276 @@
+/*
+ * DatabaseResults.java
+ *
+ * This work is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * This work is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA
+ *
+ * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ */
+
+package net.percederberg.liquidsite.db;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
+/**
+ * A database result container.
+ *
+ * @author   Per Cederberg, <per at percederberg dot net>
+ * @version  1.0
+ */
+public class DatabaseResults {
+
+    /**
+     * The map with column names and indices. Each column name is
+     * mapped to it's corresponding ordinal number (starting from 0). 
+     */
+    private HashMap columnName = new HashMap(); 
+
+    /**
+     * The list of rows in the result. This list contains a Row 
+     * object for each database row.
+     */
+    private ArrayList rows = new ArrayList();
+
+    /**
+     * Creates a new database results container.
+     *  
+     * @param results        the result set to use
+     * 
+     * @throws SQLException if the data couldn't be extracted from 
+     *             the result set
+     */
+    DatabaseResults(ResultSet results) throws SQLException {
+        ResultSetMetaData  meta;
+        int                cols;
+        Row                row;
+        int                i;
+
+        // Extract column names
+        meta = results.getMetaData();
+        cols = meta.getColumnCount();
+        for (i = 0; i < cols; i++) {
+            columnName.put(meta.getColumnName(i + 1), new Integer(i));
+        }
+
+        // Extract result data
+        while (results.next()) {
+            row = new Row();
+            for (i = 0; i < cols; i++) {
+                 row.add(results.getObject(i + 1));
+            }
+            rows.add(row);
+        }
+    }
+    
+    /**
+     * Returns the number of columns in the result.
+     * 
+     * @return the number of columns in the result
+     */
+    public int getColumnCount() {
+        return columnName.size();
+    }
+    
+    /**
+     * Returns the number of rows in the result.
+     * 
+     * @return the number of rows in the result
+     */
+    public int getRowCount() {
+        return rows.size();
+    }
+
+    /**
+     * Returns a specified row in the result.
+     * 
+     * @param row            the row number
+     * 
+     * @return the database result row, or
+     *         null if no such row exists
+     * 
+     * @throws DatabaseDataException if the row number was out of 
+     *             bounds
+     */
+    public Row getRow(int row) throws DatabaseDataException {
+        if (row < 0 || row >= getRowCount()) {
+            throw new DatabaseDataException(
+                "no row " + row + " in database results (" +
+                getRowCount() + " rows present)");
+        }
+        return (Row) rows.get(row);
+    }
+    
+
+    /**
+     * A database results row.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    public class Row {
+
+        /**
+         * The list of row elements.
+         */
+        private ArrayList elements = new ArrayList();
+        
+        /**
+         * Creates a new empty row.
+         */
+        private Row() {
+        }
+
+        /**
+         * Adds an element to the row.
+         * 
+         * @param elem       the element to add
+         */
+        private void add(Object elem) {
+            elements.add(elem); 
+        }
+
+        /**
+         * Returns the size of the row, i.e. the number of columns.
+         * 
+         * @return the number of columns in the row
+         */
+        public int size() {
+            return elements.size();
+        }
+
+        /**
+         * Returns the row value in the specified column. 
+         * 
+         * @param column     the column name
+         * 
+         * @return the row value in the specified column, or
+         *         null if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column name wasn't
+         *             present in the results
+         */
+        public Object get(String column) throws DatabaseDataException {
+            Integer  pos = (Integer) columnName.get(column);
+            
+            if (pos == null) {
+                throw new DatabaseDataException(
+                    "no column named '" + column + "' in results");
+            }
+            return elements.get(pos.intValue());
+        }
+        
+        /**
+         * Returns the row date value in the specified column. 
+         * 
+         * @param column     the column name
+         * 
+         * @return the row date value in the specified column, or
+         *         null if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column name wasn't
+         *             present in the results, or if the value wasn't
+         *             a date value
+         */
+        public Date getDate(String column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null || obj instanceof Date) {
+                return (Date) obj;
+            } else {
+                throw new DatabaseDataException(
+                    "column '" + column + "' didn't contain a " +
+                    "date value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row integer value in the specified column. 
+         * 
+         * @param column     the column name
+         * 
+         * @return the row integer value in the specified column, or
+         *         zero (0) if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column name wasn't
+         *             present in the results, or if the value wasn't
+         *             an integer value
+         */
+        public int getInt(String column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return 0;
+            } else if (obj instanceof Number) {
+                return ((Number) obj).intValue();
+            } else {
+                throw new DatabaseDataException(
+                    "column '" + column + "' didn't contain an " +
+                    "integer value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row long value in the specified column. 
+         * 
+         * @param column     the column name
+         * 
+         * @return the row long value in the specified column, or
+         *         zero (0) if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column name wasn't
+         *             present in the results, or if the value wasn't
+         *             a long value
+         */
+        public long getLong(String column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return 0;
+            } else if (obj instanceof Number) {
+                return ((Number) obj).longValue();
+            } else {
+                throw new DatabaseDataException(
+                    "column '" + column + "' didn't contain a " +
+                    "long value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row string value in the specified column. 
+         * 
+         * @param column     the column name
+         * 
+         * @return the row string value in the specified column, or
+         *         null if the column contained a NULL value
+         *
+         * @throws DatabaseDataException if the column name wasn't
+         *             present in the results
+         */
+        public String getString(String column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return null;
+            } else {
+                return obj.toString();
+            }
+        }
+    }
+}

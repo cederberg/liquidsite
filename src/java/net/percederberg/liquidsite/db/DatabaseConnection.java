@@ -22,18 +22,32 @@
 package net.percederberg.liquidsite.db;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 /**
- * A database connection. 
+ * A database connection. This class encapsulates a JDBC database
+ * connection and holds some additional information needed by the
+ * connection pool. When the database connection is no longer needed, 
+ * it MUST be returned to the database connector so that the used
+ * resources can be reused or freed.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
+ * 
+ * @see DatabaseConnector
  */
 public class DatabaseConnection {
+
+    /**
+     * The default query timeout in seconds. No queries are allowed
+     * to run longer than this timout value.
+     */
+    public static int DEFAULT_QUERY_TIMEOUT = 5;
 
     /**
      * The JDBC database connection.
@@ -76,11 +90,13 @@ public class DatabaseConnection {
      * @throws DatabaseConnectionException if the database connection 
      *             couldn't be created
      */
-    protected DatabaseConnection(String url, Properties properties) 
+    DatabaseConnection(String url, Properties properties) 
         throws DatabaseConnectionException {
 
         try {
             con = DriverManager.getConnection(url, properties);
+            con.setAutoCommit(true);
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         } catch (SQLException e) {
             throw new DatabaseConnectionException(e);
         }
@@ -115,7 +131,7 @@ public class DatabaseConnection {
      * 
      * @param reserved       the new value of the reserved flag
      */
-    protected void setReserved(boolean reserved) {
+    void setReserved(boolean reserved) {
         this.reserved = reserved;
     }
     
@@ -142,6 +158,50 @@ public class DatabaseConnection {
     }
 
     /**
+     * Executes an SQL query or statement. 
+     * 
+     * @param sql            the SQL query or statement to execute
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    public DatabaseResults execute(String sql) 
+        throws DatabaseException {
+
+        Statement        stmt;
+        ResultSet        set;
+        DatabaseResults  res;
+
+        // Execute query
+        try {
+            stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
+                                       ResultSet.CONCUR_READ_ONLY,
+                                       ResultSet.CLOSE_CURSORS_AT_COMMIT);
+            stmt.setQueryTimeout(DEFAULT_QUERY_TIMEOUT);
+            set = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
+
+        // Extract results
+        try {
+            res = new DatabaseResults(set);
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        } finally {
+            try {
+                set.close();
+            } catch (SQLException ignore) {
+                // Do nothing
+            }
+        }
+
+        return res;
+    }
+
+    /**
      * Closes the connection.
      */
     public void close() {
@@ -155,25 +215,27 @@ public class DatabaseConnection {
         }
     }
 
-
-    /*
+    /**
      * Creates a PreparedStatement object for sending parameterized
      * SQL statements to the database.
      *
-     * @param sql            an SQL statement that may contain one 
+     * @param sql            an SQL statement that may contain one
      *                       or more '?' IN parameter placeholders
      *
      * @return a new PreparedStatement object, containing the
-     *         pre-compiled SQL statement, that will have the capability 
+     *         pre-compiled SQL statement, that will have the capability
      *         of returning auto-generated keys
      *
      * @throws SQLException if a database access error occurs or the
-     *             given parameter is not a Statement constant indicating 
+     *             given parameter is not a Statement constant indicating
      *             whether auto-generated keys should be returned
+     * 
+     * @deprecated Use the execute() method instead of this one. This
+     *             method will be removed before release 1.0.
      */
-    public PreparedStatement prepareStatement(String sql) 
-	throws SQLException {
+    public PreparedStatement prepareStatement(String sql)
+        throws SQLException {
 
-	return con.prepareStatement(sql);
+        return con.prepareStatement(sql);
     }
 }

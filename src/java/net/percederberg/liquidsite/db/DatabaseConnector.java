@@ -227,4 +227,32 @@ public class DatabaseConnector {
             pool.update();
         }
     }
+    
+    /**
+     * Executes an SQL query or statement. 
+     * 
+     * @param sql            the SQL query or statement to execute
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    public DatabaseResults execute(String sql) 
+        throws DatabaseConnectionException, DatabaseException { 
+
+        DatabaseConnection  con;
+        DatabaseResults     res;
+        
+        con = getConnection();
+        try {
+            res = con.execute(sql);
+        } finally {
+            returnConnection(con);
+        }
+
+        return res;
+    }
 }
