@@ -55,10 +55,10 @@ public class UserPeer extends AbstractPeer {
      * @param domain         the domain name
      * @param filter         the search filter (empty for all)
      * @param con            the database connection to use
-     * 
+     *
      * @return the number of matching users in the domain
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static int doCountByDomain(String domain,
@@ -69,7 +69,7 @@ public class UserPeer extends AbstractPeer {
         DatabaseQuery    query = new DatabaseQuery("user.count");
         DatabaseResults  res;
         String           filterSql = "%" + filter + "%";
-        
+
         query.addParameter(domain);
         query.addParameter(filterSql);
         query.addParameter(filterSql);
@@ -91,12 +91,12 @@ public class UserPeer extends AbstractPeer {
      * @param domain         the domain name
      * @param filter         the search filter (empty for all)
      * @param startPos       the list interval start position
-     * @param maxLength      the list interval maximum length 
+     * @param maxLength      the list interval maximum length
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of matching users in the domain
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByDomain(String domain,
@@ -108,7 +108,7 @@ public class UserPeer extends AbstractPeer {
 
         DatabaseQuery  query = new DatabaseQuery("user.select.domain");
         String         filterSql = "%" + filter + "%";
-        
+
         query.addParameter(domain);
         query.addParameter(filterSql);
         query.addParameter(filterSql);
@@ -120,24 +120,24 @@ public class UserPeer extends AbstractPeer {
 
     /**
      * Returns a user with a specified name.
-     * 
+     *
      * @param domain         the domain name
      * @param name           the user name
      * @param con            the database connection to use
-     * 
+     *
      * @return the user found, or
      *         null if no matching user existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static UserData doSelectByName(String domain, 
-                                          String name, 
+    public static UserData doSelectByName(String domain,
+                                          String name,
                                           DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.select.name");
-        
+
         query.addParameter(domain);
         query.addParameter(name);
         return (UserData) PEER.select(query, con);
@@ -145,14 +145,14 @@ public class UserPeer extends AbstractPeer {
 
     /**
      * Inserts a new user into the database.
-     * 
+     *
      * @param data           the user data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doInsert(UserData data, DatabaseConnection con) 
+    public static void doInsert(UserData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.insert");
@@ -160,6 +160,7 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(data.getString(UserData.DOMAIN));
         query.addParameter(data.getString(UserData.NAME));
         query.addParameter(data.getString(UserData.PASSWORD));
+        query.addParameter(data.getBoolean(UserData.ENABLED));
         query.addParameter(data.getString(UserData.REAL_NAME));
         query.addParameter(data.getString(UserData.EMAIL));
         query.addParameter(data.getString(UserData.COMMENT));
@@ -168,19 +169,20 @@ public class UserPeer extends AbstractPeer {
 
     /**
      * Updates a user in the database.
-     * 
+     *
      * @param data           the user data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doUpdate(UserData data, DatabaseConnection con) 
+    public static void doUpdate(UserData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.update");
 
         query.addParameter(data.getString(UserData.PASSWORD));
+        query.addParameter(data.getBoolean(UserData.ENABLED));
         query.addParameter(data.getString(UserData.REAL_NAME));
         query.addParameter(data.getString(UserData.EMAIL));
         query.addParameter(data.getString(UserData.COMMENT));
@@ -188,18 +190,18 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(data.getString(UserData.NAME));
         PEER.update(query, con);
     }
-    
+
     /**
-     * Deletes a user from the database. This method also deletes 
+     * Deletes a user from the database. This method also deletes
      * all related user group and permission entries.
-     * 
+     *
      * @param data           the user data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDelete(UserData data, DatabaseConnection con) 
+    public static void doDelete(UserData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.delete");
@@ -209,31 +211,33 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(domain);
         query.addParameter(name);
         PEER.delete(query, con);
+        PreferencePeer.doDeleteUser(domain, name, con);
         UserGroupPeer.doDeleteUser(domain, name, con);
         PermissionPeer.doDeleteUser(domain, name, con);
     }
-    
+
     /**
-     * Deletes all users in a domain from the database. This method 
+     * Deletes all users in a domain from the database. This method
      * also deletes all user group entries in the domain.
-     * 
+     *
      * @param domain         the domain name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, 
-                                      DatabaseConnection con) 
+    public static void doDeleteDomain(String domain,
+                                      DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.delete.domain");
 
         query.addParameter(domain);
         PEER.delete(query, con);
+        PreferencePeer.doDeleteDomain(domain, con);
         UserGroupPeer.doDeleteDomain(domain, con);
     }
-    
+
     /**
      * Creates a new user database peer.
      */
@@ -243,7 +247,7 @@ public class UserPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

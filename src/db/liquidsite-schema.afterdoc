@@ -129,6 +129,13 @@
         </description>
         <type name="VARCHAR" size="30" required="true" />
       </column>
+      <column name="ENABLED">
+        <description>
+          The enabled flag. This flag is set to one (1) if the user
+          account is active and allows logins.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
       <column name="REAL_NAME">
         <description>
           The real name of the user.
@@ -156,6 +163,60 @@
         <ref column="DOMAIN" />
         <ref column="NAME" />
       </primarykey>
+    </table>
+
+    <table name="LS_PREFERENCE">
+      <description>
+        The user preference table. This table contains the user
+        preferences in the form of name-value pairs. Each user may
+        have multiple preference attributes, each having a unique name
+        (for that user).
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain that the user belongs to.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+        <ref table="LS_USER" column="DOMAIN" />
+      </column>
+      <column name="USER">
+        <description>
+          The user name.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_USER" column="NAME" />
+      </column>
+      <column name="NAME">
+        <description>
+          The preference attribute name. The attribute name must be
+          unique for each user name.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <column name="VALUE">
+        <description>
+          The preference attribute value. This may be set to blank if
+          the attribute has no value.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The preference is uniquely indexed by domain, user and
+          preference attribute name.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="USER" />
+        <ref column="NAME" />
+      </primarykey>
+      <index name="PREFERENCE_IDX1">
+        <description>
+          This index facilitates searches for the user preferences.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="USER" />
+      </index>
     </table>
 
     <table name="LS_GROUP">

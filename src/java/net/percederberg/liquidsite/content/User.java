@@ -79,7 +79,7 @@ public class User extends PersistentObject {
      *
      * @return the number of matching users in the domain
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static int countByDomain(ContentManager manager,
@@ -111,7 +111,7 @@ public class User extends PersistentObject {
      *
      * @return the number of users in the group
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static int countByGroup(ContentManager manager,
@@ -134,25 +134,25 @@ public class User extends PersistentObject {
 
     /**
      * Returns an array of users in a specified domain. Only users
-     * with matching names will be returned. Also, only a limited 
+     * with matching names will be returned. Also, only a limited
      * interval of the matching users will be returned.
      *
      * @param manager        the content manager to use
      * @param domain         the domain, or null for superusers
      * @param filter         the search filter (empty for all)
      * @param startPos       the list interval start position
-     * @param maxLength      the list interval maximum length 
-     * 
+     * @param maxLength      the list interval maximum length
+     *
      * @return an array of matching users in the domain
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static User[] findByDomain(ContentManager manager,
                                Domain domain,
                                String filter,
                                int startPos,
-                               int maxLength) 
+                               int maxLength)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
@@ -184,15 +184,15 @@ public class User extends PersistentObject {
 
     /**
      * Returns a user with a specified name.
-     * 
+     *
      * @param manager        the content manager to use
      * @param domain         the domain, or null for superusers
      * @param name           the user name
-     * 
+     *
      * @return the user found, or
      *         null if no matching user existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static User findByName(ContentManager manager,
@@ -223,23 +223,23 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Returns an array of all users in a certain group. Only a 
+     * Returns an array of all users in a certain group. Only a
      * limited interval of the matching users will be returned.
-     * 
+     *
      * @param manager        the content manager to use
      * @param group          the group
      * @param startPos       the list interval start position
-     * @param maxLength      the list interval maximum length 
-     * 
+     * @param maxLength      the list interval maximum length
+     *
      * @return an array of all users in the group
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static User[] findByGroup(ContentManager manager,
                               Group group,
                               int startPos,
-                              int maxLength) 
+                              int maxLength)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
@@ -253,14 +253,14 @@ public class User extends PersistentObject {
             list = UserGroupPeer.doSelectByGroup(group.getDomainName(),
                                                  group.getName(),
                                                  startPos,
-                                                 maxLength, 
+                                                 maxLength,
                                                  con);
             res = new User[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 data = (UserGroupData) list.get(i);
                 name = data.getString(UserGroupData.USER);
                 user = UserPeer.doSelectByName(group.getDomainName(),
-                                               name, 
+                                               name,
                                                con);
                 res[i] = new User(manager, user);
             }
@@ -275,8 +275,8 @@ public class User extends PersistentObject {
 
     /**
      * Creates a new user with default values.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param domain         the domain, or null for a superuser
      * @param name           the user name
      */
@@ -293,8 +293,8 @@ public class User extends PersistentObject {
 
     /**
      * Creates a new user from a data object.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the user data object
      */
     private User(ContentManager manager, UserData data) {
@@ -303,14 +303,14 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Checks if this user equals another object. This method will 
+     * Checks if this user equals another object. This method will
      * only return true if the other object is a user with the same
      * domain and user name.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical user, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Object obj) {
         if (obj instanceof User) {
@@ -321,14 +321,14 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Checks if this user equals another user. This method will 
+     * Checks if this user equals another user. This method will
      * only return true if the other object is a user with the same
      * domain and user name.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical user, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(User obj) {
         return getDomainName().equals(obj.getDomainName())
@@ -337,7 +337,7 @@ public class User extends PersistentObject {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
@@ -346,9 +346,9 @@ public class User extends PersistentObject {
 
     /**
      * Checks if this user is a super user. A super user should have
-     * access to all objects in the system, and does not belong to 
+     * access to all objects in the system, and does not belong to
      * any domain.
-     * 
+     *
      * @return true if the user represents a super user, or
      *         false otherwise
      */
@@ -358,9 +358,9 @@ public class User extends PersistentObject {
 
     /**
      * Returns the user domain.
-     * 
+     *
      * @return the user domain, or null if the user is a superuser
-     * 
+     *
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
@@ -370,58 +370,80 @@ public class User extends PersistentObject {
             return getContentManager().getDomain(getDomainName());
         }
     }
-    
+
     /**
      * Returns the user domain name
-     * 
+     *
      * @return the user domain name
      */
     public String getDomainName() {
         return data.getString(UserData.DOMAIN);
     }
-    
+
     /**
      * Returns the user name.
-     * 
+     *
      * @return the user name
      */
     public String getName() {
         return data.getString(UserData.NAME);
     }
-    
+
     /**
      * Returns the encoded user password.
-     * 
+     *
      * @return the encoded user password
      */
     public String getPassword() {
         return data.getString(UserData.PASSWORD);
     }
-    
+
     /**
-     * Sets the user password. This method will hash and encode the 
+     * Sets the user password. This method will hash and encode the
      * specified password, which is an irreversible process.
-     * 
+     *
      * @param password       the new user password
      */
     public void setPassword(String password) {
-        data.setString(UserData.PASSWORD, 
+        data.setString(UserData.PASSWORD,
                        createHash(getName() + password));
     }
-    
+
     /**
-     * Verifies the user password. This method will hash and encode 
-     * the specified password, and compare the result with the real 
-     * password. This method can be used to verify user logins.
-     * 
-     * @param password       the new user password
-     * 
+     * Returns the enabled flag.
+     *
+     * @return true if the user is enabled, or
+     *         false otherwise
+     */
+    public boolean getEnabled() {
+        return data.getBoolean(UserData.ENABLED);
+    }
+
+    /**
+     * Sets the enabled flag.
+     *
+     * @param enabled         the new enabled flag
+     */
+    public void setEnabled(boolean enabled) {
+        data.setBoolean(UserData.ENABLED, enabled);
+    }
+
+    /**
+     * Verifies the user password. This method will hash and encode
+     * the specified password, and compare the result with the real
+     * password. This method can be used to verify user logins and
+     * will return false if the enabled flag isn't set.
+     *
+     * @param password       the user password
+     *
      * @return true if the passwords are identical, or
      *         false otherwise
      */
     public boolean verifyPassword(String password) {
         // TODO: remove hack that allows empty passwords
-        if (getPassword().equals("")) {
+        if (!getEnabled()) {
+            return false;
+        } else if (getPassword().equals("")) {
             return true;
         } else {
             return getPassword().equals(createHash(getName() + password));
@@ -430,34 +452,34 @@ public class User extends PersistentObject {
 
     /**
      * Returns the real user name.
-     * 
+     *
      * @return the real user name
      */
     public String getRealName() {
         return data.getString(UserData.REAL_NAME);
     }
-    
+
     /**
      * Sets the real user name.
-     * 
+     *
      * @param realName       the new real user name
      */
     public void setRealName(String realName) {
         data.setString(UserData.REAL_NAME, realName);
     }
-    
+
     /**
      * Returns the user e-mail address.
-     * 
+     *
      * @return the user e-mail address
      */
     public String getEmail() {
         return data.getString(UserData.EMAIL);
     }
-    
+
     /**
      * Sets the user e-mail address.
-     * 
+     *
      * @param email          the new user e-mail address
      */
     public void setEmail(String email) {
@@ -476,31 +498,31 @@ public class User extends PersistentObject {
 
     /**
      * Returns the user comment.
-     * 
+     *
      * @return the user comment
      */
     public String getComment() {
         return data.getString(UserData.COMMENT);
     }
-    
+
     /**
      * Sets the user comment.
-     * 
+     *
      * @param comment        the new user comment
      */
     public void setComment(String comment) {
         data.setString(UserData.COMMENT, comment);
     }
-    
+
     /**
      * Returns the groups that this user belongs to. This method will
      * only return the groups registered to this user in the database.
      * The results will also be cached to return the same list every
      * time, until this object is written to the database.
-     * 
+     *
      * @return an array of groups this user belongs to
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Group[] getGroups() throws ContentException {
@@ -511,10 +533,10 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Adds this user to the specified group. This action will not 
+     * Adds this user to the specified group. This action will not
      * take effect until this object is saved.
-     * 
-     * @param group          the group object 
+     *
+     * @param group          the group object
      */
     public void addToGroup(Group group) {
         if (getDomainName().equals(group.getDomainName())) {
@@ -524,12 +546,12 @@ public class User extends PersistentObject {
             groupsAdded.add(group.getName());
         }
     }
-    
+
     /**
-     * Removes this user from the specified group. This action will 
+     * Removes this user from the specified group. This action will
      * not take effect until this object is saved.
-     * 
-     * @param group          the group object 
+     *
+     * @param group          the group object
      */
     public void removeFromGroup(Group group) {
         if (getDomainName().equals(group.getDomainName())) {
@@ -541,14 +563,14 @@ public class User extends PersistentObject {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
         if (!getDomainName().equals("") && getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() + 
+            throw new ContentException("domain '" + getDomainName() +
                                        "' does not exist");
         } else if (getName().equals("")) {
             throw new ContentException("no name set for user object");
@@ -559,11 +581,11 @@ public class User extends PersistentObject {
 
     /**
      * Inserts the object data into the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doInsert(User user, DatabaseConnection con)
@@ -582,11 +604,11 @@ public class User extends PersistentObject {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
@@ -605,11 +627,11 @@ public class User extends PersistentObject {
 
     /**
      * Deletes the object data from the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected void doDelete(User user, DatabaseConnection con)
@@ -623,20 +645,20 @@ public class User extends PersistentObject {
             throw new ContentException(e);
         }
     }
-    
+
     /**
      * Adds and removes user groups from the database.
-     * 
+     *
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     private void doUserGroups(DatabaseConnection con)
         throws DatabaseObjectException {
 
         UserGroupData  data;
-        
+
         // Handle added groups
         if (groupsAdded != null) {
             for (int i = 0; i < groupsAdded.size(); i++) {
@@ -663,7 +685,7 @@ public class User extends PersistentObject {
             groupsRemoved = null;
         }
     }
-    
+
     /**
      * Creates an ASCII hash value for a string. The hash value
      * calculation is irreversible, and is calculated with the MD5
@@ -676,7 +698,7 @@ public class User extends PersistentObject {
     private String createHash(String data) {
         MessageDigest  digest;
         byte           bytes[];
- 
+
         // Compute MD5 digest
         try {
             digest = MessageDigest.getInstance("MD5");
@@ -687,7 +709,7 @@ public class User extends PersistentObject {
             LOG.error(e.getMessage());
             return "";
         }
-                                                                                
+
         // Base-64 encode digest
         return new String(Base64.encodeBase64(bytes));
     }

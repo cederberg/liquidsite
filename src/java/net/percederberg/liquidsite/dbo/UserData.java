@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
 
 /**
- * A user data object. This object encapsulates a row of data from 
+ * A user data object. This object encapsulates a row of data from
  * the LS_USER table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -35,7 +35,7 @@ public class UserData extends AbstractData {
      */
     public static final Parameter DOMAIN =
         new StringParameter(UserData.class, "DOMAIN", "");
-    
+
     /**
      * The name parameter.
      */
@@ -47,6 +47,12 @@ public class UserData extends AbstractData {
      */
     public static final Parameter PASSWORD =
         new StringParameter(UserData.class, "PASSWORD", "");
+
+    /**
+     * The enabled parameter.
+     */
+    public static final Parameter ENABLED =
+        new BooleanParameter(UserData.class, "ENABLED", true);
 
     /**
      * The real name parameter.
