@@ -775,7 +775,6 @@ public class ContentView extends AdminView {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children;
-        Content[]       temp;
         ArrayList       list = new ArrayList();
         StringBuffer    buffer = new StringBuffer();
         String          str;
@@ -789,24 +788,15 @@ public class ContentView extends AdminView {
             }
             children = new Content[list.size()];
             list.toArray(children);
-            buffer.append(SCRIPT.getTreeView(domain, children, true));
+            buffer.append(SCRIPT.getTreeView(domain, children));
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
             str = getTreeScript(user, domain, content.getParent(), true);
             buffer.append(str);
-            buffer.append(SCRIPT.getTreeView(content, children, true));
+            buffer.append(SCRIPT.getTreeView(content, children));
         } else {
             children = manager.getContentChildren(user, content);
-            buffer.append(SCRIPT.getTreeView(content, children, true));
-        }
-        if (!recursive) {
-            for (int i = 0; i < children.length; i++) {
-                if (SCRIPT.isContainer(children[i])) {
-                    temp = manager.getContentChildren(user, children[i]);
-                    str = SCRIPT.getTreeView(children[i], temp, false);
-                    buffer.append(str);
-                }
-            }
+            buffer.append(SCRIPT.getTreeView(content, children));
         }
         return buffer.toString();
     }
