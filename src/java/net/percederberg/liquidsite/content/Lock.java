@@ -165,7 +165,6 @@ public class Lock extends PersistentObject {
      */
     public boolean isOwner(User user) {
         return user != null
-            && getDomainName().equals(user.getDomainName())
             && getUserName().equals(user.getName()); 
     }
 
