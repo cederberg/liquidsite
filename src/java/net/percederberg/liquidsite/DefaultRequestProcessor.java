@@ -133,7 +133,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
     }
@@ -155,7 +155,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         } catch (TemplateException e) {
             LOG.error(e.getMessage());

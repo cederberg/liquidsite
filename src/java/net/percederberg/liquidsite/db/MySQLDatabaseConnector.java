@@ -112,7 +112,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
             res = execute(query);
             str = res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
-            LOG.debug("failed to read user privileges", e);
+            LOG.warning("failed to read user privileges", e);
             throw new DatabaseException("cannot determine privileges", e);
         }
 
@@ -147,7 +147,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
             res = execute(query);
             return res.getRow(0).getString(0);
         } catch (DatabaseDataException e) {
-            LOG.debug("failed to read database user name", e);
+            LOG.warning("failed to read database user name", e);
             throw new DatabaseException("cannot determine user", e);
         }
     }
@@ -176,7 +176,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 list.add(res.getRow(i).getString(0));
             }
         } catch (DatabaseDataException e) {
-            LOG.debug("failed to read database list", e);
+            LOG.warning("failed to read database list", e);
             throw new DatabaseException("cannot list databases", e);
         }
         return list;
@@ -210,7 +210,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 list.add(res.getRow(i).getString(0));
             }
         } catch (DatabaseDataException e) {
-            LOG.debug("failed to read table list", e);
+            LOG.warning("failed to read table list", e);
             throw new DatabaseException("cannot list tables", e);
         }
         return list;
@@ -246,7 +246,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 }
             }
         } catch (DatabaseDataException e) {
-            LOG.debug("failed to read user list", e);
+            LOG.warning("failed to read user list", e);
             throw new DatabaseException("cannot list users", e);
         }
         return list;
@@ -363,7 +363,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
                 }
             }
         } catch (DatabaseDataException e) {
-            LOG.debug("failed to read user privileges", e);
+            LOG.warning("failed to read user privileges", e);
             throw new DatabaseException("cannot determine privileges", e);
         }
 

@@ -261,7 +261,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
 
@@ -310,7 +310,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
 
@@ -364,7 +364,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
 
@@ -422,7 +422,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
     }
@@ -444,11 +444,11 @@ public class ForumRequestProcessor extends RequestProcessor {
         ContentManager  manager = getContentManager();
 
         if (user == null) {
-            LOG.debug("anonymous user cannot delete posts");
+            LOG.info("anonymous user cannot delete posts");
             throw RequestException.FORBIDDEN;
         } else if (!user.getName().equals(post.getAuthorName())) {
-            LOG.debug("user '" + user + "' cannot edit post " + 
-                      post + " from '" + post.getAuthorName() + "'");
+            LOG.info("user '" + user + "' cannot edit post " + 
+                     post + " from '" + post.getAuthorName() + "'");
             throw RequestException.FORBIDDEN;
         }
         try {
@@ -462,7 +462,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
     }
@@ -486,22 +486,22 @@ public class ForumRequestProcessor extends RequestProcessor {
         boolean          moderator;
 
         if (user == null) {
-            LOG.debug("anonymous user cannot delete posts");
+            LOG.info("anonymous user cannot delete posts");
             throw RequestException.FORBIDDEN;
         }
         try {
             moderator = user.isSuperUser() || forum.isModerator(user);
             if (post == null) {
                 if (!moderator) {
-                    LOG.debug("user '" + user + "' cannot delete topic " +
-                              topic);
+                    LOG.info("user '" + user + "' cannot delete topic " +
+                             topic);
                     throw RequestException.FORBIDDEN;
                 }
                 topic.delete(user);
             } else {
                 if (!moderator && !user.equals(post.getAuthor())) {
-                    LOG.debug("user '" + user + "' cannot delete post " + 
-                              post + " in topic " + topic);
+                    LOG.info("user '" + user + "' cannot delete post " + 
+                             post + " in topic " + topic);
                     throw RequestException.FORBIDDEN;
                 }
                 post.delete(user);
@@ -516,7 +516,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
-            LOG.debug(e.getMessage());
+            LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
     }

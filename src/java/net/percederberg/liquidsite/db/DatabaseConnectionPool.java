@@ -68,7 +68,7 @@ public class DatabaseConnectionPool {
      */
     public DatabaseConnectionPool(DatabaseConnector db) {
         this.db = db;
-        LOG.trace("created connection pool for " + db);
+        LOG.info("created connection pool for " + db);
     }
 
     /**
@@ -105,8 +105,8 @@ public class DatabaseConnectionPool {
      * @see #update
      */
     public void setMinimumSize(int size) {
-        LOG.trace("new connection pool min size: " + size +
-                  ", was: " + minSize + ", for " + db);
+        LOG.info("new connection pool min size: " + size +
+                 ", was: " + minSize + ", for " + db);
         this.minSize = size;
     }
 
@@ -135,8 +135,8 @@ public class DatabaseConnectionPool {
      * @see #update
      */
     public void setMaximumSize(int size) {
-        LOG.trace("new connection pool max size: " + size +
-                  ", was: " + maxSize + ", for " + db);
+        LOG.info("new connection pool max size: " + size +
+                 ", was: " + maxSize + ", for " + db);
         this.maxSize = size;
     }
 
@@ -163,7 +163,7 @@ public class DatabaseConnectionPool {
                 con = create();
             }
         } finally {
-            LOG.debug("failed getting pooled connection for " + db);
+            LOG.warning("failed getting pooled connection for " + db);
         }
         LOG.trace("got pooled connection");
         return con;
@@ -203,7 +203,7 @@ public class DatabaseConnectionPool {
         int                 i;
 
         // Find invalid or old connections
-        LOG.trace("closing old connections in pool for " + db + "...");
+        LOG.info("closing old connections in pool for " + db + "...");
         synchronized (this) {
             for (i = 0; i < connections.size(); i++) {
                 con = (DatabaseConnection) connections.get(i);
@@ -221,19 +221,20 @@ public class DatabaseConnectionPool {
             con = (DatabaseConnection) list.get(i);
             destroy(con);
         }
-        LOG.trace("closed old connections in pool, count: " + list.size());
+        LOG.info("closed old connections in pool, count: " + list.size());
 
         // Create minimum number of connections
-        LOG.trace("creating new connections in pool for " + db);
+        LOG.info("creating new connections in pool for " + db);
         for (i = 0; getCurrentSize() < minSize; i++) {
             try {
                 con = create();
             } finally {
-                LOG.debug("failed creating new connections in pool for " + db);
+                LOG.warning("failed creating new connections in pool for " +
+                            db);
             }
             checkIn(con);
         }
-        LOG.trace("created new connections in pool, count: " + i);
+        LOG.info("created new connections in pool, count: " + i);
     }
 
     /**
@@ -256,7 +257,7 @@ public class DatabaseConnectionPool {
             msg = "cannot create new database connection, " +
                   "pool size maximum of " + maxSize +
                   " already reached";
-            LOG.debug(msg);
+            LOG.warning(msg);
             throw new DatabaseConnectionException(msg);
         }
         con = new DatabaseConnection(db);
@@ -349,8 +350,8 @@ public class DatabaseConnectionPool {
     private synchronized void add(DatabaseConnection con) {
         if (!connections.contains(con)) {
             connections.add(con);
-            LOG.trace("added connection to pool for " + db +
-                      ", new size: " + connections.size());
+            LOG.info("added connection to pool for " + db +
+                     ", new size: " + connections.size());
         }
     }
 
@@ -364,7 +365,7 @@ public class DatabaseConnectionPool {
      */
     private synchronized void remove(DatabaseConnection con) {
         connections.remove(con);
-        LOG.trace("removed connection from pool for " + db +
-                  ", new size: " + connections.size());
+        LOG.info("removed connection from pool for " + db +
+                 ", new size: " + connections.size());
     }
 }

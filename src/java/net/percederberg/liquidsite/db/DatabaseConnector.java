@@ -110,7 +110,7 @@ public class DatabaseConnector {
             Class.forName(driver).newInstance();
         } catch (Exception e) {
             message = "couldn't find JDBC driver " + driver;
-            LOG.debug(message, e);
+            LOG.warning(message, e);
             throw new DatabaseConnectionException(message, e);
         }
     }
@@ -134,7 +134,7 @@ public class DatabaseConnector {
     public DatabaseConnector(String url, Properties properties) {
         this.url = url;
         this.properties = properties;
-        LOG.trace("created database connector for " + url);
+        LOG.info("created database connector for " + url);
     }
 
     /**
@@ -212,8 +212,8 @@ public class DatabaseConnector {
      * @see #getConnectionTimeout
      */
     public void setConnectionTimeout(long timeout) {
-        LOG.trace("new connection timeout: " + timeout +
-                  ", was: " + connectionTimeout + ", for " + this);
+        LOG.info("new connection timeout: " + timeout +
+                 ", was: " + connectionTimeout + ", for " + this);
         this.connectionTimeout = timeout;
     }
 

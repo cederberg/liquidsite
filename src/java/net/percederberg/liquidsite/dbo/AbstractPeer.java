@@ -183,9 +183,9 @@ public abstract class AbstractPeer {
         DatabaseResults    res;
 
         try {
-            LOG.debug(log);
+            LOG.trace(log);
             res = con.execute(query);
-            LOG.debug("done " + log);
+            LOG.trace("done " + log);
         } catch (DatabaseException e) {
             LOG.error(log, e);
             throw new DatabaseObjectException(log, e);

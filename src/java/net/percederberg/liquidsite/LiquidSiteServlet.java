@@ -269,18 +269,18 @@ public class LiquidSiteServlet extends HttpServlet
         // TODO: handle exceptions and error responses
 
         // Process request
-        LOG.debug("Incoming request: " + r);
+        LOG.info("Incoming request: " + r);
         try {
             processor.process(r);
             if (r.hasResponse()) {
                 r.commit(getServletContext());
             } else {
-                LOG.debug("Unhandled request: " + r);
+                LOG.info("Unhandled request: " + r);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (RequestException e) {
-            LOG.debug("Erroneous request: " + r + ", Message: " +
-                      e.getMessage());
+            LOG.info("Erroneous request: " + r + ", Message: " +
+                     e.getMessage());
             response.sendError(e.getCode(), e.getMessage());
         }
         r.dispose();

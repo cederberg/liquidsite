@@ -115,8 +115,9 @@ public class Log {
 
     /**
      * Logs a warning message. A warning message is logged for errors
-     * that were recovered automatically. In the typical case, the
-     * error was handled by using fallback routines or similar.
+     * that were recovered automatically or for anomalies in the
+     * input. In the typical case, the error was handled by using
+     * fallback routines or similar.
      *
      * @param message        the log message
      */
@@ -126,8 +127,9 @@ public class Log {
 
     /**
      * Logs a warning message. A warning message is logged for errors
-     * that were recovered automatically. In the typical case, the
-     * error was handled by using fallback routines or similar.
+     * that were recovered automatically or for anomalies in the
+     * input. In the typical case, the error was handled by using
+     * fallback routines or similar.
      *
      * @param message        the log message
      * @param thrown         the throwable to log
@@ -137,32 +139,36 @@ public class Log {
     }
 
     /**
-     * Logs a debug message. A debug message is logged for debugging
-     * rare circumstances and potential problems. In the typical
-     * case, a debug message is used when an error condition occurs.
+     * Logs an informative message. An info message is logged when
+     * performing certain operations that may be interresting to track
+     * for a system administrator. In the typical case, an info
+     * message is used to report the status when communicating with
+     * external systems.
      *
      * @param message        the log message
      */
-    public void debug(String message) {
+    public void info(String message) {
         logger.info(message);
     }
 
     /**
-     * Logs a debug message. A debug message is logged for debugging
-     * rare circumstances and potential problems. In the typical
-     * case, a debug message is used when an error condition occurs.
+     * Logs an informative message. An info message is logged when
+     * performing certain operations that may be interresting to track
+     * for a system administrator. In the typical case, an info
+     * message is used to report the status when communicating with
+     * external systems.
      *
      * @param message        the log message
      * @param thrown         the throwable to log
      */
-    public void debug(String message, Throwable thrown) {
-        debug(message + ": " + thrown.getMessage());
+    public void info(String message, Throwable thrown) {
+        info(message + ": " + thrown.getMessage());
     }
 
     /**
      * Logs a trace message. A trace message is logged for debugging
-     * normal operation. In the typical case, a trance message is
-     * used to log method calls.
+     * normal operation. In the typical case, a trace message is used
+     * to log method calls.
      *
      * @param message        the log message
      */
@@ -172,8 +178,8 @@ public class Log {
 
     /**
      * Logs a trace message. A trace message is logged for debugging
-     * normal operation. In the typical case, a trance message is
-     * used to log method calls.
+     * normal operation. In the typical case, a trace message is used
+     * to log method calls.
      *
      * @param message        the log message
      * @param thrown         the throwable to log

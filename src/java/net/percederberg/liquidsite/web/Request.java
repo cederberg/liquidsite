@@ -553,7 +553,7 @@ public class Request {
     private void commitData() throws IOException {
         PrintWriter  out;
 
-        LOG.debug("Handling request for " + this + " with string data");
+        LOG.info("Handling request for " + this + " with string data");
         commitDynamicHeaders();
         if (responseMimeType.indexOf("charset") > 0) {
             response.setContentType(responseMimeType);
@@ -580,8 +580,8 @@ public class Request {
         byte[]           buffer = new byte[4096];
         int              length;
 
-        LOG.debug("Handling request for " + this + " with file " +
-                  responseData);
+        LOG.info("Handling request for " + this + " with file " +
+                 responseData);
         file = new File(responseData);
         commitStaticHeaders(file.lastModified());
         try {
@@ -611,8 +611,8 @@ public class Request {
         PrintWriter  out;
         Template     template;
 
-        LOG.debug("Handling request for " + this + " with template " +
-                  responseData);
+        LOG.info("Handling request for " + this + " with template " +
+                 responseData);
         commitDynamicHeaders();
         response.setContentType("text/html; charset=UTF-8");
         out = response.getWriter();
@@ -635,7 +635,7 @@ public class Request {
      *             redirect the request
      */
     private void commitRedirect() throws IOException {
-        LOG.debug("Redirecting request for " + this + " to " + responseData);
+        LOG.info("Redirecting request for " + this + " to " + responseData);
         commitDynamicHeaders();
         response.sendRedirect(responseData);
     }

@@ -111,7 +111,7 @@ public class DatabaseConnection {
 
         this.db = db;
         try {
-            LOG.trace("creating connection to " + db + "...");
+            LOG.info("creating connection to " + db + "...");
             con = DriverManager.getConnection(db.getUrl(),
                                               db.getProperties());
             catalog = con.getCatalog();
@@ -119,9 +119,9 @@ public class DatabaseConnection {
                 catalog = null;
             }
             reset();
-            LOG.trace("created connection to " + db);
+            LOG.info("created connection to " + db);
         } catch (SQLException e) {
-            LOG.debug("failed to create connection to " + db, e);
+            LOG.warning("failed to create connection to " + db, e);
             throw new DatabaseConnectionException(e);
         }
     }
@@ -215,7 +215,7 @@ public class DatabaseConnection {
             return con.getCatalog();
         } catch (SQLException e) {
             valid = false;
-            LOG.debug("failed to read catalog", e);
+            LOG.warning("failed to read catalog", e);
             throw new DatabaseConnectionException(e);
         }
     }
@@ -236,7 +236,7 @@ public class DatabaseConnection {
         try {
             con.setCatalog(catalog);
         } catch (SQLException e) {
-            LOG.debug("failed to set catalog to '" + catalog + "'", e);
+            LOG.warning("failed to set catalog to '" + catalog + "'", e);
             throw new DatabaseException(e);
         }
     }
@@ -260,7 +260,7 @@ public class DatabaseConnection {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         } catch (SQLException e) {
             valid = false;
-            LOG.debug("failed to reset connection to " + db, e);
+            LOG.warning("failed to reset connection to " + db, e);
             throw new DatabaseConnectionException(e);
         }
     }
@@ -292,7 +292,7 @@ public class DatabaseConnection {
             if (!query.hasSql()) {
                 message = "no database function '" + query.getName() +
                           "' exists";
-                LOG.debug(message);
+                LOG.warning(message);
                 throw new DatabaseException(message);
             }
         }
@@ -310,7 +310,7 @@ public class DatabaseConnection {
             }
             LOG.trace("done executing " + query);
         } catch (SQLException e) {
-            LOG.debug("failed to execute " + query, e);
+            LOG.warning("failed to execute " + query, e);
             throw new DatabaseException("couldn't execute " + query, e);
         } finally {
             LOG.trace("closing " + query + " resources...");
@@ -400,7 +400,7 @@ public class DatabaseConnection {
                 stmt.setObject(i + 1, query.getParameter(i));
             }
         } catch (SQLException e) {
-            LOG.debug("failed to prepare " + query, e);
+            LOG.warning("failed to prepare " + query, e);
             throw new DatabaseException("couldn't prepare " + query, e);
         }
         return stmt;
@@ -410,7 +410,7 @@ public class DatabaseConnection {
      * Closes the connection.
      */
     public void close() {
-        LOG.trace("closing connection to " + db + "...");
+        LOG.info("closing connection to " + db + "...");
         valid = false;
         try {
             if (!con.isClosed()) {
@@ -419,6 +419,6 @@ public class DatabaseConnection {
         } catch (SQLException ignore) {
             // Ignore this error
         }
-        LOG.trace("closed connection to " + db);
+        LOG.info("closed connection to " + db);
     }
 }
