@@ -258,6 +258,8 @@ function objectAddRevision(revision, date, user, comment, viewurl) {
 
     if (viewurl != null) {
         a.href = viewurl;
+        a.onclick = new Function("window.open('" + viewurl + "'); return false;");
+        a.title = "View revision";
     }
     if (revision == 0) {
         a.className = "modified";

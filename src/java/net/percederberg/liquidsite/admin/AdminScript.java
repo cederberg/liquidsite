@@ -470,7 +470,17 @@ class AdminScript {
         buffer.append(getString(revision.getAuthorName()));
         buffer.append(", ");
         buffer.append(getString(revision.getComment()));
-        buffer.append(", null);\n");
+        buffer.append(", ");
+        if (revision instanceof FileContent) {
+            buffer.append("'view.html");
+            buffer.append(getLinkParameters(revision));
+            buffer.append("&revision=");
+            buffer.append(revision.getRevisionNumber());
+            buffer.append("'");
+        } else {
+            buffer.append("null");
+        }
+        buffer.append(");\n");
         return buffer.toString();
     }
 

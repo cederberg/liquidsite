@@ -145,6 +145,8 @@ public class AdminController extends Controller {
             processRevertObject(request);
         } else if (path.equals("unlock-site.html")) {
             processUnlockObject(request);
+        } else if (path.equals("view.html")) {
+            processView(request);
         } else if (path.equals("loadsite.js")) {
             processLoadSite(request);
         } else if (path.equals("opensite.js")) {
@@ -968,6 +970,37 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
             view.dialogError(request, e);
+        }
+    }
+
+    /**
+     * Processes the view content object requests.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processView(Request request) throws RequestException {
+        Content  content;
+        String   revision;
+
+        try {
+            content = (Content) view.getRequestReference(request);
+            revision = request.getParameter("revision");
+            if (revision != null) {
+                content = content.getRevision(Integer.parseInt(revision));
+            }
+            if (content instanceof FileContent) {
+                request.sendFile(((FileContent) content).getFile());
+            } else {
+                view.pageError(request, "Cannot preview this object");
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
         }
     }
 
