@@ -113,30 +113,26 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * Initializes all the form validators.
      */
     private void initialize() {
-        String  upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String  lowerCase = "abcdefghijklmonpqrstuvwxyz";
-        String  numbers = "0123456789";
-        String  nameChars = upperCase + lowerCase + numbers + ".-_";
         String  error;
 
         // Add and edit section validator
         section.addRequiredConstraint("name", "No section name specified");
         error = "Section name contains invalid character";
-        section.addCharacterConstraint("name", nameChars, error);
+        section.addCharacterConstraint("name", CONTENT_CHARS, error);
         error = "No revision comment specified";
         section.addRequiredConstraint("comment", error);
 
         // Add and edit document validator
         document.addRequiredConstraint("name", "No document name specified");
         error = "Document name contains invalid character";
-        document.addCharacterConstraint("name", nameChars, error);
+        document.addCharacterConstraint("name", CONTENT_CHARS, error);
         error = "No revision comment specified";
         document.addRequiredConstraint("comment", error);
 
         // Add and edit forum validator
         forum.addRequiredConstraint("name", "No forum name specified");
         error = "Forum name contains invalid character";
-        forum.addCharacterConstraint("name", nameChars, error);
+        forum.addCharacterConstraint("name", CONTENT_CHARS, error);
         forum.addRequiredConstraint("realname",
                                     "No real forum name specified");
         forum.addRequiredConstraint("description",
