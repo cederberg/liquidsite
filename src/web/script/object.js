@@ -472,7 +472,7 @@ function objectInternalGetHostTable() {
                                        "Host Names");
         tr = objectInternalAddElement(tbody, "tr");
         objectInternalAddElement(tr, "th", "Web Host");
-        objectInternalAddElement(tr, "th", "Comment");
+        objectInternalAddElement(tr, "th", "Description");
     }
     return tbody;
 }

@@ -27,6 +27,7 @@ import java.util.Date;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.Site;
@@ -202,6 +203,7 @@ class AdminScript {
         buffer.append(domain.getDescription());
         buffer.append("');\n");
         buffer.append(getButtons(user, domain));
+        buffer.append(getHosts(domain));
         buffer.append(getPermissions(domain));
         return buffer.toString();
     }
@@ -294,6 +296,36 @@ class AdminScript {
         }
         if (content.hasPublishAccess(user)) {
             buffer.append("objectAddDeleteButton('delete-site.html');\n");
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting domain hosts.
+     * 
+     * @param domain         the domain object
+     * 
+     * @return the JavaScript for presenting domain hosts
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getHosts(Domain domain) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        Host[]        hosts;
+        
+        hosts = domain.getHosts();
+        if (hosts.length == 0) {
+            buffer.append("objectAddHost('N/A', 'No hosts registered');\n");
+        }
+        for (int i = 0; i < hosts.length; i++) {
+            buffer.append("objectAddHost('");
+            buffer.append(hosts[i].getName());
+            buffer.append("', '");
+            buffer.append(hosts[i].getDescription());
+            buffer.append("');\n");
         }
         return buffer.toString();
     }
