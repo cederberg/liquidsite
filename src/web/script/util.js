@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2003-2005 Per Cederberg. All rights reserved.
  */
 
 
@@ -35,6 +35,13 @@ var UTIL_ICON_PATH = "images/icons/24x24/";
  * CSS can be added to the elements to be removed.
  */
 var UTIL_REMOVE_LIST = new Array();
+
+/**
+ * The number of inner frames that have been added. This number is
+ * used to assign a unique identifier to each new frame that is
+ * added.
+ */
+var UTIL_IFRAME_COUNT = 0;
 
 /**
  * Opens a new dialog window.
@@ -286,4 +293,85 @@ function utilSessionKeepAlive() {
     script.src = "sessionping.js";
     document.getElementsByTagName("head")[0].appendChild(script);
 	setTimeout("utilSessionKeepAlive();", 600000);
+}
+
+/**
+ * Loads and executes a JavaScript from the specified URL. This
+ * function will return *before* the script has been executed, as the
+ * script loading and execution is run in the background. Due to the
+ * lack of proper DHTML support in some browsers, iframe elements may
+ * be used. In that case an empty div element where the frames will
+ * be stored must be provided, as well as a "glue" JavaScript that
+ * diverts function calls to the "window.parent" evironment.
+ *
+ * @param url                the JavaScript URL
+ * @param iframeParentId     the id of the iframe parent element
+ * @param iframeScriptUrl    the JavaScript URL for a glue script
+ */
+function utilLoadScript(url, iframeParentId, iframeScriptUrl) {
+    var parent;
+    var script;
+    var iframe;
+
+    if (utilInternalIsDynamicallyScriptable()) {
+        parent = document.getElementsByTagName("head")[0];
+        script = document.createElement('script');
+        script.type = "text/javascript";
+        script.src = url;
+        parent.appendChild(script);
+    } else {
+        parent = document.getElementById(iframeParentId);
+        iframe = document.createElement("iframe");
+        iframe.id = "util.iframe." + UTIL_IFRAME_COUNT++;
+        iframe.style.border = "0px";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        parent.appendChild(iframe);
+        script = "utilInternalLoadScript('" + iframe.id + "','" +
+                 iframeScriptUrl + "','" + url + "')"
+        setTimeout(script, 10);
+    }
+}
+
+/**
+ * Checks if the navigtor is dynamically scriptable. This check is
+ * performed by controlling the browser user agent string for the
+ * Apple WebKit or KHTML, none of which supports the dynamic addition
+ * of scripts to a page.
+ */
+function utilInternalIsDynamicallyScriptable() {
+    var agent = navigator.userAgent.toLowerCase();
+
+    return agent.indexOf("applewebkit/") < 0
+        && agent.indexOf("khtml") < 0;
+}
+
+/**
+ * Internal helper function to utilLoadScript(), shouldn't be called
+ * directly. This function will change the inner frame document HTML
+ * to one that loads the specified JavaScript URL:s.
+ *
+ * @param id                 the unique frame identifier
+ * @param url1               the first JavaScript URL to load
+ * @param url1               the second JavaScript URL to load
+ */
+function utilInternalLoadScript(id, url1, url2) {
+    var  win;
+    var  html;
+
+    win = document.getElementById(id);
+    if (win.contentWindow) {
+        win = win.contentWindow;
+    }
+    html = "<html>\n" +
+           "<head>\n" +
+           "<script type='text/javascript' src='" + url1 + "'></script>\n" +
+           "<script type='text/javascript' src='" + url2 + "'></script>\n" +
+           "</head>\n" +
+           "<body>\n" +
+           "</body>\n" +
+           "</html>\n";
+    win.document.open("about:blank", "replace");
+    win.document.write(html);
+    win.document.close();
 }

@@ -12,21 +12,16 @@
     }
 
     function loadItem(type, id, open) {
-        var script = document.createElement('script');
-
-        script.type = "text/javascript";
-        script.src = "loadsite.js?type=" + type + "&id=" + id +
-                     "&open=" + open;
-        document.getElementsByTagName("head")[0].appendChild(script);
+        utilLoadScript("loadsite.js?type=" + type + "&id=" + id +
+                       "&open=" + open,
+                       "iframe",
+                       "script/tree-iframe.js");
     }
 
     function openItem(type, id) {
-        var script = document.createElement('script');
-
-        objectClear();
-        script.type = "text/javascript";
-        script.src = "opensite.js?type=" + type + "&id=" + id;
-        document.getElementsByTagName("head")[0].appendChild(script);
+        utilLoadScript("opensite.js?type=" + type + "&id=" + id,
+                       "iframe",
+                       "script/object-iframe.js");
     }
     </script>
 
@@ -39,5 +34,7 @@
         </td>
       </tr>
     </table>
+
+    <div id="iframe"></div>
 
 <#include "footer.ftl">
