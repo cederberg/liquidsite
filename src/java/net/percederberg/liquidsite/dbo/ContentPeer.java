@@ -158,7 +158,8 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
-     * Inserts a new content object into the database.
+     * Inserts a new content object into the database. This method 
+     * will assign a new content id if it is set to zero (0).
      * 
      * @param data           the content data object
      * @param con            the database connection to use
@@ -171,11 +172,12 @@ public class ContentPeer extends AbstractPeer {
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.insert");
-        int            id = getNewId(con);
 
-        data.setInt(ContentData.ID, id);
+        if (data.getInt(ContentData.ID) <= 0) {
+            data.setInt(ContentData.ID, getNewId(con));
+        }
         query.addParameter(data.getString(ContentData.DOMAIN));
-        query.addParameter(id);
+        query.addParameter(data.getInt(ContentData.ID));
         query.addParameter(data.getInt(ContentData.REVISION));
         query.addParameter(data.getInt(ContentData.CATEGORY));
         query.addParameter(data.getString(ContentData.NAME));
