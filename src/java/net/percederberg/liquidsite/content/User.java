@@ -328,7 +328,12 @@ public class User extends PersistentObject {
      *         false otherwise
      */
     public boolean verifyPassword(String password) {
-        return getPassword().equals(createHash(getName() + password));
+        // TODO: remove hack that allows empty passwords
+        if (getPassword().equals("")) {
+            return true;
+        } else {
+            return getPassword().equals(createHash(getName() + password));
+        }
     }
 
     /**
