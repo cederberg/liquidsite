@@ -82,22 +82,83 @@ public class UsersAddFormHandler extends AdminFormHandler {
      * @param request        the request object
      * @param step           the workflow step
      *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
-        throws FormValidationException {
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
 
         UsersEditFormHandler  edit = UsersEditFormHandler.getInstance();
         String                type = request.getParameter("type", "");
-        String                message;
 
         edit.validateStep(request, step);
         if (type.equals("user")) {
-            if (request.getParameter("password", "").length() <= 0) {
-                message = "The user password field cannot be empty";
-                throw new FormValidationException("password", message);
-            }
+            validateUser(request);
+        } else if (type.equals("group")) {
+            validateGroup(request);
+        }
+    }
+
+    /**
+     * Validates a user add form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateUser(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        String          name;
+        String          message;
+
+        if (request.getParameter("password", "").length() <= 0) {
+            message = "The user password field cannot be empty";
+            throw new FormValidationException("password", message);
+        }
+        name = request.getParameter("name");
+        if (manager.getUser(getDomain(request), name) != null) {
+            message = "A user with the specified login name already exists";
+            throw new FormValidationException("name", message);
+        }
+    }
+
+    /**
+     * Validates a group add form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateGroup(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        String          name;
+        String          message;
+
+        name = request.getParameter("name");
+        if (manager.getGroup(getDomain(request), name) != null) {
+            message = "A group with the specified name already exists";
+            throw new FormValidationException("name", message);
         }
     }
 
