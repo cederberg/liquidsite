@@ -244,7 +244,7 @@ public class LiquidSiteBean {
         int           pos;
 
         path = request.getPath();
-        path = path.substring(basePath.length() + 1);
+        path = path.substring(basePath.length());
         while ((pos = path.indexOf('/')) >= 0) {
             buffer.append("../");
             path = path.substring(pos + 1);
