@@ -409,6 +409,7 @@ public class AdminController extends Controller {
             } else if (!page.hasReadAccess(request.getUser())) {
                 throw RequestException.FORBIDDEN;
             } else {
+                request.setSite((ContentSite) site);
                 processPreview(request, page);
             }
         } catch (ContentException e) {
