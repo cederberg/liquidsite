@@ -2,17 +2,16 @@
 String host = (String) request.getAttribute("host");
 String rootUsername = (String) request.getAttribute("rootUsername");
 String rootPassword = (String) request.getAttribute("rootPassword");
-String dbchoice = (String) request.getAttribute("dbchoice");
 String dbsel = (String) request.getAttribute("dbsel");
 String database = (String) request.getAttribute("database");
-String userchoice = (String) request.getAttribute("userchoice");
 String usersel = (String) request.getAttribute("usersel");
 String username = (String) request.getAttribute("username");
 String password = (String) request.getAttribute("password");
 String verify = (String) request.getAttribute("verify");
 
-java.util.Vector databases  = 
-    (java.util.Vector) request.getAttribute("databases");
+java.util.ArrayList dbsInfo = 
+    (java.util.ArrayList) request.getAttribute("dbsInfo");
+java.util.Hashtable dbInfo;
 String db;
 
 boolean error = 
@@ -44,7 +43,6 @@ boolean errorConnection =
     <input type="hidden" name="host" value="<%= host %>" />
     <input type="hidden" name="rootUsername" value="<%= rootUsername %>" />
     <input type="hidden" name="rootPassword" value="<%= rootPassword %>" />
-    <input type="hidden" name="userchoice" value="<%= userchoice %>" />
     <input type="hidden" name="usersel" value="<%= usersel %>" />
     <input type="hidden" name="username" value="<%= username %>" />
     <input type="hidden" name="password" value="<%= password %>" />
@@ -52,44 +50,33 @@ boolean errorConnection =
   
     <table>
       <tr>
-        <td>
-<% if (dbchoice.compareTo("select") == 0) { %>
-	  <input checked type="radio" name="dbchoice" value="select" />
-<% } else { %>
-          <input type="radio" name="dbchoice" value="select" />
-<% } %>
-        </td>
         <td>Select a database:</td>
-        <td>
-	  <select name="dbsel">
-            <option value="">Select a database</option>
-<% if (databases != null) {
-       for (int i=0; i<databases.size(); i++) {
-           db = (String) databases.elementAt(i);
-           if (db.compareTo(dbsel) == 0) {
-%>
-            <option selected value="<%= db %>"><%= db %></option>
-<%         } else { %>
-            <option value="<%= db %>"><%= db %></option>
-<%         } 
-       }
-   }
-%>
-          </select></td>
       </tr>
-
       <tr>
         <td>
-<% if (dbchoice.compareTo("create") == 0) { %>
-          <input checked type="radio" name="dbchoice" value="create" />
+<% for (int i=0; i<dbsInfo.size(); i++) {
+       dbInfo = (java.util.Hashtable) dbsInfo.get(i);
+       db = (String) dbInfo.get("name");
+       if (dbsel.equals(db)) {
+%>
+          <input checked type="radio" name="dbsel" 
+            value="<%= db %>" /> <%= db %> <br />
+<%     } else { %>
+          <input type="radio" name="dbsel" 
+            value="<%= db %>" /> <%= db %> <br />
+<%     } 
+   }
+   if (dbsel.equals("")) { 
+%>
+          <input checked type="radio" name="dbsel" value="" />
 <% } else { %>
-          <input type="radio" name="dbchoice" value="create" />
+          <input type="radio" name="dbsel" value="" />
 <% } %>
+          Create new database: 
+          <input type="input" name="database" value="<%= database %>" />
         </td>
-        <td>Create new database:</td>
-        <td><input type="text" name="database" value="<%= database %>" /></td>
       </tr>
-
+      
       <tr>
         <td colspan="3">
           <input type="button" name="submit" value="&lt;&lt; Previous" 
