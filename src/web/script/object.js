@@ -220,6 +220,17 @@ function objectAddUnpublishButton(url) {
 }
 
 /**
+ * Adds a revert button to the object view.
+ *
+ * @param url                 the URL to visit
+ */
+function objectAddRevertButton(url) {
+    var script = "objectInternalOpenDialog('" + url + "',550,300)";
+
+    objectInternalAddButton("Revert", "revert.png", script);
+}
+
+/**
  * Adds an unlock button to the object view.
  *
  * @param url                 the URL to visit

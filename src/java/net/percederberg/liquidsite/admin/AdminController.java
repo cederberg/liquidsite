@@ -135,6 +135,8 @@ public class AdminController extends Controller {
             processPublishObject(request);
         } else if (path.equals("unpublish-site.html")) {
             processUnpublishObject(request);
+        } else if (path.equals("revert-site.html")) {
+            processRevertObject(request);
         } else if (path.equals("unlock-site.html")) {
             processUnlockObject(request);
         } else if (path.equals("loadsite.js")) {
@@ -628,6 +630,41 @@ public class AdminController extends Controller {
             comment = "Date format error, " + e.getMessage();
             request.setAttribute("error", comment);
             view.dialogPublish(request, content);
+        }
+    }
+
+    /**
+     * Processes the revert object requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processRevertObject(Request request) 
+        throws RequestException {
+
+        Content  content;
+        Content  revision;
+        
+        try {
+            content = (Content) view.getRequestReference(request);
+            revision = content.getRevision(0);
+            if (revision != null) {
+                content = revision;
+            }
+            if (request.getParameter("confirmed") == null) {
+                view.dialogRevert(request, content);
+            } else {
+                content.deleteRevision(request.getUser());
+                view.dialogClose(request);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            view.dialogError(request, e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            view.dialogError(request, e);
         }
     }
 

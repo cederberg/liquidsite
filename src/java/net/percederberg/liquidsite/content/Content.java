@@ -794,6 +794,40 @@ public abstract class Content extends PersistentObject implements Comparable {
     }
 
     /**
+     * Deletes this content revision from the database.
+     * 
+     * @param user           the user performing the operation
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have write permissions
+     */
+    public void deleteRevision(User user) 
+        throws ContentException, ContentSecurityException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+
+        // Delete from database
+        try {
+            getSecurityManager().checkDelete(user, this);
+            ContentPeer.doDeleteRevision(getId(), getRevisionNumber(), con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+
+        // Delete from cache
+        try {
+            getContentManager().cacheRemove(this);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    /**
      * Inserts the object data into the database.
      * 
      * @param user           the user performing the operation

@@ -364,6 +364,12 @@ class AdminScript {
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 }
+                // TODO: improve efficiency of this, already queried
+                if (content.getAllRevisions().length > 1) {
+                    buffer.append("objectAddRevertButton('revert-site.html");
+                    buffer.append(getLinkParameters(content));
+                    buffer.append("');\n");
+                }
                 buffer.append("objectAddDeleteButton('delete-site.html");
                 buffer.append(getLinkParameters(content));
                 buffer.append("');\n");

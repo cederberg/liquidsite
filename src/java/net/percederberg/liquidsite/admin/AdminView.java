@@ -181,6 +181,25 @@ class AdminView {
     }
 
     /**
+     * Shows the content revert dialog.
+     * 
+     * @param request        the request object
+     * @param content        the content object to revert
+     */
+    public void dialogRevert(Request request, Content content) {
+        String  str;
+
+        setRequestReference(request, content);
+        if (content.getRevisionNumber() == 0) {
+            str = "Work";
+        } else {
+            str = String.valueOf(content.getRevisionNumber());
+        }
+        request.setAttribute("revision", str);
+        request.sendTemplate("admin/dialog/revert-object.ftl");
+    }
+
+    /**
      * Shows the content unlock dialog.
      * 
      * @param request        the request object
