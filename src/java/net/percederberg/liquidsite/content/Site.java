@@ -21,62 +21,100 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
+
+import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.ContentData;
+import net.percederberg.liquidsite.dbo.ContentPeer;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+
 /**
  * A web site.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Site {
+public class Site extends Content {
 
     /**
-     * The unique site id. This value is set to zero (0) for sites 
-     * that are not present in the database. 
+     * The protocol content attribute.
      */
-    private int id = 0;
+    private static final String PROTOCOL_ATTRIBUTE = "PROTOCOL";
 
     /**
-     * The site name.
+     * The host content attribute.
      */
-    private String name = "";
-    
-    /**
-     * The site host name or IP.
-     */
-    private String host = "*";
-    
-    /**
-     * The site port number.
-     */
-    private int port = 0;
-    
-    /**
-     * The site base directory. This string always ends in '/'.
-     */
-    private String directory = "/";
+    private static final String HOST_ATTRIBUTE = "HOST";
 
     /**
-     * Creates a new site with default values.
+     * The port content attribute.
      */
-    public Site() {
+    private static final String PORT_ATTRIBUTE = "PORT";
+
+    /**
+     * The directory content attribute.
+     */
+    private static final String DIRECTORY_ATTRIBUTE = "DIRECTORY";
+
+    /**
+     * Returns an array of all domain sites in the database.
+     * 
+     * @param domain         the domain
+     * 
+     * @return an array of all domain sites in the database
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public static Site[] findByDomain(Domain domain) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Site[]              res;
+
+        try {
+            list = ContentPeer.doSelectByCategory(domain.getName(),
+                                                  Content.SITE_CATEGORY,
+                                                  con);
+            res = new Site[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new Site((ContentData) list.get(i), con);
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
     }
 
     /**
-     * Checks if this site equals another object. This method will 
-     * only return true if the other object is a site with the same
-     * unique site id.
+     * Creates a new site with default values.
      * 
-     * @param obj            the object to compare with
-     * 
-     * @return true if the other object is an identical site, or
-     *         false otherwise 
+     * @param domain         the site domain
      */
-    public boolean equals(Object obj) {
-        if (obj instanceof Site) {
-            return id == ((Site) obj).id;
-        } else {
-            return false;
-        }
+    public Site(Domain domain) {
+        super(domain, 1, Content.SITE_CATEGORY);
+        setAttribute(PROTOCOL_ATTRIBUTE, "http");
+        setAttribute(HOST_ATTRIBUTE, "*");
+        setAttribute(PORT_ATTRIBUTE, "0");
+        setAttribute(DIRECTORY_ATTRIBUTE, "/");
+    }
+
+    /**
+     * Creates a new site.
+     * 
+     * @param data           the content data object
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected Site(ContentData data, DatabaseConnection con) 
+        throws DatabaseObjectException {
+
+        super(data, con);
     }
 
     /**
@@ -86,52 +124,37 @@ public class Site {
      */
     public String toString() {
         StringBuffer  buffer = new StringBuffer();
+        int           port = getPort();
+        String        dir = getDirectory();
         
         buffer.append("Site: ");
-        buffer.append(host);
+        buffer.append(getProtocol());
+        buffer.append("://");
+        buffer.append(getHost());
         if (port != 0 && port != 80) {
             buffer.append(":");
             buffer.append(port); 
         }
-        buffer.append(directory.substring(directory.length() - 1));
+        buffer.append(dir.substring(dir.length() - 1));
         return buffer.toString();
     }
 
     /**
-     * Returns the unique site id.
+     * Returns the site protocol
      * 
-     * @return the unique site id
+     * @return the site protocol
      */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * Sets the site id. This method is only used when reading sites
-     * from the database.
-     * 
-     * @param id             the new site id
-     */
-    void setId(int id) {
-        this.id = id;
+    public String getProtocol() {
+        return getAttribute(PROTOCOL_ATTRIBUTE);
     }
     
     /**
-     * Returns the site name
+     * Sets the site protocol.
      * 
-     * @return the site name
+     * @param protocol       the new site protocol
      */
-    public String getName() {
-        return name;
-    }
-    
-    /**
-     * Sets the site name.
-     * 
-     * @param name           the new site name
-     */
-    public void setName(String name) {
-        this.name = name;
+    public void setProtocol(String protocol) {
+        setAttribute(PROTOCOL_ATTRIBUTE, protocol);
     }
     
     /**
@@ -141,7 +164,7 @@ public class Site {
      *         "*" if any host matches this site
      */
     public String getHost() {
-        return host;
+        return getAttribute(HOST_ATTRIBUTE);
     }
     
     /**
@@ -151,7 +174,7 @@ public class Site {
      * @param host           the new host name, or "*" for any
      */
     public void setHost(String host) {
-        this.host = host;
+        setAttribute(HOST_ATTRIBUTE, host);
     }
     
     /**
@@ -161,7 +184,7 @@ public class Site {
      *         zero (0) if any port matches this site
      */
     public int getPort() {
-        return port;
+        return Integer.parseInt(getAttribute(PORT_ATTRIBUTE));
     }
     
     /**
@@ -170,7 +193,7 @@ public class Site {
      * @param port           the new port number, or zero (0) for any
      */
     public void setPort(int port) {
-        this.port = port;
+        setAttribute(PORT_ATTRIBUTE, String.valueOf(port));
     }
 
     /**
@@ -180,7 +203,7 @@ public class Site {
      * @return the base directory
      */
     public String getDirectory() {
-        return directory;
+        return getAttribute(DIRECTORY_ATTRIBUTE);
     }
 
     /**
@@ -190,13 +213,11 @@ public class Site {
      */
     public void setDirectory(String directory) {
         if (directory == null) {
-            this.directory = "/";
-        } else {
-            this.directory = directory;
-        }        
-        if (!this.directory.endsWith("/")) {
-            this.directory += "/";
+            directory = "/";
+        } else if (!directory.endsWith("/")) {
+            directory += "/";
         }
+        setAttribute(DIRECTORY_ATTRIBUTE, directory);
     }
 
     /**
@@ -204,41 +225,47 @@ public class Site {
      * returns a numeric value that is higher for better matches. If
      * the request parameters didn't match at all, zero (0) is always
      * returned. The matching algorithm gives priority to exact 
-     * matches for host and port, and longer matches for URI:s. An 
+     * matches for host and port, and longer matches for paths. An 
      * exact match for host or port is also always preferred over a
-     * longer URI match. 
-     * 
+     * longer path match. 
+     *
+     * @param protocol       the request protocol 
      * @param host           the request host name (server name)
      * @param port           the request (server) port
-     * @param uri            the request uri
+     * @param path           the request path
      * 
      * @return the match value (higher is better), or
      *         zero (0) for no match
      */
-    public int match(String host, int port, String uri) {
+    public int match(String protocol, String host, int port, String path) {
         int  result = 0;
         
+        // Check protocol match
+        if (!getProtocol().equals(protocol)) {
+            return 0;
+        }
+
         // Check host match
-        if (this.host.equals("*")) {
-            // Do nothing
-        } else if (this.host.equals(host)) {
+        if (getHost().equals(host)) {
             result += 10000;
+        } else if (getHost().equals("*")) {
+            result += 0;
         } else {
             return 0;
         }
 
         // Check port match        
-        if (this.port == 0) {
-            // Do nothing
-        } else if (this.port == port) {
+        if (getPort() == port) {
             result += 1000;
+        } else if (getPort() == 0) {
+            result += 0;
         } else {
             return 0;
         }
         
         // Check directory match
-        if (uri.startsWith(directory)) {
-            result += directory.length();
+        if (path.startsWith(getDirectory())) {
+            result += getDirectory().length();
         } else {
             return 0;
         }
