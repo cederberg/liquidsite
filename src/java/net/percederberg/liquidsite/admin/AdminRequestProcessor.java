@@ -58,6 +58,11 @@ public class AdminRequestProcessor extends RequestProcessor {
     private static final Log LOG = new Log(AdminRequestProcessor.class);
 
     /**
+     * The system view request processor.
+     */
+    private SystemRequestProcessor system;
+
+    /**
      * The admin form handlers (workflows).
      */
     private ArrayList workflows = new ArrayList();
@@ -71,6 +76,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         super(new ContentManager(app, true), app.getBaseDir());
         AdminUtils.setConfiguration(app.getConfig());
         AdminUtils.setContentManager(getContentManager());
+        system = new SystemRequestProcessor(app);
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
@@ -134,7 +140,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         } else if (path.equals("view-users.html")) {
             processViewUserDetails(request);
         } else if (path.equals("system.html")) {
-            AdminView.SYSTEM.viewSystem(request);
+            system.process(request, path);
         } else if (path.equals("logout.html")) {
             processLogout(request);
         } else if (path.equals("loadsite.js")) {
