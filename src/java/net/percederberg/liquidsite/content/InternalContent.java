@@ -47,6 +47,37 @@ class InternalContent {
     private static final Log LOG = new Log(InternalContent.class);
 
     /**
+     * Returns the number of content objects matching the specified
+     * selector. Only the latest revision of each content object will
+     * be considered.
+     *
+     * @param manager        the content manager to use
+     * @param selector       the content selector
+     *
+     * @return the number of content objects found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    static int countBySelector(ContentManager manager,
+                               ContentSelector selector)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
+
+        try {
+            query = selector.getContentQuery(manager);
+            return ContentPeer.doCountByQuery(query, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
      * Returns an array of content object revisions with the
      * specified identifier.
      *
@@ -336,7 +367,7 @@ class InternalContent {
      * be returned.
      *
      * @param manager        the content manager to use
-     * @param selecto        the content selector
+     * @param selector       the content selector
      *
      * @return an array of content objects found
      *

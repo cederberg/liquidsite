@@ -63,6 +63,35 @@ public class ContentPeer extends AbstractPeer {
     public static final int PUBLISHED_STATUS = 2;
 
     /**
+     * Returns the number of content objects matching the specified
+     * query.
+     *
+     * @param query          the content query to use
+     * @param con            the database connection to use
+     *
+     * @return the number of matching content objects
+     *
+     * @throws DatabaseObjectException if the database couldn't be
+     *             accessed properly
+     */
+    public static int doCountByQuery(ContentQuery query,
+                                     DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseResults  res;
+
+        res = PEER.execute("counting content",
+                           query.createCountQuery(),
+                           con);
+        try {
+            return res.getRow(0).getInt(0);
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+    }
+
+    /**
      * Returns a list of all content object revisions with the
      * specified id.
      *

@@ -486,6 +486,26 @@ public class ContentManager {
     }
 
     /**
+     * Returns the number of content objects matching the selector.
+     * Only the highest revision of each object will be returned. Note
+     * that the number returned by this method may in some cases be
+     * higher than the number of content object actually visible by
+     * the user, due to lacking read permissions.
+     *
+     * @param selector       the content selector
+     *
+     * @return the number of matching content objects
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public int getContentCount(ContentSelector selector)
+        throws ContentException {
+
+        return InternalContent.countBySelector(this, selector);
+    }
+
+    /**
      * Returns the user readable content objects matching the
      * selector. Only the highest revision of each object will be
      * returned.
