@@ -555,6 +555,10 @@ public class TaggedFormatter {
             case '\r':
                 pos++;
                 break;
+            case '@':
+                result.append("&#64;");
+                pos++;
+                break;
             default:
                 result.append(text.charAt(pos));
                 pos++;

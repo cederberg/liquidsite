@@ -73,6 +73,9 @@ public class PlainFormatter {
             case '&':
                 buffer.append("&amp;");
                 break;
+            case '@':
+                buffer.append("&#64;");
+                break;
             default:
                 buffer.append(c);
             }
