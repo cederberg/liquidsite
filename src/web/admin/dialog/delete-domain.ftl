@@ -2,6 +2,8 @@
 <#include "header.ftl">
 
     <form method="post">
+      <input type="hidden" name="type" value="${type}" />
+      <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="confirmed" value="true" />
       <table class="dialog">
         <tr>
@@ -9,12 +11,12 @@
             <img src="images/icons/48x48/delete.png" alt="Delete" />
           </td>
           <td>
-            <h2>Delete Domain</h2>
+            <h2>Delete Domain '${name}'</h2>
           </td>
         </tr>
         <tr>
           <td>
-            <strong>Are you sure you wish to delete the
+            <strong>Are you sure you wish to delete this
             domain?</strong>
 
             <p>Deleting the domain will 

@@ -284,23 +284,41 @@ public class AdminController extends Controller {
      * Processes the delete object requests for the site view.
      * 
      * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
      */
-    private void processDeleteObject(Request request) {
-        Object  focus = view.getSiteTreeFocus(request);
+    private void processDeleteObject(Request request) 
+        throws RequestException {
 
-        // TODO: remove the use of site tree focus, as it is unsafe
-        if (focus instanceof Domain) {
-            if (request.getParameter("confirmed") == null) {
-                view.dialogDeleteDomain(request);
+        Object  obj;
+        String  error;
+        
+        try {
+            obj = getRequestReference(request);
+            if (obj instanceof Domain) {
+                if (request.getParameter("confirmed") == null) {
+                    view.dialogDeleteDomain(request, (Domain) obj);
+                } else {
+                    processDeleteDomain(request, (Domain) obj);
+                }
+            } else if (obj instanceof Site) {
+                if (request.getParameter("confirmed") == null) {
+                    view.dialogDeleteSite(request, (Site) obj);
+                } else {
+                    processDeleteContent(request, (Site) obj);
+                }
             } else {
-                processDeleteDomain(request);
+                view.dialogClose(request);  
             }
-        } else if (focus instanceof Site) {
-            if (request.getParameter("confirmed") == null) {
-                view.dialogDeleteSite(request);
-            } else {
-                processDeleteContent(request);
-            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            error = "Database access problem, " + e.getMessage();
+            view.dialogError(request, error);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            error = "Security violation, " + e.getMessage();
+            view.dialogError(request, error);
         }
     }
 
@@ -309,29 +327,20 @@ public class AdminController extends Controller {
      * view.
      * 
      * @param request        the request object
+     * @param domain         the domain to delete
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
      */
-    private void processDeleteDomain(Request request) {
-        Domain  domain;
-        String  error;
-        
-        try {
-            // TODO: check for request domain!
-            // TODO: change line below, as it is unsafe!
-            domain = (Domain) view.getSiteTreeFocus(request);
-            domain.delete(request.getUser());
-            view.setSiteTreeFocus(request, null);
-            view.dialogClose(request);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            error = "Failed to write to database, " + e.getMessage();
-            request.setAttribute("error", error);
-            view.dialogError(request);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            error = "You don't have permission for removing domain";
-            request.setAttribute("error", error);
-            view.dialogError(request);
-        }
+    private void processDeleteDomain(Request request, Domain domain) 
+        throws ContentException, ContentSecurityException {
+
+        // TODO: check if domain is current site domain!
+        domain.delete(request.getUser());
+        view.setSiteTreeFocus(request, null);
+        view.dialogClose(request);
     }
 
     /**
@@ -339,29 +348,27 @@ public class AdminController extends Controller {
      * view.
      * 
      * @param request        the request object
+     * @param content        the content object to delete
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
      */
-    private void processDeleteContent(Request request) {
-        Content content;
-        String  error;
-        
-        try {
-            // TODO: check for request site!
-            // TODO: change line below, as it is unsafe!
-            content = (Content) view.getSiteTreeFocus(request);
-            content.delete(request.getUser());
-            view.setSiteTreeFocus(request, content.getParent());
-            view.dialogClose(request);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            error = "Failed to write to database, " + e.getMessage();
-            request.setAttribute("error", error);
-            view.dialogError(request);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            error = "You don't have permission for removing this object";
-            request.setAttribute("error", error);
-            view.dialogError(request);
+    private void processDeleteContent(Request request, Content content)
+        throws ContentException, ContentSecurityException {
+
+        Content  parent;
+
+        // TODO: check if content is current site domain!
+        content.delete(request.getUser());
+        parent = content.getParent();
+        if (parent == null) {
+            view.setSiteTreeFocus(request, content.getDomain());
+        } else {
+            view.setSiteTreeFocus(request, parent);
         }
+        view.dialogClose(request);
     }
     
     /**

@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
+import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -80,8 +81,10 @@ class AdminView {
      * Shows the error message dialog.
      * 
      * @param request        the request object
+     * @param message        the error message
      */
-    public void dialogError(Request request) {
+    public void dialogError(Request request, String message) {
+        request.setAttribute("error", message);
         request.sendTemplate("admin/dialog/error.ftl");
     }
 
@@ -89,8 +92,11 @@ class AdminView {
      * Shows the delete domain confirmation dialog.
      * 
      * @param request        the request object
+     * @param domain         the domain to delete
      */
-    public void dialogDeleteDomain(Request request) {
+    public void dialogDeleteDomain(Request request, Domain domain) {
+        setRequestReference(request, domain);
+        request.setAttribute("name", domain.getName());
         request.sendTemplate("admin/dialog/delete-domain.ftl");
     }
 
@@ -98,8 +104,11 @@ class AdminView {
      * Shows the delete site confirmation dialog.
      * 
      * @param request        the request object
+     * @param site           the site to delete
      */
-    public void dialogDeleteSite(Request request) {
+    public void dialogDeleteSite(Request request, Site site) {
+        setRequestReference(request, site);
+        request.setAttribute("name", site.getName());
         request.sendTemplate("admin/dialog/delete-site.ftl");
     }
 
