@@ -177,8 +177,8 @@ public class DatabaseConnector {
      * 
      * @return a database connection
      * 
-     * @throws DatabaseConnectionException if a new database 
-     *             connection couldn't be established
+     * @throws DatabaseConnectionException if a database connection 
+     *             couldn't be established
      * 
      * @see #returnConnection
      */
@@ -219,8 +219,8 @@ public class DatabaseConnector {
      * background thread, as this method may get stuck waiting for 
      * I/O timeouts.
      * 
-     * @throws DatabaseConnectionException if new database 
-     *             connections couldn't be created
+     * @throws DatabaseConnectionException if a database connection 
+     *             couldn't be established
      */
     public void update() throws DatabaseConnectionException {
         if (pool != null) {
@@ -235,8 +235,8 @@ public class DatabaseConnector {
      * 
      * @return the database results
      * 
-     * @throws DatabaseConnectionException if a new database 
-     *             connection couldn't be established
+     * @throws DatabaseConnectionException if a database connection 
+     *             couldn't be established
      * @throws DatabaseException if the query or statement couldn't 
      *             be executed correctly
      */
