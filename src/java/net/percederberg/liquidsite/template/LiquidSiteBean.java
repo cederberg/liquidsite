@@ -21,7 +21,15 @@
 
 package net.percederberg.liquidsite.template;
 
+import java.util.ArrayList;
+
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.content.Content;
+import net.percederberg.liquidsite.content.ContentDocument;
+import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.content.ContentSection;
+import net.percederberg.liquidsite.content.Domain;
 
 /**
  * A LiquidSite template bean. This class is used to insert the 
@@ -107,5 +115,140 @@ public class LiquidSiteBean {
      */
     public UserBean getUser() {
         return user;
+    }
+    
+    /**
+     * Returns all document in the specified section path.
+     * 
+     * @param path           the section path
+     * 
+     * @return a list of the documents found (as document beans)
+     */
+    public ArrayList findDocuments(String path) {
+        ArrayList       result = new ArrayList();
+        Domain          domain;
+        ContentSection  section;
+
+        // TODO: add sorting (and remove the one that exists)
+        // TODO: add filtering
+        // TODO: add content publish checks (online)
+        try {
+            domain = request.getSite().getDomain();
+            section = findSection(path, domain);
+            if (section == null) {
+                // TODO: log this
+            } else {
+                findDocuments(section, result);
+            }
+        } catch (ContentException e) {
+            // TODO: log this!
+        }
+        return result;
+    }
+    
+    /**
+     * Finds a specified section.
+     * 
+     * @param path           the section path
+     * @param parent         the parent domain or section
+     * 
+     * @return the section found, or
+     *         null if not found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ContentSection findSection(String path, Object parent)
+        throws ContentException {
+
+        ContentManager  manager;
+        Content[]       children;
+
+        if (path == null || path.equals("")) {
+            if (parent instanceof ContentSection) {
+                return (ContentSection) parent;
+            } else {
+                return null;
+            }
+        }
+        manager = ContentManager.getInstance();
+        if (parent instanceof Domain) {
+            children = manager.getContentChildren(request.getUser(),
+                                                  (Domain) parent);
+        } else {
+            children = manager.getContentChildren(request.getUser(),
+                                                  (Content) parent);
+        }
+        return findSection(path, children);
+    }
+
+    /**
+     * Finds a specified section.
+     * 
+     * @param path           the section path
+     * @param content        the content objects to search
+     * 
+     * @return the section found, or
+     *         null if not found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ContentSection findSection(String path, Content[] content) 
+        throws ContentException {
+        
+        String  name;
+        int     pos;
+
+        // Find first section name
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        pos = path.indexOf("/");
+        if (pos > 0) {
+            name = path.substring(0, pos);
+            path = path.substring(pos + 1);
+        } else {
+            name = path;
+            path = "";
+        }
+
+        // Search for section name
+        for (int i = 0; i < content.length; i++) {
+            if (content[i] instanceof ContentSection
+             && content[i].getName().equals(name)) {
+
+                return findSection(path, (ContentSection) content[i]);
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Finds all documents in the specified section (and in 
+     * subsections). The documents will be added (as document beans)
+     * to the specified list.
+     * 
+     * @param section        the content section
+     * @param results        the list with results
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void findDocuments(ContentSection section, ArrayList results) 
+        throws ContentException {
+
+        ContentManager  manager = ContentManager.getInstance();
+        Content[]       children;
+
+        children = manager.getContentChildren(request.getUser(), section);
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] instanceof ContentSection) {
+                findDocuments((ContentSection) children[i], results);
+            } else if (children[i] instanceof ContentDocument) {
+                results.add(new DocumentBean((ContentDocument) children[i]));
+            }
+        }
     }
 }
