@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
@@ -39,22 +38,12 @@ import net.percederberg.liquidsite.content.ContentSelector;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DocumentBean {
+public class DocumentBean extends ContentBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(DocumentBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
-
-    /**
-     * The document being encapsulated.
-     */
-    private ContentDocument document;
 
     /**
      * The base section of the document being encapsulated. If set
@@ -104,23 +93,8 @@ public class DocumentBean {
                  ContentDocument document,
                  ContentSection baseSection) {
 
-        this.context = context;
-        this.document = document;
+        super(context, document);
         this.baseSection = baseSection;
-    }
-
-    /**
-     * Returns the document identifier.
-     *
-     * @return the document identifier number, or
-     *         zero (0) for a non-existing document
-     */
-    public int getId() {
-        if (document == null) {
-            return 0;
-        } else {
-            return document.getId();
-        }
     }
 
     /**
@@ -131,7 +105,7 @@ public class DocumentBean {
      */
     public String getName() {
         try {
-            return getName(document);
+            return getName(getContent());
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             return "";
@@ -161,102 +135,13 @@ public class DocumentBean {
             }
         } else if (content instanceof ContentDocument) {
             if (baseSection == null) {
-                return document.getName();
+                return content.getName();
             } else {
-                return getName(document.getParent()) +
-                       document.getName();
+                return getName(content.getParent()) +
+                       content.getName();
             }
         } else {
             return "";
-        }
-    }
-
-    /**
-     * Returns the full document path.
-     *
-     * @return the document path, or
-     *         an empty string for a non-existing document
-     */
-    public String getPath() {
-        String  path = context.getContentPath(document);
-
-        if (path.endsWith("/")) {
-            return path.substring(0, path.length() - 1);
-        } else {
-            return path;
-        }
-    }
-
-    /**
-     * Returns the document parent (always a section).
-     *
-     * @return the document parent
-     */
-    public SectionBean getParent() {
-        if (document != null) {
-            try {
-                return new SectionBean(context,
-                                       (ContentSection) document.getParent());
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-            }
-        }
-        return new SectionBean();
-    }
-
-    /**
-     * Returns the document revision number.
-     *
-     * @return the document revision number, or
-     *         zero (0) for a non-existing document
-     */
-    public int getRevision() {
-        if (document == null) {
-            return 0;
-        } else {
-            return document.getRevisionNumber();
-        }
-    }
-
-    /**
-     * Returns the document revision date.
-     *
-     * @return the document revision date, or
-     *         the current date and time for a non-existing document
-     */
-    public Date getDate() {
-        if (document == null) {
-            return new Date();
-        } else {
-            return document.getModifiedDate();
-        }
-    }
-
-    /**
-     * Returns the document revision author login name.
-     *
-     * @return the document revision user name, or
-     *         an empty string for a non-existing document
-     */
-    public String getUser() {
-        if (document == null) {
-            return "";
-        } else {
-            return document.getAuthorName();
-        }
-    }
-
-    /**
-     * Returns the document online flag.
-     *
-     * @return the document online flag, or
-     *         the false for a non-existing document
-     */
-    public boolean getOnline() {
-        if (document == null) {
-            return false;
-        } else {
-            return document.isOnline();
         }
     }
 
@@ -268,26 +153,10 @@ public class DocumentBean {
      */
     public DocumentDataBean getData() {
         if (data == null) {
-            data = new DocumentDataBean(context, document);
+            data = new DocumentDataBean(getContext(),
+                                        (ContentDocument) getContent());
         }
         return data;
-    }
-
-    /**
-     * Returns the document lock.
-     *
-     * @return the document lock object, or
-     *         an empty lock for a non-existing document
-     */
-    public LockBean getLock() {
-        if (document != null) {
-            try {
-                return new LockBean(document.getLock());
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-            }
-        }
-        return new LockBean(null);
     }
 
     /**
@@ -303,16 +172,16 @@ public class DocumentBean {
 
         if (files == null) {
             files = new ArrayList();
-            if (document != null) {
+            if (getContent() != null) {
                 try {
-                    selector = new ContentSelector(document.getDomain());
-                    selector.requireParent(document);
+                    selector = new ContentSelector(getContent().getDomain());
+                    selector.requireParent(getContent());
                     selector.requireCategory(Content.FILE_CATEGORY);
                     selector.sortByName(true);
                     selector.limitResults(0, 100);
-                    content = context.findContent(selector);
+                    content = getContext().findContent(selector);
                     for (int i = 0; i < content.length; i++) {
-                        file = new DocumentFileBean(context,
+                        file = new DocumentFileBean(getContext(),
                                                     this,
                                                     (ContentFile) content[i]);
                         files.add(file);

@@ -38,22 +38,12 @@ import net.percederberg.liquidsite.text.PlainFormatter;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class SectionBean {
+public class SectionBean extends ContentBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(SectionBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
-
-    /**
-     * The section being encapsulated.
-     */
-    private ContentSection section;
 
     /**
      * Creates a new empty section template bean.
@@ -79,32 +69,7 @@ public class SectionBean {
      * @param section        the content section, or null
      */
     SectionBean(BeanContext context, ContentSection section) {
-        this.context = context;
-        this.section = section;
-    }
-
-    /**
-     * Returns the content identifier.
-     *
-     * @return the content identifier
-     */
-    public int getId() {
-        if (section != null) {
-            return section.getId();
-        }
-        return 0;
-    }
-
-    /**
-     * Returns the section name.
-     *
-     * @return the section name
-     */
-    public String getName() {
-        if (section != null) {
-            return section.getName();
-        }
-        return "";
+        super(context, section);
     }
 
     /**
@@ -113,46 +78,13 @@ public class SectionBean {
      * @return the section description
      */
     public String getDescription() {
-        if (section != null) {
-            return PlainFormatter.formatHtml(section.getDescription());
+        String  str;
+
+        if (getContent() != null) {
+            str = ((ContentSection) getContent()).getDescription();
+            return PlainFormatter.formatHtml(str);
         }
         return "";
-    }
-
-    /**
-     * Returns the full section path.
-     *
-     * @return the section path
-     */
-    public String getPath() {
-        String  path = context.getContentPath(section);
-
-        if (path.endsWith("/")) {
-            return path.substring(0, path.length() - 1);
-        } else {
-            return path;
-        }
-    }
-
-    /**
-     * Returns the parent section. If there is no parent section, an
-     * emtpy section will be returned.
-     *
-     * @return the parent section, or
-     *         an empty section if no parent exists
-     */
-    public SectionBean getParent() {
-        if (section == null) {
-            return this;
-        } else {
-            try {
-                return new SectionBean(context,
-                                       (ContentSection) section.getParent());
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-                return new SectionBean();
-            }
-        }
     }
 
     /**
@@ -166,16 +98,16 @@ public class SectionBean {
         ContentSelector  selector;
         Content[]        content;
 
-        if (section != null) {
+        if (getContent() != null) {
             try {
-                selector = new ContentSelector(section.getDomain());
-                selector.requireParent(section);
+                selector = new ContentSelector(getContent().getDomain());
+                selector.requireParent(getContent());
                 selector.requireCategory(Content.SECTION_CATEGORY);
                 selector.sortByName(true);
                 selector.limitResults(0, 100);
-                content = context.findContent(selector);
+                content = getContext().findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new SectionBean(context,
+                    results.add(new SectionBean(getContext(),
                                                 (ContentSection) content[i]));
                 }
             } catch (ContentException e) {
@@ -196,16 +128,16 @@ public class SectionBean {
         ContentSelector  selector;
         Content[]        content;
 
-        if (section != null) {
+        if (getContent() != null) {
             try {
-                selector = new ContentSelector(section.getDomain());
-                selector.requireParent(section);
+                selector = new ContentSelector(getContent().getDomain());
+                selector.requireParent(getContent());
                 selector.requireCategory(Content.FORUM_CATEGORY);
                 selector.sortByName(true);
                 selector.limitResults(0, 100);
-                content = context.findContent(selector);
+                content = getContext().findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new ForumBean(context,
+                    results.add(new ForumBean(getContext(),
                                               (ContentForum) content[i]));
                 }
             } catch (ContentException e) {
@@ -222,8 +154,8 @@ public class SectionBean {
      * @return the number of documents found
      */
     public int countDocuments() {
-        if (section != null) {
-            return context.countDocuments(section);
+        if (getContent() != null) {
+            return getContext().countDocuments((ContentSection) getContent());
         }
         return 0;
     }
@@ -238,8 +170,8 @@ public class SectionBean {
      *         an empty document if not found
      */
     public DocumentBean findDocument(String path) {
-        if (section != null) {
-            return context.findDocument(section, path);
+        if (getContent() != null) {
+            return getContext().findDocument(getContent(), path);
         }
         return new DocumentBean();
     }
@@ -270,8 +202,11 @@ public class SectionBean {
      * @return a list of the documents found (as document beans)
      */
     public ArrayList findDocuments(String sorting, int offset, int count) {
-        if (section != null) {
-            return context.findDocuments(section, sorting, offset, count);
+        if (getContent() != null) {
+            return getContext().findDocuments((ContentSection) getContent(),
+                                              sorting,
+                                              offset,
+                                              count);
         }
         return new ArrayList(0);
     }
@@ -285,8 +220,9 @@ public class SectionBean {
      *         an empty forum if not found
      */
     public ForumBean findForum(String name) {
-        if (section != null) {
-            return context.findForum(section, name);
+        if (getContent() != null) {
+            return getContext().findForum((ContentSection) getContent(),
+                                          name);
         }
         return new ForumBean();
     }

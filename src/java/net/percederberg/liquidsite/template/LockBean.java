@@ -34,16 +34,30 @@ import net.percederberg.liquidsite.content.Lock;
 public class LockBean {
 
     /**
+     * The bean context.
+     */
+    private BeanContext context;
+
+    /**
      * The lock being encapsulated.
      */
     private Lock lock;
 
     /**
+     * Creates a new empty content lock bean.
+     */
+    LockBean() {
+        this(null, null);
+    }
+
+    /**
      * Creates a new content lock bean.
      *
+     * @param context        the bean context
      * @param lock           the content lock, or null for empty
      */
-    LockBean(Lock lock) {
+    LockBean(BeanContext context, Lock lock) {
+        this.context = context;
         this.lock = lock;
     }
 
@@ -61,7 +75,7 @@ public class LockBean {
      * Returns the lock acquiring date.
      *
      * @return the lock acquiring date, or
-     *         the current date and time for an open lock
+     *         the current date and time if the lock doesn't exist
      */
     public Date getDate() {
         if (lock == null) {
@@ -72,16 +86,16 @@ public class LockBean {
     }
 
     /**
-     * Returns the lock owner login name.
+     * Returns the lock owner user.
      *
-     * @return the lock owner user name, or
-     *         an empty string for an open lock
+     * @return the lock owner user bean, or
+     *         an empty user if the lock doesn't exist
      */
-    public String getUser() {
+    public UserBean getUser() {
         if (lock == null) {
-            return "";
+            return new UserBean(null);
         } else {
-            return lock.getUserName();
+            return context.findUser(lock.getUserName());
         }
     }
 }

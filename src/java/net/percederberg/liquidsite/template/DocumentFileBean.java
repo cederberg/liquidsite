@@ -21,10 +21,7 @@
 
 package net.percederberg.liquidsite.template;
 
-import java.util.Date;
-
 import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 
@@ -35,27 +32,12 @@ import net.percederberg.liquidsite.content.ContentFile;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DocumentFileBean {
+public class DocumentFileBean extends ContentBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(DocumentFileBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
-
-    /**
-     * The parent document bean.
-     */
-    private DocumentBean parent;
-
-    /**
-     * The file being encapsulated.
-     */
-    private ContentFile file;
 
     /**
      * Creates a new document file template bean.
@@ -68,81 +50,7 @@ public class DocumentFileBean {
                      DocumentBean parent,
                      ContentFile file) {
 
-        this.context = context;
-        this.parent = parent;
-        this.file = file;
-    }
-
-    /**
-     * Returns the file identifier.
-     *
-     * @return the file identifier number
-     */
-    public int getId() {
-        return file.getId();
-    }
-
-    /**
-     * Returns the name of the file.
-     *
-     * @return the file name
-     */
-    public String getName() {
-        return file.getName();
-    }
-
-    /**
-     * Returns the full file path.
-     *
-     * @return the file path
-     */
-    public String getPath() {
-        return parent.getPath() + "/" + getName();
-    }
-
-    /**
-     * Returns the file parent (always a document).
-     *
-     * @return the file parent
-     */
-    public DocumentBean getParent() {
-        return parent;
-    }
-
-    /**
-     * Returns the file revision number.
-     *
-     * @return the file revision number 
-     */
-    public int getRevision() {
-        return file.getRevisionNumber();
-    }
-
-    /**
-     * Returns the file revision date.
-     *
-     * @return the file revision date
-     */
-    public Date getDate() {
-        return file.getModifiedDate();
-    }
-
-    /**
-     * Returns the file revision author login name.
-     *
-     * @return the file revision user name
-     */
-    public String getUser() {
-        return file.getAuthorName();
-    }
-
-    /**
-     * Returns the file online flag.
-     *
-     * @return the file online flag
-     */
-    public boolean getOnline() {
-        return file.isOnline();
+        super(context, parent, file);
     }
 
     /**
@@ -152,7 +60,7 @@ public class DocumentFileBean {
      */
     public long getSize() {
         try {
-            return file.getFile().length();
+            return ((ContentFile) getContent()).getFile().length();
         } catch (ContentException e) {
             LOG.error(e.getMessage());
         }
@@ -165,22 +73,6 @@ public class DocumentFileBean {
      * @return the file MIME type
      */
     public String getMimeType() {
-        return file.getMimeType();
-    }
-
-    /**
-     * Returns the file lock.
-     *
-     * @return the file lock object
-     */
-    public LockBean getLock() {
-        if (file != null) {
-            try {
-                return new LockBean(file.getLock());
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-            }
-        }
-        return new LockBean(null);
+        return ((ContentFile) getContent()).getMimeType();
     }
 }

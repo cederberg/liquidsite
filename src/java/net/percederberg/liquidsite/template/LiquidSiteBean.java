@@ -176,6 +176,15 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Returns the utility bean.
+     *
+     * @return the utility bean
+     */
+    public UtilBean getUtil() {
+        return new UtilBean();
+    }
+
+    /**
      * Returns a relative link to an object in the same site. If the
      * specified path starts with '/' it is assumed to be relative to
      * the site root directory, otherwise it is assumed to be

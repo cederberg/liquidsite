@@ -36,6 +36,7 @@ import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.mail.MailException;
@@ -165,14 +166,17 @@ class BeanContext {
         try {
             if (content instanceof ContentSite) {
                 return request.getEnvironment().getSite().getDirectory();
-            } else if (content instanceof ContentFolder) {
-                return getContentPath(content.getParent()) +
-                       content.getName() + "/";
-            } else if (content instanceof ContentSection) {
+            } else if (content instanceof ContentFolder
+                    || content instanceof ContentSection
+                    || content instanceof ContentDocument
+                    || content instanceof ContentForum
+                    || content instanceof ContentTopic) {
+
                 return getContentPath(content.getParent()) +
                        content.getName() + "/";
             } else if (content != null) {
-                return getContentPath(content.getParent());
+                return getContentPath(content.getParent()) +
+                       content.getName();
             } else {
                 return "/";
             }

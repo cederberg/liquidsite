@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSelector;
@@ -40,22 +39,12 @@ import net.percederberg.liquidsite.text.PlainFormatter;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class TopicBean {
+public class TopicBean extends ContentBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(TopicBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
-
-    /**
-     * The topic being encapsulated.
-     */
-    private ContentTopic topic;
 
     /**
      * The first post in the forum. This variable is set upon the
@@ -93,71 +82,28 @@ public class TopicBean {
      * @param topic          the content topic, or null
      */
     TopicBean(BeanContext context, ContentTopic topic) {
-        this.context = context;
-        this.topic = topic;
-    }
-
-    /**
-     * Returns the content identifier.
-     *
-     * @return the content identifier
-     */
-    public int getId() {
-        if (topic != null) {
-            return topic.getId();
-        }
-        return 0;
-    }
-
-    /**
-     * Returns the topic name.
-     *
-     * @return the topic name
-     */
-    public String getName() {
-        if (topic != null) {
-            return topic.getName();
-        }
-        return "";
-    }
-
-    /**
-     * Returns the topic parent (always a forum).
-     *
-     * @return the topic parent
-     */
-    public ForumBean getParent() {
-        if (topic != null) {
-            try {
-                return new ForumBean(context,
-                                     (ContentForum) topic.getParent());
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-            }
-        }
-        return new ForumBean();
+        super(context, topic);
     }
 
     /**
      * Returns the topic subject.
      *
-     * @return the topic subject
+     * @return the topic subject, or
+     *         an empty string if the topic doesn't exist
      */
     public String getSubject() {
-        if (topic != null) {
-            return PlainFormatter.formatHtml(topic.getSubject());
-        }
-        return "";
+        return PlainFormatter.formatHtml(getSubjectSource());
     }
 
     /**
      * Returns the unprocessed topic subject.
      *
-     * @return the unprocessed topic subject
+     * @return the unprocessed topic subject, or
+     *         an empty string if the topic doesn't exist
      */
     public String getSubjectSource() {
-        if (topic != null) {
-            return topic.getSubject();
+        if (getContent() != null) {
+            return ((ContentTopic) getContent()).getSubject();
         }
         return "";
     }
@@ -165,11 +111,12 @@ public class TopicBean {
     /**
      * Returns the topic locked flag.
      *
-     * @return the topic locked flag
+     * @return the topic locked flag, or
+     *         true if the topic doesn't exist
      */
     public boolean getLocked() {
-        if (topic != null) {
-            return topic.isLocked();
+        if (getContent() != null) {
+            return ((ContentTopic) getContent()).isLocked();
         }
         return true;
     }
@@ -178,13 +125,14 @@ public class TopicBean {
      * Returns the first post in this topic. The posts are ordered in
      * creation date order.
      *
-     * @return the first post in this topic
+     * @return the first post in this topic, or
+     *         an empty post if the topic doesn't exist
      */
     public PostBean getFirst() {
         ContentSelector  selector;
 
         if (first == null) {
-            if (topic != null) {
+            if (getContent() != null) {
                 try {
                     selector = createPostSelector();
                     selector.sortById(true);
@@ -205,13 +153,14 @@ public class TopicBean {
      * Returns the last post in this topic. The posts are ordered in
      * creation date order.
      *
-     * @return the last post in this topic
+     * @return the last post in this topic, or
+     *         an empty post if the topic doesn't exist
      */
     public PostBean getLast() {
         ContentSelector  selector;
 
         if (last == null) {
-            if (topic != null) {
+            if (getContent() != null) {
                 try {
                     selector = createPostSelector();
                     selector.sortById(false);
@@ -234,9 +183,9 @@ public class TopicBean {
      * @return the number of posts in this topic
      */
     public int getPostCount() {
-        if (topic != null) {
+        if (getContent() != null) {
             try {
-                return context.countContent(createPostSelector());
+                return getContext().countContent(createPostSelector());
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -256,11 +205,11 @@ public class TopicBean {
     public PostBean findPost(int id) {
         Content  content;
 
-        if (topic != null) {
+        if (getContent() != null) {
             try {
-                content = context.findContent(id);
+                content = getContext().findContent(id);
                 if (content != null) {
-                    return new PostBean(context, (ContentPost) content);
+                    return new PostBean(getContext(), (ContentPost) content);
                 }
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
@@ -286,14 +235,14 @@ public class TopicBean {
         ContentSelector  selector;
         Content[]        content;
 
-        if (topic != null) {
+        if (getContent() != null) {
             try {
                 selector = createPostSelector();
                 selector.sortById(true);
                 selector.limitResults(offset, count);
-                content = context.findContent(selector);
+                content = getContext().findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new PostBean(context,
+                    results.add(new PostBean(getContext(),
                                              (ContentPost) content[i]));
                 }
             } catch (ContentException e) {
@@ -316,8 +265,8 @@ public class TopicBean {
 
         ContentSelector  selector;
 
-        selector = new ContentSelector(topic.getDomain());
-        selector.requireParent(topic);
+        selector = new ContentSelector(getContent().getDomain());
+        selector.requireParent(getContent());
         selector.requireCategory(Content.POST_CATEGORY);
         return selector;
     }
@@ -335,9 +284,9 @@ public class TopicBean {
 
         Content[]  content;
 
-        content = context.findContent(selector);
+        content = getContext().findContent(selector);
         if (content.length > 0) {
-            return new PostBean(context, (ContentPost) content[0]);
+            return new PostBean(getContext(), (ContentPost) content[0]);
         } else {
             return null;
         }

@@ -58,9 +58,25 @@ public class UserBean {
     }
 
     /**
+     * Returns a description of this user. The description will
+     * contain the real user name and the login name.
+     *
+     * @return a description of this user, or
+     *         an empty string if the user doesn't exist
+     */
+    public String toString() {
+        if (user == null) {
+            return "";
+        } else {
+            return user.getRealName() + " (" + user.getName() + ")";
+        }
+    }
+
+    /**
      * Returns the user login name.
      *
-     * @return the user login name
+     * @return the user login name, or
+     *         an empty string if the user doesn't exist
      */
     public String getLogin() {
         if (user == null) {
@@ -73,7 +89,8 @@ public class UserBean {
     /**
      * Returns the real user name.
      *
-     * @return the real user name
+     * @return the real user name, or
+     *         an empty string if the user doesn't exist
      */
     public String getRealName() {
         if (user == null) {
@@ -86,7 +103,8 @@ public class UserBean {
     /**
      * Returns the user email address.
      *
-     * @return the user email address
+     * @return the user email address, or
+     *         an empty string if the user doesn't exist
      */
     public String getEmail() {
         if (user == null) {

@@ -27,7 +27,6 @@ import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentForum;
-import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSelector;
 import net.percederberg.liquidsite.content.ContentTopic;
 
@@ -38,22 +37,12 @@ import net.percederberg.liquidsite.content.ContentTopic;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ForumBean {
+public class ForumBean extends ContentBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(ForumBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
-
-    /**
-     * The forum being encapsulated.
-     */
-    private ContentForum forum;
 
     /**
      * The first topic in the forum. This variable is set upon the
@@ -91,71 +80,31 @@ public class ForumBean {
      * @param forum          the content forum, or null
      */
     ForumBean(BeanContext context, ContentForum forum) {
-        this.context = context;
-        this.forum = forum;
-    }
-
-    /**
-     * Returns the content identifier.
-     *
-     * @return the content identifier
-     */
-    public int getId() {
-        if (forum != null) {
-            return forum.getId();
-        }
-        return 0;
-    }
-
-    /**
-     * Returns the forum name.
-     *
-     * @return the forum name
-     */
-    public String getName() {
-        if (forum != null) {
-            return forum.getName();
-        }
-        return "";
+        super(context, forum);
     }
 
     /**
      * Returns the real forum name.
      *
-     * @return the real forum name
+     * @return the real forum name, or
+     *         an empty string if the forum doesn't exist
      */
     public String getRealName() {
-        if (forum != null) {
-            return forum.getRealName();
+        if (getContent() != null) {
+            return ((ContentForum) getContent()).getRealName();
         }
         return "";
     }
 
     /**
-     * Returns the forum parent (always a section).
-     *
-     * @return the forum parent
-     */
-    public SectionBean getParent() {
-        if (forum != null) {
-            try {
-                return new SectionBean(context,
-                                       (ContentSection) forum.getParent());
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-            }
-        }
-        return new SectionBean();
-    }
-
-    /**
      * Returns the forum description.
      *
-     * @return the forum description
+     * @return the forum description, or
+     *         an empty string if the forum doesn't exist
      */
     public String getDescription() {
-        if (forum != null) {
-            return forum.getDescription();
+        if (getContent() != null) {
+            return ((ContentForum) getContent()).getDescription();
         }
         return "";
     }
@@ -169,9 +118,9 @@ public class ForumBean {
     public boolean getModerator() {
         String  moderator;
 
-        if (forum != null) {
-            moderator = forum.getModeratorName();
-            return context.findUser("").inGroup(moderator);
+        if (getContent() != null) {
+            moderator = ((ContentForum) getContent()).getModeratorName();
+            return getContext().findUser("").inGroup(moderator);
         }
         return false;
     }
@@ -180,13 +129,14 @@ public class ForumBean {
      * Returns the first topic in this forum. The topics are ordered
      * in modification date order.
      *
-     * @return the first topic in this forum
+     * @return the first topic in this forum, or
+     *         an empty topic if the forum doesn't exist
      */
     public TopicBean getFirst() {
         ContentSelector  selector;
 
         if (first == null) {
-            if (forum != null) {
+            if (getContent() != null) {
                 try {
                     selector = createTopicSelector();
                     selector.sortByModified(true);
@@ -207,13 +157,14 @@ public class ForumBean {
      * Returns the last topic in this forum. The topics are ordered in
      * modification date order.
      *
-     * @return the last topic in this forum
+     * @return the last topic in this forum, or
+     *         an empty topic if the forum doesn't exist
      */
     public TopicBean getLast() {
         ContentSelector  selector;
 
         if (last == null) {
-            if (forum != null) {
+            if (getContent() != null) {
                 try {
                     selector = createTopicSelector();
                     selector.sortByModified(false);
@@ -236,9 +187,9 @@ public class ForumBean {
      * @return the number of topics in this forum
      */
     public int getTopicCount() {
-        if (forum != null) {
+        if (getContent() != null) {
             try {
-                return context.countContent(createTopicSelector());
+                return getContext().countContent(createTopicSelector());
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -261,14 +212,14 @@ public class ForumBean {
         ContentSelector  selector;
         Content[]        content;
 
-        if (forum != null) {
+        if (getContent() != null) {
             try {
                 selector = createTopicSelector();
                 selector.sortByModified(false);
                 selector.limitResults(offset, count);
-                content = context.findContent(selector);
+                content = getContext().findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new TopicBean(context,
+                    results.add(new TopicBean(getContext(),
                                               (ContentTopic) content[i]));
                 }
             } catch (ContentException e) {
@@ -292,8 +243,8 @@ public class ForumBean {
 
         ContentSelector  selector;
 
-        selector = new ContentSelector(forum.getDomain());
-        selector.requireParent(forum);
+        selector = new ContentSelector(getContent().getDomain());
+        selector.requireParent(getContent());
         selector.requireCategory(Content.TOPIC_CATEGORY);
         return selector;
     }
@@ -312,9 +263,9 @@ public class ForumBean {
 
         Content[]  content;
 
-        content = context.findContent(selector);
+        content = getContext().findContent(selector);
         if (content.length > 0) {
-            return new TopicBean(context, (ContentTopic) content[0]);
+            return new TopicBean(getContext(), (ContentTopic) content[0]);
         } else {
             return null;
         }
