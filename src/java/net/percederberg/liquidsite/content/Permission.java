@@ -394,6 +394,35 @@ public class Permission extends PersistentObject {
     }
 
     /**
+     * Checks if the specified user or group list matches this 
+     * permission. The list of groups should be the user groups.
+     * 
+     * @param user           the user to check, or null for none
+     * @param groups         the group list to check, or null for none
+     * 
+     * @return true if this permission matches, or
+     *         false otherwise
+     */
+    public boolean isMatch(User user, Group[] groups) {
+        if (getUserName().equals("") && getGroupName().equals("")) {
+            return true;
+        } else if (user == null) {
+            return false;
+        } else if (!getUserName().equals("")) {
+            return getUserName().equals(user.getName());
+        } else if (groups == null) {
+            return false;
+        } else {
+            for (int i = 0; i < groups.length; i++) {
+                if (groups[i].getName().equals(getGroupName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 
