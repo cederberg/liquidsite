@@ -1,5 +1,6 @@
 <#include "header.ftl">
 
+    <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
     function doEditUser() {
         utilGetElement("edituser").value = "true";
