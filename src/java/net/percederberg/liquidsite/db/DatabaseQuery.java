@@ -21,7 +21,9 @@
 
 package net.percederberg.liquidsite.db;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A database query. This class encapsulates an SQL query or 
@@ -154,6 +156,9 @@ public class DatabaseQuery {
      * @param obj            the query parameter
      */
     public void addParameter(Object obj) {
+        if (obj instanceof Date) {
+            obj = new Timestamp(((Date) obj).getTime());
+        }
         params.add(obj);
     }
     
@@ -187,10 +192,26 @@ public class DatabaseQuery {
      * @return a string representation of this object
      */
     public String toString() {
+        StringBuffer  buffer = new StringBuffer();
+
         if (name != null) {
-            return "database query '" + name + "'";
+            buffer.append("database query ");
+            buffer.append(name);
         } else {
-            return "database SQL '" + sql + "'";
+            buffer.append("database SQL '");
+            buffer.append(sql);
+            buffer.append("'");
         }
+        if (params.size() > 0) {
+            buffer.append("(");
+            for (int i = 0; i < params.size(); i++) {
+                if (i > 0) {
+                    buffer.append(",");
+                }
+                buffer.append(params.get(i));
+            }
+            buffer.append(")");
+        }
+        return buffer.toString();
     }
 }

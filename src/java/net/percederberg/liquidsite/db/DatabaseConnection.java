@@ -297,24 +297,8 @@ public class DatabaseConnection {
             }
         }
 
-        // Prepare SQL
-        try {
-            LOG.trace("preparing " + query + "...");
-            stmt = con.prepareStatement(query.getSql(),
-                                        ResultSet.TYPE_FORWARD_ONLY,
-                                        ResultSet.CONCUR_READ_ONLY,
-                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
-            stmt.setQueryTimeout(queryTimeout);
-            stmt.clearParameters();
-            for (int i = 0; i < query.getParameterCount(); i++) {
-                stmt.setObject(i + 1, query.getParameter(i));
-            }
-        } catch (SQLException e) {
-            LOG.debug("failed to prepare " + query, e);
-            throw new DatabaseException("couldn't prepare " + query, e);
-        }
-
         // Execute SQL
+        stmt = prepare(query);
         try {
             LOG.trace("executing " + query + "...");
             if (query.hasResults()) {
@@ -387,6 +371,39 @@ public class DatabaseConnection {
                 // Do nothing
             }
         }
+    }
+    
+    /**
+     * Prepares a database query or statement. 
+     * 
+     * @param query          the database query
+     * 
+     * @return the prepared database statement
+     * 
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be prepared correctly
+     */
+    private PreparedStatement prepare(DatabaseQuery query) 
+        throws DatabaseException { 
+    
+        PreparedStatement  stmt;
+
+        try {
+            LOG.trace("preparing " + query + "...");
+            stmt = con.prepareStatement(query.getSql(),
+                                        ResultSet.TYPE_FORWARD_ONLY,
+                                        ResultSet.CONCUR_READ_ONLY,
+                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
+            stmt.setQueryTimeout(queryTimeout);
+            stmt.clearParameters();
+            for (int i = 0; i < query.getParameterCount(); i++) {
+                stmt.setObject(i + 1, query.getParameter(i));
+            }
+        } catch (SQLException e) {
+            LOG.debug("failed to prepare " + query, e);
+            throw new DatabaseException("couldn't prepare " + query, e);
+        }
+        return stmt;
     }
 
     /**
