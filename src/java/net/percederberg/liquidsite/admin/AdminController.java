@@ -60,6 +60,8 @@ public class AdminController extends Controller {
      */
     public AdminController(Application app) {
         super(app);
+        // TODO: set internal content manager here!
+        AdminUtils.setContentManager(app.getContentManager());
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());

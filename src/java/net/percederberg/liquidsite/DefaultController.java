@@ -259,7 +259,7 @@ public class DefaultController extends Controller {
 
         try {
             template = TemplateManager.getPageTemplate(page);
-            template.process(request, buffer);
+            template.process(request, getContentManager(), buffer);
             request.sendData("text/html", buffer.toString());
         } catch (TemplateException e) {
             LOG.error(e.getMessage());

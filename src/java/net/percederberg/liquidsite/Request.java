@@ -624,7 +624,8 @@ public class Request {
         out = response.getWriter();
         try {
             template = TemplateManager.getFileTemplate(responseData);
-            template.process(this, out);
+            // TODO: return real content manager here?
+            template.process(this, null, out);
         } catch (TemplateException e) {
             LOG.error("while processing " + responseData + " template", e);
             throw new IOException(e.getMessage());

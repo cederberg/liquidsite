@@ -30,9 +30,13 @@ import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Log;
 
 /**
- * The content manager. This class manages the content objects in use
- * by the application. In particular these objects include the site
- * and content caches.
+ * The content manager. This class provides an interface for 
+ * retrieving objects from the database. The content manager 
+ * guarantees that security considerations are taken into account
+ * before returning object (if a method comment does not explicitly 
+ * say otherwise). The content manager also makes sure not to return
+ * unpublished content if it's policy does not allow that (only used
+ * by the web administration).
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -45,29 +49,9 @@ public class ContentManager {
     private static final Log LOG = new Log(ContentManager.class);
 
     /**
-     * The content manager instance currently in use.
-     */
-    private static ContentManager instance = null;
-
-    /**
      * The application context.
      */
     private Application app;
-
-    /**
-     * Returns the content manager currently in use.
-     * 
-     * @return the content manager currently in use
-     * 
-     * @throws ContentException if no content manager is available
-     */
-    public static ContentManager getInstance() throws ContentException {
-        if (instance == null) {
-            LOG.debug("content manager not initialized");
-            throw new ContentException("content manager not initialized");
-        }
-        return instance;
-    }
 
     /**
      * Creates a new content manager. All new content handling 
@@ -81,7 +65,6 @@ public class ContentManager {
      *             initialized properly
      */
     public ContentManager(Application app) throws ContentException {
-        instance = this;
         this.app = app;
     }
 
@@ -576,9 +559,6 @@ public class ContentManager {
      */
     public void close() {
         CacheManager.getInstance().removeAll();
-        if (instance == this) {
-            instance = null;
-        }
         LOG.trace("closed content manager");
     }
 }

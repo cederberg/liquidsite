@@ -49,16 +49,33 @@ public class AdminUtils {
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
-     * Returns the content manager currently in use.
+     * The content manager used for administration.
+     */
+    private static ContentManager manager = null;
+
+    /**
+     * Returns the content manager for administration.
      * 
-     * @return the content manager currently in use
+     * @return the content manager for administration
      * 
      * @throws ContentException if no content manager exists
      */
     public static ContentManager getContentManager() 
         throws ContentException {
 
-        return ContentManager.getInstance();
+        if (manager == null) {
+            throw new ContentException("no content manager set");
+        }
+        return manager;
+    }
+
+    /**
+     * Sets the content manager for administration.
+     * 
+     * @param manager        the content manager for administration
+     */
+    static void setContentManager(ContentManager manager) {
+        AdminUtils.manager = manager;
     }
 
     /**

@@ -46,6 +46,11 @@ public class LiquidSiteBean {
     private Request request;
 
     /**
+     * The content manager to use.
+     */
+    private ContentManager manager;
+
+    /**
      * The site bean.
      */
     private SiteBean site;
@@ -64,9 +69,11 @@ public class LiquidSiteBean {
      * Creates a new LiquidSite template bean.
      * 
      * @param request        the request object
+     * @param manager        the content manager to use
      */
-    LiquidSiteBean(Request request) {
+    LiquidSiteBean(Request request, ContentManager manager) {
         this.request = request;
+        this.manager = manager;
         this.site = new SiteBean(request);
         this.page = new PageBean(request);
         this.user = new UserBean(request.getUser());
@@ -161,8 +168,7 @@ public class LiquidSiteBean {
     private ContentSection findSection(String path, Object parent)
         throws ContentException {
 
-        ContentManager  manager;
-        Content[]       children;
+        Content[]  children;
 
         if (path == null || path.equals("")) {
             if (parent instanceof ContentSection) {
@@ -171,8 +177,9 @@ public class LiquidSiteBean {
                 return null;
             }
         }
-        manager = ContentManager.getInstance();
-        if (parent instanceof Domain) {
+        if (manager == null) {
+            return null;
+        } else if (parent instanceof Domain) {
             children = manager.getContentChildren(request.getUser(),
                                                   (Domain) parent);
         } else {
@@ -239,8 +246,7 @@ public class LiquidSiteBean {
     private void findDocuments(ContentSection section, ArrayList results) 
         throws ContentException {
 
-        ContentManager  manager = ContentManager.getInstance();
-        Content[]       children;
+        Content[]  children;
 
         children = manager.getContentChildren(request.getUser(), section);
         for (int i = 0; i < children.length; i++) {
