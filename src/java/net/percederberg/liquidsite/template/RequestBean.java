@@ -21,7 +21,9 @@
 
 package net.percederberg.liquidsite.template;
 
-import java.util.Map;
+import freemarker.template.SimpleScalar;
+import freemarker.template.TemplateHashModel;
+import freemarker.template.TemplateModel;
 
 import net.percederberg.liquidsite.web.Request;
 
@@ -40,9 +42,9 @@ public class RequestBean {
     private Request request;
 
     /**
-     * The request parameters.
+     * The request parameter bean.
      */
-    private Map parameters = null;
+    private RequestParameterBean paramBean = null;
 
     /**
      * Creates a new request bean.
@@ -96,10 +98,61 @@ public class RequestBean {
      *
      * @return the map with request parameter names and values
      */
-    public Map getParam() {
-        if (parameters == null) {
-            parameters = request.getAllParameters();
+    public TemplateHashModel getParam() {
+        if (paramBean == null) {
+            paramBean = new RequestParameterBean(request);
         }
-        return parameters;
+        return paramBean;
+    }
+
+
+    /**
+     * A request parameter bean. This bean exposes all the request
+     * parameters as a template hash model with the parameter names a
+     * keys, and their values always returned as strings.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    public class RequestParameterBean implements TemplateHashModel {
+        
+        /**
+         * The request containing the parameters.
+         */
+        private Request request;
+
+        /**
+         * Creates a new request parameter bean.
+         *
+         * @param request        the request containing parameters
+         */
+        RequestParameterBean(Request request) {
+            this.request = request;
+        }
+
+        /**
+         * Checks if the parameter hash model is empty.
+         *
+         * @return this method always returns false
+         */
+        public boolean isEmpty() {
+            return false;
+        }
+
+        /**
+         * Returns a parameter value. If the parameter didn't exist, a
+         * null template model will be returned. Existing parameter
+         * values will be returned as scalars.
+         *
+         * @param name           the parameter name
+         *
+         * @return the template model for the value, or
+         *         null if the parameter didn't exist
+         */
+        public TemplateModel get(String name) {
+            String  value = request.getParameter(name);
+
+            return (value == null) ? null : new SimpleScalar(value);
+        }
     }
 }
