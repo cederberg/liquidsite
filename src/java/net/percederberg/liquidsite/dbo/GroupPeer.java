@@ -41,23 +41,29 @@ public class GroupPeer extends AbstractPeer {
     private static final GroupPeer PEER = new GroupPeer();
 
     /**
-     * Returns a list of all groups in a certain domain.
-     * 
+     * Returns a list of matching groups in a specified domain. Only
+     * groups with matching names will be returned.
+     *
      * @param domain         the domain name
+     * @param filter         the search filter (empty for all)
      * @param con            the database connection to use
-     * 
-     * @return a list of all groups in the domain
-     * 
+     *
+     * @return a list of matching groups in the domain
+     *
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
     public static ArrayList doSelectByDomain(String domain,
+                                             String filter,
                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.select.domain");
-        
+        String         filterSql = "%" + filter + "%";
+
         query.addParameter(domain);
+        query.addParameter(filterSql);
+        query.addParameter(filterSql);
         return PEER.selectList(query, con);
     }
 

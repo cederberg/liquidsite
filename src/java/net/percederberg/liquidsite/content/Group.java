@@ -60,17 +60,21 @@ public class Group extends PersistentObject {
     private ArrayList usersRemoved = null;
 
     /**
-     * Returns an array of all groups in a certain domain.
-     * 
+     * Returns a list of matching groups in a specified domain. Only
+     * groups with matching names will be returned.
+     *
      * @param manager        the content manager to use
      * @param domain         the domain
-     * 
+     * @param filter         the search filter (empty for all)
+     *
      * @return an array of all groups in the domain
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    static Group[] findByDomain(ContentManager manager, Domain domain)
+    static Group[] findByDomain(ContentManager manager,
+                                Domain domain,
+                                String filter)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
@@ -78,7 +82,7 @@ public class Group extends PersistentObject {
         Group[]             res;
 
         try {
-            list = GroupPeer.doSelectByDomain(domain.getName(), con);
+            list = GroupPeer.doSelectByDomain(domain.getName(), filter, con);
             res = new Group[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new Group(manager, (GroupData) list.get(i));

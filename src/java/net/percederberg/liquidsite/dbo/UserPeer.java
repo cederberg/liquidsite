@@ -16,15 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseQuery;
+import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
  * A user database peer. This class contains static methods that
@@ -36,28 +39,82 @@ import net.percederberg.liquidsite.db.DatabaseQuery;
 public class UserPeer extends AbstractPeer {
 
     /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(UserPeer.class);
+
+    /**
      * The user peer instance.
      */
     private static final UserPeer PEER = new UserPeer();
 
     /**
-     * Returns a list of all users in a certain domain.
-     * 
+     * Returns the number of users in a specified domain. Only users
+     * with matching names will be counted.
+     *
      * @param domain         the domain name
+     * @param filter         the search filter (empty for all)
      * @param con            the database connection to use
      * 
-     * @return a list of all users in the domain
+     * @return the number of matching users in the domain
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static int doCountByDomain(String domain,
+                                      String filter,
+                                      DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query = new DatabaseQuery("user.count");
+        DatabaseResults  res;
+        String           filterSql = "%" + filter + "%";
+        
+        query.addParameter(domain);
+        query.addParameter(filterSql);
+        query.addParameter(filterSql);
+        query.addParameter(filterSql);
+        res = PEER.execute("counting users", query, con);
+        try {
+            return res.getRow(0).getInt(0);
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+    }
+
+    /**
+     * Returns a list of matching users in a specified domain. Only
+     * users with matching names will be returned. Also, only a
+     * limited interval of the matching users will be returned.
+     *
+     * @param domain         the domain name
+     * @param filter         the search filter (empty for all)
+     * @param startPos       the list interval start position
+     * @param maxLength      the list interval maximum length 
+     * @param con            the database connection to use
+     * 
+     * @return a list of matching users in the domain
      * 
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
     public static ArrayList doSelectByDomain(String domain,
+                                             String filter,
+                                             int startPos,
+                                             int maxLength,
                                              DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.select.domain");
+        String         filterSql = "%" + filter + "%";
         
         query.addParameter(domain);
+        query.addParameter(filterSql);
+        query.addParameter(filterSql);
+        query.addParameter(filterSql);
+        query.addParameter(startPos);
+        query.addParameter(maxLength);
         return PEER.selectList(query, con);
     }
 

@@ -546,6 +546,67 @@ public class ContentManager {
     }
 
     /**
+     * Returns the number of users in a specified domain. Only users
+     * with matching names will be counted.
+     *
+     * @param domain         the domain, or null for superusers
+     * @param filter         the user search filter (empty for all)
+     *
+     * @return the number of matching users in the domain
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public int getUserCount(Domain domain, String filter) 
+        throws ContentException {
+
+        return User.countByDomain(this, domain, filter);
+    }
+
+    /**
+     * Returns an array of users in a specified domain. Only users
+     * with matching names will be returned. Also, only a limited 
+     * interval of the matching users will be returned.
+     *
+     * @param user           the user requesting the list
+     * @param domain         the domain, or null for superusers
+     * @param filter         the user search filter (empty for all)
+     * @param startPos       the list interval start position
+     * @param maxLength      the list interval maximum length 
+     *
+     * @return an array of matching users in the domain
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user isn't allowed to
+     *             list users in the domain
+     */
+    public User[] getUsers(User user,
+                           Domain domain,
+                           String filter,
+                           int startPos,
+                           int maxLength)
+        throws ContentException, ContentSecurityException {
+
+        // Check permission to list users
+        if (user == null) {
+            throw new ContentSecurityException(
+                "<anonymous> cannot list users");
+        } else if (domain == null) {
+            if (!user.isSuperUser()) {
+                throw new ContentSecurityException(
+                    user + " cannot list superusers");
+            }
+        } else if (!domain.hasAdminAccess(user)) {
+            throw new ContentSecurityException(
+                user + " cannot list users in domain " + domain);
+        }
+
+        // Find user list
+        return User.findByDomain(this, domain, filter, startPos, maxLength);
+    }
+
+    /**
      * Returns a group with a specified name.
      * 
      * @param domain         the domain
@@ -561,6 +622,48 @@ public class ContentManager {
         throws ContentException {
 
         return Group.findByName(this, domain, name);
+    }
+
+    /**
+     * Returns an array of groups in a specified domain. Only groups
+     * with matching names will be returned.
+     *
+     * @param user           the user requesting the list
+     * @param domain         the domain, or null for superusers
+     * @param filter         the search filter (empty for all)
+     *
+     * @return an array of matching groups in the domain
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user isn't allowed to
+     *             list groups in the domain
+     */
+    public Group[] getGroups(User user,
+                             Domain domain,
+                             String filter)
+        throws ContentException, ContentSecurityException {
+
+        // Check permission to list groups
+        if (user == null) {
+            throw new ContentSecurityException(
+                "<anonymous> cannot list groups");
+        } else if (domain == null) {
+            if (!user.isSuperUser()) {
+                throw new ContentSecurityException(
+                    user + " cannot list superuser groups");
+            }
+        } else if (!domain.hasAdminAccess(user)) {
+            throw new ContentSecurityException(
+                user + " cannot list groups in domain " + domain);
+        }
+
+        // Find group list
+        if (domain == null) {
+            return new Group[0];
+        } else {
+            return Group.findByDomain(this, domain, filter);
+        }
     }
 
     /**

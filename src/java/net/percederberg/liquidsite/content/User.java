@@ -70,17 +70,60 @@ public class User extends PersistentObject {
     private ArrayList groupsRemoved = null;
 
     /**
-     * Returns an array of all users in a certain domain.
-     * 
+     * Returns the number of users in a specified domain. Only users
+     * with matching names will be counted.
+     *
      * @param manager        the content manager to use
      * @param domain         the domain, or null for superusers
+     * @param filter         the search filter (empty for all)
+     *
+     * @return the number of matching users in the domain
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static int countByDomain(ContentManager manager,
+                             Domain domain,
+                             String filter)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        String              domainName = "";
+
+        try {
+            if (domain != null) {
+                domainName = domain.getName();
+            }
+            return UserPeer.doCountByDomain(domainName, filter, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
+     * Returns an array of users in a specified domain. Only users
+     * with matching names will be returned. Also, only a limited 
+     * interval of the matching users will be returned.
+     *
+     * @param manager        the content manager to use
+     * @param domain         the domain, or null for superusers
+     * @param filter         the search filter (empty for all)
+     * @param startPos       the list interval start position
+     * @param maxLength      the list interval maximum length 
      * 
-     * @return an array of all users in the domain
+     * @return an array of matching users in the domain
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    static User[] findByDomain(ContentManager manager, Domain domain) 
+    static User[] findByDomain(ContentManager manager,
+                               Domain domain,
+                               String filter,
+                               int startPos,
+                               int maxLength) 
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
@@ -92,7 +135,11 @@ public class User extends PersistentObject {
             if (domain != null) {
                 domainName = domain.getName();
             }
-            list = UserPeer.doSelectByDomain(domainName, con);
+            list = UserPeer.doSelectByDomain(domainName,
+                                             filter,
+                                             startPos,
+                                             maxLength,
+                                             con);
             res = new User[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new User(manager, (UserData) list.get(i));

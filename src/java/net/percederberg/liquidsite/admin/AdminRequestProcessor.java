@@ -125,7 +125,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         } else if (path.equals("content.html")) {
             processViewContent(request);
         } else if (path.equals("users.html")) {
-            AdminView.USER.viewUsers(request);
+            processViewUsers(request);
         } else if (path.equals("system.html")) {
             AdminView.SYSTEM.viewSystem(request);
         } else if (path.equals("logout.html")) {
@@ -232,10 +232,10 @@ public class AdminRequestProcessor extends RequestProcessor {
             AdminView.SITE.viewSite(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            AdminView.BASE.viewError(request, e.getMessage(), "site.html");
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            AdminView.BASE.viewError(request, e.getMessage(), "site.html");
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
         }
     }
 
@@ -254,10 +254,32 @@ public class AdminRequestProcessor extends RequestProcessor {
             AdminView.CONTENT.viewContent(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            AdminView.BASE.viewError(request, e.getMessage(), "content.html");
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            AdminView.BASE.viewError(request, e.getMessage(), "content.html");
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
+        }
+    }
+    
+    /**
+     * Processes a view users request.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processViewUsers(Request request)
+        throws RequestException {
+
+        try {
+            AdminView.USER.viewUsers(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
         }
     }
 
