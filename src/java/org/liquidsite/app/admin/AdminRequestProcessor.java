@@ -313,10 +313,12 @@ public class AdminRequestProcessor extends RequestProcessor {
      */
     private void processLoadSite(Request request) throws RequestException {
         PersistentObject  obj;
+        boolean           open;
 
         try {
             obj = AdminUtils.getReference(request);
-            AdminView.SITE.viewLoadSiteScript(request, obj);
+            open = request.getParameter("open", "").equals("true");
+            AdminView.SITE.viewLoadSiteScript(request, obj, open);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
@@ -335,10 +337,12 @@ public class AdminRequestProcessor extends RequestProcessor {
      */
     private void processLoadContent(Request request) throws RequestException {
         PersistentObject  obj;
+        boolean           open;
 
         try {
             obj = AdminUtils.getReference(request);
-            AdminView.CONTENT.viewLoadContentScript(request, obj);
+            open = request.getParameter("open", "").equals("true");
+            AdminView.CONTENT.viewLoadContentScript(request, obj, open);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;

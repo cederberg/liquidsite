@@ -173,7 +173,7 @@ function treeOpen(type, id) {
     var img  = document.getElementById("treeicon" + id);
 
     if (div == null) {
-        TREE_LOAD_FUNCTION(type, id);
+        TREE_LOAD_FUNCTION(type, id, "true");
     } else {
         div.style.display = "block";
         if (img != null) {

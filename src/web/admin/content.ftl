@@ -11,11 +11,12 @@
         ${initialize}
     }
 
-    function loadItem(type, id) {
+    function loadItem(type, id, open) {
         var script = document.createElement('script');
 
         script.type = "text/javascript";
-        script.src = "loadcontent.js?type=" + type + "&id=" + id;
+        script.src = "loadcontent.js?type=" + type + "&id=" + id +
+                     "&open=" + open;
         document.getElementsByTagName("head")[0].appendChild(script);
     }
 

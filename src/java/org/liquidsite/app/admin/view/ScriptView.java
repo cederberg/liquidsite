@@ -125,13 +125,16 @@ public class ScriptView {
      *
      * @param domain         the domain object
      * @param children       the child content objects
+     * @param open           the open (domain) object flag
      *
      * @return the JavaScript for presenting a tree view
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getTreeView(Domain domain, Content[] children)
+    public String getTreeView(Domain domain,
+                              Content[] children,
+                              boolean open)
         throws ContentException {
 
         StringBuffer    buffer = new StringBuffer();
@@ -157,9 +160,11 @@ public class ScriptView {
             buffer.append(getContentStatus(children[i]));
             buffer.append(");\n");
         }
-        buffer.append("treeOpen('domain', '");
-        buffer.append(domain.getName());
-        buffer.append("');\n");
+        if (open) {
+            buffer.append("treeOpen('domain', '");
+            buffer.append(domain.getName());
+            buffer.append("');\n");
+        }
         return buffer.toString();
     }
 
@@ -168,13 +173,16 @@ public class ScriptView {
      *
      * @param parent         the parent content object
      * @param children       the child content objects
+     * @param open           the open content object flag
      *
      * @return the JavaScript for presenting a tree view
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getTreeView(Content parent, Content[] children)
+    public String getTreeView(Content parent,
+                              Content[] children,
+                              boolean open)
         throws ContentException {
 
         StringBuffer    buffer = new StringBuffer();
@@ -200,11 +208,13 @@ public class ScriptView {
             buffer.append(getContentStatus(children[i]));
             buffer.append(");\n");
         }
-        buffer.append("treeOpen('");
-        buffer.append(AdminUtils.getCategory(parent));
-        buffer.append("', ");
-        buffer.append(parent.getId());
-        buffer.append(");\n");
+        if (open) {
+            buffer.append("treeOpen('");
+            buffer.append(AdminUtils.getCategory(parent));
+            buffer.append("', ");
+            buffer.append(parent.getId());
+            buffer.append(");\n");
+        }
         return buffer.toString();
     }
 

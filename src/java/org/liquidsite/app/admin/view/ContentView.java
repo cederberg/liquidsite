@@ -93,6 +93,7 @@ public class ContentView extends AdminView {
                 str = getTreeScript(user,
                                     content.getDomain(),
                                     content.getParent(),
+                                    true,
                                     true);
                 buffer.append(str);
                 buffer.append(SCRIPT.getTreeViewSelect(content));
@@ -705,22 +706,23 @@ public class ContentView extends AdminView {
      *
      * @param request        the request object
      * @param obj            the domain or content parent object
+     * @param open           the open object flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewLoadContentScript(Request request, PersistentObject obj)
+    public void viewLoadContentScript(Request request,
+                                      PersistentObject obj,
+                                      boolean open)
         throws ContentException {
 
         User     user = request.getUser();
-        Content  content;
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = getTreeScript(user, (Domain) obj, null, false);
+            buffer = getTreeScript(user, (Domain) obj, null, false, open);
         } else {
-            content = (Content) obj;
-            buffer = getTreeScript(user, null, content, false);
+            buffer = getTreeScript(user, null, (Content) obj, false, open);
         }
         request.sendData("text/javascript", buffer);
     }
@@ -761,6 +763,7 @@ public class ContentView extends AdminView {
      * @param domain         the domain object
      * @param content        the content object
      * @param recursive      the recursive flag
+     * @param open           the open object flag
      *
      * @return the JavaScript code for adding the object to the tree
      *
@@ -770,7 +773,8 @@ public class ContentView extends AdminView {
     private String getTreeScript(User user,
                                  Domain domain,
                                  Content content,
-                                 boolean recursive)
+                                 boolean recursive,
+                                 boolean open)
         throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
@@ -788,15 +792,15 @@ public class ContentView extends AdminView {
             }
             children = new Content[list.size()];
             list.toArray(children);
-            buffer.append(SCRIPT.getTreeView(domain, children));
+            buffer.append(SCRIPT.getTreeView(domain, children, open));
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
-            str = getTreeScript(user, domain, content.getParent(), true);
+            str = getTreeScript(user, domain, content.getParent(), true, open);
             buffer.append(str);
-            buffer.append(SCRIPT.getTreeView(content, children));
+            buffer.append(SCRIPT.getTreeView(content, children, open));
         } else {
             children = manager.getContentChildren(user, content);
-            buffer.append(SCRIPT.getTreeView(content, children));
+            buffer.append(SCRIPT.getTreeView(content, children, open));
         }
         return buffer.toString();
     }
