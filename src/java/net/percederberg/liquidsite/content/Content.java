@@ -481,7 +481,7 @@ public abstract class Content extends PersistentObject {
         if (attr == null) {
             return null; 
         } else {
-            return attr.getString(AttributeData.NAME);
+            return attr.getString(AttributeData.DATA);
         }
     }
     
