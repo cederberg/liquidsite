@@ -2,10 +2,8 @@
 String host = (String) request.getAttribute("host");
 String rootUsername = (String) request.getAttribute("rootUsername");
 String rootPassword = (String) request.getAttribute("rootPassword");
-String dbchoice = (String) request.getAttribute("dbchoice");
 String dbsel = (String) request.getAttribute("dbsel");
 String database = (String) request.getAttribute("database");
-String userchoice = (String) request.getAttribute("userchoice");
 String usersel = (String) request.getAttribute("usersel");
 String username = (String) request.getAttribute("username");
 String password = (String) request.getAttribute("password");
@@ -35,10 +33,8 @@ boolean errorConnection =
 
   <form method="post" action="install.html" id="form">
     <input type="hidden" name="step" value="2" />
-    <input type="hidden" name="dbchoice" value="<%= dbchoice %>" />
     <input type="hidden" name="dbsel" value="<%= dbsel %>" />
     <input type="hidden" name="database" value="<%= database %>" />
-    <input type="hidden" name="userchoice" value="<%= userchoice %>" />
     <input type="hidden" name="usersel" value="<%= usersel %>" />
     <input type="hidden" name="username" value="<%= username %>" />
     <input type="hidden" name="password" value="<%= password %>" />
