@@ -428,11 +428,12 @@ function htmlEditInternalExecCommand(editor, command, value) {
 /**
  * Creates an inner frame. This method is needed as IE 5.0 does not
  * support creating frames with the normal DOM createElement()
- * method. Also note that the parent object MUST exit as text in
+ * method. Also note that the parent object MUST exist as text in
  * the HTML, or the frame cannot be created. Any previous contents
  * of the parent will be replaced with the frame.
  *
  * @param parent             the parent element
+ * @param editor             the editor number
  *
  * @return the frame created
  */
