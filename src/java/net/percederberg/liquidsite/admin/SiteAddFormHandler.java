@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.content.Content;
@@ -48,11 +47,6 @@ import net.percederberg.liquidsite.form.FormValidationException;
  * @version  1.0
  */
 class SiteAddFormHandler extends AdminFormHandler {
-
-    /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(SiteAddFormHandler.class);
 
     /**
      * Creates a new site add request handler.
