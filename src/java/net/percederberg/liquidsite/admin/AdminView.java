@@ -476,6 +476,7 @@ class AdminView {
 
         User     user = request.getUser();
         Content  content;
+        Content  revision;
         String   buffer;
 
         if (obj instanceof Domain) {
@@ -483,6 +484,10 @@ class AdminView {
             setSiteTreeFocus(request, obj);
         } else {
             content = (Content) obj;
+            revision = content.getRevision(0);
+            if (revision != null) {
+                content = revision;
+            }
             buffer = script.getObjectView(user, content);
             setSiteTreeFocus(request, content);
         }
