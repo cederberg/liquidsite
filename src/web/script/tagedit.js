@@ -153,20 +153,22 @@ function tagEditInternalAddButton(parent, text, image) {
  */
 function tagEditInternalStyleSelect(editor, select) {
     var  area = TAGEDIT_TEXTAREAS[editor];
+    var  selection;
     var  tag;
-    var  sel;
+    var  text;
 
     if (select.selectedIndex > 0) {
         tag = select.value;
         tagEditInternalAdjustSelection(editor, true);
-        sel = area.value.substring(area.selectionStart, area.selectionEnd);
-        if (sel.indexOf("<") == 0) {
-            sel = sel.substring(0, sel.indexOf(">") + 1);
+        selection = tagEditInternalGetSelection(editor);
+        text = area.value.substring(selection.start, selection.end);
+        if (text.indexOf("<") == 0) {
+            text = text.substring(0, text.indexOf(">") + 1);
         } else {
-            sel = null;
+            text = null;
         }
-        if (tagEditInternalIsBlockTag(sel)) {
-            tagEditInternalRemove(editor, sel, "</" + sel.substring(1));
+        if (tagEditInternalIsBlockTag(text)) {
+            tagEditInternalRemove(editor, text, "</" + text.substring(1));
         }
         if (tag != "") {
             tagEditInternalInsert(editor, tag, "</" + tag.substring(1));
@@ -186,10 +188,12 @@ function tagEditInternalStyleSelect(editor, select) {
  */
 function tagEditInternalFormat(editor, start, end) {
     var  area = TAGEDIT_TEXTAREAS[editor];
+    var  selection;
     var  pos;
 
     tagEditInternalAdjustSelection(editor, false);
-    pos = area.selectionStart;
+    selection = tagEditInternalGetSelection(editor);
+    pos = selection.start
     if (area.value.substring(pos, pos + start.length) == start) {
         tagEditInternalRemove(editor, start, end);
     } else {
@@ -205,30 +209,29 @@ function tagEditInternalFormat(editor, start, end) {
  */
 function tagEditInternalUnformat(editor) {
     var  area = TAGEDIT_TEXTAREAS[editor];
-    var  sel;
-    var  selStart;
-    var  selEnd;
+    var  selection;
+    var  text;
     var  startPos = 0;
     var  endPos;
 
-    selStart = area.selectionStart;
-    selEnd = area.selectionEnd;
-    sel = area.value.substring(selStart, selEnd);
+    selection = tagEditInternalGetSelection(editor);
+    text = area.value.substring(selection.start, selection.end);
     while (startPos >= 0) {
-        startPos = sel.indexOf("<");
+        startPos = text.indexOf("<");
         if (startPos >= 0) {
-            endPos = sel.indexOf(">");
+            endPos = text.indexOf(">");
             if (endPos > startPos) {
-                sel = sel.substring(0, startPos) + sel.substring(endPos + 1);
+                text = text.substring(0, startPos) + 
+                       text.substring(endPos + 1);
             } else {
-                sel = sel.substring(0, startPos);
+                text = text.substring(0, startPos);
             }
         }
     }
-    area.value = area.value.substring(0, selStart) + sel + 
-                 area.value.substring(selEnd);
-    area.selectionStart = selStart;
-    area.selectionEnd = selStart + sel.length;
+    area.value = area.value.substring(0, selection.start) + text + 
+                 area.value.substring(selection.end);
+    selection.end = selection.start + text.length;
+    tagEditInternalSetSelection(editor, selection);
     tagEditInternalStoreUndo(editor);
 }
 
@@ -273,17 +276,18 @@ function tagEditInternalAddImage(editor) {
  */
 function tagEditInternalAdjustSelection(editor, paragraph) {
     var  area = TAGEDIT_TEXTAREAS[editor];
-    var  pos = area.selectionStart;
+    var  selection = tagEditInternalGetSelection(editor);
+    var  pos = selection.start;
     var  value = area.value;
 
-    while (pos < area.selectionEnd) {
+    while (pos < selection.end) {
         if (value.charAt(pos) == '\n' || value.charAt(pos) == '\r') {
-            area.selectionEnd = pos;
+            selection.end = pos;
         }
         pos++;
     }
     if (paragraph) {
-        pos = area.selectionStart;
+        pos = selection.start;
         while (pos > 0) {
             if (value.charAt(pos) == '\n' || value.charAt(pos) == '\r') {
                 pos++;
@@ -291,16 +295,17 @@ function tagEditInternalAdjustSelection(editor, paragraph) {
             }
             pos--;
         }
-        area.selectionStart = pos;
-        pos = area.selectionEnd;
+        selection.start = pos;
+        pos = selection.end;
         while (pos < value.length) {
             if (value.charAt(pos) == '\n' || value.charAt(pos) == '\r') {
                 break;
             }
             pos++;
         }
-        area.selectionEnd = pos;
+        selection.end = pos;
     }
+    tagEditInternalSetSelection(editor, selection);
 }
 
 /**
@@ -312,22 +317,21 @@ function tagEditInternalAdjustSelection(editor, paragraph) {
  */
 function tagEditInternalInsert(editor, start, end) {
     var  area = TAGEDIT_TEXTAREAS[editor];
-    var  startPos = area.selectionStart;
-    var  endPos = area.selectionEnd;
     var  value = area.value;
+    var  selection;
 
+    selection = tagEditInternalGetSelection(editor);
     if (end == null) {
-        area.value = value.substring(0, startPos) + start + 
-                     value.substring(startPos);
-        area.selectionStart = startPos;
-        area.selectionEnd = startPos + start.length;
+        area.value = value.substring(0, selection.start) + start + 
+                     value.substring(selection.start);
+        selection.end = selection.start + start.length;
     } else {
-        area.value = value.substring(0, startPos) + start + 
-                     value.substring(startPos, endPos) + end + 
-                     value.substring(endPos);
-        area.selectionStart = startPos;
-        area.selectionEnd = endPos + start.length + end.length;
+        area.value = value.substring(0, selection.start) + start + 
+                     value.substring(selection.start, selection.end) + 
+                     end + value.substring(selection.end);
+        selection.end = selection.end + start.length + end.length;
     }
+    tagEditInternalSetSelection(editor, selection);
 }
 
 /**
@@ -339,23 +343,22 @@ function tagEditInternalInsert(editor, start, end) {
  */
 function tagEditInternalRemove(editor, start, end) {
     var  area = TAGEDIT_TEXTAREAS[editor];
-    var  startPos = area.selectionStart;
-    var  endPos = area.selectionEnd;
+    var  selection = tagEditInternalGetSelection(editor);
     var  value = area.value;
-    var  sel = value.substring(startPos, endPos);
+    var  text = value.substring(selection.start, selection.end);
 
-    if (sel.length >= start.length && sel.indexOf(start) == 0) {
-        sel = sel.substring(start.length);
+    if (text.length >= start.length && text.indexOf(start) == 0) {
+        text = text.substring(start.length);
     }
-    if (sel.length >= end.length
-     && sel.lastIndexOf(end) == sel.length - end.length) {
+    if (text.length >= end.length
+     && text.lastIndexOf(end) == text.length - end.length) {
 
-        sel = sel.substring(0, sel.length - end.length);
+        text = text.substring(0, text.length - end.length);
     }
-    area.value = value.substring(0, startPos) + sel + 
-                 value.substring(endPos);
-    area.selectionStart = startPos;
-    area.selectionEnd = startPos + sel.length;
+    area.value = value.substring(0, selection.start) + text + 
+                 value.substring(selection.end);
+    selection.end = selection.start + text.length;
+    tagEditInternalSetSelection(editor, selection);
 }
 
 /**
@@ -442,6 +445,71 @@ function tagEditInternalIsBlockTag(tag) {
         || tag == "<h1>"
         || tag == "<h2>"
         || tag == "<h3>";
+}
+
+/**
+ * Returns the current text selection within the tag editor.
+ *
+ * @param editor             the editor number
+ *
+ * @return an object containing the selection start and end
+ */
+function tagEditInternalGetSelection(editor) {
+    var  area = TAGEDIT_TEXTAREAS[editor];
+    var  selection = new Object();
+    var  range;
+    var  text;
+
+    if (area.selectionStart) {
+        // Mozilla selection handling
+        selection.start = area.selectionStart;
+        selection.end = area.selectionEnd;
+    } else {
+        // IE selection handling
+        range = document.selection.createRange().duplicate();
+        text = range.text;
+        range.text = "#~^"  + text;
+        range.moveStart("character", 0 - text.length - 3);
+        selection.start = area.value.indexOf("#~^");
+        if (selection.start >= 0) {
+            selection.end = selection.start + text.length;
+        } else {
+            selection.start = area.value.length;
+            selection.end = area.value.length;
+        }
+        range.text = text;
+        range.moveStart("character", 0 - text.length);
+    }
+    return selection;
+}
+
+/**
+ * Sets the current text selection within the tag editor.
+ *
+ * @param editor             the editor number
+ * @param selection          the selection object
+ */
+function tagEditInternalSetSelection(editor, selection) {
+    var  area = TAGEDIT_TEXTAREAS[editor];
+    var  newlines = 0;
+
+    if (area.selectionStart) {
+        // Mozilla selection handling
+        area.selectionStart = selection.start;
+        area.selectionEnd = selection.end;
+    } else {
+        // IE selection handling
+        for (var i = 0; i < selection.start; i++) {
+            if (area.value.charAt(i) == '\r') {
+                newlines++;
+            }
+        }
+        range = area.createTextRange();
+        range.collapse();
+        range.moveEnd("character", selection.end - newlines);
+        range.moveStart("character", selection.start - newlines);
+        range.select();
+    }
 }
 
 /**

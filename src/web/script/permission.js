@@ -231,9 +231,10 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
 
     td = utilAddElement(tr, "td");
 
-    input = utilAddElement(td, "input");
+    input = document.createElement("input");
     input.type = "radio";
     input.tabIndex = 10;
+    td.appendChild(input);
     if (perm.user == null && perm.group == null) {
         input.checked = "checked";
     }
@@ -248,9 +249,10 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
     utilAddTextElement(td, " Anonymous");
     utilAddElement(td, "br");
 
-    input = utilAddElement(td, "input");
+    input = document.createElement("input");
     input.type = "radio";
     input.tabIndex = 10;
+    td.appendChild(input);
     if (perm.user != null) {
         input.checked = "checked";
     }
@@ -280,9 +282,10 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
     }
     utilAddElement(td, "br");
     
-    input = utilAddElement(td, "input");
+    input = document.createElement("input");
     input.type = "radio";
     input.tabIndex = 10;
+    td.appendChild(input);
     if (perm.group != null) {
         input.checked = "checked";
     }
@@ -345,8 +348,9 @@ function permissionInternalAddFlag(parent, index, name, flag, inherited) {
     var  input;
     var  script;
 
-    input = utilAddElement(parent, "input");
+    input = document.createElement("input");
     input.type = "checkbox";
+    parent.appendChild(input);
     input.tabIndex = 10;
     input.checked = flag;
     input.name = "perm_" + index + "_" + name;
