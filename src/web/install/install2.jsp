@@ -87,8 +87,8 @@ String    str;
               <tr<%=style%>>
                 <td>
                   <input type="radio" name="database1" value="" <%=options%> />
-                  <input type="input" name="database2" <%=options%>
-                         value="<%=str%>" />
+                  <input type="input" name="database2" value="<%=str%>"
+                         size="15" <%=options%> />
                 </td>
                 <td colspan="2">
                   Creates a new database with the specified name.
