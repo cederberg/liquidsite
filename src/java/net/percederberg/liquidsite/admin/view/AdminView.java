@@ -108,6 +108,19 @@ public class AdminView {
     }
 
     /**
+     * Shows the redirect page. This page is sometimes needed to
+     * compensate for erroneous 403 handling by some browsers (i.e.
+     * Internet Explorer).
+     *
+     * @param request        the request object
+     * @param url            the destination URL
+     */
+    public void viewRedirect(Request request, String url) {
+        request.setAttribute("url", url);
+        request.sendTemplate("admin/redirect.ftl");
+    }
+
+    /**
      * Finds all domains readable by a user. The domains will not be
      * added directly to the result list, but rather only the domain
      * names.

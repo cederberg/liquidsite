@@ -160,7 +160,7 @@ abstract class AdminFormHandler extends FormHandler {
         String  url;
 
         url = request.getParameter("liquidsite.startpage", startPage);
-        request.sendRedirect(url);
+        AdminView.BASE.viewRedirect(request, url);
     }
 
     /**
