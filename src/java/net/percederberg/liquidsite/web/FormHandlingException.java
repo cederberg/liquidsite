@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.form;
+package net.percederberg.liquidsite.web;
 
 /**
  * A form handling exception. This exception is thrown when the form

@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package net.percederberg.liquidsite.web;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
@@ -511,7 +512,9 @@ public class Request {
 
     /**
      * Sends the request response to the underlying HTTP response
-     * object.
+     * object. This method shouldn't be called more than once per
+     * request, and should not be called in case no response has been
+     * stored in the request.
      *
      * @param context        the servlet context
      *
@@ -520,7 +523,7 @@ public class Request {
      * @throws ServletException if a configuration error was
      *             encountered while sending the response
      */
-    void commit(ServletContext context)
+    public void commit(ServletContext context)
         throws IOException, ServletException {
 
         if (responseType == FILE_RESPONSE) {

@@ -19,14 +19,14 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.form;
+package net.percederberg.liquidsite.web;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A form field validator. This class contains methods for checking

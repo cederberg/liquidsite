@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -33,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A helper class for the user view. This class contains methods

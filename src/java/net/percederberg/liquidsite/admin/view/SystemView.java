@@ -21,7 +21,7 @@
 
 package net.percederberg.liquidsite.admin.view;
 
-import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A helper class for the system view. This class contains methods

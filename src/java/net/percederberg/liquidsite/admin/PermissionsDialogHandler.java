@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.admin;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -34,8 +33,9 @@ import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.PermissionList;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.content.Group;
-import net.percederberg.liquidsite.form.FormValidationException;
-import net.percederberg.liquidsite.form.FormValidator;
+import net.percederberg.liquidsite.web.FormValidationException;
+import net.percederberg.liquidsite.web.FormValidator;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The permission editing request handler. This class handles the

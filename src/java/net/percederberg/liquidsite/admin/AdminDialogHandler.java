@@ -21,8 +21,8 @@
 
 package net.percederberg.liquidsite.admin;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The administration base dialog request handler. This class

@@ -28,13 +28,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A class containing general utility methods for the administration

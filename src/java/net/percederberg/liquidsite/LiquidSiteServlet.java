@@ -37,6 +37,8 @@ import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
+import net.percederberg.liquidsite.web.MultiPartRequest;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A front controller servlet. This class handles all incoming HTTP

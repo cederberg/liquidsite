@@ -29,8 +29,8 @@ import freemarker.template.Environment;
 import freemarker.template.TemplateExceptionHandler;
 
 import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.ContentManager;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A template class. This class wraps a FreeMarker template and adds

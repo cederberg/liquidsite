@@ -21,12 +21,12 @@
 
 package net.percederberg.liquidsite.admin;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The delete request handler. This class handles the delete dialog

@@ -24,7 +24,6 @@ package net.percederberg.liquidsite.admin.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -36,6 +35,7 @@ import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A helper class for creating the HTML and JavaScript output for the

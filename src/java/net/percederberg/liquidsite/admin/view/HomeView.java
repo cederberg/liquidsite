@@ -21,8 +21,8 @@
 
 package net.percederberg.liquidsite.admin.view;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A helper class for the home view. This class contains methods for

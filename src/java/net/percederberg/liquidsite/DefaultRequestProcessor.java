@@ -28,6 +28,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.TemplateException;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The default request processor for normal requests.

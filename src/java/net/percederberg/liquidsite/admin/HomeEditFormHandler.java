@@ -21,13 +21,13 @@
 
 package net.percederberg.liquidsite.admin;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.form.FormValidationException;
-import net.percederberg.liquidsite.form.FormValidator;
+import net.percederberg.liquidsite.web.FormValidationException;
+import net.percederberg.liquidsite.web.FormValidator;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The home edit request handler. This class handles the edit user

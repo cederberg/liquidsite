@@ -38,6 +38,7 @@ import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A request processor.

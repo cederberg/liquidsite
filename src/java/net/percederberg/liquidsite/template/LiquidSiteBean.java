@@ -24,7 +24,6 @@ package net.percederberg.liquidsite.template;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
@@ -35,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A LiquidSite template bean. This class is used to insert the

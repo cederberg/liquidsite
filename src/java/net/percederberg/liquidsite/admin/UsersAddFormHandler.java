@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
@@ -29,7 +28,8 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.web.FormValidationException;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The users add request handler. This class handles the various

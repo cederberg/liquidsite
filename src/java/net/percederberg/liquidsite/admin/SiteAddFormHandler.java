@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -40,7 +38,9 @@ import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.form.FormValidationException;
+import net.percederberg.liquidsite.web.FormValidationException;
+import net.percederberg.liquidsite.web.Request;
+import net.percederberg.liquidsite.web.Request.FileParameter;
 
 /**
  * The site add request handler. This class handles the add workflow

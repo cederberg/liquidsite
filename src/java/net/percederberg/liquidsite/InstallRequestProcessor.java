@@ -38,6 +38,7 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseException;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * The installation request processor. This processor differs from

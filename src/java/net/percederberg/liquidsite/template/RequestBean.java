@@ -21,7 +21,7 @@
 
 package net.percederberg.liquidsite.template;
 
-import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A request bean. This class is used to access the request object

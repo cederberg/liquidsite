@@ -19,9 +19,9 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.form;
+package net.percederberg.liquidsite.web;
 
-import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.web.Request;
 
 /**
  * A form request handler. This class attempts to provide some

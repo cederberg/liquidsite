@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package net.percederberg.liquidsite.web;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
+
+import net.percederberg.liquidsite.Configuration;
+import net.percederberg.liquidsite.Log;
 
 /**
  * An HTTP multi-part request and response.
