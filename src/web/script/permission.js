@@ -112,6 +112,7 @@ function permissionToggleEdit() {
     if (PERMISSION_SHOW_LOCAL && PERMISSION_LOCAL.length == 0) {
         for (var i = 0; i < PERMISSION_INHERITED.length; i++) {
             perm = new Object();
+            perm.type = PERMISSION_INHERITED[i].type;
             perm.user = PERMISSION_INHERITED[i].user;
             perm.group = PERMISSION_INHERITED[i].group;
             perm.read = PERMISSION_INHERITED[i].read;
@@ -146,6 +147,13 @@ function permissionAddGroup(group) {
 function permissionAddInherited(user, group, read, write, publish, admin) {
     var  perm = new Object();
 
+    if (user != null) {
+        perm.type = 1;
+    } else if (group != null) {
+        perm.type = 2;
+    } else {
+        perm.type = 0;
+    }
     perm.user = user;
     perm.group = group;
     perm.read = read;
@@ -168,6 +176,13 @@ function permissionAddInherited(user, group, read, write, publish, admin) {
 function permissionAddLocal(user, group, read, write, publish, admin) {
     var  perm = new Object();
 
+    if (user != null) {
+        perm.type = 1;
+    } else if (group != null) {
+        perm.type = 2;
+    } else {
+        perm.type = 0;
+    }
     perm.user = user;
     perm.group = group;
     perm.read = read;
@@ -184,6 +199,7 @@ function permissionAddLocal(user, group, read, write, publish, admin) {
 function permissionInternalNewLocal() {
     var  perm = new Object();
 
+    perm.type = 0;
     perm.user = null;
     perm.group = null;
     perm.read = false;
@@ -235,15 +251,14 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
     input.type = "radio";
     input.tabIndex = 10;
     td.appendChild(input);
-    if (perm.user == null && perm.group == null) {
+    if (perm.type == 0) {
         input.checked = "checked";
     }
     input.name = "perm_" + index + "_type";
-    input.value = "0";
     if (inherited) {
         input.disabled = "disabled";
     } else {
-        script = "permissionInternalSetType(" + index + ", this.value);";
+        script = "permissionInternalSetType(" + index + ", 0);";
         input.onclick = new Function(script);
     }
     utilAddTextElement(td, " Anonymous");
@@ -253,18 +268,17 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
     input.type = "radio";
     input.tabIndex = 10;
     td.appendChild(input);
-    if (perm.user != null) {
+    if (perm.type == 1) {
         input.checked = "checked";
     }
     input.name = "perm_" + index + "_type";
-    input.value = "1";
     if (inherited) {
         input.disabled = "disabled";
     } else {
-        script = "permissionInternalSetType(" + index + ", this.value);";
+        script = "permissionInternalSetType(" + index + ", 1);";
         input.onclick = new Function(script);
     }
-    if (perm.user == null) {
+    if (perm.type != 1) {
         utilAddTextElement(td, " User");
     } else {
         utilAddTextElement(td, " User: ");
@@ -286,18 +300,17 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
     input.type = "radio";
     input.tabIndex = 10;
     td.appendChild(input);
-    if (perm.group != null) {
+    if (perm.type == 2) {
         input.checked = "checked";
     }
     input.name = "perm_" + index + "_type";
-    input.value = "2";
     if (inherited) {
         input.disabled = "disabled";
     } else {
-        script = "permissionInternalSetType(" + index + ", this.value);";
+        script = "permissionInternalSetType(" + index + ", 2);";
         input.onclick = new Function(script);
     }
-    if (perm.group == null) {
+    if (perm.type != 2) {
         utilAddTextElement(td, " Group");
     } else {
         utilAddTextElement(td, " Group: ");
@@ -371,16 +384,7 @@ function permissionInternalAddFlag(parent, index, name, flag, inherited) {
  * @param type                the permission type
  */
 function permissionInternalSetType(index, type) {
-    if (type == 1) {
-        PERMISSION_LOCAL[index].user = "";
-        PERMISSION_LOCAL[index].group = null;
-    } else if (type == 2) {
-        PERMISSION_LOCAL[index].user = null;
-        PERMISSION_LOCAL[index].group = "";
-    } else {
-        PERMISSION_LOCAL[index].user = null;
-        PERMISSION_LOCAL[index].group = null;
-    }
+    PERMISSION_LOCAL[index].type = type;
     permissionDisplay();
 }
 
