@@ -45,14 +45,6 @@ var TEMPLATE_INHERITED = new Object();
 var TEMPLATE_LOCAL = new Object();
 
 /**
- * The list of HTML nodes to be removed. This is used when redrawing 
- * the template view, as IE 5.0 (at least) require a short delay 
- * after removing a form element (textarea or input). If all elements
- * are removed instantly, the IE browser will crash.
- */
-var TEMPLATE_REMOVE_LIST = new Array();
-
-/**
  * Initializes the template editor.
  *
  * @param id                  the id of the page element table
@@ -63,10 +55,10 @@ function templateInitialize(id) {
     var  tr;
 
     table = document.getElementById(id);
-    tbody = templateInternalAddElement(table, "tbody");
-    tr = templateInternalAddElement(tbody, "tr");
-    templateInternalAddElement(tr, "th", "Name");
-    templateInternalAddElement(tr, "th", "Content");
+    tbody = utilAddElement(table, "tbody");
+    tr = utilAddElement(tbody, "tr");
+    utilAddElement(tr, "th", "Name");
+    utilAddElement(tr, "th", "Content");
     TEMPLATE_ROOT = tbody;
 }
 
@@ -82,10 +74,10 @@ function templateDisplay() {
 
     for (var i = 1; i < TEMPLATE_ROOT.childNodes.length; i++) {
         tr = TEMPLATE_ROOT.childNodes.item(i);
-        templateInternalSetRemovalFlag(tr);
+        utilSetRemovalFlag(tr);
         tr.style.display = "none";
     }
-    templateInternalRemoveElements();
+    utilRemoveElements();
     for (var elem in TEMPLATE_LOCAL) {
         templateInternalDisplayLocal(elem);
     }
@@ -94,11 +86,11 @@ function templateDisplay() {
             templateInternalDisplayInherited(elem);
         }
     }
-    tr = templateInternalAddElement(TEMPLATE_ROOT, "tr");
-    td = templateInternalAddElement(tr, "td");
-    templateInternalAddElement(td, "strong", "Add New:");
-    td = templateInternalAddElement(tr, "td");
-    input = templateInternalAddElement(td, "input");
+    tr = utilAddElement(TEMPLATE_ROOT, "tr");
+    td = utilAddElement(tr, "td");
+    utilAddElement(td, "strong", "Add New:");
+    td = utilAddElement(tr, "td");
+    input = utilAddElement(td, "input");
     input.id = "template.new";
     input.type = "text";
     input.size = "20";
@@ -183,20 +175,20 @@ function templateInternalAddLocal(id) {
  * @param name               the inherited element name
  */ 
 function templateInternalDisplayInherited(name) {
-    var  tr = templateInternalAddElement(TEMPLATE_ROOT, "tr");
+    var  tr = utilAddElement(TEMPLATE_ROOT, "tr");
     var  td;
 
     tr.className = "inherited";
-    td = templateInternalAddElement(tr, "td");
-    templateInternalAddElement(td, "strong", name);
-    templateInternalAddElement(td, "br");
-    templateInternalAddTextElement(td, "Inherited");
-    templateInternalAddElement(td, "br");
-    templateInternalAddElement(td, "br");
+    td = utilAddElement(tr, "td");
+    utilAddElement(td, "strong", name);
+    utilAddElement(td, "br");
+    utilAddTextElement(td, "Inherited");
+    utilAddElement(td, "br");
+    utilAddElement(td, "br");
     script = "templateAddLocal('" + name + "', TEMPLATE_INHERITED." + 
              name + "); templateDisplay();";
     templateInternalAddAction(td, "Edit", "edit.png", script);
-    td = templateInternalAddElement(tr, "td");
+    td = utilAddElement(tr, "td");
     templateInternalAddEditor(td, name, TEMPLATE_INHERITED[name], false);
 }
 
@@ -207,20 +199,20 @@ function templateInternalDisplayInherited(name) {
  * @param name               the local element name
  */ 
 function templateInternalDisplayLocal(name) {
-    var  tr = templateInternalAddElement(TEMPLATE_ROOT, "tr");
+    var  tr = utilAddElement(TEMPLATE_ROOT, "tr");
     var  td;
     var  a;
     var  script;
 
-    td = templateInternalAddElement(tr, "td");
-    templateInternalAddElement(td, "strong", name);
-    templateInternalAddElement(td, "br");
-    templateInternalAddTextElement(td, "Local");
-    templateInternalAddElement(td, "br");
-    templateInternalAddElement(td, "br");
+    td = utilAddElement(tr, "td");
+    utilAddElement(td, "strong", name);
+    utilAddElement(td, "br");
+    utilAddTextElement(td, "Local");
+    utilAddElement(td, "br");
+    utilAddElement(td, "br");
     script = "templateRemoveLocal('" + name + "'); templateDisplay();";
     templateInternalAddAction(td, "Delete", "delete.png", script);
-    td = templateInternalAddElement(tr, "td");
+    td = utilAddElement(tr, "td");
     templateInternalAddEditor(td, name, TEMPLATE_LOCAL[name], true);
 }
 
@@ -235,16 +227,16 @@ function templateInternalDisplayLocal(name) {
  * @return the HTML element created
  */
 function templateInternalAddAction(parent, name, image, script) {
-    var  a = templateInternalAddElement(parent, "a");
+    var  a = utilAddElement(parent, "a");
 
     a.href = "#";
     a.title = name;
     a.tabIndex = "10";
     a.onclick = new Function(script + " return false;");
-    img = templateInternalAddElement(a, "img");
+    img = utilAddElement(a, "img");
     img.src = TEMPLATE_ICON_PATH + image;
     img.alt = name;
-    templateInternalAddTextElement(a, " " + name);
+    utilAddTextElement(a, " " + name);
     return a;
 }
 
@@ -259,8 +251,8 @@ function templateInternalAddAction(parent, name, image, script) {
  * @return the HTML element created
  */
 function templateInternalAddEditor(parent, name, data, local) {
-    var  textarea = templateInternalAddElement(parent, "textarea");
-    var  rows = 1;
+    var  textarea = utilAddElement(parent, "textarea");
+    var  rows = 3;
     
     for (var i = 0; i <= data.indexOf("\n", i); ) {
         i = data.indexOf("\n", i) + 1;
@@ -283,83 +275,4 @@ function templateInternalAddEditor(parent, name, data, local) {
         textarea.disabled = "disabled";
     }
     return textarea;
-}
-
-/**
- * Creates and adds an HTML element to a parent node.
- *
- * @param parent              the parent HTML node
- * @param name                the new element name
- * @param child               the element child (or null)
- *
- * @return the HTML element created
- */
-function templateInternalAddElement(parent, name, child) {
-    var elem = document.createElement(name);
-
-    if (typeof(child) == "string") {
-        child = document.createTextNode(child);
-    }
-    if (child != null) {
-        elem.appendChild(child);
-    }
-    parent.appendChild(elem);
-    return elem;
-}
-
-/**
- * Creates and adds an HTML text element to a parent node.
- *
- * @param parent              the parent HTML node
- * @param text                the text content
- *
- * @return the HTML text element created
- */
-function templateInternalAddTextElement(parent, text) {
-    var elem = document.createTextNode(text);
-
-    parent.appendChild(elem);
-    return elem;
-}
-
-/**
- * Flags an HTML element for removal. All subelements will be flagged
- * for removal too.
- *
- * @param elem               the element to remove
- */
-function templateInternalSetRemovalFlag(elem) {
-    var  child;
-
-    TEMPLATE_REMOVE_LIST[TEMPLATE_REMOVE_LIST.length] = elem;
-    for (var i = 0; i < elem.childNodes.length; i++) {
-        child = elem.childNodes.item(i);
-        if (child.tagName != undefined) {
-            templateInternalSetRemovalFlag(child);
-        }
-    }
-}
-
-/**
- * Removes all elements flagged for removal. This function may return
- * prior to all elements being removed, due to processing some 
- * removals after a delay. When removing form elements in IE, a delay
- * must be added to avoid a browser crash.
- */
-function templateInternalRemoveElements() {
-    var  elem;
-    var  tag;
-    
-    if (TEMPLATE_REMOVE_LIST.length <= 0) {
-        return;
-    }
-    elem = TEMPLATE_REMOVE_LIST[TEMPLATE_REMOVE_LIST.length - 1];
-    tag = elem.tagName.toLowerCase();
-    elem.parentNode.removeChild(elem);
-    TEMPLATE_REMOVE_LIST.length = TEMPLATE_REMOVE_LIST.length - 1;
-    if (tag == "textarea" || tag == "input") {
-        setTimeout("templateInternalRemoveElements();", 1);
-    } else {
-        templateInternalRemoveElements();
-    }
 }
