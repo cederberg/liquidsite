@@ -161,7 +161,7 @@ public abstract class Content extends PersistentObject {
         this.data = new ContentData();
         this.data.setString(ContentData.DOMAIN, domain.getName());
         this.data.setInt(ContentData.REVISION, revision);
-        this.data.setInt(ContentData.NAME, category);
+        this.data.setInt(ContentData.CATEGORY, category);
         this.data.setDate(ContentData.MODIFIED, new Date());
     }
 
@@ -179,7 +179,7 @@ public abstract class Content extends PersistentObject {
         this.data.setString(ContentData.DOMAIN, domain.getName());
         this.data.setInt(ContentData.ID, id);
         this.data.setInt(ContentData.REVISION, revision);
-        this.data.setInt(ContentData.NAME, category);
+        this.data.setInt(ContentData.CATEGORY, category);
         this.data.setDate(ContentData.MODIFIED, new Date());
     }
 
@@ -613,6 +613,9 @@ public abstract class Content extends PersistentObject {
         while (iter.hasNext()) {
             name = (String) iter.next();
             attr = (AttributeData) attributes.get(name);
+            if (attr.getInt(AttributeData.CONTENT) <= 0) {
+                attr.setInt(AttributeData.CONTENT, getId());
+            }
             if (attributesAdded.contains(name)) {
                 AttributePeer.doInsert(attr, con);
             } else {
