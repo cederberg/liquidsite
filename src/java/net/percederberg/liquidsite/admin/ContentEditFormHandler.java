@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -66,6 +67,11 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * The document form validator.
      */
     private FormValidator document = new FormValidator();
+
+    /**
+     * The forum form validator.
+     */
+    private FormValidator forum = new FormValidator();
 
     /**
      * Returns an instance of this class. If a prior instance has
@@ -114,6 +120,16 @@ public class ContentEditFormHandler extends AdminFormHandler {
         document.addCharacterConstraint("name", nameChars, error);
         error = "No revision comment specified";
         document.addRequiredConstraint("comment", error);
+
+        // Add and edit forum validator
+        forum.addRequiredConstraint("name", "No forum name specified");
+        error = "Forum name contains invalid character";
+        forum.addCharacterConstraint("name", nameChars, error);
+        forum.addRequiredConstraint("title", "No forum title specified");
+        forum.addRequiredConstraint("description",
+                                    "No forum description specified");
+        error = "No revision comment specified";
+        forum.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -142,6 +158,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
                                                (ContentDocument) ref);
         } else if (ref instanceof ContentFile) {
             AdminView.CONTENT.viewEditFile(request, (ContentFile) ref);
+        } else if (ref instanceof ContentForum) {
+            AdminView.CONTENT.viewEditForum(request, (ContentForum) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -185,6 +203,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
             }
         } else if (category.equals("file")) {
             SiteEditFormHandler.getInstance().validateStep(request, step);
+        } else if (category.equals("forum")) {
+            forum.validate(request);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
@@ -229,6 +249,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
             }
         } else if (ref instanceof ContentFile) {
             handleEditFile(request, (ContentFile) ref);
+        } else if (ref instanceof ContentForum) {
+            handleEditForum(request, (ContentForum) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -416,6 +438,41 @@ public class ContentEditFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles the edit forum form.
+     *
+     * @param request        the request object
+     * @param forum          the forum content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleEditForum(Request request, ContentForum forum)
+        throws ContentException, ContentSecurityException {
+
+        int  section;
+
+        forum.setRevisionNumber(0);
+        forum.setName(request.getParameter("name"));
+        forum.setTitle(request.getParameter("title"));
+        forum.setDescription(request.getParameter("description"));
+        forum.setComment(request.getParameter("comment"));
+        try {
+            section = Integer.parseInt(request.getParameter("section"));
+            forum.setParentId(section);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
+        if (request.getParameter("action", "").equals("publish")) {
+            forum.setRevisionNumber(forum.getMaxRevisionNumber() + 1);
+            forum.setOnlineDate(new Date());
+            forum.setOfflineDate(null);
+        }
+        forum.save(request.getUser());
     }
 
     /**

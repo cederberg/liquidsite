@@ -32,9 +32,11 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.PersistentObject;
@@ -125,11 +127,22 @@ public class ContentView extends AdminView {
             if (parent.hasWriteAccess(user)) {
                 request.setAttribute("enableSection", true);
                 request.setAttribute("enableDocument", true);
+                request.setAttribute("enableForum", true);
             }
         }
         if (parent instanceof ContentDocument) {
             if (parent.hasWriteAccess(user)) {
                 request.setAttribute("enableFile", true);
+            }
+        }
+        if (parent instanceof ContentForum) {
+            if (parent.hasWriteAccess(user)) {
+                request.setAttribute("enableTopic", true);
+            }
+        }
+        if (parent instanceof ContentTopic) {
+            if (parent.hasWriteAccess(user)) {
+                request.setAttribute("enablePost", true);
             }
         }
         if (request.getParameter("liquidsite.startpage") != null) {
@@ -263,8 +276,7 @@ public class ContentView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditDocument(Request request,
-                                 Content reference)
+    public void viewEditDocument(Request request, Content reference)
         throws ContentException {
 
         ContentDocument   doc;
@@ -425,6 +437,87 @@ public class ContentView extends AdminView {
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-file.ftl");
+    }
+
+    /**
+     * Shows the add or edit forum page. Either the parent or the
+     * forum object must be specified.
+     *
+     * @param request        the request object
+     * @param reference      the parent or forum object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewEditForum(Request request, Content reference)
+        throws ContentException {
+
+        ContentForum  forum;
+        String        name;
+        String        title;
+        String        description;
+        String        comment;
+        int           section;
+        ArrayList     sections;
+        boolean       publish;
+        String        str;
+
+        // Find default values
+        AdminUtils.setReference(request, reference);
+        if (reference instanceof ContentForum) {
+            forum = (ContentForum) reference;
+            name = forum.getName();
+            section = forum.getParentId();
+            sections = findSections(request.getUser(),
+                                    forum.getDomain(),
+                                    null);
+            title = forum.getTitle();
+            description = forum.getDescription();
+            if (forum.getRevisionNumber() == 0) {
+                comment = forum.getComment();
+            } else {
+                comment = "";
+            }
+            publish = forum.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(forum.getParent());
+        } else {
+            name = "";
+            section = 0;
+            sections = new ArrayList(0);
+            title = "";
+            description = "";
+            comment = "Created";
+            publish = reference.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(reference);
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            str = request.getParameter("section", "0");
+            try {
+                section = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                section = 0;
+            }
+            title = request.getParameter("title", "");
+            description = request.getParameter("description", "");
+            comment = request.getParameter("comment", "");
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("section", String.valueOf(section));
+        request.setAttribute("sections", sections);
+        request.setAttribute("title", title);
+        request.setAttribute("description", description);
+        request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
+        if (request.getParameter("liquidsite.startpage") != null) {
+            request.setAttribute("startpage", 
+                                 request.getParameter("liquidsite.startpage"));
+        }
+        request.sendTemplate("admin/edit-forum.ftl");
     }
 
     /**

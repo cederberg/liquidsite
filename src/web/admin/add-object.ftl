@@ -168,13 +168,56 @@
           </td>
         </tr>
 </#if>
+<#if enableForum?exists>
+        <tr>
+          <th style="width: 8em;">
+            <input type="radio" tabindex="10"
+                   name="category" value="forum" />
+            Forum
+          </th>
+          <td>
+            A forum is used to allow site users exchange ideas and
+            discuss. The user messages are grouped into topics inside
+            the forum.
+          </td>
+        </tr>
+</#if>
+<#if enableTopic?exists>
+        <tr>
+          <th style="width: 8em;">
+            <input type="radio" tabindex="11"
+                   name="category" value="topic" />
+            Topic
+          </th>
+          <td>
+            A topic is a set of forum messages that follow each other
+            in a single discussion. The users are free to post
+            messages to an existing topic or to create a new topic.
+          </td>
+        </tr>
+</#if>
+<#if enablePost?exists>
+        <tr>
+          <th style="width: 8em;">
+            <input type="radio" tabindex="12"
+                   name="category" value="post" />
+            Post
+          </th>
+          <td>
+            A post is a forum message. It contains the message text
+            that the user posted to the thread. Normally only the user
+            himself and the forum moderators are allowed to edit or
+            remove the post.
+          </td>
+        </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="11" onclick="doPrevious()">
+            <button type="button" tabindex="101" onclick="doPrevious()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button tabindex="10" type="submit">
+            <button tabindex="100" type="submit">
               Next
               <img src="images/icons/24x24/right_arrow.png" />
             </button>

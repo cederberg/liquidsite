@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -84,6 +85,8 @@ public class ContentAddFormHandler extends AdminFormHandler {
             AdminView.CONTENT.viewEditDocument(request, (Content) parent);
         } else if (category.equals("file")) {
             AdminView.CONTENT.viewEditFile(request, (Content) parent);
+        } else if (category.equals("forum")) {
+            AdminView.CONTENT.viewEditForum(request, (Content) parent);
         } else {
             AdminView.CONTENT.viewAddObject(request, parent);
         }
@@ -170,6 +173,8 @@ public class ContentAddFormHandler extends AdminFormHandler {
             }
         } else if (category.equals("file")) {
             handleAddFile(request, (ContentDocument) parent);
+        } else if (category.equals("forum")) {
+            handleAddForum(request, (ContentSection) parent);
         }
         return 0;
     }
@@ -323,6 +328,36 @@ public class ContentAddFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles the add forum form.
+     *
+     * @param request        the request object
+     * @param parent         the parent section object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    private void handleAddForum(Request request, ContentSection parent)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ContentForum    forum;
+
+        forum = new ContentForum(manager, parent);
+        forum.setName(request.getParameter("name"));
+        forum.setTitle(request.getParameter("title"));
+        forum.setDescription(request.getParameter("description"));
+        forum.setComment(request.getParameter("comment"));
+        if (request.getParameter("action", "").equals("publish")) {
+            forum.setRevisionNumber(1);
+            forum.setOnlineDate(new Date());
+        }
+        forum.save(request.getUser());
+        AdminView.CONTENT.setContentTreeFocus(request, forum);
     }
 
     /**

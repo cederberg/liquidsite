@@ -294,6 +294,12 @@ public class AdminUtils {
                 return "section";
             case Content.DOCUMENT_CATEGORY:
                 return "document";
+            case Content.FORUM_CATEGORY:
+                return "forum";
+            case Content.TOPIC_CATEGORY:
+                return "topic";
+            case Content.POST_CATEGORY:
+                return "post";
             default:
                 return null;
             }

@@ -211,7 +211,9 @@ function treeInternalIsContainer(type) {
         || type == "folder"
         || type == "template"
         || type == "section"
-        || type == "document";
+        || type == "document"
+        || type == "forum"
+        || type == "topic";
 }
 
 /**

@@ -30,10 +30,12 @@ import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
@@ -865,7 +867,9 @@ public class ScriptView {
                 || content instanceof ContentFolder
                 || content instanceof ContentTemplate
                 || content instanceof ContentSection
-                || content instanceof ContentDocument;
+                || content instanceof ContentDocument
+                || content instanceof ContentForum
+                || content instanceof ContentTopic;
         }
     }
 }
