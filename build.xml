@@ -54,10 +54,9 @@
       <fileset dir="${build.dir}/classes" />
     </jar>
     <war destfile="${build.dir}/liquidsite.war"
-         webxml="${build.dir}/src/metainf/web.xml"
-         basedir="${build.dir}/src/jsp">
-      <webinf dir="${build.dir}/src/metainf"
-              excludes="web.xml" />
+         webxml="${build.dir}/src/web/WEB-INF/web.xml"
+         basedir="${build.dir}/src/web"
+         excludes="**/web.xml">
       <lib dir="${build.dir}/lib">
         <exclude name="servlet.jar" />
       </lib>
