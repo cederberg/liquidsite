@@ -42,7 +42,7 @@
   </xsl:template>
 
   <xsl:template match="table">
-    <xsl:text>DROP TABLE </xsl:text>
+    <xsl:text>DROP TABLE IF EXISTS </xsl:text>
     <xsl:value-of select="@name" />
     <xsl:text>;</xsl:text>
     &newline;
