@@ -1,5 +1,5 @@
 /*
- * InstallController.java
+ * InstallRequestProcessor.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -50,12 +50,12 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class InstallController extends RequestProcessor {
+public class InstallRequestProcessor extends RequestProcessor {
 
     /**
      * The class logger.
      */
-    private static final Log LOG = new Log(InstallController.class);
+    private static final Log LOG = new Log(InstallRequestProcessor.class);
 
     /**
      * The description of the last error encountered. If this 
@@ -129,7 +129,7 @@ public class InstallController extends RequestProcessor {
      *
      * @param app            the application context
      */
-    public InstallController(Application app) {
+    public InstallRequestProcessor(Application app) {
         super(app);
     }
 

@@ -200,9 +200,9 @@ public class LiquidSiteServlet extends HttpServlet
 
         // Initialize request processor
         if (!config.isInitialized()) {
-            processor = new InstallController(this);
+            processor = new InstallRequestProcessor(this);
         } else {
-            processor = new DefaultController(this);
+            processor = new DefaultRequestProcessor(this);
         }
         
         // Set the online status

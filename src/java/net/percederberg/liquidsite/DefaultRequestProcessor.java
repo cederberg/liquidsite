@@ -1,5 +1,5 @@
 /*
- * DefaultController.java
+ * DefaultRequestProcessor.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -23,7 +23,7 @@ package net.percederberg.liquidsite;
 
 import java.io.StringWriter;
 
-import net.percederberg.liquidsite.admin.AdminController;
+import net.percederberg.liquidsite.admin.AdminRequestProcessor;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -41,12 +41,12 @@ import net.percederberg.liquidsite.template.TemplateManager;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DefaultController extends RequestProcessor {
+public class DefaultRequestProcessor extends RequestProcessor {
 
     /**
      * The class logger.
      */
-    private static final Log LOG = new Log(DefaultController.class);
+    private static final Log LOG = new Log(DefaultRequestProcessor.class);
 
     /**
      * The delay in milliseconds on a failed login attempt.
@@ -56,16 +56,16 @@ public class DefaultController extends RequestProcessor {
     /**
      * The admin request processor.
      */
-    private AdminController admin;
+    private AdminRequestProcessor admin;
 
     /**
      * Creates a new default request processor. 
      *
      * @param app            the application context
      */
-    public DefaultController(Application app) {
+    public DefaultRequestProcessor(Application app) {
         super(app);
-        admin = new AdminController(app);
+        admin = new AdminRequestProcessor(app);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * AdminController.java
+ * AdminRequestProcessor.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -51,12 +51,12 @@ import net.percederberg.liquidsite.template.TemplateManager;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class AdminController extends RequestProcessor {
+public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * The class logger.
      */
-    private static final Log LOG = new Log(AdminController.class);
+    private static final Log LOG = new Log(AdminRequestProcessor.class);
 
     /**
      * The administration application content manager.
@@ -73,7 +73,7 @@ public class AdminController extends RequestProcessor {
      *
      * @param app            the application context
      */
-    public AdminController(Application app) {
+    public AdminRequestProcessor(Application app) {
         super(app);
         manager = new ContentManager(app, true);
         AdminUtils.setContentManager(manager);
