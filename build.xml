@@ -64,6 +64,7 @@
          excludes="**/web.xml">
       <lib dir="${build.dir}/lib">
         <include name="liquidsite*.jar" />
+        <include name="commons-codec*.jar" />
         <include name="mysql*.jar" />
       </lib>
       <webinf dir="${build.dir}">

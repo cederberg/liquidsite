@@ -21,8 +21,13 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import org.apache.commons.codec.binary.Base64;
+
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.UserData;
@@ -37,6 +42,11 @@ import net.percederberg.liquidsite.dbo.UserPeer;
  * @version  1.0
  */
 public class User extends PersistentObject {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(User.class);
 
     /**
      * The user data.
@@ -261,14 +271,14 @@ public class User extends PersistentObject {
     }
     
     /**
-     * Sets the user password. This method will also encode the user
-     * password.
+     * Sets the user password. This method will hash and encode the 
+     * specified password, which is an irreversible process.
      * 
      * @param password       the new user password
      */
     public void setPassword(String password) {
-        // TODO: encode the password
-        data.setString(UserData.PASSWORD, password);
+        data.setString(UserData.PASSWORD, 
+                       createHash(getName() + password));
     }
     
     /**
@@ -456,5 +466,33 @@ public class User extends PersistentObject {
             }
             groupsRemoved = null;
         }
+    }
+    
+    /**
+     * Creates an ASCII hash value for a string. The hash value
+     * calculation is irreversible, and is calculated with the MD5
+     * algorithm and encoded with base-64.
+     *
+     * @param data           the input string data
+     *
+     * @return the encoded hash value
+     */
+    private String createHash(String data) {
+        MessageDigest  digest;
+        byte           bytes[];
+ 
+        // Compute MD5 digest
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            digest.reset();
+            digest.update(data.getBytes());
+            bytes = digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            LOG.error(e.getMessage());
+            return "";
+        }
+                                                                                
+        // Base-64 encode digest
+        return new String(Base64.encodeBase64(bytes));
     }
 }
