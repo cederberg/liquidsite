@@ -226,6 +226,8 @@ public class TaggedFormatter {
             return "</ul>";
         } else if (name.equals("item")) {
             return "<li>";
+        } else if (name.equals("/item")) {
+            return "</li>";
         } else {
             return "";
         }
