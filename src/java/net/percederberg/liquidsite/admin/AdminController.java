@@ -342,9 +342,13 @@ public class AdminController extends Controller {
                 }
             }
             if (request.getParameter("prev") != null) {
+                if (obj instanceof Content) {
+                    removeLock((Content) obj, request.getUser(), false);
+                }
                 request.sendRedirect("site.html");
             } else if (obj instanceof Site) {
                 if (step == null) {
+                    checkLock((Site) obj, request.getUser(), true);
                     view.pageEditSite(request, (Site) obj);
                 } else {
                     processEditSite(request, (Site) obj);
@@ -376,6 +380,7 @@ public class AdminController extends Controller {
         throws ContentException, ContentSecurityException {
 
         try {
+            checkLock(site, request.getUser(), false);
             validator.validateSite(request);
             site.setRevisionNumber(0);
             site.setName(request.getParameter("name"));
@@ -385,6 +390,7 @@ public class AdminController extends Controller {
             site.setDirectory(request.getParameter("dir"));
             site.setComment("Modified");
             site.save(request.getUser());
+            removeLock(site, request.getUser(), false);
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
