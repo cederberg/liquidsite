@@ -318,7 +318,7 @@ public class FrontControllerServlet extends HttpServlet
          * Runs the thread. This method is not supposed to be called
          * directly, but rather by the monitor thread.
          */
-        public void run() {
+        public synchronized void run() {
             while (alive) {
 
                 // Update database
@@ -334,14 +334,12 @@ public class FrontControllerServlet extends HttpServlet
 
                 // Delay execution
                 try {
-                    Thread.sleep(LOOP_DELAY);
+                    wait(LOOP_DELAY);
                 } catch (InterruptedException ignore) {
                     // Do nothing
                 }
             }
-            synchronized (this) {
-                notifyAll();
-            }
+            notifyAll();
         }
         
         /**
@@ -349,9 +347,10 @@ public class FrontControllerServlet extends HttpServlet
          * cannot be started again. This method will not return until
          * the monitor thread has stopped, or a timeout has passed.
          */
-        public void stop() {
+        public synchronized void stop() {
             alive = false;
             try {
+                notifyAll();
                 wait(STOP_TIMEOUT);
             } catch (InterruptedException ignore) {
                 // Do nothing
