@@ -270,6 +270,11 @@ class SecurityManager {
         Permission[]  perms = content.getPermissions().getPermissions();
         Group[]       groups = null;
 
+        // Check for prohibited local permissions
+        if (access == ADMIN && !hasPermissionList(content)) {
+            return false;
+        }
+
         // Check for superuser or inherited permissions
         if (user != null && user.isSuperUser()) {
             return true;
@@ -382,6 +387,31 @@ class SecurityManager {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Checks if the specified content object can have a permission
+     * list. Some categories of content objects cannot have local
+     * permission lists (for performance reasons) and thus depend
+     * purely on inherited permissions.
+     *
+     * @return true if the object can have a permission list, or
+     *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private boolean hasPermissionList(Content content)
+        throws ContentException {
+
+        switch (content.getCategory()) {
+        case Content.DOCUMENT_CATEGORY:
+            return false;
+        case Content.FILE_CATEGORY:
+            return hasPermissionList(content.getParent());
+        default:
+            return true;
         }
     }
 

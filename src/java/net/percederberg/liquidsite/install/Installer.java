@@ -38,6 +38,7 @@ import net.percederberg.liquidsite.db.DatabaseResults;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.dbo.ContentPeer;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+import net.percederberg.liquidsite.dbo.PermissionPeer;
 
 /**
  * The install helper class. This class handles all the installation
@@ -380,11 +381,28 @@ public class Installer {
             DatabaseQuery    query = new DatabaseQuery();
             DatabaseResults  res;
 
+            // Set the content status
             query.setSql("SELECT DISTINCT(ID) FROM LS_CONTENT");
             res = con.execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 try {
                     ContentPeer.doStatusUpdate(res.getRow(i).getInt(0), con);
+                } catch (DatabaseDataException e) {
+                    throw new DatabaseException(e.getMessage());
+                } catch (DatabaseObjectException e) {
+                    throw new DatabaseException(e.getMessage());
+                }
+            }
+
+            // Remove document permissions
+            query.setSql("SELECT DISTINCT(ID), DOMAIN FROM LS_CONTENT " +
+                         "WHERE CATEGORY = 12");
+            res = con.execute(query);
+            for (int i = 0; i < res.getRowCount(); i++) {
+                try {
+                    PermissionPeer.doDelete(res.getRow(i).getString(1),
+                                            res.getRow(i).getInt(0),
+                                            con);
                 } catch (DatabaseDataException e) {
                     throw new DatabaseException(e.getMessage());
                 } catch (DatabaseObjectException e) {
