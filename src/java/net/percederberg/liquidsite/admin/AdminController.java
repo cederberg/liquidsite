@@ -110,11 +110,11 @@ public class AdminController extends Controller {
         } else if (path.equals("site.html")) {
             processViewSite(request);
         } else if (path.equals("content.html")) {
-            AdminView.BASE.pageContent(request);
+            AdminView.CONTENT.viewContent(request);
         } else if (path.equals("users.html")) {
-            AdminView.BASE.pageUsers(request);
+            AdminView.USER.viewUsers(request);
         } else if (path.equals("system.html")) {
-            AdminView.BASE.pageSystem(request);
+            AdminView.SYSTEM.viewSystem(request);
         } else if (path.equals("logout.html")) {
             processLogout(request);
         } else if (path.equals("view.html")) {

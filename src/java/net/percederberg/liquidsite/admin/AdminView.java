@@ -22,10 +22,13 @@
 package net.percederberg.liquidsite.admin;
 
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.admin.view.ContentView;
 import net.percederberg.liquidsite.admin.view.DialogView;
 import net.percederberg.liquidsite.admin.view.HomeView;
 import net.percederberg.liquidsite.admin.view.ScriptView;
 import net.percederberg.liquidsite.admin.view.SiteView;
+import net.percederberg.liquidsite.admin.view.SystemView;
+import net.percederberg.liquidsite.admin.view.UserView;
 
 /**
  * A helper class for creating the HTML and JavaScript output for the
@@ -37,7 +40,7 @@ import net.percederberg.liquidsite.admin.view.SiteView;
 public class AdminView {
 
     /**
-     * The dialog view helper.
+     * The base view class.
      */
     public static final AdminView BASE = new AdminView();
 
@@ -55,6 +58,21 @@ public class AdminView {
      * The site view helper.
      */
     public static final SiteView SITE = new SiteView();
+
+    /**
+     * The content view helper.
+     */
+    public static final ContentView CONTENT = new ContentView();
+
+    /**
+     * The user view helper.
+     */
+    public static final UserView USER = new UserView();
+
+    /**
+     * The system view helper.
+     */
+    public static final SystemView SYSTEM = new SystemView();
 
     /**
      * The script view helper.
@@ -80,33 +98,5 @@ public class AdminView {
         request.setAttribute("error", message);
         request.setAttribute("page", page);
         request.sendTemplate("admin/error.ftl");
-    }
-
-
-    /**
-     * Shows the content page.
-     *
-     * @param request        the request object
-     */
-    public void pageContent(Request request) {
-        request.sendTemplate("admin/content.ftl");
-    }
-
-    /**
-     * Shows the users page.
-     *
-     * @param request        the request object
-     */
-    public void pageUsers(Request request) {
-        request.sendTemplate("admin/users.ftl");
-    }
-
-    /**
-     * Shows the system page.
-     *
-     * @param request        the request object
-     */
-    public void pageSystem(Request request) {
-        request.sendTemplate("admin/system.ftl");
     }
 }
