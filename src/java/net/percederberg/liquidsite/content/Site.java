@@ -152,7 +152,7 @@ public class Site extends Content {
             buffer.append(":");
             buffer.append(port); 
         }
-        buffer.append(dir.substring(dir.length() - 1));
+        buffer.append(dir);
         return buffer.toString();
     }
 
