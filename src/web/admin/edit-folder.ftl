@@ -6,12 +6,18 @@
     function initialize() {
         document.getElementsByName("name").item(0).focus();
     }
+
+    function previous() {
+        document.getElementsByName("prev").item(0).value = "true";
+        document.forms.item(0).submit();
+    }
     </script>
 
     <form method="post">
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="step" value="2" />
+      <input type="hidden" name="prev" value="" />
       <input type="hidden" name="category" value="folder" />
       <table class="form">
         <tr>
@@ -60,7 +66,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" name="prev">
+            <button type="button" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>

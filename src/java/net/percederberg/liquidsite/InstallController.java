@@ -155,7 +155,7 @@ public class InstallController extends Controller {
             request.sendFile(getFile(path));
         } else if (!path.equals("/") && !path.equals("/install.html")) {
             // Do nothing for unrecognized pages
-        } else if (request.getParameter("prev") != null) {
+        } else if (request.getParameter("prev", "").equals("true")) {
             processPrevious(request, step);
         } else if (step.equals("1")) {
             processStep1(request);

@@ -1,12 +1,18 @@
 <#include "header.ftl">
 
     <script type="text/javascript">
-        function initialize() {
-        }
+    function initialize() {
+    }
+
+    function previous() {
+        document.getElementsByName("prev").item(0).value = "true";
+        document.forms.item(0).submit();
+    }
     </script>
 
     <form method="post" action="install.html">
       <input type="hidden" name="step" value="5" />
+      <input type="hidden" name="prev" value="" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="7">
@@ -74,7 +80,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" name="prev">
+            <button type="button" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
