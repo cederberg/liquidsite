@@ -135,6 +135,9 @@ public class AdminController extends Controller {
             request.sendFile(getFile(path));
         } else if (path.startsWith("images/")) {
             request.sendFile(getFile(path));
+        } else if (path.endsWith(".js")) {
+            request.sendData("text/javascript", 
+                             "window.location.reload();\n");
         } else {
             if (request.getUser() != null) {
                 request.setAttribute("error", 
