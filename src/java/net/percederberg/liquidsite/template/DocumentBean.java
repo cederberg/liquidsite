@@ -37,6 +37,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.text.PlainFormatter;
+import net.percederberg.liquidsite.web.RequestEnvironment;
 
 /**
  * A document template bean. This class is used to access document
@@ -69,6 +70,14 @@ public class DocumentBean implements TemplateHashModel {
      * property.
      */
     private ContentSection baseSection;
+
+    /**
+     * The relative path to the document directory. The path is
+     * relative to the request URL and may be empty if the request
+     * refers to an object in the document directory. Otherwise the
+     * path ends with an "/" character.
+     */
+    private String docPath = null;
 
     /**
      * The document meta-data template model.
@@ -197,6 +206,69 @@ public class DocumentBean implements TemplateHashModel {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Returns the relative path to the document directory. The path
+     * is relative to the request URL and may be empty if the request
+     * refers to an object in the document directory. Otherwise the
+     * path ends with an "/" character.
+     *
+     * @return the relative path to the document directory
+     */
+    private String getDocPath() {
+        if (docPath == null) {
+            if (document == null) {
+                docPath = "";
+            } else {
+                docPath = getDocEnvPath(document);
+                if (docPath == null) {
+                    docPath = context.getSitePath() + "liquidsite.obj/" +
+                              document.getId() + "/";
+                }
+            }
+        }
+        return docPath;
+    }
+
+    /**
+     * Returns the relative path to the document directory in the
+     * request environment. If the document or one of it's parent
+     * sections aren't found in the request environment, null is
+     * returned. The path is relative to the request URL and may be
+     * empty if the request environment points to the document.
+     * Otherwise the path ends with an "/" character.
+     *
+     * @param content        the content document
+     *
+     * @return the relative path to the document directory, or
+     *         null if not in the request environment
+     */
+    private String getDocEnvPath(Content content) {
+        RequestEnvironment  env = context.getRequest().getEnvironment();
+        ContentSection      section = env.getSection();
+        ContentDocument     doc = env.getDocument();
+        String              path = "";
+
+        if (doc != null) {
+            if (doc.getId() == content.getId()) {
+                return "";
+            }
+        } else if (section != null) {
+            while (content != null) {
+                path = content.getName() + "/" + path;
+                try {
+                    content = content.getParent();
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                    return null;
+                }
+                if (section.getId() == content.getId()) {
+                    return path;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -528,12 +600,8 @@ public class DocumentBean implements TemplateHashModel {
             return path;
         } else if (path.startsWith("/")) {
             return context.getSitePath() + path.substring(1);
-        } else if (baseSection == null) {
-            return path;
         } else {
-            // TODO: use translator path if possible
-            return context.getSitePath() + "liquidsite.obj/" + 
-                   document.getId() + "/" + path;
+            return getDocPath() + path;
         }
     }
 }
