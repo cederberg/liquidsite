@@ -117,8 +117,8 @@ public class Lock extends PersistentObject {
      *         false otherwise
      */
     public boolean equals(Object obj) {
-        if (obj instanceof Permission) {
-            return equals((Permission) obj);
+        if (obj instanceof Lock) {
+            return equals((Lock) obj);
         } else {
             return false;
         }
