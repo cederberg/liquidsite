@@ -1,4 +1,6 @@
-<#assign isadd = liquidsite.page.path?ends_with("add-site.html")>
+<#assign issite = liquidsite.page.path?ends_with("site.html")>
+<#assign isadd = liquidsite.page.path?ends_with("add-content.html") ||
+                 liquidsite.page.path?ends_with("add-content.html")>
 <#assign onload = "initialize()">
 <#include "header.ftl">
 
@@ -60,7 +62,7 @@
             spaces.</p>
           </td>
         </tr>
-<#if !isadd>
+<#if issite && !isadd>
         <tr>
           <th>
             Folder:

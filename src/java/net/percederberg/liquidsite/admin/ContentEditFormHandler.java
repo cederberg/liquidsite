@@ -21,13 +21,16 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
@@ -123,6 +126,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
         } else if (ref instanceof ContentDocument) {
             AdminView.CONTENT.viewEditDocument(request, 
                                                (ContentDocument) ref);
+        } else if (ref instanceof ContentFile) {
+            AdminView.CONTENT.viewEditFile(request, (ContentFile) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -150,6 +155,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
             section.validate(request);
         } else if (category.equals("document")) {
             document.validate(request);
+        } else if (category.equals("file")) {
+            SiteEditFormHandler.getInstance().validateStep(request, step); 
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
@@ -187,6 +194,8 @@ public class ContentEditFormHandler extends AdminFormHandler {
             handleEditSection(request, (ContentSection) ref);
         } else if (ref instanceof ContentDocument) {
             handleEditDocument(request, (ContentDocument) ref);
+        } else if (ref instanceof ContentFile) {
+            handleEditFile(request, (ContentFile) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -313,5 +322,36 @@ public class ContentEditFormHandler extends AdminFormHandler {
             }
         }
         doc.save(request.getUser());
+    }
+
+    /**
+     * Handles the edit file form.
+     * 
+     * @param request        the request object
+     * @param file           the file content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleEditFile(Request request, ContentFile file) 
+        throws ContentException, ContentSecurityException {
+
+        FileParameter  param;
+        
+        try {
+            file.setRevisionNumber(0);
+            file.setName(request.getParameter("name"));
+            file.setComment(request.getParameter("comment"));
+            param = request.getFileParameter("content");
+            if (param != null && param.getSize() > 0) {
+                file.setFileName(param.getName());
+                param.write(file.getFile());
+            }
+            file.save(request.getUser());
+        } catch (IOException e) {
+            throw new ContentException(e.getMessage());
+        }
     }
 }

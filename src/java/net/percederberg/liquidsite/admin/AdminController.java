@@ -486,11 +486,20 @@ public class AdminController extends Controller {
                                 String path)
         throws RequestException, ContentException, TemplateException {
 
-        Content  content;
-        String   revision;
+        Content[]  children;
+        Content    content = null;
+        String     revision;
 
-        // TODO: handle attached document files here...
-        content = doc;
+        if (path.equals("")) {
+            content = doc;
+        } else {
+            children = manager.getContentChildren(request.getUser(), doc);
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].getName().equals(path)) {
+                    content = children[i];
+                }
+            }
+        }
         revision = request.getParameter("revision");
         if (content != null && revision != null) {
             content = content.getRevision(Integer.parseInt(revision));

@@ -624,6 +624,8 @@ public class ScriptView {
      *             properly
      */
     private String getContentUrl(Content content) throws ContentException {
+        String  str;
+
         if (content instanceof ContentSite) {
             return content.toString();
         } else if (content instanceof ContentFolder) {
@@ -633,8 +635,12 @@ public class ScriptView {
             return getContentUrl(content.getParent()) +  
                    content.toString(); 
         } else if (content instanceof ContentFile) {
-            return getContentUrl(content.getParent()) +  
-                   content.toString(); 
+            str = getContentUrl(content.getParent());
+            if (str.endsWith("/")) {  
+                return str + content.toString(); 
+            } else {
+                return str;
+            }
         } else {
             return "N/A";
         }
@@ -815,7 +821,8 @@ public class ScriptView {
         } else {
             return content instanceof ContentFolder
                 || content instanceof ContentTemplate
-                || content instanceof ContentSection;
+                || content instanceof ContentSection
+                || content instanceof ContentDocument;
         }
     }
 }

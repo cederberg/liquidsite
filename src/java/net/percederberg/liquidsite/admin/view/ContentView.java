@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -125,6 +126,12 @@ public class ContentView extends AdminView {
             if (content.hasWriteAccess(user)) {
                 request.setAttribute("enableSection", true);
                 request.setAttribute("enableDocument", true);
+            }
+        }
+        if (parent instanceof ContentDocument) {
+            content = (Content) parent;
+            if (content.hasWriteAccess(user)) {
+                request.setAttribute("enableFile", true);
             }
         }
         request.sendTemplate("admin/add-object.ftl");
@@ -311,6 +318,49 @@ public class ContentView extends AdminView {
         request.sendTemplate("admin/edit-document.ftl");
     }
 
+    /**
+     * Shows the add or edit file page.
+     *
+     * @param request        the request object
+     * @param reference      the reference object (parent or file)
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewEditFile(Request request, Object reference)
+        throws ContentException {
+
+        ContentFile  file;
+        String       name;
+        String       comment;
+
+        // Find default values
+        AdminUtils.setReference(request, reference);
+        if (reference instanceof ContentFile) {
+            file = (ContentFile) reference;
+            name = file.getName();
+            if (file.getRevisionNumber() == 0) {
+                comment = file.getComment();
+            } else {
+                comment = "";
+            }
+        } else {
+            name = "";
+            comment = "Created";
+        }
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            comment = request.getParameter("comment", "");
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("comment", comment);
+        request.sendTemplate("admin/edit-file.ftl");
+    }
+    
     /**
      * Shows the section preview page.
      * 
