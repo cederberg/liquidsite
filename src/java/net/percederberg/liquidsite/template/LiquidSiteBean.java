@@ -23,6 +23,8 @@ package net.percederberg.liquidsite.template;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
+
 /**
  * A LiquidSite template bean. This class is used to insert the
  * "liquidsite" namespace into the template data model.
@@ -31,6 +33,11 @@ import java.util.ArrayList;
  * @version  1.0
  */
 public class LiquidSiteBean {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(LiquidSiteBean.class);
 
     /**
      * The bean context.
@@ -197,6 +204,7 @@ public class LiquidSiteBean {
      * @return the path relative to the request path
      */
     public String linkTo(String path) {
+        LOG.trace("call to linkTo: " + path);
         if (path.indexOf(":") >= 0) {
             return path;
         } else if (path.startsWith("/")) {
@@ -218,6 +226,7 @@ public class LiquidSiteBean {
      *         false otherwise
      */
     public boolean mailTo(String receiver, String subject, String text) {
+        LOG.trace("call to mailTo: " + receiver + "," + subject + ",...");
         return context.sendMail(receiver, subject, text);
     }
 
@@ -228,6 +237,7 @@ public class LiquidSiteBean {
      * @return the number of documents found
      */
     public int countDocuments(String path) {
+        LOG.trace("call to countDocuments: " + path);
         return context.countDocuments(path);
     }
 
@@ -240,6 +250,7 @@ public class LiquidSiteBean {
      *         an empty document if not found
      */
     public DocumentBean findDocument(String path) {
+        LOG.trace("call to findDocument: " + path);
         return context.findDocument(path);
     }
 
@@ -275,6 +286,8 @@ public class LiquidSiteBean {
                                    int offset,
                                    int count) {
 
+        LOG.trace("call to findDocuments: " + path + "," + sorting +
+                  "," + offset + "," + count);
         return context.findDocuments(path, sorting, offset, count);
     }
 
@@ -287,6 +300,7 @@ public class LiquidSiteBean {
      *         an empty section if not found
      */
     public SectionBean findSection(String path) {
+        LOG.trace("call to findSection: " + path);
         return context.findSection(path);
     }
 
@@ -299,6 +313,7 @@ public class LiquidSiteBean {
      *         an empty user if not found
      */
     public UserBean findUser(String name) {
+        LOG.trace("call to findUser: " + name);
         return context.findUser(name);
     }
 }
