@@ -55,8 +55,10 @@ public abstract class Controller {
      * Processes a request.
      * 
      * @param request        the request to process
+     * 
+     * @throws RequestException if the request couldn't be processed
      */
-    public abstract void process(Request request);
+    public abstract void process(Request request) throws RequestException;
 
     /**
      * Returns the application context.

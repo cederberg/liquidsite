@@ -23,7 +23,6 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -72,27 +71,14 @@ public class LiquidSiteServlet extends HttpServlet
     private ContentManager contentManager = null;
 
     /**
-     * The installation controller.
+     * The currently active controller.
      */
-    private ArrayList controllers = null;
+    private Controller controller = null;
     
     /**
      * The application online flag.
      */
     private boolean online = false;
-
-    /**
-     * Checks if the application has been properly installed. This 
-     * method will return true if the configuration files written
-     * during the installation exists. This method returning true is
-     * no guarantee for the application functioning properly.
-     * 
-     * @return true if the application has been installed, or
-     *         false otherwise
-     */
-    public boolean isInstalled() {
-        return config != null && config.isInitialized();        
-    }
 
     /**
      * Checks if the application is running correctly. This method 
@@ -191,11 +177,10 @@ public class LiquidSiteServlet extends HttpServlet
         }
 
         // Initialize controllers
-        controllers = new ArrayList();
         if (!config.isInitialized()) {
-            controllers.add(new InstallController(this));
+            controller = new InstallController(this);
         } else {
-            controllers.add(new AdminController(this));
+            controller = new DefaultController(this);
         }
         
         // Set the online status
@@ -207,9 +192,7 @@ public class LiquidSiteServlet extends HttpServlet
      * controllers and the database.
      */
     public void shutdown() {
-        for (int i = 0; i < controllers.size(); i++) {
-            ((Controller) controllers.get(i)).destroy();
-        }
+        controller.destroy();
         contentManager.close();
         database.setPoolSize(0);
         try {
@@ -229,9 +212,9 @@ public class LiquidSiteServlet extends HttpServlet
         shutdown();
         startup();
     }
-    
+
     /**
-     * Handles an incoming HTTP request.
+     * Handles an incoming HTTP GET request.
      * 
      * @param request        the HTTP request object
      * @param response       the HTTP response object
@@ -241,8 +224,8 @@ public class LiquidSiteServlet extends HttpServlet
      * @throws IOException if an IO error occured while attempting to
      *             service this request
      */
-    public void service(HttpServletRequest request, 
-                        HttpServletResponse response) 
+    protected void doGet(HttpServletRequest request, 
+                         HttpServletResponse response) 
         throws ServletException, IOException {
 
         Request  r = new Request(request, response);
@@ -252,34 +235,37 @@ public class LiquidSiteServlet extends HttpServlet
         
         // Process request
         LOG.debug("Incoming request: " + r);
-        process(r);
-        
-        // Send response
-        if (r.hasResponse()) {
-            r.commit(getServletContext());
-        } else {
-            LOG.debug("Unhandled request, reporting HTTP 404: " + r);
-            response.sendError(HttpServletResponse.SC_NOT_FOUND); 
+        try {
+            controller.process(r);
+            if (r.hasResponse()) {
+                r.commit(getServletContext());
+            } else {
+                LOG.debug("Unhandled request: " + r);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND); 
+            }
+        } catch (RequestException e) {
+            LOG.debug("Erroneous request: " + r + ", Message: " + 
+                      e.getMessage());
+            response.sendError(e.getCode(), e.getMessage()); 
         }
     }
     
     /**
-     * Processes an incoming request.
+     * Handles an incoming HTTP POST request.
      * 
-     * @param request        the request object
+     * @param request        the HTTP request object
+     * @param response       the HTTP response object
+     * 
+     * @throws ServletException if the request couldn't be handled by
+     *             this servlet
+     * @throws IOException if an IO error occured while attempting to
+     *             service this request
      */
-    private void process(Request request) {
-        Controller  c;
+    protected void doPost(HttpServletRequest request, 
+                          HttpServletResponse response)
+        throws ServletException, IOException {
 
-        // TODO: find controller (and handler) directly
-        // TODO: handle run-time exceptions
-        for (int i = 0; i < controllers.size(); i++) {
-            c = (Controller) controllers.get(i);
-            c.process(request);
-            if (request.hasResponse()) {
-                return;
-            }
-        }
+        doGet(request, response);
     }
 
     /**
@@ -315,6 +301,16 @@ public class LiquidSiteServlet extends HttpServlet
         return database;
     }
     
+    /**
+     * Returns the application content manager. The object returned 
+     * by this method will not change, unless a reset is made.
+     * 
+     * @return the application content manager
+     */
+    public ContentManager getContentManager() {
+        return contentManager;
+    }
+
     /**
      * An application monitor thread. This thread call the database
      * update method regularly, and performs other monitoring tasks.
@@ -378,7 +374,7 @@ public class LiquidSiteServlet extends HttpServlet
                 if (databaseCounter >= DATABASE_UPDATE_THRESHOLD) {
                     databaseCounter = 0;
                     try {
-                        if (!isInstalled()) {
+                        if (config == null || !config.isInitialized()) {
                             // Do nothing
                         } else if (!isOnline()) {
                             restart();

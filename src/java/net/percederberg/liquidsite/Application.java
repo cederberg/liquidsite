@@ -23,6 +23,7 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 
 /**
@@ -34,17 +35,6 @@ import net.percederberg.liquidsite.db.DatabaseConnector;
  * @version  1.0
  */
 public interface Application {
-
-    /**
-     * Checks if the application has been properly installed. This 
-     * method will return true if the configuration files written
-     * during the installation exists. This method returning true is
-     * no guarantee for the application functioning properly.
-     * 
-     * @return true if the application has been installed, or
-     *         false otherwise
-     */
-    boolean isInstalled();
 
     /**
      * Checks if the application is running correctly. This method 
@@ -93,4 +83,12 @@ public interface Application {
      * @return the application database connector
      */
     DatabaseConnector getDatabase();
+    
+    /**
+     * Returns the application content manager. The object returned 
+     * by this method will not change, unless a reset is made.
+     * 
+     * @return the application content manager
+     */
+    ContentManager getContentManager();
 }
