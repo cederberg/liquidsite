@@ -241,7 +241,7 @@ public class ScriptView {
         }
         buffer.append(getButtons(user, domain, view));
         buffer.append(getHosts(domain));
-        buffer.append(getPermissions(domain, false));
+        buffer.append(getPermissions(domain));
         return buffer.toString();
     }
 
@@ -649,27 +649,27 @@ public class ScriptView {
         }
         for (int i = 0; i < permissions.length; i++) {
             buffer.append("objectAddPermission(");
-            if (permission[i].getUserName().equals("")) {
+            if (permissions[i].getUserName().equals("")) {
                 buffer.append("null");
             } else {
-                str = permission[i].getUserName();
+                str = permissions[i].getUserName();
                 buffer.append(AdminUtils.getScriptString(str));
             }
             buffer.append(", ");
-            if (permission[i].getGroupName().equals("")) {
+            if (permissions[i].getGroupName().equals("")) {
                 buffer.append("null");
             } else {
-                str = permission[i].getGroupName();
+                str = permissions[i].getGroupName();
                 buffer.append(AdminUtils.getScriptString(str));
             }
             buffer.append(", ");
-            buffer.append(permission[i].getRead());
+            buffer.append(permissions[i].getRead());
             buffer.append(", ");
-            buffer.append(permission[i].getWrite());
+            buffer.append(permissions[i].getWrite());
             buffer.append(", ");
-            buffer.append(permission[i].getPublish());
+            buffer.append(permissions[i].getPublish());
             buffer.append(", ");
-            buffer.append(permission[i].getAdmin());
+            buffer.append(permissions[i].getAdmin());
             buffer.append(", ");
             buffer.append(!inherited);
             buffer.append(");\n");
