@@ -182,9 +182,12 @@
 </#if>
 <#list files as file>
               <tr>
-                <td>${file.name}
+                <td>
   <#if file.id = "0">
-                (New)
+                  ${file.name} (New)
+  <#else>
+                  <a href="preview/${file.id}/${file.name}"
+                     target="_blank">${file.name}</a>
   </#if>
                 </td>
                 <td>${file.fileSize}</td>
