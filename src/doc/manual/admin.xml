@@ -1,0 +1,268 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>The Administration Application</h1>
+
+    <h2>What Is It?</h2>
+
+    <p>The administration application is a web application that is
+    always installed with Liquid Site. Though it, you can handle all
+    the management and administration of Liquid Site, such as creating
+    and designing web sites, writing web content, and managing users
+    and permissions.</p>
+
+    <h2>Where Do I Find It?</h2>
+
+    <p>The administration application is really just a special type of
+    web site, and Liquid Site allows you to move the location of it as
+    you wish. By default it is available from the same URL as you used
+    when installing Liquid Site, i.e. usually
+    "<code>http://localhost:8080/</code>". If you use Liquid Site in a
+    hosted environment, your hosting provider should give you the URL
+    to the administration application.</p>
+
+    <h2>Login &amp; Security</h2>
+
+    <p>Obviously you don't want to allow everyone to make changes to
+    your web sites, so the administration application is protected
+    with a mandatory user login. Any user with a valid user name and
+    password and with read access to the administration web site is
+    allowed to login, but anonymous access is not accepted. In the
+    figure below you can see what the login screen looks like.</p>
+
+    <figure>
+      <caption>The administration login screen. Only users with at
+      least read access to the administration site are allowed to
+      login here.</caption>
+
+      <content>
+        <p style="illustration">
+          <ref url="admin-login.png">
+            <object type="image"
+                    url="admin-login-small.png"
+                    description="The login screen" />
+          </ref>
+        </p>
+      </content>
+    </figure>
+
+    <p>Normally you would restrict read access to the administration
+    web site to only those users that really need to use it.
+    <strong>Allowing other users to access the administration
+    application is a security risk</strong> and should be avoided if
+    possible. Note though, that users must have write permission to
+    the objects themselves or they will not be editable. Likewise if a
+    user without read access to some objects will not be able to see
+    them even in the administration application.</p>
+
+    <h2>The Home View</h2>
+
+    <p>When logging in to the adminstration application the home view
+    is shown, allowing the user to modify information about themselves
+    in Liquid Site. Things that can be modified in this way includes
+    the real user name, email address, and password. See the figure
+    below for an example of how the home view can look.</p>
+
+    <figure>
+      <caption>The administration home view. This is the default view
+      after a successful login and allows the user to modify his or
+      her personal information.</caption>
+
+      <content>
+        <p style="illustration">
+          <ref url="admin-home.png">
+            <object type="image"
+                    url="admin-home-small.png"
+                    description="The home view" />
+          </ref>
+        </p>
+      </content>
+    </figure>
+
+    <p>The home view is accessible to any user that can login to the
+    administration site. The user can also see and modify all the
+    information about him- or herself (except the comment field, see
+    later section <ref file="users.xml">Users, Groups &amp;
+    Permissions</ref>) as it is considered to be owned by the user. It
+    is important to be aware of this, so that one does not rely on the
+    user information to stay exactly as originally created.</p>
+
+    <h2>The Site View</h2>
+
+    <p>The site view opens when clicking the "Site" tab in the top
+    menu. Inside the site view you can find everything related to
+    creating and maintaining web sites. The view itself is split into
+    an object tree to the left and a detail pane to the right. The
+    tree contains the domain at the root and all objects belonging to
+    it thereunder, such as sites and templates. The detail page is
+    updated each time an object in the tree view is selected. See the
+    figure below for an example of the initial site view.</p>
+
+    <figure>
+      <caption>The administration site view. This view allows managing
+      everything related to the web site design, structure and
+      layout.</caption>
+
+      <content>
+        <p style="illustration">
+          <ref url="admin-site.png">
+            <object type="image"
+                    url="admin-site-small.png"
+                    description="The site view" />
+          </ref>
+        </p>
+      </content>
+    </figure>
+
+    <p>Modifications to the objects in the site view is made by
+    clicking a corresponding button in the detail pane which either
+    brings up a dialog or moves to a sequence of forms. All buttons
+    are not shown at once, as they cannot all be applicable at once,
+    and if a user lacks the required permissions they may not be shown
+    all. Below is a list of all the available buttons (and thus
+    operations) in the site view.</p>
+
+    <list>
+      <item>
+        <title>New</title>
+        <text>Displays a form for creating a new object under the
+        currently selected one. For instance, to create a new site the
+        parent domain object should first be selected.</text>
+      </item>
+
+      <item>
+        <title>Edit</title>
+        <text>Displays a form for editing the currently selected
+        object. The form is mostly similar to the one used when
+        creating the object.</text>
+      </item>
+
+      <item>
+        <title>Publish</title>
+        <text>Opens a publishing dialog for the current object. By
+        default the current date and time are suggested, but these may
+        be modified for publishing at a future date.</text>
+      </item>
+
+      <item>
+        <title>Unpublish</title>
+        <text>Opens an unpublishing dialog for the current object. By
+        default the current date and time are suggested, but these may
+        be modified for unpublishing at a future date.</text>
+      </item>
+
+      <item>
+        <title>Revert</title>
+        <text>Opens a revert version dialog for the current object.
+        This allows the deletion of the latest version of an object,
+        effectively reverting to the previous one.</text>
+      </item>
+
+      <item>
+        <title>Delete</title>
+        <text>Opens a delete dialog for the current object. This
+        allows for the complete removal of all versions of an object,
+        something that should normally be avoided (use unpublishing
+        instead).</text>
+      </item>
+
+      <item>
+        <title>Permissions</title>
+        <text>Opens a permission dialog for the current object. This
+        makes it possible to modify the permissions for the current
+        object.</text>
+      </item>
+
+      <item>
+        <title>Unlock</title>
+        <text>Opens an unlock dialog for the current object (only if
+        it was locked). All objects are locked during editing, and if
+        the "Save", "Cancel" or "Previous" buttons are not pressed
+        when done, the lock will remain until manually removed through
+        this dialog.</text>
+      </item>
+    </list>
+
+    <p>The exact workings of each of these operations are described in
+    detail in the chapter <ref file="index.xml" id="site">Designing
+    Web Sites</ref> or <ref file="index.xml" id="security">Security
+    &amp; Workflow</ref> for the permission and publishing
+    operations.</p>
+
+    <h2>The Content View</h2>
+
+    <p>The content view is accessed by selecting the "Content" tab in
+    the top menu in the administration application. Inside the content
+    view you can find things related to creating and maintaining
+    non-site specific web content, such as documents and other data.
+    The content view should contain all the text and data you wish to
+    publish on the web, except for the actual web site design.</p>
+
+    <p>The content view is split in the same way as the site view and
+    has the same button and operations. The difference between the
+    content and site views are which objects are visible in each one.
+    In the content view, only the sections, documents and related
+    objects are visible. See the figure below for an example of a
+    content view.</p>
+
+    <figure>
+      <caption>The administration content view. This view allows
+      managing web content unrelated to the web site design.</caption>
+
+      <content>
+        <p style="illustration">
+          <ref url="admin-content.png">
+            <object type="image"
+                    url="admin-content-small.png"
+                    description="The content view" />
+          </ref>
+        </p>
+      </content>
+    </figure>
+
+    <p>The intrincate details of creating web content are described in
+    the chapter <ref file="index.xml" id="content">Creating Web
+    Content</ref>.</p>
+
+    <h2>The User View</h2>
+
+    <p>The final view (for most users) in the administration
+    application is the user view, that can be accessed by selecting
+    "Users" in the top menu. The user view allows for adding,
+    modifying and removing both users and groups. See the figure below
+    for an example of how the user view can look.</p>
+
+    <figure>
+      <caption>The administration user view. This view allows
+      managing the web users and groups.</caption>
+
+      <content>
+        <p style="illustration">
+          <ref url="admin-users.png">
+            <object type="image"
+                    url="admin-users-small.png"
+                    description="The user view" />
+          </ref>
+        </p>
+      </content>
+    </figure>
+
+    <p>The selector "Type" at the top allows for selecting a list of
+    either users or groups. An additional filter is available,
+    allowing for a quick search in the list of users or groups. By
+    pressing the button "Add New" at the bottom of the screen a new
+    user or group can be added, depending on if a user or group list
+    was being shown. Users and groups can also be edited by clicking
+    their names which brings up an editing form.</p>
+
+    <p>For the exact details on how to manage users and groups, please
+    refer to the section <ref file="users.xml">Users, Groups &amp;
+    Permissions</ref> in the <ref file="index.xml"
+    id="security">Security &amp; Workflow</ref> chapter.</p>
+
+  </body>
+</doc>

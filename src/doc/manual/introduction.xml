@@ -1,0 +1,121 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>What's This All About?</h1>
+
+    <h2>A Little Bit of History</h2>
+
+    <p>Liquid Site was first conceptualized during the summer of 2003
+    as the direct result of the authors' frustrations with a number of
+    open source Content Management Systems (CMS). It was created as a
+    web solution for the <ref url="http://www.sak.se">Swedish
+    Committee For Afghanistan</ref> and much inspiration and many
+    ideas came from <ref url="http://www.erikgustafsson.com/">Erik
+    Gustafsson</ref> (then Information Coordinator at Swedish
+    Committee). Although originally planned for three months in
+    development, the first version of Liquid Site took a full year to
+    create, although admittedly much of the work was done as a
+    part-time job.</p>
+
+    <h2>What is a CMS?</h2>
+
+    <p>Liquid Site is a Content Management System (CMS) for web
+    publishing. Using a CMS instead of static web pages or a
+    custom-programmed web site has several advantages:</p>
+
+    <list>
+      <item>
+        <title>Separation of Content &amp; Design</title>
+        <text>The web design can be modified and handled totally
+        independently to the creation of web content, usually by
+        different people.</text>
+      </item>
+
+      <item>
+        <title>Easy Content Creation</title>
+        <text>It is normally much easier to create web content with a
+        CMS than with other tools such as text editors or even
+        specialized HTML editors.</text>
+      </item>
+
+      <item>
+        <title>Automatic Publishing &amp; Depublishing</title>
+        <text>Publishing and depublishing of web resources based on
+        date and time information is possible, allowing automatic
+        removal of outdated information.</text>
+      </item>
+
+      <item>
+        <title>Versioning</title>
+        <text>All versions of each web resource can be kept, making it
+        possible to easily recover from mistakes or errors.</text>
+      </item>
+    </list>
+
+    <p>When using a CMS most of these come "for free" compared to a
+    custom web solution. Basing a web site on a CMS platform also
+    mitigates the risk of the web site becoming a dead end, with
+    outdated or unmanageable source code.</p>
+
+    <h2>Why Use Liquid Site?</h2>
+
+    <p>Liquid Site is a state-of-the-art CMS that attempts to be easy
+    to use without sacrificing the advantages of a custom web
+    solution. It is written in 100% pure Java and is primarily aimed
+    at small- to medium-traffic sites with dynamic web content, but it
+    should also work well in lots of other scenarios. The main
+    advantages with using Liquid Site compared to other CMS are the
+    following:</p>
+
+    <list>
+      <item>
+        <title>Dynamic Content Structure</title>
+        <text>Need to store a corporate document number with some
+        documents? No problem, as content is not limited to a preset
+        collection of fields. Instead you define your own document
+        types with any fields you need.</text>
+      </item>
+
+      <item>
+        <title>Fully Programmable Web Pages</title>
+        <text>Need to sort documents backwards according to some
+        criterion? No problem, as the web pages are fully programmable
+        it is easy to modify sorting, filtering, or even to present a
+        different page depending on the user.</text>
+      </item>
+
+      <item>
+        <title>Web Design Any Way You Want It</title>
+        <text>Don't like frames? No problem, as the web site design is
+        completely up to you. There are no restriction, no limits and
+        no compromises. Just you and your HTML.</text>
+      </item>
+
+      <item>
+        <title>Search Engine-friendly URLs</title>
+        <text>Like short and meaningful URLs? No problem, as you can
+        have full control over them. Add your keywords to the URL and
+        watch your pages become more relevant in the major search
+        engines. Also, there won't be much trouble when sending URLs
+        in email anymore.</text>
+      </item>
+
+      <item>
+        <title>Multiple Web Site Support</title>
+        <text>Want to share user names across several web sites? No
+        problem, as you can create as many web sites as you wish while
+        still sharing the same content and user names.</text>
+      </item>
+    </list>
+
+    <p>These are but a few of the reasons to use Liquid Site instead
+    of some other CMS. Others include UTF-8 support, visual content
+    editors and the availability of fully supported and managed
+    hosting.</p>
+
+  </body>
+</doc>

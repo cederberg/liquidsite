@@ -5,29 +5,129 @@
 
   <body>
 
-    <h1>Introduction</h1>
+    <h1>Index</h1>
 
     <p>This is the reference manual for Liquid Site version
     <param name="version" />.</p>
 
+
+    <h2>Introduction</h2>
+
+    <p>This chapter contains introductory information about Liquid
+    Site and attempts to explain the basic concepts needed for later
+    chapters.</p>
+
     <list>
       <item>
-        <title><ref file="terminology.xml">Concepts &amp;
-        Definitions</ref></title>
-        <text>Summary of the most important terminology used in this
-        reference manual.</text>
+        <title><ref file="introduction.xml">What's This All
+        About?</ref></title>
+        <text>A little bit of history and reasoning behind Liquid
+        Site. Also outlines the major advantages to using a CMS and
+        Liquid Site in particular.</text>
       </item>
 
       <item>
-        <title><ref file="users.xml">Users &amp; Groups</ref></title>
+        <title><ref file="terminology.xml">Concepts &amp;
+        Definitions</ref></title>
+        <text>Summary of the most important terminology used
+        throughout this reference manual.</text>
+      </item>
+
+      <item>
+        <title><ref file="admin.xml">The Administration
+        Application</ref></title>
+        <text>An introduction to the administration application that
+        is used for managing everything in Liquid Site.</text>
+      </item>
+    </list>
+
+
+    <h2 id="site">Designing Web Sites</h2>
+
+    <p>This chapter explains how to create and design web sites in
+    Liquid Site. It details how sites and pages work, the processing
+    flow, and how to create dynamic web sites. If you only write
+    content for web sites, you can skip ahead to the next chapter.</p>
+
+    <list>
+      <item>
+        <title><ref file="sites.xml">Sites &amp; Folders</ref></title>
+        <text>Explains how web sites are created, structured and
+        matched to requests.</text>
+      </item>
+
+      <item style="draft">
+        <title><ref file="pages.xml">Pages &amp; Templates</ref></title>
+        <text>Details how to create web sites, pages, templates and
+        other objects in the site view. This chapter also explains the
+        basic request processing.</text>
+      </item>
+
+      <item style="draft">
+        <title><ref file="revisions.xml">Working with Revisions</ref></title>
+        <text></text>
+      </item>
+
+      <item style="draft">
+        <title><ref file="translators.xml">Translators</ref></title>
+        <text></text>
+      </item>
+
+      <item>
+        <title><ref file="requests.xml">Form &amp; Request
+        Processing</ref></title>
+        <text>Detailed description of the request processing flow.</text>
+      </item>
+    </list>
+
+
+    <h2 id="content">Creating Web Content</h2>
+
+    <p>This chapter explains how to create and design web content in
+    Liquid Site. It details how sections and documents are structured,
+    the tagged text format, and how objects can link to each
+    other.</p>
+
+    <list>
+      <item style="draft">
+        <title><ref file="documents.xml">The Document Model</ref></title>
+        <text></text>
+      </item>
+
+      <item style="draft">
+        <title><ref file="linking.xml">Files &amp; Linking</ref></title>
+        <text></text>
+      </item>
+
+      <item style="draft">
+        <title><ref file="tagged.xml">The Tagged Text Format</ref></title>
+        <text></text>
+      </item>
+    </list>
+
+
+    <h2 id="security">Security &amp; Workflow</h2>
+
+    <p>This chapter explains the basic security and workflow aspects
+    of Liquid Site. It details how users and groups are managed,
+    publishing workflows, and how to secure web sites.</p>
+
+    <list>
+      <item>
+        <title><ref file="users.xml">Users, Groups &amp;
+        Permissions</ref></title>
         <text>Details of the authentication and authorization
         process.</text>
       </item>
 
-      <item>
-        <title><ref file="requests.xml">Request Processing</ref></title>
-        <text>Detailed description of the request processing
-        flow.</text>
+      <item style="draft">
+        <title><ref file="publishing.xml">Publishing</ref></title>
+        <text></text>
+      </item>
+
+      <item style="draft">
+        <title><ref file="security.xml">Securing Web Sites</ref></title>
+        <text></text>
       </item>
     </list>
 

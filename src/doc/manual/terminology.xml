@@ -14,32 +14,61 @@
     important of these terms.</p>
 
     <list>
-      <item id="acl" style="draft">
+      <item id="acl">
         <title>Access Control List</title>
-        <text></text>
+        <text>An access control list contains the <ref
+        id="permission">Permissions</ref> for a resource in a <ref
+        id="domain">Domain</ref>. The list enumerates a set of <ref
+        id="user">Users</ref> and <ref id="group">Groups</ref> and the
+        assigned permission level. A user is always given the highest
+        permission level possible if several entries in the this
+        should match. The access control list is inherited from the
+        parent resource if none is defined.</text>
       </item>
 
-      <item id="alias" style="draft">
-        <title>Alias</title>
-        <text></text>
+      <item id="content_view">
+        <title>Content View</title>
+        <text>The content view displays resources in a <ref
+        id="domain">Domain</ref> that are used for storing
+        non-presentation data or content. Typical objects in the
+        content view are <ref id="section">Sections</ref> and <ref
+        id="document">Documents</ref>. Resources related to the web
+        presentation of these objects are present in the <ref
+        id="site_view">Site View</ref>.</text>
       </item>
 
       <item id="css">
-        <title>CSS</title>
-        <text>The <ref url="http://www.w3.org/TR/REC-CSS2">Cascading
-        Style Sheet (CSS)</ref> format is the most common layout and
-        styling langugage used on the world wide web. The CSS format
-        is text-based and readable by both humans and machines. A CSS
+        <title>CSS</title> <text>The <ref
+        url="http://www.w3.org/TR/REC-CSS2">Cascading Style Sheet
+        (CSS)</ref> format is the most common layout and styling
+        langugage used on the world wide web. The CSS format is
+        text-based and readable by both humans and machines. A CSS
         file contains detailed layout and formatting instructions for
         <ref id="html">HTML</ref> documents, allowing a single style
         sheet to be used for several documents. A working knowledge of
-        CSS is required in order to modify the layout of web
-        pages.</text>
+        CSS is required in order to modify the layout and style of web
+        pages.</text> </item>
+
+      <item id="document">
+        <title>Document</title>
+        <text>A document consists of a set of <ref
+        id="document_property">Document Property</ref> values. The
+        values can have different formats and provides structured
+        document data that can be retrieved and displayed on a web
+        <ref id="page">Page</ref>. Each document must have a parent
+        <ref id="section">Section</ref> that defines the set of
+        document properties available.</text>
       </item>
 
-      <item id="directory" style="draft">
-        <title>Directory</title>
-        <text></text>
+      <item id="document_property">
+        <title>Document Property</title>
+        <text>A document property is a semantical definition for a
+        field in a <ref id="document">Document</ref>. The set of
+        document properties in a <ref id="section">Section</ref>
+        defines the fields that the documents in that section will
+        have. Each document property defines a name and a data type
+        for the property, whereas the value is contained in the
+        documents (similar in spirit to an XML DTD).</text>
       </item>
 
       <item id="domain">
@@ -51,18 +80,46 @@
         span all the <ref id="site">Sites</ref> in the domain. Note
         that a domain does not have to correlate to an Intenet domain
         name, although often that is the case. A domain may be
-        registered to have <ref id="host">Hosts</ref> from several
+        registered to contain <ref id="host">Hosts</ref> from several
         Intenet domain names.</text>
       </item>
 
-      <item id="group" style="draft">
-        <title>Group</title>
-        <text></text>
+      <item id="file">
+        <title>File</title>
+        <text>A file consists of binary or text data for a resource on
+        the world wide web. Files are primarily used for storing
+        images or other binary objects, but may also be used for <ref
+        id="html">HTML</ref> code. It is recommended to use <ref
+        id="page">Pages</ref> for HTML content, however. Files may
+        also be attached to a <ref
+        id="document">Document</ref>.</text>
       </item>
 
-      <item id="host" style="draft">
+      <item id="folder">
+        <title>Folder</title>
+        <text>A folder is used to group web resources in a <ref
+        id="site">Site</ref>. If a request is made directly for the
+        folder, the web resource <code>index.html</code> is
+        returned.</text>
+      </item>
+
+      <item id="group">
+        <title>Group</title>
+        <text>A group is a set of <ref id="user">Users</ref> in a <ref
+        id="domain">Domain</ref>. Normally all the users in the group
+        share some common important property, such as being content
+        editors or similar. Groups can be used in <ref id="acl">Access
+        Control Lists</ref> instead of specifying all users in the
+        group. Each user can be a member one or more groups.</text>
+      </item>
+
+      <item id="host">
         <title>Host</title>
-        <text></text>
+        <text>A host name identifies a computer on the Internet. The
+        host name is part of the <ref id="url">URL</ref> for a web
+        resource, and each <ref id="site">Site</ref> is normally
+        associated with one of the host names in the <ref
+        id="domain">Domain</ref>.</text>
       </item>
 
       <item id="html">
@@ -74,72 +131,139 @@
         document normally only contains the text and overall structure
         of a web page, using external <ref id="css">CSS</ref> style
         sheets and image files for specifying the layout. A working
-        knowledge of HTML is required in order to modify the layout of
-        web pages.</text>
+        knowledge of HTML is required in order to modify the layout
+        and style of web pages.</text>
+      </item>
+
+      <item id="lock">
+        <title>Lock</title>
+        <text>A lock prevents accidental overwrites to objects as a
+        result of parallell editing by two or more users. Whenever an
+        object is edited in any way, a lock is acquired to prevent
+        other users from editing the object. Upon saving the changes
+        to the object the lock is removed. If a form or a dialog is
+        not closed using the proper "Save", "Previous" or "Cancel"
+        buttons, a stale lock may remain and require manual
+        removal.</text>
       </item>
 
       <item id="page">
         <title>Page</title>
-        <text>A web page contains <ref id="html">HTML</ref> code
-        presenting the web content. The HTML code for each page is
-        split into one or more <ref id="page_element">Page
-        Elements</ref> allowing individual elements to be reused
-        across different pages. Pages can inherit the page elements
-        from other pages, typically <ref id="template">Template</ref>
-        pages.</text>
+        <text>A page contains the <ref id="html">HTML</ref> code for a
+        page on the world wide web. The HTML code for each page is
+        divided into one or more <ref id="page_element">Page
+        Elements</ref>, allowing elements to be inherited or modified
+        from a <ref id="template">Template</ref> page.</text>
       </item>
 
       <item id="page_element">
         <title>Page Element</title>
         <text>A page element is a piece of <ref id="html">HTML</ref>
-        code for a part of a document. A page element may also contain
-        references to other page elements, thereby creating an element
-        hierarchy. Such a page element hierarchy can be inherited
-        between <ref id="page">Pages</ref>, allowing overriding a
-        single page element in the hierarchy. A page element is
-        identified by it's name.</text>
+        code that can be part of a <ref id="page">Page</ref> or a <ref
+        id="template">Template</ref>. The page element can include
+        other page elements or contain advanced processing
+        instructions, as defined by the <ref
+        url="http://freemarker.sf.net/">FreeMarker</ref> language. A
+        page element is identified by it's name and may be inherited
+        if defined in a template. </text>
       </item>
 
-      <item id="request" style="draft">
-        <title>Request</title>
-        <text></text>
+      <item id="permission">
+        <title>Permission</title>
+        <text>The permission level controls what operations a user or
+        a group are entitled to perform on an object. There are four
+        permission levels; read, write, publish, and admin. The read
+        permission is required in order to read or list an object. The
+        write permission is needed to modify an object. The publish
+        permission is required to modify the online or offline status
+        of an object. And finally the admin permission is needed for
+        changing the <ref id="acl">Access Control List</ref> with
+        permissions.</text>
       </item>
 
-      <item id="response" style="draft">
-        <title>Response</title>
-        <text></text>
+      <item id="section">
+        <title>Section</title>
+        <text>A section provides a way to group and structure <ref
+        id="document">Documents</ref>. It is the equivalent to a <ref
+        id="folder">Folder</ref> in the <ref id="content_view">Content
+        View</ref>, but also contains the definition of the <ref
+        id="document_property">Document Properties</ref> available for
+        contained documents.</text>
       </item>
 
       <item id="site">
         <title>Site</title>
         <text>A web site consists of a collection of documents and
         files available from a single location on the world wide web.
-        A web site is normally identified by a host name, for example
+        A web site is normally identified by a <ref
+        id="host">Host</ref> name, for example
         <code>www.liquidsite.org</code>. It is also possible to
-        separate sites on protocol, port number or base directory.
-        Web sites can only share information with other sites in the
-        same <ref id="domain">Domain</ref>, but they can of course
-        link to public resources on other sites.</text>
+        separate sites on protocol, port number or base directory. Web
+        sites can only share information with other sites in the same
+        <ref id="domain">Domain</ref>, but they can of course link to
+        public resources on other sites.</text>
       </item>
 
-      <item id="superuser" style="draft">
+      <item id="site_view">
+        <title>Site View</title>
+        <text>The site view displays resources in a <ref
+        id="domain">Domain</ref> that are used for presenting content
+        on the web. Typical objects in the site view are <ref
+        id="site">Sites</ref>, <ref id="folder">Folders</ref> and <ref
+        id="page">Pages</ref>. Data content unrelated to the web
+        presentation are present in the <ref id="content_view">Content
+        View</ref>.</text>
+      </item>
+
+      <item id="superuser">
         <title>Superuser</title>
-        <text></text>
+        <text>A superuser is a special <ref id="user">User</ref> that
+        does not belong to any <ref id="domain">Domain</ref>. Instead
+        the superuser has full privileges across all domains. Some
+        operations on domains can only be performed by a superuser.
+        Having more than a few superusers should be avoided.</text>
       </item>
 
       <item id="template">
         <title>Template</title>
-        <text>A template is a <ref id="page">Page</ref> that is only
-        used as a parent for other pages. A template page consists of
-        <ref id="page_element">Page Elements</ref> with HTML code just
-        as normal pages. Templates can inherit the page elements from
-        other templates, creating a hierarchy of more refined
-        templates.</text>
+        <text>A template is a <ref id="page">Page</ref> that is used
+        to share <ref id="page_element">Page Elements</ref> between
+        pages. Templates consists of <ref id="page_element">Page
+        Elements</ref> just as normal pages, but cannot be directly
+        accessed on the web. Pages or other templates may inherit the
+        page elements in a template, reusing or modifying individual
+        page elements as needed.</text>
       </item>
 
-      <item id="user" style="draft">
+      <item id="translator">
+        <title>Translator</title>
+        <text>A translator maps <ref id="content_view">Content
+        View</ref> objects to a web <ref id="site">Site</ref>. The
+        translator points to a <ref id="section">Section</ref> whose
+        <ref id="document">Documents</ref> and subsections becomes
+        available as virtual <ref id="folder">Folders</ref> under
+        translator. In order to retrieve the contents of a document or
+        a section with a translator, a <code>index.html</code> <ref
+        id="page">Page</ref> must be created.</text>
+      </item>
+
+      <item id="url">
+        <title>Uniform Resource Locator (URL)</title>
+        <text>A uniform resource locator (URL) is used for locating
+        pages and other resources on the world wide web. The URL can
+        be either absolute or relative to the current resource URL.
+        Absolute URLs normally start with <code>http:</code> or
+        <code>https:</code>.</text>
+      </item>
+
+      <item id="user">
         <title>User</title>
-        <text></text>
+        <text>A user is an authenticated web site visitor. Each user
+        is identified by a user name that is unique within the <ref
+        id="domain">Domain</ref>. Users must log in with a password to
+        authenticate themselves, otherwise the default anonymous user
+        is assumed. Each user can be a member one or more <ref
+        id="group">Groups</ref>.</text>
       </item>
 
       <item id="web_page">
@@ -150,11 +274,6 @@
       <item id="web_site">
         <title>Web Site</title>
         <text>See <ref id="site">Site</ref>.</text>
-      </item>
-
-      <item id="web_transaction" style="draft">
-        <title>Web Transaction</title>
-        <text></text>
       </item>
     </list>
 
