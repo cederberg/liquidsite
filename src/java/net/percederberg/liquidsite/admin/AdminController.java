@@ -160,6 +160,8 @@ public class AdminController extends Controller {
      * @param path           the request path
      */
     public void processUnauthorized(Request request, String path) {
+
+
         if (path.equals("style.css")) {
             request.sendFile(getFile(path));
         } else if (path.startsWith("images/")) {
@@ -167,12 +169,21 @@ public class AdminController extends Controller {
         } else if (path.endsWith(".js")) {
             request.sendData("text/javascript", 
                              "window.location.reload(1);\n");
-        } else {
+        } else if (path.equals("")
+                || path.equals("index.html")
+                || path.equals("home.html")
+                || path.equals("site.html")
+                || path.equals("content.html")
+                || path.equals("users.html")
+                || path.equals("system.html")) {
+
             if (request.getUser() != null) {
                 request.setAttribute("error", 
                                      "Access denied for your current user."); 
             }
             request.sendTemplate("admin/login.ftl");
+        } else {
+            request.sendRedirect(request.getSite().getDirectory());
         }
     }
     
