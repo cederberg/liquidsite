@@ -43,13 +43,14 @@ public class Permission extends PersistentObject {
 
     /**
      * Returns an array of all permission objects for the specified 
-     * content object. Note that this method only returns the 
-     * permissions set directly on the content object, not any 
-     * inherited permissions.
+     * content object. Note that this method only returns the list of 
+     * permissions set on the content object, not any inherited 
+     * permissions.
      * 
      * @param content        the content object
      * 
-     * @return an array of permission objects found
+     * @return an array of permission objects found, or 
+     *         an empty array if no permissions were found
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly

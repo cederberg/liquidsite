@@ -544,9 +544,11 @@
       <description>
         The content object permission table. Each content object may
         have an access control list associated with it, in the form of
-        one of more rows in this table. Each content object by default
-        also inherits all permissions from its parent object,
-        overriding only the ones with the same user and group name.
+        one of more rows in this table. In the absence of an access 
+        control list, the content object inherits all permissions 
+        from its parent object. If no parent object exists to inherit
+        from, the empty access list is inherited which allows noone
+        access.
       </description>
       <column name="DOMAIN">
         <description>
