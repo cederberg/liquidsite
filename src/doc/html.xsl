@@ -12,8 +12,10 @@
 
   <!-- ### INPUT PARAMETERS ### -->
   <xsl:param name="date" select="'UNDEFINED'" />
-  <xsl:param name="version" select="'UNDEFINED'" />
   <xsl:param name="style" select="''" />
+  <xsl:param name="name" select="'UNDEFINED'" />
+  <xsl:param name="version" select="'UNDEFINED'" />
+  <xsl:param name="url" select="'UNDEFINED'" />
 
 
   <!-- ### OUTPUT DECLARATION ### -->
@@ -70,13 +72,20 @@
       <hr/>
       &newline;&newline;&indent;&indent;
       <p class="footer">
-        <xsl:text>Mibble </xsl:text>
+        <xsl:value-of select="$name" />
+        <xsl:text> </xsl:text>
         <xsl:value-of select="$version" />
         <xsl:text> (</xsl:text>
         <xsl:value-of select="$date" />
         <xsl:text>). See the</xsl:text>
         &newline;&indent;&indent;
-        <a href="http://www.nongnu.org/mibble">Mibble web site</a>
+        <a>
+          <xsl:attribute name="href">
+            <xsl:value-of select="$url" />
+          </xsl:attribute>
+          <xsl:value-of select="$name" />
+          <xsl:text> web site</xsl:text>
+        </a>
         &newline;&indent;&indent;
         <xsl:text>for more information.</xsl:text>
       </p>
@@ -145,8 +154,7 @@
         </a>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates />
-        <xsl:text> [UNDEFINED REFERENCE]</xsl:text>
+        <em><xsl:apply-templates /></em>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -156,8 +164,14 @@
       <xsl:when test="@name = 'date'">
         <xsl:value-of select="$date" />
       </xsl:when>
+      <xsl:when test="@name = 'name'">
+        <xsl:value-of select="$name" />
+      </xsl:when>
       <xsl:when test="@name = 'version'">
         <xsl:value-of select="$version" />
+      </xsl:when>
+      <xsl:when test="@name = 'url'">
+        <xsl:value-of select="$url" />
       </xsl:when>
     </xsl:choose>
   </xsl:template>

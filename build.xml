@@ -94,13 +94,14 @@
 
 
 <!-- DOCUMENTATION TARGETS -->
-  <target name="doc" depends="init,doc-clean,doc-java">
+  <target name="doc" depends="init,doc-clean,doc-text,doc-html,doc-java">
   </target>
 
   <target name="doc-clean">
     <delete dir="${build.dir}/doc" />
     <mkdir dir="${build.dir}/doc" />
-    <mkdir dir="${build.dir}/doc/api/java" />
+    <mkdir dir="${build.dir}/doc/manual" />
+    <mkdir dir="${build.dir}/doc/api" />
   </target>
 
   <target name="doc-text">
@@ -109,8 +110,10 @@
           destdir="${build.dir}/doc"
           extension=".txt"
           includes="*.xml">
-      <param name="version" expression="${build.version}" />
       <param name="date" expression="${build.printdate}" />
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="url" expression="http://www.liquidsite.org/" />
     </xslt>
   </target>
 
@@ -122,16 +125,29 @@
           destdir="${build.dir}/doc"
           extension=".html"
           includes="*.xml">
-      <param name="version" expression="${build.version}" />
       <param name="date" expression="${build.printdate}" />
       <param name="style" expression="style.css" />
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="url" expression="http://www.liquidsite.org/" />
+    </xslt>
+    <xslt style="${build.dir}/src/doc/html.xsl"
+          basedir="${build.dir}/src/doc/manual"
+          destdir="${build.dir}/doc/manual"
+          extension=".html"
+          includes="*.xml">
+      <param name="date" expression="${build.printdate}" />
+      <param name="style" expression="../style.css" />
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="url" expression="http://www.liquidsite.org/" />
     </xslt>
   </target>
 
   <target name="doc-java">
     <javadoc packagenames="net.percederberg.liquidsite.*"
              sourcepath="${build.dir}/src/java"
-             destdir="${build.dir}/doc/api/java"
+             destdir="${build.dir}/doc/api"
              classpath="${build.dir}/classes"
              classpathref="project.class.path"
              version="false"

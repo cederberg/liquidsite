@@ -1,0 +1,18 @@
+<doc>
+  <head>
+    <title>Liquid Site Version Information</title>
+  </head>
+
+  <body>
+
+    <h1>Version <param name="version"/> (<param name="date"/>):</h1>
+
+    <list>
+      <item>
+        <title>Initial release</title>
+        <text>The first public release.</text>
+      </item>
+    </list>
+
+  </body>
+</doc>

@@ -1,0 +1,25 @@
+<doc>
+  <head>
+    <title>Liquid Site Features</title>
+  </head>
+
+  <body>
+
+    <h1>Existing Features</h1>
+
+    <p>This is a summary of the features currently present in 
+    Liquid Site.</p>
+
+    <list>
+    </list>
+
+
+    <h1>Upcoming Features</h1>
+
+    <p>No commitment has been made regarding which new features will
+    be present in future releases. See the 
+    <ref file="bugs.xml">TODO-list</ref> for a the currently known 
+    future improvements.</p>
+
+  </body>
+</doc>

@@ -11,7 +11,9 @@
   
   <!-- ### INPUT PARAMETERS ### -->
   <xsl:param name="date" select="'UNDEFINED'" />
+  <xsl:param name="name" select="'UNDEFINED'" />
   <xsl:param name="version" select="'UNDEFINED'" />
+  <xsl:param name="url" select="'UNDEFINED'" />
 
 
   <!-- ### OUTPUT DECLARATION ### -->
@@ -44,13 +46,16 @@
   <xsl:template match="body">
     <xsl:apply-templates />
     &newline;
-    <xsl:text>_____________________________________________________________________
-
-Mibble </xsl:text>
+    <xsl:text>_____________________________________________________________________</xsl:text>
+    &newline;&newline;
+    <xsl:value-of select="$name" />
+    <xsl:text> </xsl:text>
     <xsl:value-of select="$version" />
     <xsl:text> (</xsl:text>
     <xsl:value-of select="$date" />
-    <xsl:text>). See http://www.nongnu.org/mibble for
+    <xsl:text>). See </xsl:text>
+    <xsl:value-of select="$url" />
+    <xsl:text> for
 more information.
 
 Copyright (c) 2003 Per Cederberg. Permission is granted to copy this 
@@ -135,7 +140,6 @@ is left intact.</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates />
-        <xsl:text> [UNDEFINED REFERENCE]</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -145,8 +149,14 @@ is left intact.</xsl:text>
       <xsl:when test="@name = 'date'">
         <xsl:value-of select="$date" />
       </xsl:when>
+      <xsl:when test="@name = 'name'">
+        <xsl:value-of select="$name" />
+      </xsl:when>
       <xsl:when test="@name = 'version'">
         <xsl:value-of select="$version" />
+      </xsl:when>
+      <xsl:when test="@name = 'url'">
+        <xsl:value-of select="$url" />
       </xsl:when>
     </xsl:choose>
   </xsl:template>

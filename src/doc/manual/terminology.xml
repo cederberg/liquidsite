@@ -1,0 +1,66 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>Concepts &amp; Definitions</h1>
+
+    <p>Liquid Site uses a specific terminology that is important to
+    understand in order to administrate a web site. These same terms
+    are also used extensively in this reference manual and in other
+    documents. The list below attempts to define and describe the most
+    important of these terms.</p>
+
+    <list>
+      <item>
+        <title>Site</title>
+        <text>A web site consists of a collection of documents and
+        files available from a single location on the world wide web.
+        A web site is normally identified by a host name, for example
+        <code>www.liquidsite.org</code>. It is possible to have
+        several web sites separated by different directories on  a
+        single host. Web sites cannot share information, such as
+        files, users, or similar (but they can of course link to
+        public resources on other sites).</text>
+      </item>
+
+      <item>
+        <title>Directory</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Page</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Page Element</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Request</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Response</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Web Transaction</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Web Site</title>
+        <text>See <ref>Site</ref>.</text>
+      </item>
+    </list>
+
+  </body>
+</doc>

@@ -1,0 +1,34 @@
+<doc>
+  <head>
+    <title>Liquid Site Installation Instructions</title>
+  </head>
+
+  <body>
+
+    <h1>Requirements</h1>
+
+    <p>The following software is required in order to run 
+    Liquid Site:</p>
+
+    <list>
+      <item>
+        <text>Java runtime compatible with JDK 1.4</text>
+      </item>
+
+      <item>
+        <text>Apache Tomcat version 4.1 or later</text>
+      </item>
+
+      <item>
+        <text>MySQL database</text>
+      </item>
+    </list>
+
+
+    <h1>Installation</h1>
+
+    <p></p>
+
+
+  </body>
+</doc>

@@ -1,0 +1,43 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>Request Processing</h1>
+
+    <p>Incoming requests to Liquid Site are always processed in a
+    particular way. The exact processing order is important to
+    understand in order to correctly design site security and
+    similar.</p>
+
+    <list>
+      <item>
+        <title>1. Determine Site</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>2. Authenticate User</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>3. Determine Directory</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>4. Determine Page</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>5. Process Page</title>
+        <text></text>
+      </item>
+    </list>
+
+  </body>
+</doc>
