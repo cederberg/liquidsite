@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -125,6 +126,15 @@ public class MultiPartRequest extends Request {
                 files.put(item.getFieldName(), new MultiPartFile(item));
             }
         }
+    }
+
+    /**
+     * Returns a map with all the request parameter names and values.
+     * 
+     * @return the map with request parameter names and values
+     */
+    public Map getAllParameters() {
+        return parameters;
     }
 
     /**

@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -285,6 +286,7 @@ public class Request {
      * @return the map with request attribute names and values
      */
     public HashMap getAllAttributes() {
+        // TODO: refactor to return pure map
         HashMap      map = new HashMap();
         Enumeration  names;
         String       name;
@@ -315,6 +317,23 @@ public class Request {
      */
     public void setAttribute(String name, boolean value) {
         setAttribute(name, new Boolean(value));
+    }
+
+    /**
+     * Returns a map with all the request parameter names and values.
+     * 
+     * @return the map with request parameter names and values
+     */
+    public Map getAllParameters() {
+        HashMap      params = new HashMap();
+        Enumeration  names = request.getParameterNames();
+        String       name;
+        
+        while (names.hasMoreElements()) {
+            name = names.nextElement().toString();
+            params.put(name, request.getParameter(name));
+        }
+        return params;
     }
 
     /**
