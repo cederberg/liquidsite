@@ -220,7 +220,7 @@ class AdminScript {
         buffer.append(");\n");
         buffer.append(getButtons(user, domain));
         buffer.append(getHosts(domain));
-        buffer.append(getPermissions(domain));
+        buffer.append(getPermissions(domain, false));
         return buffer.toString();
     }
 
@@ -473,13 +473,14 @@ class AdminScript {
      * Returns the JavaScript for presenting domain permissions.
      * 
      * @param domain         the domain object
+     * @param inherited      the inherited permissions flag
      * 
      * @return the JavaScript for presenting domain permissions
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getPermissions(Domain domain) 
+    private String getPermissions(Domain domain, boolean inherited) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -490,7 +491,7 @@ class AdminScript {
             buffer.append(getPermission(null, true));
         }
         for (int i = 0; i < permissions.length; i++) {
-            buffer.append(getPermission(permissions[i], false));
+            buffer.append(getPermission(permissions[i], inherited));
         }
         return buffer.toString();
     }
@@ -523,7 +524,7 @@ class AdminScript {
             }
         }
         if (parent == null) {
-            return getPermissions(content.getDomain());
+            return getPermissions(content.getDomain(), true);
         }
 
         // Create permission script
