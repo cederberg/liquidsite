@@ -131,47 +131,61 @@ public class Request {
     }
 
     /**
-     * Returns the value of the named attribute as an Object, or null
-     * if no attribute of the given name exists.
+     * Returns the value of a request attribute.
      * 
-     * @param name       a String specifying the name of the attribute 
+     * @param name           the attribute name 
      *
-     * @return an Object containing the value of the attribute, or
-     *         null if the attribute does not exist
+     * @return the attribute value, or
+     *         null if no such attribute was found
      */
     public Object getAttribute(String name) {
         return request.getAttribute(name);
     }
 
     /**
-     * Stores an attribute in this request. Attributes are reset
-     * between requests. 
+     * Sets a request attribute value.
      *
-     * @param name       a String specifying the name of the attribute
-     * @param object     the Object to be stored
+     * @param name           the attribute name
+     * @param value          the attribute value
      */
-    public void setAttribute(String name, Object object) {
-        request.setAttribute(name, object);
+    public void setAttribute(String name, Object value) {
+        setAttribute(name, value, null);
     }
 
     /**
-     * Stores a boolean attribute in this request. Attributes are reset
-     * between requests. 
+     * Sets a request attribute value.
      *
-     * @param name       a String specifying the name of the attribute
-     * @param bool       the boolean to be stored
+     * @param name           the attribute name
+     * @param value          the attribute value
      */
-    public void setAttribute(String name, boolean bool) {
-        request.setAttribute(name, new Boolean(bool));
+    public void setAttribute(String name, boolean value) {
+        setAttribute(name, new Boolean(value), null);
     }
 
     /**
-     * Returns the value of a request parameter as a String, or null
-     * if the parameter does not exist.
+     * Sets a request attribute value. If the specified attribute
+     * value is null, the default attribute value will be used 
+     * instead.
      *
-     * @param name       a String specifying the name of the parameter
+     * @param name           the attribute name
+     * @param value          the attribute value
+     * @param defVal         the default attribute value
+     */
+    public void setAttribute(String name, Object value, Object defVal) {
+        if (value == null) {
+            request.setAttribute(name, defVal);
+        } else {
+            request.setAttribute(name, value);
+        }
+    }
+
+    /**
+     * Returns the value of a request parameter.
      *
-     * @return a String representing the single value of the parameter
+     * @param name           the request parameter name
+     *
+     * @return the request parameter value, or
+     *         null if no such parameter was found
      */
     public String getParameter(String name) {
         return request.getParameter(name);
