@@ -59,13 +59,17 @@ public class Domain extends PersistentObject implements Comparable {
     /**
      * Returns an array of all domains in the database.
      * 
+     * @param manager        the content manager to use
+     *
      * @return an array of all domains in the database
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Domain[] findAll() throws ContentException {
-        DatabaseConnection  con = getDatabaseConnection();
+    static Domain[] findAll(ContentManager manager)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Domain[]            res;
 
@@ -79,7 +83,7 @@ public class Domain extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         return res;
     }
@@ -87,6 +91,7 @@ public class Domain extends PersistentObject implements Comparable {
     /**
      * Returns a domain with a specified name.
      * 
+     * @param manager        the content manager to use
      * @param name           the domain name
      * 
      * @return the domain found, or
@@ -95,10 +100,10 @@ public class Domain extends PersistentObject implements Comparable {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Domain findByName(String name) 
+    static Domain findByName(ContentManager manager, String name) 
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection();
+        DatabaseConnection  con = getDatabaseConnection(manager);
         DomainData          data;
 
         try {
@@ -107,7 +112,7 @@ public class Domain extends PersistentObject implements Comparable {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(con);
+            returnDatabaseConnection(manager, con);
         }
         if (data == null) {
             return null;

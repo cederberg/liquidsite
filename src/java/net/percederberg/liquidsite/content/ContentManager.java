@@ -115,7 +115,7 @@ public class ContentManager {
         // Retrieve domain collection
         domains = cache.getAllDomains();
         if (domains.isEmpty()) {
-            cache.addAll(Domain.findAll());
+            cache.addAll(Domain.findAll(this));
             domains = cache.getAllDomains();
         }
 
@@ -154,7 +154,7 @@ public class ContentManager {
         
         domain = CacheManager.getInstance().getDomain(name);
         if (domain == null) {
-            CacheManager.getInstance().addAll(Domain.findAll());
+            CacheManager.getInstance().addAll(Domain.findAll(this));
             domain = CacheManager.getInstance().getDomain(name);
         }
         return domain;
