@@ -66,6 +66,11 @@ public class LiquidSiteBean {
     private RequestBean requestBean = null;
 
     /**
+     * The section bean.
+     */
+    private SectionBean sectionBean = null;
+
+    /**
      * The document bean.
      */
     private DocumentBean docBean = null;
@@ -131,6 +136,21 @@ public class LiquidSiteBean {
             requestBean = new RequestBean(request);
         }
         return requestBean;
+    }
+
+    /**
+     * Returns the section bean.
+     *
+     * @return the section bean
+     */
+    public SectionBean getSection() {
+        ContentSection  section;
+
+        if (sectionBean == null) {
+            section = request.getEnvironment().getSection();
+            sectionBean = new SectionBean(section);
+        }
+        return sectionBean;
     }
 
     /**

@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.web;
 
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentPage;
+import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
@@ -55,6 +56,11 @@ public class RequestEnvironment {
      * The content page.
      */
     private ContentPage page = null;
+
+    /**
+     * The content section.
+     */
+    private ContentSection section = null;
 
     /**
      * The content document.
@@ -137,6 +143,24 @@ public class RequestEnvironment {
      */
     public void setPage(ContentPage page) {
         this.page = page;
+    }
+
+    /**
+     * Returns the content section.
+     *
+     * @return the content section
+     */
+    public ContentSection getSection() {
+        return section;
+    }
+
+    /**
+     * Sets the content section.
+     *
+     * @param section        the content section
+     */
+    public void setSection(ContentSection section) {
+        this.section = section;
     }
 
     /**

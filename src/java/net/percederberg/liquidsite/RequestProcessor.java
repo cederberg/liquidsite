@@ -258,6 +258,7 @@ public abstract class RequestProcessor {
 
         ContentManager  manager = getContentManager();
         User            user = request.getUser();
+        ContentSection  section;
         Content         content = null;
 
         if (translator.getType() == ContentTranslator.ALIAS_TYPE) {
@@ -268,13 +269,14 @@ public abstract class RequestProcessor {
         } else if (translator.getType() ==  ContentTranslator.REDIRECT_TYPE) {
             // TODO: implement this!
         } else if (translator.getType() ==  ContentTranslator.SECTION_TYPE) {
+            section = translator.getSection(user);
             content = manager.getContentChild(user, translator, name);
             if (content == null) {
-                content = translator.getSection(user);
-                content = manager.getContentChild(user, content, name);
+                content = manager.getContentChild(user, section, name);
             }
             if (content != null) {
                 request.getEnvironment().setTranslator(translator);
+                request.getEnvironment().setSection(section);
             }
         }
         return content;
@@ -502,6 +504,8 @@ public abstract class RequestProcessor {
     private void updateRequestEnvironment(Request request, Content content) {
         if (content instanceof ContentPage) {
             request.getEnvironment().setPage((ContentPage) content);
+        } else if (content instanceof ContentSection) {
+            request.getEnvironment().setSection((ContentSection) content);
         } else if (content instanceof ContentDocument) {
             request.getEnvironment().setDocument((ContentDocument) content);
         }
