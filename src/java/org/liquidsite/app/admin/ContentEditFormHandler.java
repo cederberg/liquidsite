@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004, 2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -276,31 +276,12 @@ public class ContentEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException,
                FormValidationException {
 
-        Iterator  iter = request.getAllParameters().keySet().iterator();
-        String    id;
-        int       type;
         String    str;
 
         documentValidator.validate(request);
         str = "Another object with identical name already exists in " +
               "the parent section";
         validateParent(request, "section", str);
-        while (iter.hasNext()) {
-            str = iter.next().toString();
-            if (str.startsWith("property.")) {
-                id = str.substring(9);
-                try {
-                    str = request.getParameter("propertytype." + id);
-                    type = Integer.parseInt(str);
-                } catch (NumberFormatException e) {
-                    type = DocumentProperty.STRING_TYPE;
-                }
-                str = request.getParameter("property." + id);
-                if (type == DocumentProperty.TAGGED_TYPE) {
-                    // TODO: validate tagged text
-                }
-            }
-        }
     }
     
     /**
