@@ -24,24 +24,52 @@
         <td class="logo" rowspan="2">
           <img src="images/liquidsite.jpeg" alt="Liquid Site" />
         </td>
-        <td clsss="title" colspan="4">
+        <td clsss="title" colspan="12">
           <h1>Liquid Site Administration</h1>
         </td>
         <td class="extra">
           Version&nbsp;0.1<br />
-          2003-09-13
+          2003-10-01
         </td>
       </tr>
       <tr>
         <td class="space">&nbsp;</td>
         <td class="space">&nbsp;</td>
         <td class="active"
-            onclick="window.location='index.html'"
+            onclick="window.location='home.html'"
             onmouseover="this.className='hoover'"
             onmouseout="this.className='active'">
-          <a href="index.html">Login</a>
+          <a href="home.html">Home</a>
+        </td>
+        <td class="space">&nbsp;</td>
+        <td class="inactive"
+            onclick="window.location='site.html'"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='inactive'">
+          <a href="site.html">Site</a>
+        </td>
+        <td class="space">&nbsp;</td>
+        <td class="inactive"
+            onclick="window.location='content.html'"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='inactive'">
+          <a href="content.html">Content</a>
+        </td>
+        <td class="space">&nbsp;</td>
+        <td class="inactive"
+            onclick="window.location='users.html'"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='inactive'">
+          <a href="users.html">Users</a>
+        </td>
+        <td class="space">&nbsp;</td>
+        <td class="inactive"
+            onclick="window.location='system.html'"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='inactive'">
+          <a href="system.html">System</a>
         </td>
         <td class="filler">&nbsp;</td>
-        <td class="end">&nbsp;</td>
+        <td class="end"><a href="logout.html">Logout</a></td>
       </tr>
     </table>

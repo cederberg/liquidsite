@@ -1,5 +1,5 @@
 <%@ include file="header.jsp" %>
 
-    <p class="draft">Not implemented yet.</p>
+    <p>&nbsp;</p>
 
 <%@ include file="footer.jsp" %>

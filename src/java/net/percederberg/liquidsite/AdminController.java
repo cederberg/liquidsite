@@ -53,7 +53,7 @@ public class AdminController extends Controller {
     /**
      * Processes a request.
      *
-     * @param request        the request object to process
+     * @param request        the request object
      */
     public void process(Request request) {
     }
@@ -62,14 +62,18 @@ public class AdminController extends Controller {
      * Processes an authorized request. This is a request from a user
      * with permissions to access the admin site.
      *
-     * @param request        the request object to process
+     * @param request        the request object
      * @param path           the request path
      */
     public void processAuthorized(Request request, String path) {
         if (path.equals("style.css") || path.startsWith("images/")) {
             request.sendFile(getFile(path));
-        } else {
+        } else if (path.equals("") || path.equals("index.html")) {
             displayHome(request);
+        } else if (path.equals("home.html")) {
+            displayHome(request);
+        } else if (path.equals("logout.html")) {
+            processLogout(request);
         }
     }
 
@@ -77,7 +81,7 @@ public class AdminController extends Controller {
      * Processes an unauthorized request. This is a request from a 
      * user without permissions to access the admin site.
      *
-     * @param request        the request object to process
+     * @param request        the request object
      * @param path           the request path
      */
     public void processUnauthorized(Request request, String path) {
@@ -88,6 +92,16 @@ public class AdminController extends Controller {
         }
     }
     
+    /**
+     * Processes a logout request.
+     * 
+     * @param request        the request object
+     */
+    private void processLogout(Request request) {
+        request.setUser(null);
+        request.sendRedirect("index.html");
+    }
+
     /**
      * Displays the home page.
      *
