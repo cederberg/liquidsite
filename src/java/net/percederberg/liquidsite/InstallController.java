@@ -26,6 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseException;
@@ -60,57 +63,57 @@ public class InstallController extends Controller {
      * no valid database connection has been made.
      */
     private MySQLDatabaseConnector connector = null;
-     
+
     /**
      * The database host name.
      */
     private String host = "localhost";
-    
+
     /**
      * The database name.
      */
     private String database = "liquidsite";
-    
+
     /**
      * The data directory.
      */
     private String dataDir = "/home/liquidsite";
-    
+
     /**
      * The database user used in the installation.
      */
     private String installUser = "";
-    
+
     /**
      * The database user password used in the installation.
      */
     private String installPassword = "";
-    
+
     /**
      * The database user name for Liquid Site.
      */
     private String databaseUser = "liquidsite";
-    
+
     /**
      * The database user password for Liquid Site.
      */
     private String databasePassword = "";
-    
+
     /**
      * The administrator user name for Liquid Site.
      */
     private String adminUser = "root";
-    
+
     /**
      * The administrator user password for Liquid Site.
      */
     private String adminPassword = "";
-    
+
     /**
      * The create database flag.
      */
     private boolean createDatabase = false;
-    
+
     /**
      * The create database user flag.
      */
@@ -344,7 +347,8 @@ public class InstallController extends Controller {
             }
             createTables();
             writeConfiguration();
-            // TODO: write default web site and admin users
+            getApplication().restart();
+            writeDefaultData();
         } catch (DatabaseConnectionException e) {
             LOG.error("couldn't finish installation", e);
             lastError = e.getMessage();
@@ -366,7 +370,6 @@ public class InstallController extends Controller {
         if (lastError != null) {
             displayStep5(request);
         } else {
-            getApplication().restart();
             request.sendRedirect("index.html");
         }
     }
@@ -721,5 +724,23 @@ public class InstallController extends Controller {
         config.set(Configuration.DATABASE_POOL_SIZE, 10);
         config.set(Configuration.FILE_DIRECTORY, dataDir);
         config.write(con);
+    }
+
+    /**
+     * Writes the Liquid Site database default data.
+     */
+    private void writeDefaultData() {
+        Domain  domain = new Domain("ROOT");
+        User    user = new User(domain, adminUser);
+
+        try {
+            domain.setDescription("Root Domain");
+            domain.save();
+            user.setRealName("Administrator");
+            user.setPassword(adminPassword);
+            user.save();
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
     }
 }
