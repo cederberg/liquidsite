@@ -448,7 +448,10 @@ public class ContentManager {
         sites = getSites(domain);
         for (int i = 0; i < sites.length; i++) {
             match = sites[i].match(protocol, hostname, port, path); 
-            if (match > max) {
+            if (sites[i].isOnline()
+             && sites[i].getRevisionNumber() > 0
+             && match > max) {
+
                 res = sites[i];
                 max = match;
             }
