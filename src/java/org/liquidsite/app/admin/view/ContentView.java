@@ -37,6 +37,7 @@ import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentPost;
 import org.liquidsite.core.content.ContentSection;
 import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.ContentSelector;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.DocumentProperty;
 import org.liquidsite.core.content.Domain;
@@ -922,16 +923,19 @@ public class ContentView extends AdminView {
     private ArrayList findDocumentFiles(User user, Content content)
         throws ContentException {
 
-        Application     app = AdminUtils.getApplication();
-        ContentManager  manager = AdminUtils.getContentManager();
-        ArrayList       res = new ArrayList();
-        Content[]       children;
-        ContentFile     file;
-        HashMap         map;
+        Application      app = AdminUtils.getApplication();
+        ContentManager   manager = AdminUtils.getContentManager();
+        ContentSelector  selector;
+        ArrayList        res = new ArrayList();
+        Content[]        children;
+        ContentFile      file;
+        HashMap          map;
 
-        children = manager.getContentChildren(user,
-                                              content,
-                                              Content.FILE_CATEGORY);
+        selector = new ContentSelector(content.getDomain());
+        selector.requireParent(content);
+        selector.requireCategory(Content.FILE_CATEGORY);
+        selector.sortByName(true);
+        children = manager.getContentObjects(user, selector);
         for (int i = 0; i < children.length; i++) {
             file = (ContentFile) children[i];
             map = new HashMap();
