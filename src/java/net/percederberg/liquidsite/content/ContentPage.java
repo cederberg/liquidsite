@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -56,11 +56,11 @@ public class ContentPage extends Content {
 
     /**
      * Creates a new page with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param parent         the parent content object
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public ContentPage(ContentManager manager, Content parent)
@@ -72,17 +72,17 @@ public class ContentPage extends Content {
 
     /**
      * Creates a new page.
-     * 
+     *
      * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentPage(ContentManager manager,
-                          ContentData data, 
-                          DatabaseConnection con) 
+                          ContentData data,
+                          DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
@@ -95,7 +95,7 @@ public class ContentPage extends Content {
      *
      * @return the page template, or null for none
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have read
      *             access to the template
@@ -104,7 +104,7 @@ public class ContentPage extends Content {
         throws ContentException, ContentSecurityException {
 
         int  id = getTemplateId();
-        
+
         if (id <= 0) {
             return null;
         } else {
@@ -114,7 +114,7 @@ public class ContentPage extends Content {
 
     /**
      * Sets the page template.
-     * 
+     *
      * @param template       the new template, or null for none
      */
     public void setTemplate(ContentTemplate template) {
@@ -127,7 +127,7 @@ public class ContentPage extends Content {
 
     /**
      * Returns the tempate content identifier.
-     * 
+     *
      * @return the template content identifier
      */
     public int getTemplateId() {
@@ -139,16 +139,16 @@ public class ContentPage extends Content {
             return Integer.parseInt(value);
         }
     }
-    
+
     /**
      * Sets the template content identifier.
-     * 
+     *
      * @param template       the new template identifier
      */
     public void setTemplateId(int template) {
         setAttribute(TEMPLATE_ATTRIBUTE, String.valueOf(template));
     }
-    
+
     /**
      * Returns the page section.
      *
@@ -156,7 +156,7 @@ public class ContentPage extends Content {
      *
      * @return the page section, or null for none
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have read
      *             access to the section
@@ -165,7 +165,7 @@ public class ContentPage extends Content {
         throws ContentException, ContentSecurityException {
 
         int  id = getSectionId();
-        
+
         if (id <= 0) {
             return null;
         } else {
@@ -175,7 +175,7 @@ public class ContentPage extends Content {
 
     /**
      * Sets the page section.
-     * 
+     *
      * @param section        the new section, or null for none
      */
     public void setSection(ContentSection section) {
@@ -188,7 +188,7 @@ public class ContentPage extends Content {
 
     /**
      * Returns the section content identifier.
-     * 
+     *
      * @return the section content identifier
      */
     public int getSectionId() {
@@ -200,26 +200,26 @@ public class ContentPage extends Content {
             return Integer.parseInt(value);
         }
     }
-    
+
     /**
      * Sets the section content identifier.
-     * 
+     *
      * @param section        the new section identifier
      */
     public void setSectionId(int section) {
         setAttribute(SECTION_ATTRIBUTE, String.valueOf(section));
     }
-    
+
     /**
-     * Returns all page element names in this page and it's template. 
-     * The returned collection is guaranteed to not contain any 
+     * Returns all page element names in this page and it's template.
+     * The returned collection is guaranteed to not contain any
      * duplicates.
      *
      * @param user           the user performing the operation
      *
      * @return a collection of page element names
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have read
      *             access to the template
@@ -246,17 +246,17 @@ public class ContentPage extends Content {
     }
 
     /**
-     * Returns all page element names in this page. If a page element 
-     * is not present in this collection, it may still be present in 
+     * Returns all page element names in this page. If a page element
+     * is not present in this collection, it may still be present in
      * the template and thus returned by getElement().
-     * 
+     *
      * @return a collection of page element names
      */
     public Collection getLocalElementNames() {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
         String     name;
-        
+
         while (iter.hasNext()) {
             name = iter.next().toString();
             if (name.startsWith(ELEMENT_PREFIX)) {
@@ -267,18 +267,18 @@ public class ContentPage extends Content {
     }
 
     /**
-     * Returns a named page element. The element data will be 
-     * retrieved from this page if possible, or from the template. 
-     * The template parents will also be searched in the inheritance 
+     * Returns a named page element. The element data will be
+     * retrieved from this page if possible, or from the template.
+     * The template parents will also be searched in the inheritance
      * order, starting from the page template.
-     * 
+     *
      * @param user           the user performing the operation
      * @param name           the page element name
-     * 
+     *
      * @return the page element data, or
      *         null if the page element didn't exist
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have read
      *             access to the template
@@ -288,7 +288,7 @@ public class ContentPage extends Content {
 
         ContentTemplate  template;
         String           data;
-        
+
         data = getAttribute(ELEMENT_PREFIX + name.toLowerCase());
         if (data == null && getTemplateId() > 0) {
             template = getTemplate(user);
@@ -298,14 +298,14 @@ public class ContentPage extends Content {
                 data = template.getElement(name);
             }
         }
-        return data; 
+        return data;
     }
-    
+
     /**
      * Sets the data for a named page element. The element will be
      * removed from this page if the data value is null. The page
      * element values in the template will NOT be modified.
-     * 
+     *
      * @param name           the page element name
      * @param data           the page element data, or null
      */
@@ -314,9 +314,9 @@ public class ContentPage extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {

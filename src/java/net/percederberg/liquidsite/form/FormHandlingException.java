@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.form;
@@ -41,7 +41,7 @@ public class FormHandlingException extends Exception {
 
     /**
      * Creates a new form handling exception.
-     * 
+     *
      * @param message        the error message
      */
     public FormHandlingException(String message) {
@@ -50,17 +50,17 @@ public class FormHandlingException extends Exception {
 
     /**
      * Creates a new form handling exception.
-     * 
+     *
      * @param cause          the root cause to the error
      */
     public FormHandlingException(Exception cause) {
         super(cause.getMessage());
         this.rootCause = cause;
     }
-    
+
     /**
      * Creates a new form handling exception.
-     * 
+     *
      * @param message        the error message
      * @param cause          the root cause to the error
      */

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
@@ -38,12 +38,12 @@ public class DatabaseResults {
 
     /**
      * The map with column names and indices. Each column name is
-     * mapped to it's corresponding ordinal number (starting from 0). 
+     * mapped to it's corresponding ordinal number (starting from 0).
      */
-    private HashMap columnName = new HashMap(); 
+    private HashMap columnName = new HashMap();
 
     /**
-     * The list of rows in the result. This list contains a Row 
+     * The list of rows in the result. This list contains a Row
      * object for each database row.
      */
     private ArrayList rows = new ArrayList();
@@ -56,10 +56,10 @@ public class DatabaseResults {
 
     /**
      * Creates a new database results container.
-     *  
+     *
      * @param results        the result set to use
-     * 
-     * @throws SQLException if the data couldn't be extracted from 
+     *
+     * @throws SQLException if the data couldn't be extracted from
      *             the result set
      */
     DatabaseResults(ResultSet results) throws SQLException {
@@ -84,37 +84,37 @@ public class DatabaseResults {
             rows.add(row);
         }
     }
-    
+
     /**
      * Returns the number of columns in the result.
-     * 
+     *
      * @return the number of columns in the result
      */
     public int getColumnCount() {
         return columnName.size();
     }
-    
+
     /**
      * Returns the column position, starting from zero (0).
-     * 
+     *
      * @param name           the column name
-     * 
+     *
      * @return the column position, or
      *         -1 if the column name wasn't recognized
      */
     public int getColumnPosition(String name) {
         Integer  pos = (Integer) columnName.get(name);
-        
+
         if (pos == null) {
             return -1;
         } else {
             return pos.intValue();
         }
     }
-    
+
     /**
      * Returns the number of rows in the result.
-     * 
+     *
      * @return the number of rows in the result
      */
     public int getRowCount() {
@@ -123,13 +123,13 @@ public class DatabaseResults {
 
     /**
      * Returns a specified row in the result.
-     * 
+     *
      * @param row            the row number
-     * 
+     *
      * @return the database result row, or
      *         null if no such row exists
-     * 
-     * @throws DatabaseDataException if the row number was out of 
+     *
+     * @throws DatabaseDataException if the row number was out of
      *             bounds
      */
     public Row getRow(int row) throws DatabaseDataException {
@@ -140,7 +140,7 @@ public class DatabaseResults {
         }
         return (Row) rows.get(row);
     }
-    
+
 
     /**
      * A database results row.
@@ -154,7 +154,7 @@ public class DatabaseResults {
          * The list of row elements.
          */
         private ArrayList elements = new ArrayList();
-        
+
         /**
          * Creates a new empty row.
          */
@@ -163,16 +163,16 @@ public class DatabaseResults {
 
         /**
          * Adds an element to the row.
-         * 
+         *
          * @param elem       the element to add
          */
         void add(Object elem) {
-            elements.add(elem); 
+            elements.add(elem);
         }
 
         /**
          * Returns the number of columns in the row.
-         * 
+         *
          * @return the number of columns in the row
          */
         public int getColumnCount() {
@@ -180,13 +180,13 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row value in the specified column. 
-         * 
+         * Returns the row value in the specified column.
+         *
          * @param column     the column number, 0 <= column < count
-         * 
+         *
          * @return the row value in the specified column, or
          *         null if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column number was out
          *             of bounds
          */
@@ -198,43 +198,43 @@ public class DatabaseResults {
             }
             return elements.get(column);
         }
-        
+
         /**
-         * Returns the row value in the specified column. 
-         * 
+         * Returns the row value in the specified column.
+         *
          * @param column     the column name
-         * 
+         *
          * @return the row value in the specified column, or
          *         null if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column name wasn't
          *             present in the results
          */
         public Object get(String column) throws DatabaseDataException {
             int  pos = getColumnPosition(column);
-            
+
             if (pos < 0) {
                 throw new DatabaseDataException(
                     "no column named '" + column + "' in results");
             }
             return elements.get(pos);
         }
-        
+
         /**
-         * Returns the row boolean value in the specified column. 
-         * 
+         * Returns the row boolean value in the specified column.
+         *
          * @param column     the column number, 0 <= column < count
-         * 
+         *
          * @return the row boolean value in the specified column, or
          *         false if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column number was out
-         *             of bounds, or if the value wasn't a boolean 
+         *             of bounds, or if the value wasn't a boolean
          *             value
          */
         public boolean getBoolean(int column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return false;
             } else if (obj instanceof Boolean) {
@@ -249,20 +249,20 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row boolean value in the specified column. 
-         * 
+         * Returns the row boolean value in the specified column.
+         *
          * @param column     the column name
-         * 
+         *
          * @return the row boolean value in the specified column, or
          *         false if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column name wasn't
          *             present in the results, or if the value wasn't
          *             a boolean value
          */
         public boolean getBoolean(String column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return false;
             } else if (obj instanceof Boolean) {
@@ -277,19 +277,19 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row date value in the specified column. 
-         * 
+         * Returns the row date value in the specified column.
+         *
          * @param column     the column number, 0 <= column < count
-         * 
+         *
          * @return the row date value in the specified column, or
          *         null if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column number was out
          *             of bounds, or if the value wasn't a date value
          */
         public Date getDate(int column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null || obj instanceof Date) {
                 return (Date) obj;
             } else {
@@ -300,20 +300,20 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row date value in the specified column. 
-         * 
+         * Returns the row date value in the specified column.
+         *
          * @param column     the column name
-         * 
+         *
          * @return the row date value in the specified column, or
          *         null if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column name wasn't
          *             present in the results, or if the value wasn't
          *             a date value
          */
         public Date getDate(String column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null || obj instanceof Date) {
                 return (Date) obj;
             } else {
@@ -324,20 +324,20 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row integer value in the specified column. 
-         * 
+         * Returns the row integer value in the specified column.
+         *
          * @param column     the column number, 0 <= column < count
-         * 
+         *
          * @return the row integer value in the specified column, or
          *         zero (0) if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column number was out
-         *             of bounds, or if the value wasn't an integer 
+         *             of bounds, or if the value wasn't an integer
          *             value
          */
         public int getInt(int column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return 0;
             } else if (obj instanceof Number) {
@@ -350,20 +350,20 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row integer value in the specified column. 
-         * 
+         * Returns the row integer value in the specified column.
+         *
          * @param column     the column name
-         * 
+         *
          * @return the row integer value in the specified column, or
          *         zero (0) if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column name wasn't
          *             present in the results, or if the value wasn't
          *             an integer value
          */
         public int getInt(String column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return 0;
             } else if (obj instanceof Number) {
@@ -376,19 +376,19 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row long value in the specified column. 
-         * 
+         * Returns the row long value in the specified column.
+         *
          * @param column     the column number, 0 <= column < count
-         * 
+         *
          * @return the row long value in the specified column, or
          *         zero (0) if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column number was out
          *             of bounds, or if the value wasn't a long value
          */
         public long getLong(int column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return 0;
             } else if (obj instanceof Number) {
@@ -401,20 +401,20 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row long value in the specified column. 
-         * 
+         * Returns the row long value in the specified column.
+         *
          * @param column     the column name
-         * 
+         *
          * @return the row long value in the specified column, or
          *         zero (0) if the column contained a NULL value
-         * 
+         *
          * @throws DatabaseDataException if the column name wasn't
          *             present in the results, or if the value wasn't
          *             a long value
          */
         public long getLong(String column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return 0;
             } else if (obj instanceof Number) {
@@ -427,10 +427,10 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row string value in the specified column. 
-         * 
+         * Returns the row string value in the specified column.
+         *
          * @param column     the column number, 0 <= column < count
-         * 
+         *
          * @return the row string value in the specified column, or
          *         null if the column contained a NULL value
          *
@@ -439,7 +439,7 @@ public class DatabaseResults {
          */
         public String getString(int column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return null;
             } else {
@@ -448,10 +448,10 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the row string value in the specified column. 
-         * 
+         * Returns the row string value in the specified column.
+         *
          * @param column     the column name
-         * 
+         *
          * @return the row string value in the specified column, or
          *         null if the column contained a NULL value
          *
@@ -460,7 +460,7 @@ public class DatabaseResults {
          */
         public String getString(String column) throws DatabaseDataException {
             Object  obj = get(column);
-            
+
             if (obj == null) {
                 return null;
             } else {

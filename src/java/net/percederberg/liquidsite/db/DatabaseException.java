@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
 
 /**
- * A database exception. This exception is thrown when a database 
+ * A database exception. This exception is thrown when a database
  * query or statement couldn't be executed correctly. This may be due
  * to invalid SQL syntax, or similar.
  *
@@ -38,7 +38,7 @@ public class DatabaseException extends Exception {
 
     /**
      * Creates a new database exception.
-     * 
+     *
      * @param message        the error message
      */
     public DatabaseException(String message) {
@@ -47,17 +47,17 @@ public class DatabaseException extends Exception {
 
     /**
      * Creates a new database exception.
-     * 
+     *
      * @param cause          the root cause to the error
      */
     public DatabaseException(Exception cause) {
         this("couldn't execute database query", cause);
     }
-    
+
     /**
      * Creates a new database exception.
-     * 
-     * @param message        the error message 
+     *
+     * @param message        the error message
      * @param cause          the root cause to the error
      */
     public DatabaseException(String message, Exception cause) {

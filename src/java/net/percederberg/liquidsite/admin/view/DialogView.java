@@ -36,7 +36,7 @@ import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.User;
 
 /**
- * A helper class for the dialog views. This class contains methods 
+ * A helper class for the dialog views. This class contains methods
  * for creating the HTML responses to the various dialog pages.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -52,7 +52,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the automatic close dialog.
-     * 
+     *
      * @param request        the request object
      */
     public void viewClose(Request request) {
@@ -61,7 +61,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the error message dialog.
-     * 
+     *
      * @param request        the request object
      * @param message        the error message
      */
@@ -72,7 +72,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the error message dialog.
-     * 
+     *
      * @param request        the request object
      * @param e              the content database error
      */
@@ -82,7 +82,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the error message dialog.
-     * 
+     *
      * @param request        the request object
      * @param e              the content security error
      */
@@ -92,7 +92,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the delete object confirmation dialog.
-     * 
+     *
      * @param request        the request object
      * @param obj            the object to delete
      */
@@ -111,7 +111,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the delete user confirmation dialog.
-     * 
+     *
      * @param request        the request object
      * @param obj            the user or group to delete
      */
@@ -173,7 +173,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the content unpublish dialog.
-     * 
+     *
      * @param request        the request object
      * @param content        the content object to unpublish
      */
@@ -199,7 +199,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the content revert dialog.
-     * 
+     *
      * @param request        the request object
      * @param content        the content object to revert
      */
@@ -225,7 +225,7 @@ public class DialogView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewPermissions(Request request, Object obj) 
+    public void viewPermissions(Request request, Object obj)
         throws ContentException {
 
         Domain     domain;
@@ -275,7 +275,7 @@ public class DialogView extends AdminView {
 
     /**
      * Shows the content unlock dialog.
-     * 
+     *
      * @param request        the request object
      * @param content        the content object to unlock
      */
@@ -316,7 +316,7 @@ public class DialogView extends AdminView {
 
         Permission[]  permissions;
         Content       parent = content;
-        
+
         do {
             parent = parent.getParent();
             if (parent == null) {
@@ -342,7 +342,7 @@ public class DialogView extends AdminView {
 
         ArrayList  result = new ArrayList();
         HashMap    map;
-        
+
         if (permissions.length == 0 && addEmpty) {
             map = new HashMap();
             map.put("user", "");

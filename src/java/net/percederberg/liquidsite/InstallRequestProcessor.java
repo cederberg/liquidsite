@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -44,7 +44,7 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
  * the other processors in that it uses instance variables to keep
  * session information. This makes this processor impossible to use
  * in a multi-user scenario, but the installation process is supposed
- * to be run by a single user. 
+ * to be run by a single user.
  *
  * @author   Marielle Fois, <marielle at kth dot se>
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -63,13 +63,13 @@ public class InstallRequestProcessor extends RequestProcessor {
     private Application application;
 
     /**
-     * The description of the last error encountered. If this 
+     * The description of the last error encountered. If this
      * variable is set to null, no error has ocurred.
      */
     private String lastError = null;
 
     /**
-     * The MySQL database connector. This variable is set to null if 
+     * The MySQL database connector. This variable is set to null if
      * no valid database connection has been made.
      */
     private MySQLDatabaseConnector connector = null;
@@ -130,7 +130,7 @@ public class InstallRequestProcessor extends RequestProcessor {
     private boolean createDatabaseUser = false;
 
     /**
-     * Creates a new install request processor. 
+     * Creates a new install request processor.
      *
      * @param app            the application context
      */
@@ -272,12 +272,12 @@ public class InstallRequestProcessor extends RequestProcessor {
         } else if (!createDatabaseUser) {
             if (createDatabase) {
                 test = new MySQLDatabaseConnector(host,
-                                                  databaseUser, 
+                                                  databaseUser,
                                                   databasePassword);
             } else {
                 test = new MySQLDatabaseConnector(host,
                                                   database,
-                                                  databaseUser, 
+                                                  databaseUser,
                                                   databasePassword);
             }
             try {
@@ -346,7 +346,7 @@ public class InstallRequestProcessor extends RequestProcessor {
      */
     private void processStep5(Request request) {
 
-        // Write database and configuration 
+        // Write database and configuration
         try {
             if (createDatabase) {
                 connector.createDatabase(database);
@@ -429,7 +429,7 @@ public class InstallRequestProcessor extends RequestProcessor {
                 info.put("status", new Integer(0));
                 info.put("info", "MySQL administration database");
             } else if (getTableConflicts(tables) > 0) {
-                str = getTableConflicts(tables) + 
+                str = getTableConflicts(tables) +
                       " conflicting tables found";
                 info.put("status", new Integer(0));
                 info.put("info", str);
@@ -502,18 +502,18 @@ public class InstallRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Creates a new database connector and tests it. If an old 
-     * database connector exists, it will be closed. The instance 
-     * variables are used for passing the connection details. As a 
-     * side-effect, this method will also log any error encountered, 
+     * Creates a new database connector and tests it. If an old
+     * database connector exists, it will be closed. The instance
+     * variables are used for passing the connection details. As a
+     * side-effect, this method will also log any error encountered,
      * and set the lastError variable.
      */
     private void createConnector() {
         if (connector != null) {
             closeConnector();
         }
-        connector = new MySQLDatabaseConnector(host, 
-                                               installUser, 
+        connector = new MySQLDatabaseConnector(host,
+                                               installUser,
                                                installPassword);
         connector.setPoolSize(1);
         try {
@@ -550,10 +550,10 @@ public class InstallRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Checks if the current connector is has administrator 
+     * Checks if the current connector is has administrator
      * privileges. As a side-effect, this method will log any error
      * encountered, and set the lastError variable.
-     * 
+     *
      * @return true if the connector user is administrator, or
      *         false otherwise
      */
@@ -572,9 +572,9 @@ public class InstallRequestProcessor extends RequestProcessor {
 
     /**
      * Returns a list of databases found with the current connector.
-     * As a side-effect, this method will log any error encountered, 
+     * As a side-effect, this method will log any error encountered,
      * and set the lastError variable.
-     * 
+     *
      * @return the list of database names found
      */
     private ArrayList listDatabases() {
@@ -591,8 +591,8 @@ public class InstallRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Returns a list of tables found in a specified database with 
-     * the current connector. As a side-effect, this method will log 
+     * Returns a list of tables found in a specified database with
+     * the current connector. As a side-effect, this method will log
      * any error encountered, and set the lastError variable.
      *
      * @param database       the database to check
@@ -614,14 +614,14 @@ public class InstallRequestProcessor extends RequestProcessor {
 
     /**
      * Returns a list of all users found with the current connector.
-     * As a side-effect, this method will log any error encountered, 
+     * As a side-effect, this method will log any error encountered,
      * and set the lastError variable.
-     * 
+     *
      * @return the list with user names
      */
     private ArrayList listUsers() {
         ArrayList users;
-        
+
         try {
             return connector.listUsers();
         } catch (DatabaseConnectionException e) {
@@ -635,12 +635,12 @@ public class InstallRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Returns the number of tables in a list that may cause 
+     * Returns the number of tables in a list that may cause
      * conflicts. A conflicting table is one that has a name starting
      * with "LS_".
-     * 
+     *
      * @param tables         the list of table names to check
-     * 
+     *
      * @return the number of conflicting table names
      */
     private int getTableConflicts(ArrayList tables) {
@@ -658,23 +658,23 @@ public class InstallRequestProcessor extends RequestProcessor {
 
     /**
      * Creates the Liquid Site database tables.
-     * 
+     *
      * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
      * @throws DatabaseException if a database statement execution
      *             failed
      * @throws FileNotFoundException if the create tables SQL file
      *             couldn't be found
-     * @throws IOException if the create tables SQL file couldn't be 
+     * @throws IOException if the create tables SQL file couldn't be
      *             read
      */
-    private void createTables() 
-        throws DatabaseConnectionException, DatabaseException, 
+    private void createTables()
+        throws DatabaseConnectionException, DatabaseException,
                FileNotFoundException, IOException {
 
         DatabaseConnection  con = null;
         File                sqlFile;
-        
+
         try {
             con = connector.getConnection();
             con.setCatalog(database);
@@ -686,30 +686,30 @@ public class InstallRequestProcessor extends RequestProcessor {
             }
         }
     }
-    
+
     /**
      * Writes the Liquid Site configuration file and database table.
-     * 
+     *
      * @throws FileNotFoundException if the database functions file
      *             couldn't be found
-     * @throws IOException if the database functions file couldn't be 
+     * @throws IOException if the database functions file couldn't be
      *             read
      * @throws ConfigurationException if the configuration couldn't
      *             be written
      */
-    private void writeConfiguration() 
+    private void writeConfiguration()
         throws FileNotFoundException, IOException, ConfigurationException {
 
         MySQLDatabaseConnector  con = null;
         Configuration           config;
-        
+
         // Create database connector
-        con = new MySQLDatabaseConnector(host, 
-                                         database, 
-                                         databaseUser, 
+        con = new MySQLDatabaseConnector(host,
+                                         database,
+                                         databaseUser,
                                          databasePassword);
         con.loadFunctions(getFile("WEB-INF/database.properties"));
-        
+
         // Write configuration
         config = application.getConfig();
         config.set(Configuration.VERSION, application.getBuildVersion());
@@ -719,7 +719,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         config.set(Configuration.DATABASE_PASSWORD, databasePassword);
         config.set(Configuration.DATABASE_POOL_SIZE, 10);
         config.set(Configuration.FILE_DIRECTORY, dataDir);
-        config.set(Configuration.UPLOAD_DIRECTORY, 
+        config.set(Configuration.UPLOAD_DIRECTORY,
                    application.getBaseDir() + "/tmp");
         config.set(Configuration.UPLOAD_MAX_SIZE, 10000000);
         config.write(con);
@@ -727,10 +727,10 @@ public class InstallRequestProcessor extends RequestProcessor {
 
     /**
      * Writes the Liquid Site database default data. The servlet path
-     * will be used to place the admin site in the correct base 
+     * will be used to place the admin site in the correct base
      * directory.
-     * 
-     * @param path           the servlet path 
+     *
+     * @param path           the servlet path
      */
     private void writeDefaultData(String path) {
         ContentManager  manager = application.getContentManager();

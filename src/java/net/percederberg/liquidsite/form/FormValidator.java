@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.form;
@@ -49,103 +49,103 @@ public class FormValidator {
     }
 
     /**
-     * Adds a form field required constraint. This will check that 
+     * Adds a form field required constraint. This will check that
      * the specified form field isn't empty or null.
-     * 
+     *
      * @param field          the field name
-     * @param message        the message on error 
+     * @param message        the message on error
      */
     public void addRequiredConstraint(String field, String message) {
-        constraints.add(new RequiredConstraint(field, message)); 
+        constraints.add(new RequiredConstraint(field, message));
     }
-    
+
     /**
-     * Adds a form field length constraint. This will check that 
+     * Adds a form field length constraint. This will check that
      * the length of the specified form field is in the range.
-     * 
+     *
      * @param field          the field name
      * @param min            the minimum length
      * @param max            the maximum length, or -1 for infinite
-     * @param message        the message on error 
+     * @param message        the message on error
      */
     public void addLengthConstraint(String field,
                                     int min,
                                     int max,
                                     String message) {
 
-        constraints.add(new LengthConstraint(field, min, max, message)); 
+        constraints.add(new LengthConstraint(field, min, max, message));
     }
-    
+
     /**
-     * Adds a form field character constraint. This will check that 
-     * the specified form field only contains characters from the 
+     * Adds a form field character constraint. This will check that
+     * the specified form field only contains characters from the
      * specified set.
-     * 
+     *
      * @param field          the field name
      * @param chars          the character set to allow
-     * @param message        the message on error 
+     * @param message        the message on error
      */
-    public void addCharacterConstraint(String field, 
-                                       String chars, 
+    public void addCharacterConstraint(String field,
+                                       String chars,
                                        String message) {
 
-        constraints.add(new CharacterConstraint(field, chars, message)); 
+        constraints.add(new CharacterConstraint(field, chars, message));
     }
 
     /**
-     * Adds a form field date constraint. This will check that the 
+     * Adds a form field date constraint. This will check that the
      * specified form field is parseable with the date formatter.
-     * 
+     *
      * @param field          the field name
      * @param format         the date format to allow
-     * @param message        the message on error 
+     * @param message        the message on error
      */
-    public void addDateConstraint(String field, 
-                                  DateFormat format, 
+    public void addDateConstraint(String field,
+                                  DateFormat format,
                                   String message) {
 
-        constraints.add(new DateConstraint(field, format, message)); 
+        constraints.add(new DateConstraint(field, format, message));
     }
 
     /**
      * Validates the parameters in a request. The constraints will be
-     * checked in the same order as they were added to this 
+     * checked in the same order as they were added to this
      * validator.
-     * 
+     *
      * @param request        the form request
-     * 
+     *
      * @throws FormValidationException if the form validation failed
      */
-    public void validate(Request request) 
+    public void validate(Request request)
         throws FormValidationException {
 
         for (int i = 0; i < constraints.size(); i++) {
             ((Constraint) constraints.get(i)).validate(request);
         }
     }
-    
+
 
     /**
      * A form field constraint.
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
-     */    
+     */
     private abstract class Constraint {
-        
+
         /**
          * The field name.
          */
         private String field;
-        
+
         /**
          * The error message.
          */
         private String message;
-        
+
         /**
          * Creates a new form field constraint.
-         * 
+         *
          * @param field          the field name
          * @param message        the error message
          */
@@ -156,13 +156,13 @@ public class FormValidator {
 
         /**
          * Validates this constraint.
-         * 
+         *
          * @param request        the form request
-         * 
-         * @throws FormValidationException if the form validation 
+         *
+         * @throws FormValidationException if the form validation
          *             failed
          */
-        public void validate(Request request) 
+        public void validate(Request request)
             throws FormValidationException {
 
             validate(request.getParameter(field));
@@ -170,20 +170,20 @@ public class FormValidator {
 
         /**
          * Validates this constraint.
-         * 
+         *
          * @param value          the form field value
-         * 
-         * @throws FormValidationException if the form validation 
+         *
+         * @throws FormValidationException if the form validation
          *             failed
          */
-        protected abstract void validate(String value) 
+        protected abstract void validate(String value)
             throws FormValidationException;
-            
+
         /**
          * Reports a form validation error. This method just throws
          * the adequate form exception.
-         * 
-         * @throws FormValidationException the validation exception 
+         *
+         * @throws FormValidationException the validation exception
          *             representing the constraint error
          */
         protected void error() throws FormValidationException {
@@ -193,34 +193,34 @@ public class FormValidator {
         /**
          * Reports a form validation error. This method just throws
          * the adequate form exception. Note that the field message
-         * will be outputted with the additional detailes appended 
+         * will be outputted with the additional detailes appended
          * after ": ".
-         * 
+         *
          * @param details        the additional error details
-         * 
-         * @throws FormValidationException the validation exception 
+         *
+         * @throws FormValidationException the validation exception
          *             representing the constraint error
          */
-        protected void error(String details) 
+        protected void error(String details)
             throws FormValidationException {
 
             details = message + ": " + details;
             throw new FormValidationException(field, details);
         }
     }
-    
+
 
     /**
      * A required form field constraint.
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
-     */    
+     */
     private class RequiredConstraint extends Constraint {
 
         /**
          * Creates a new required form field constraint.
-         * 
+         *
          * @param field          the field name
          * @param message        the error message
          */
@@ -230,13 +230,13 @@ public class FormValidator {
 
         /**
          * Validates this constraint.
-         * 
+         *
          * @param value          the form field value
-         * 
-         * @throws FormValidationException if the form validation 
+         *
+         * @throws FormValidationException if the form validation
          *             failed
          */
-        protected void validate(String value) 
+        protected void validate(String value)
             throws FormValidationException {
 
             if (value == null || value.equals("")) {
@@ -244,14 +244,14 @@ public class FormValidator {
             }
         }
     }
-    
+
 
     /**
      * A form field length constraint.
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
-     */    
+     */
     private class LengthConstraint extends Constraint {
 
         /**
@@ -266,15 +266,15 @@ public class FormValidator {
 
         /**
          * Creates a new form field length constraint.
-         * 
+         *
          * @param field          the field name
          * @param min            the minimum length
          * @param max            the maximum length, or -1 for infinite
          * @param message        the error message
          */
-        public LengthConstraint(String field, 
+        public LengthConstraint(String field,
                                 int min,
-                                int max, 
+                                int max,
                                 String message) {
             super(field, message);
             this.min = min;
@@ -283,13 +283,13 @@ public class FormValidator {
 
         /**
          * Validates this constraint.
-         * 
+         *
          * @param value          the form field value
-         * 
-         * @throws FormValidationException if the form validation 
+         *
+         * @throws FormValidationException if the form validation
          *             failed
          */
-        protected void validate(String value) 
+        protected void validate(String value)
             throws FormValidationException {
 
             if (value == null) {
@@ -310,7 +310,7 @@ public class FormValidator {
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
-     */    
+     */
     private class CharacterConstraint extends Constraint {
 
         /**
@@ -320,13 +320,13 @@ public class FormValidator {
 
         /**
          * Creates a new character set form field constraint.
-         * 
+         *
          * @param field          the field name
          * @param chars          the character set to allow
          * @param message        the error message
          */
-        public CharacterConstraint(String field, 
-                                   String chars, 
+        public CharacterConstraint(String field,
+                                   String chars,
                                    String message) {
             super(field, message);
             this.chars = chars;
@@ -334,13 +334,13 @@ public class FormValidator {
 
         /**
          * Validates this constraint.
-         * 
+         *
          * @param value          the form field value
-         * 
-         * @throws FormValidationException if the form validation 
+         *
+         * @throws FormValidationException if the form validation
          *             failed
          */
-        protected void validate(String value) 
+        protected void validate(String value)
             throws FormValidationException {
 
             if (value == null) {
@@ -360,7 +360,7 @@ public class FormValidator {
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
-     */    
+     */
     private class DateConstraint extends Constraint {
 
         /**
@@ -370,13 +370,13 @@ public class FormValidator {
 
         /**
          * Creates a new date format form field constraint.
-         * 
+         *
          * @param field          the field name
          * @param format         the date format to allow
          * @param message        the error message
          */
-        public DateConstraint(String field, 
-                              DateFormat format, 
+        public DateConstraint(String field,
+                              DateFormat format,
                               String message) {
             super(field, message);
             this.format = format;
@@ -384,13 +384,13 @@ public class FormValidator {
 
         /**
          * Validates this constraint.
-         * 
+         *
          * @param value          the form field value
-         * 
-         * @throws FormValidationException if the form validation 
+         *
+         * @throws FormValidationException if the form validation
          *             failed
          */
-        protected void validate(String value) 
+        protected void validate(String value)
             throws FormValidationException {
 
             Date  date;

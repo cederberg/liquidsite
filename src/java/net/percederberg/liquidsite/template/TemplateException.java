@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
@@ -37,7 +37,7 @@ public class TemplateException extends Exception {
 
     /**
      * Creates a new template exception.
-     * 
+     *
      * @param message        the error message
      */
     public TemplateException(String message) {
@@ -46,16 +46,16 @@ public class TemplateException extends Exception {
 
     /**
      * Creates a new template exception.
-     * 
+     *
      * @param cause          the root cause to the error
      */
     public TemplateException(Exception cause) {
         this("template processing error", cause);
     }
-    
+
     /**
      * Creates a new template exception.
-     * 
+     *
      * @param message        the error message
      * @param cause          the root cause to the error
      */
@@ -63,11 +63,11 @@ public class TemplateException extends Exception {
         super(message);
         this.rootCause = cause;
     }
-    
+
     /**
-     * Returns the detailed error message. This error message will 
+     * Returns the detailed error message. This error message will
      * include any messages from the root errors.
-     * 
+     *
      * @return the detailed error message
      */
     public String getMessage() {
@@ -82,10 +82,10 @@ public class TemplateException extends Exception {
         }
         return message.toString();
     }
-    
+
     /**
      * Returns the root exception cause.
-     * 
+     *
      * @return the root exception cause, or
      *         null for none
      */

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin;
@@ -40,7 +40,7 @@ import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
 
 /**
- * The content edit request handler. This class handles the edit 
+ * The content edit request handler. This class handles the edit
  * workflow for the content view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -64,10 +64,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
     private FormValidator document = new FormValidator();
 
     /**
-     * Returns an instance of this class. If a prior instance has 
+     * Returns an instance of this class. If a prior instance has
      * been created, it will be returned instead of creating a new
-     * one. 
-     * 
+     * one.
+     *
      * @return an instance of a content edit form handler
      */
     public static ContentEditFormHandler getInstance() {
@@ -96,7 +96,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         String  numbers = "0123456789";
         String  nameChars = upperCase + lowerCase + numbers + ".-_";
         String  error;
-        
+
         // Add and edit section validator
         section.addRequiredConstraint("name", "No section name specified");
         error = "Section name contains invalid character";
@@ -115,14 +115,14 @@ public class ContentEditFormHandler extends AdminFormHandler {
     /**
      * Displays a form for the specified workflow step. This method
      * will NOT be called when returning to the start page.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
@@ -130,11 +130,11 @@ public class ContentEditFormHandler extends AdminFormHandler {
         Object  ref = AdminUtils.getReference(request);
 
         if (ref instanceof ContentSection) {
-            AdminView.CONTENT.viewEditSection(request, 
-                                              null, 
+            AdminView.CONTENT.viewEditSection(request,
+                                              null,
                                               (ContentSection) ref);
         } else if (ref instanceof ContentDocument) {
-            AdminView.CONTENT.viewEditDocument(request, 
+            AdminView.CONTENT.viewEditDocument(request,
                                                (ContentDocument) ref);
         } else if (ref instanceof ContentFile) {
             AdminView.CONTENT.viewEditFile(request, (ContentFile) ref);
@@ -145,14 +145,14 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
     /**
      * Validates a form for the specified workflow step. If the form
-     * validation fails in this step, the form page for the workflow 
-     * step will be displayed again with an 'error' attribute 
+     * validation fails in this step, the form page for the workflow
+     * step will be displayed again with an 'error' attribute
      * containing the message in the validation exception.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @throws FormValidationException if the form request data 
+     *
+     * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
@@ -166,7 +166,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         } else if (category.equals("document")) {
             document.validate(request);
         } else if (category.equals("file")) {
-            SiteEditFormHandler.getInstance().validateStep(request, step); 
+            SiteEditFormHandler.getInstance().validateStep(request, step);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
@@ -176,26 +176,26 @@ public class ContentEditFormHandler extends AdminFormHandler {
     /**
      * Handles a validated form for the specified workflow step. This
      * method returns the next workflow step, i.e. the step used when
-     * calling the display method. If the special zero (0) workflow 
+     * calling the display method. If the special zero (0) workflow
      * step is returned, the workflow is assumed to have terminated.
-     * Note that this method also allows additional validation to 
-     * occur. By returning the incoming workflow step number and 
+     * Note that this method also allows additional validation to
+     * occur. By returning the incoming workflow step number and
      * setting the appropriate request attributes the same results as
      * in the normal validate method can be achieved. For recoverable
      * errors, this is the recommended course of action.
-     *  
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @return the next workflow step, or 
+     *
+     * @return the next workflow step, or
      *         zero (0) if the workflow has finished
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    protected int handleStep(Request request, int step) 
+    protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
         Object  ref = AdminUtils.getReference(request);
@@ -214,16 +214,16 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit section form.
-     * 
+     *
      * @param request        the request object
      * @param section        the section content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditSection(Request request, ContentSection section) 
+    private void handleEditSection(Request request, ContentSection section)
         throws ContentException, ContentSecurityException {
 
         Map                 params = request.getAllParameters();
@@ -281,16 +281,16 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit document form.
-     * 
+     *
      * @param request        the request object
      * @param doc            the document content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditDocument(Request request, ContentDocument doc) 
+    private void handleEditDocument(Request request, ContentDocument doc)
         throws ContentException, ContentSecurityException {
 
         Map       params = request.getAllParameters();
@@ -353,20 +353,20 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit file form.
-     * 
+     *
      * @param request        the request object
      * @param file           the file content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditFile(Request request, ContentFile file) 
+    private void handleEditFile(Request request, ContentFile file)
         throws ContentException, ContentSecurityException {
 
         FileParameter  param;
-        
+
         try {
             file.setRevisionNumber(0);
             file.setName(request.getParameter("name"));

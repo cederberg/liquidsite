@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin.view;
@@ -63,10 +63,10 @@ public class SiteView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    public void viewSite(Request request) 
+    public void viewSite(Request request)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
@@ -76,14 +76,14 @@ public class SiteView extends AdminView {
         Content         content;
         StringBuffer    buffer = new StringBuffer();
         String          str;
-        
+
         domains = manager.getDomains(user);
         buffer.append(SCRIPT.getTreeView(domains));
         if (focus != null && focus instanceof Content) {
             content = manager.getContent(user, ((Content) focus).getId());
             if (content != null) {
-                str = getSiteTreeScript(user, 
-                                        content.getDomain(), 
+                str = getSiteTreeScript(user,
+                                        content.getDomain(),
                                         content.getParent(),
                                         true);
                 buffer.append(str);
@@ -100,14 +100,14 @@ public class SiteView extends AdminView {
 
     /**
      * Shows the add object page.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewAddObject(Request request, Object parent) 
+    public void viewAddObject(Request request, Object parent)
         throws ContentException {
 
         User     user = request.getUser();
@@ -146,29 +146,29 @@ public class SiteView extends AdminView {
 
     /**
      * Shows the add domain page.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent object
      */
     public void viewAddDomain(Request request, Object parent) {
         AdminUtils.setReference(request, parent);
         request.setAttribute("name", request.getParameter("name", ""));
-        request.setAttribute("description", 
+        request.setAttribute("description",
                              request.getParameter("description", ""));
         request.setAttribute("host", request.getParameter("host", ""));
         request.sendTemplate("admin/add-domain.ftl");
     }
-    
+
     /**
      * Shows the add or edit site page.
-     * 
+     *
      * @param request        the request object
      * @param reference      the reference object (domain or site)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditSite(Request request, Object reference) 
+    public void viewEditSite(Request request, Object reference)
         throws ContentException {
 
         Domain       domain;
@@ -182,7 +182,7 @@ public class SiteView extends AdminView {
         String       defaultDir;
         String       defaultComment;
         String       str;
-        
+
         if (reference instanceof Domain) {
             domain = (Domain) reference;
             defaultName = "";
@@ -227,18 +227,18 @@ public class SiteView extends AdminView {
     }
 
     /**
-     * Shows the add or edit page page. Either the parent or the page 
+     * Shows the add or edit page page. Either the parent or the page
      * object must be specified.
-     * 
+     *
      * @param request        the request object
-     * @param reference      the parent or page object 
-     * 
+     * @param reference      the parent or page object
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have read
      *             access to the template
      */
-    public void viewEditPage(Request request, Object reference) 
+    public void viewEditPage(Request request, Object reference)
         throws ContentException, ContentSecurityException {
 
         User         user = request.getUser();
@@ -269,7 +269,7 @@ public class SiteView extends AdminView {
             template = String.valueOf(page.getTemplateId());
             templates = findTemplates(user, page.getDomain(), null);
             section = page.getSectionId();
-            sections = findSections(user, page.getDomain(), null); 
+            sections = findSections(user, page.getDomain(), null);
             if (page.getRevisionNumber() == 0) {
                 comment = page.getComment();
             } else {
@@ -288,7 +288,7 @@ public class SiteView extends AdminView {
             template = "0";
             templates = findTemplates(user, content.getDomain(), null);
             section = 0;
-            sections = findSections(user, content.getDomain(), null); 
+            sections = findSections(user, content.getDomain(), null);
             comment = "Created";
         }
 
@@ -315,7 +315,7 @@ public class SiteView extends AdminView {
                 str = iter.next().toString();
                 if (str.startsWith("element.")) {
                     value = request.getParameter(str);
-                    locals.put(str.substring(8), 
+                    locals.put(str.substring(8),
                                AdminUtils.getScriptString(value));
                 }
             }
@@ -400,11 +400,11 @@ public class SiteView extends AdminView {
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-file.ftl");
     }
-    
+
     /**
      * Shows the add or edit folder page. Either the parent or the
      * folder object must be specified.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent object, or null
      * @param folder         the folder object, or null
@@ -412,8 +412,8 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditFolder(Request request, 
-                               Object parent, 
+    public void viewEditFolder(Request request,
+                               Object parent,
                                ContentFolder folder)
         throws ContentException {
 
@@ -462,21 +462,21 @@ public class SiteView extends AdminView {
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-folder.ftl");
     }
-    
+
     /**
      * Shows the add or edit template page. Either the parent or the
      * template object must be specified.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent object, or null
      * @param template       the template object, or null
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditTemplate(Request request, 
-                                 Object parent, 
-                                 ContentTemplate template) 
+    public void viewEditTemplate(Request request,
+                                 Object parent,
+                                 ContentTemplate template)
         throws ContentException {
 
         String     name;
@@ -503,8 +503,8 @@ public class SiteView extends AdminView {
             AdminUtils.setReference(request, template);
             name = template.getName();
             inherited = template.getParentId();
-            templates = findTemplates(request.getUser(), 
-                                      template.getDomain(), 
+            templates = findTemplates(request.getUser(),
+                                      template.getDomain(),
                                       template);
             if (template.getRevisionNumber() == 0) {
                 comment = template.getComment();
@@ -537,7 +537,7 @@ public class SiteView extends AdminView {
                 str = iter.next().toString();
                 if (str.startsWith("element.")) {
                     value = request.getParameter(str);
-                    locals.put(str.substring(8), 
+                    locals.put(str.substring(8),
                                AdminUtils.getScriptString(value));
                 }
             }
@@ -551,10 +551,10 @@ public class SiteView extends AdminView {
         request.setAttribute("templates", templates);
         request.sendTemplate("admin/edit-template.ftl");
     }
-    
+
     /**
      * Shows the template preview page.
-     * 
+     *
      * @param request        the request object
      * @param template       the template object
      *
@@ -589,14 +589,14 @@ public class SiteView extends AdminView {
 
     /**
      * Shows the load site object JavaScript code.
-     * 
+     *
      * @param request        the request object
      * @param obj            the domain or content parent object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewLoadSiteScript(Request request, Object obj) 
+    public void viewLoadSiteScript(Request request, Object obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -604,24 +604,24 @@ public class SiteView extends AdminView {
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = getSiteTreeScript(user, (Domain) obj, null, false); 
+            buffer = getSiteTreeScript(user, (Domain) obj, null, false);
         } else {
             content = (Content) obj;
-            buffer = getSiteTreeScript(user, null, content, false); 
+            buffer = getSiteTreeScript(user, null, content, false);
         }
         request.sendData("text/javascript", buffer);
     }
-    
+
     /**
      * Shows the open site object JavaScript code.
-     * 
+     *
      * @param request        the request object
      * @param obj            the domain or content object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewOpenSiteScript(Request request, Object obj) 
+    public void viewOpenSiteScript(Request request, Object obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -641,10 +641,10 @@ public class SiteView extends AdminView {
 
     /**
      * Shows the open template JavaScript code.
-     * 
+     *
      * @param request        the request object
      * @param template       the content template, or null
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -660,11 +660,11 @@ public class SiteView extends AdminView {
 
     /**
      * Finds the content site for a specified page.
-     * 
+     *
      * @param page           the content page, file or folder
-     * 
+     *
      * @return the containing content site
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -676,29 +676,29 @@ public class SiteView extends AdminView {
     }
 
     /**
-     * Returns the JavaScript code for displaying child content 
-     * objects. This method may create a nested tree view with all 
+     * Returns the JavaScript code for displaying child content
+     * objects. This method may create a nested tree view with all
      * parent objects up to the domain if the recursive flag is set.
-     * 
+     *
      * @param user           the current user
      * @param domain         the domain object
      * @param content        the content object
      * @param recursive      the recursive flag
-     * 
+     *
      * @return the JavaScript code for adding the object to the tree
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getSiteTreeScript(User user, 
-                                     Domain domain, 
+    private String getSiteTreeScript(User user,
+                                     Domain domain,
                                      Content content,
-                                     boolean recursive) 
+                                     boolean recursive)
         throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children;
-        ArrayList       list = new ArrayList(); 
+        ArrayList       list = new ArrayList();
 
         if (content == null) {
             children = manager.getContentChildren(user, domain);
@@ -712,23 +712,23 @@ public class SiteView extends AdminView {
             return SCRIPT.getTreeView(domain, children);
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
-            return getSiteTreeScript(user, domain, content.getParent(), true) 
+            return getSiteTreeScript(user, domain, content.getParent(), true)
                  + SCRIPT.getTreeView(content, children);
         } else {
             children = manager.getContentChildren(user, content);
             return SCRIPT.getTreeView(content, children);
         }
     }
-    
+
     /**
-     * Returns the site tree focus object. The focus object is either 
-     * a domain or a content object, and is stored in the session. It 
+     * Returns the site tree focus object. The focus object is either
+     * a domain or a content object, and is stored in the session. It
      * is not possible to trust the focus object for any operations.
      * It may have been removed from the database by another user.
-     * 
+     *
      * @param request        the request
-     * 
-     * @return the site view focus object, or 
+     *
+     * @return the site view focus object, or
      *         null for none
      */
     public Object getSiteTreeFocus(Request request) {
@@ -738,7 +738,7 @@ public class SiteView extends AdminView {
     /**
      * Sets the site tree focus object. The focus object is either a
      * domain or a content object, and is stored in the session.
-     * 
+     *
      * @param request        the request
      * @param obj            the new focus object
      */
@@ -747,10 +747,10 @@ public class SiteView extends AdminView {
     }
 
     /**
-     * Checks if an object should be shown in the site view. 
-     * 
+     * Checks if an object should be shown in the site view.
+     *
      * @param obj            the object to check
-     * 
+     *
      * @return true if the object should be shown, or
      *         false otherwise
      */

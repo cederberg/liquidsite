@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -34,11 +34,11 @@ public class ContentFolder extends Content {
 
     /**
      * Creates a new folder with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param parent         the parent content object
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public ContentFolder(ContentManager manager, Content parent)
@@ -50,17 +50,17 @@ public class ContentFolder extends Content {
 
     /**
      * Creates a new folder.
-     * 
+     *
      * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentFolder(ContentManager manager,
-                            ContentData data, 
-                            DatabaseConnection con) 
+                            ContentData data,
+                            DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
@@ -68,7 +68,7 @@ public class ContentFolder extends Content {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
@@ -76,9 +76,9 @@ public class ContentFolder extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -56,8 +56,8 @@ public class Request {
     private static final Log LOG = new Log(Request.class);
 
     /**
-     * The no response type. This type is used when no request 
-     * response has been issued. 
+     * The no response type. This type is used when no request
+     * response has been issued.
      */
     private static final int NO_RESPONSE = 0;
 
@@ -69,38 +69,38 @@ public class Request {
 
     /**
      * The file response type. This type is used when a file has been
-     * set as the request response. The response data contains the 
+     * set as the request response. The response data contains the
      * absolute file name when this type is set.
      */
     private static final int FILE_RESPONSE = 2;
 
     /**
      * The template response type. This type is used when a template
-     * has been set as the request response. The response data 
-     * contains the template file name (relative to the web context 
+     * has been set as the request response. The response data
+     * contains the template file name (relative to the web context
      * directory) when this type is set.
      */
     private static final int TEMPLATE_RESPONSE = 3;
 
     /**
      * The redirect response type. This type is used when a request
-     * redirect has been issued. The response data contains the 
+     * redirect has been issued. The response data contains the
      * redirect URI (absolute or relative) when this type is set.
      */
     private static final int REDIRECT_RESPONSE = 4;
 
     /**
-     * The HTTP request. 
+     * The HTTP request.
      */
     private HttpServletRequest request;
 
     /**
-     * The HTTP response. 
+     * The HTTP response.
      */
     private HttpServletResponse response;
 
     /**
-     * The reqponse type. This flag is set to true if the 
+     * The reqponse type. This flag is set to true if the
      * response object has been modified.
      */
     private int responseType = NO_RESPONSE;
@@ -111,7 +111,7 @@ public class Request {
     private String responseMimeType = null;
 
     /**
-     * The response data. 
+     * The response data.
      */
     private String responseData = null;
 
@@ -121,12 +121,12 @@ public class Request {
     private RequestEnvironment environment = new RequestEnvironment();
 
     /**
-     * Creates a new request. 
-     * 
+     * Creates a new request.
+     *
      * @param request        the HTTP request
      * @param response       the HTTP response
      */
-    public Request(HttpServletRequest request, 
+    public Request(HttpServletRequest request,
                    HttpServletResponse response) {
 
         this.request = request;
@@ -139,10 +139,10 @@ public class Request {
             }
         }
     }
-    
+
     /**
      * Checks if this request contains a response.
-     * 
+     *
      * @return true if the request contains a response, or
      *         false otherwise
      */
@@ -151,37 +151,37 @@ public class Request {
     }
 
     /**
-     * Returns the protocol name in the request, i.e. "http" or 
+     * Returns the protocol name in the request, i.e. "http" or
      * "https".
-     * 
+     *
      * @return the protocol name
      */
     public String getProtocol() {
         return request.getScheme();
     }
-    
+
     /**
      * Returns the host name in the request.
-     * 
+     *
      * @return the host name
      */
     public String getHost() {
         return request.getServerName();
     }
-    
+
     /**
      * Returns the port number in the request.
-     * 
+     *
      * @return the port number
      */
     public int getPort() {
         return request.getServerPort();
     }
-    
+
     /**
      * Returns the request path with file name. This will include the
      * servlet portion of the path.
-     * 
+     *
      * @return the request path with file name
      */
     public String getPath() {
@@ -196,7 +196,7 @@ public class Request {
 
     /**
      * Returns the servlet portion of the request path.
-     * 
+     *
      * @return the servlet portion of the request path
      */
     public String getServletPath() {
@@ -205,8 +205,8 @@ public class Request {
 
     /**
      * Returns the value of a request attribute.
-     * 
-     * @param name           the attribute name 
+     *
+     * @param name           the attribute name
      *
      * @return the attribute value, or
      *         null if no such attribute was found
@@ -218,22 +218,22 @@ public class Request {
     /**
      * Returns the value of a request attribute. If the specified
      * attribute does not exist, a default value will be returned.
-     * 
+     *
      * @param name           the attribute name
-     * @param defVal         the default attribute value 
+     * @param defVal         the default attribute value
      *
      * @return the attribute value, or
      *         the default value if no such attribute was found
      */
     public Object getAttribute(String name, Object defVal) {
         Object  value = request.getAttribute(name);
-        
+
         return (value == null) ? defVal : value;
     }
 
     /**
      * Returns all the request attributes in a map.
-     * 
+     *
      * @return the map with request attribute names and values
      */
     public Map getAllAttributes() {
@@ -281,14 +281,14 @@ public class Request {
 
     /**
      * Returns a map with all the request parameter names and values.
-     * 
+     *
      * @return the map with request parameter names and values
      */
     public Map getAllParameters() {
         HashMap      params = new HashMap();
         Enumeration  names = request.getParameterNames();
         String       name;
-        
+
         while (names.hasMoreElements()) {
             name = names.nextElement().toString();
             params.put(name, request.getParameter(name));
@@ -320,17 +320,17 @@ public class Request {
      */
     public String getParameter(String name, String defVal) {
         String  value = request.getParameter(name);
-        
+
         return (value == null) ? defVal : value;
     }
-    
+
     /**
-     * Returns the specified file request parameter. The default 
+     * Returns the specified file request parameter. The default
      * request container doesn't support file parameters, and will
-     * return null on each call. Other request containers may 
-     * override this method, however, if they are able to handle 
+     * return null on each call. Other request containers may
+     * override this method, however, if they are able to handle
      * incoming files.
-     * 
+     *
      * @param name           the request parameter name
      *
      * @return the request file parameter, or
@@ -343,8 +343,8 @@ public class Request {
     /**
      * Returns the value of a session attribute. This method will not
      * create a new session if one didn't already exist.
-     * 
-     * @param name           the attribute name 
+     *
+     * @param name           the attribute name
      *
      * @return the attribute value, or
      *         null if no such attribute was found
@@ -356,18 +356,18 @@ public class Request {
     /**
      * Returns the value of a session attribute. If the specified
      * attribute does not exist, a default value will be returned.
-     * This method will not create a new session if one didn't 
+     * This method will not create a new session if one didn't
      * already exist.
-     * 
+     *
      * @param name           the attribute name
-     * @param defVal         the default attribute value 
+     * @param defVal         the default attribute value
      *
      * @return the attribute value, or
      *         the default value if no such attribute was found
      */
     public Object getSessionAttribute(String name, Object defVal) {
         HttpSession  session = request.getSession(false);
-        
+
         if (session != null && session.getAttribute(name) != null) {
             return session.getAttribute(name);
         } else {
@@ -376,7 +376,7 @@ public class Request {
     }
 
     /**
-     * Sets a session attribute value. This method creates a new 
+     * Sets a session attribute value. This method creates a new
      * session if one didn't already exist.
      *
      * @param name           the attribute name
@@ -393,25 +393,25 @@ public class Request {
     /**
      * Returns the session user. The session user is null until it is
      * set by the setUser() method. Normally the session user is not
-     * set until the user has been authenticated. 
-     * 
+     * set until the user has been authenticated.
+     *
      * @return the session user, or
      *         null if no user has been set
-     * 
+     *
      * @see #setUser
      */
     public User getUser() {
         return (User) getSessionAttribute("user");
     }
-    
+
     /**
      * Sets the session user. The session user is null until it is
      * set by this method. Normally the session user is not set until
-     * the user has been authenticated. If the user is set to null, 
+     * the user has been authenticated. If the user is set to null,
      * the whole session will be invalidated.
-     * 
+     *
      * @param user           the new session user, or null to logout
-     * 
+     *
      * @see #getUser
      */
     public void setUser(User user) {
@@ -427,17 +427,17 @@ public class Request {
     /**
      * Returns the request environment object. The request
      * environment is used for storing references to objects that the
-     * request touches. 
+     * request touches.
      *
      * @return the request environment object
      */
     public RequestEnvironment getEnvironment() {
         return environment;
     }
-    
+
     /**
      * Returns a string representation of this request.
-     * 
+     *
      * @return a string representation of this request
      */
     public String toString() {
@@ -446,7 +446,7 @@ public class Request {
 
     /**
      * Sends the specified data as the request response.
-     * 
+     *
      * @param mimeType       the data MIME type
      * @param data           the data to send
      */
@@ -460,7 +460,7 @@ public class Request {
      * Sends the contents of a file as the request response. The file
      * name extension will be used for determining the MIME type for
      * the file contents.
-     * 
+     *
      * @param file           the file containing the response
      */
     public void sendFile(File file) {
@@ -468,13 +468,13 @@ public class Request {
         responseMimeType = null;
         responseData = file.toString();
     }
-    
+
     /**
-     * Sends the results from processing a template as the request 
-     * response. The template file name is relative to the web 
+     * Sends the results from processing a template as the request
+     * response. The template file name is relative to the web
      * context directory, and the output MIME type will always be set
      * to "text/html".
-     * 
+     *
      * @param template       the template file name
      */
     public void sendTemplate(String template) {
@@ -482,13 +482,13 @@ public class Request {
         responseMimeType = null;
         responseData = template;
     }
-    
+
     /**
      * Redirects this request by sending a temporary redirection URL
-     * to the browser. The location specified may be either an 
-     * absolute or a relative URL. This method will set a request 
+     * to the browser. The location specified may be either an
+     * absolute or a relative URL. This method will set a request
      * response.
-     * 
+     *
      * @param location       the destination location
      */
     public void sendRedirect(String location) {
@@ -497,7 +497,7 @@ public class Request {
     }
 
     /**
-     * Disposes of all resources used by this request object. This 
+     * Disposes of all resources used by this request object. This
      * method shouldn't be called until a response has been written.
      */
     public void dispose() {
@@ -510,17 +510,17 @@ public class Request {
     }
 
     /**
-     * Sends the request response to the underlying HTTP response 
-     * object. 
-     * 
+     * Sends the request response to the underlying HTTP response
+     * object.
+     *
      * @param context        the servlet context
-     * 
+     *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
-     * @throws ServletException if a configuration error was 
+     * @throws ServletException if a configuration error was
      *             encountered while sending the response
      */
-    void commit(ServletContext context) 
+    void commit(ServletContext context)
         throws IOException, ServletException {
 
         if (responseType == FILE_RESPONSE) {
@@ -543,14 +543,14 @@ public class Request {
             commitRedirect();
             break;
         default:
-            throw new ServletException("No request response available: " + 
+            throw new ServletException("No request response available: " +
                                        this);
         }
     }
 
     /**
-     * Sends the data response to the underlying HTTP response object. 
-     * 
+     * Sends the data response to the underlying HTTP response object.
+     *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      */
@@ -569,10 +569,10 @@ public class Request {
     }
 
     /**
-     * Sends the file response to the underlying HTTP response object. 
-     * 
+     * Sends the file response to the underlying HTTP response object.
+     *
      * @param context        the servlet context
-     * 
+     *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      */
@@ -581,9 +581,9 @@ public class Request {
         FileInputStream  input;
         OutputStream     output;
         byte[]           buffer = new byte[4096];
-        int              length;      
+        int              length;
 
-        LOG.debug("Handling request for " + this + " with file " + 
+        LOG.debug("Handling request for " + this + " with file " +
                   responseData);
         file = new File(responseData);
         try {
@@ -603,9 +603,9 @@ public class Request {
     }
 
     /**
-     * Sends the processed template response to the underlying HTTP 
-     * response object. 
-     * 
+     * Sends the processed template response to the underlying HTTP
+     * response object.
+     *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      */
@@ -629,9 +629,9 @@ public class Request {
     }
 
     /**
-     * Sends the redirect response to the underlying HTTP response 
-     * object. 
-     * 
+     * Sends the redirect response to the underlying HTTP response
+     * object.
+     *
      * @throws IOException if an IO error occured while attempting to
      *             redirect the request
      */
@@ -647,32 +647,32 @@ public class Request {
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
      */
-    public interface FileParameter { 
+    public interface FileParameter {
 
         /**
          * Returns the base file name including the extension. The
          * file name returned is guaranteed to not contain any file
          * path or directory name.
-         * 
+         *
          * @return the base file name (with extension)
          */
         String getName();
 
         /**
          * Returns the file size.
-         * 
+         *
          * @return the file size
          */
         long getSize();
-        
+
         /**
          * Writes this file to the specified destination file. After
          * calling this method, no other methods in this interface
          * should be called.
-         * 
+         *
          * @param dest           the destination file
-         * 
-         * @throws IOException if the file parameter couldn't be 
+         *
+         * @throws IOException if the file parameter couldn't be
          *             written to the specified file
          */
         void write(File dest) throws IOException;

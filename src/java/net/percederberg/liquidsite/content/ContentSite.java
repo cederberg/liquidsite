@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -64,7 +64,7 @@ public class ContentSite extends Content {
 
     /**
      * Creates a new site with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param domain         the site domain
      */
@@ -79,17 +79,17 @@ public class ContentSite extends Content {
 
     /**
      * Creates a new site.
-     * 
+     *
      * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentSite(ContentManager manager,
-                          ContentData data, 
-                          DatabaseConnection con) 
+                          ContentData data,
+                          DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
@@ -97,14 +97,14 @@ public class ContentSite extends Content {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
         StringBuffer  buffer = new StringBuffer();
         int           port = getPort();
         String        dir = getDirectory();
-        
+
         buffer.append(getProtocol());
         buffer.append("://");
         if (getHost().equals("*")) {
@@ -116,7 +116,7 @@ public class ContentSite extends Content {
             buffer.append(":<*>");
         } else if (port != 80) {
             buffer.append(":");
-            buffer.append(port); 
+            buffer.append(port);
         }
         buffer.append(dir);
         return buffer.toString();
@@ -124,55 +124,55 @@ public class ContentSite extends Content {
 
     /**
      * Returns the site protocol
-     * 
+     *
      * @return the site protocol
      */
     public String getProtocol() {
         return getAttribute(PROTOCOL_ATTRIBUTE);
     }
-    
+
     /**
      * Sets the site protocol.
-     * 
+     *
      * @param protocol       the new site protocol
      */
     public void setProtocol(String protocol) {
         setAttribute(PROTOCOL_ATTRIBUTE, protocol);
     }
-    
+
     /**
      * Returns the host name or IP address.
-     * 
-     * @return the host name, or 
+     *
+     * @return the host name, or
      *         "*" if any host matches this site
      */
     public String getHost() {
         return getAttribute(HOST_ATTRIBUTE);
     }
-    
+
     /**
-     * Sets the host name or IP address. This value must be the fully 
+     * Sets the host name or IP address. This value must be the fully
      * qualified name with domain used in the URL:s to the site.
-     * 
+     *
      * @param host           the new host name, or "*" for any
      */
     public void setHost(String host) {
         setAttribute(HOST_ATTRIBUTE, host);
     }
-    
+
     /**
      * Returns the port number.
-     * 
+     *
      * @return the port number, or
      *         zero (0) if any port matches this site
      */
     public int getPort() {
         return Integer.parseInt(getAttribute(PORT_ATTRIBUTE));
     }
-    
+
     /**
      * Sets the port number.
-     * 
+     *
      * @param port           the new port number, or zero (0) for any
      */
     public void setPort(int port) {
@@ -182,7 +182,7 @@ public class ContentSite extends Content {
     /**
      * Returns the base directory. The base directory always starts
      * and ends with a '/' character.
-     * 
+     *
      * @return the base directory
      */
     public String getDirectory() {
@@ -191,7 +191,7 @@ public class ContentSite extends Content {
 
     /**
      * Sets the base directory.
-     * 
+     *
      * @param directory      the new base directory
      */
     public void setDirectory(String directory) {
@@ -208,25 +208,25 @@ public class ContentSite extends Content {
     }
 
     /**
-     * Checks if the admin flag is set. 
-     * 
+     * Checks if the admin flag is set.
+     *
      * @return true if the admin flag is set, or
      *         false otherwise
      */
     public boolean isAdmin() {
         int flags = Integer.parseInt(getAttribute(FLAGS_ATTRIBUTE));
-        
+
         return (flags & ADMIN_FLAG) > 0;
     }
 
     /**
-     * Sets the admin flag. 
-     * 
+     * Sets the admin flag.
+     *
      * @param admin          the new admin flag
      */
     public void setAdmin(boolean admin) {
         int flags = Integer.parseInt(getAttribute(FLAGS_ATTRIBUTE));
-        
+
         if (admin) {
             flags = (flags | ADMIN_FLAG);
         } else {
@@ -239,22 +239,22 @@ public class ContentSite extends Content {
      * Matches a set of request parameters to this site. This method
      * returns a numeric value that is higher for better matches. If
      * the request parameters didn't match at all, zero (0) is always
-     * returned. The matching algorithm gives priority to exact 
-     * matches for host and port, and longer matches for paths. An 
+     * returned. The matching algorithm gives priority to exact
+     * matches for host and port, and longer matches for paths. An
      * exact match for host or port is also always preferred over a
-     * longer path match. 
+     * longer path match.
      *
-     * @param protocol       the request protocol 
+     * @param protocol       the request protocol
      * @param host           the request host name (server name)
      * @param port           the request (server) port
      * @param path           the request path
-     * 
+     *
      * @return the match value (higher is better), or
      *         zero (0) for no match
      */
     public int match(String protocol, String host, int port, String path) {
         int  result = 0;
-        
+
         // Check protocol match
         if (!getProtocol().equals(protocol)) {
             return 0;
@@ -269,7 +269,7 @@ public class ContentSite extends Content {
             return 0;
         }
 
-        // Check port match        
+        // Check port match
         if (getPort() == port) {
             result += 1000;
         } else if (getPort() == 0) {
@@ -277,7 +277,7 @@ public class ContentSite extends Content {
         } else {
             return 0;
         }
-        
+
         // Check directory match
         if (path.startsWith(getDirectory())) {
             result += getDirectory().length();
@@ -287,11 +287,11 @@ public class ContentSite extends Content {
 
         return result;
     }
-    
+
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {

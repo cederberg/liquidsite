@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
@@ -31,8 +31,8 @@ import java.util.Properties;
 import net.percederberg.liquidsite.Log;
 
 /**
- * A database connector. The database connector manages all 
- * connections to the database, pooling resources as desired. By 
+ * A database connector. The database connector manages all
+ * connections to the database, pooling resources as desired. By
  * default connection pooling is not used, but is may be activated by
  * modifying the pool size.
  *
@@ -47,7 +47,7 @@ public class DatabaseConnector {
     private static final Log LOG = new Log(DatabaseConnector.class);
 
     /**
-     * The default connection timeout in milliseconds. By default 
+     * The default connection timeout in milliseconds. By default
      * this is set to 14400000 ms (4 h).
      */
     public static final long DEFAULT_CONNECTION_TIMEOUT = 14400000L;
@@ -55,7 +55,7 @@ public class DatabaseConnector {
     /**
      * The default query timeout in seconds. By default this is set
      * to 5 seconds.
-     * 
+     *
      * @see DatabaseConnection#setQueryTimeout
      */
     public static final int DEFAULT_QUERY_TIMEOUT = 5;
@@ -67,41 +67,41 @@ public class DatabaseConnector {
 
     /**
      * The JDBC database properties.
-     */    
+     */
     private Properties properties;
 
     /**
-     * The database connection pool. By default no connection pooling 
-     * is used. A connection pool is created if the pool size is set. 
+     * The database connection pool. By default no connection pooling
+     * is used. A connection pool is created if the pool size is set.
      */
     private DatabaseConnectionPool pool = null;
 
     /**
-     * The connection expiration timeout in milliseconds. If this 
+     * The connection expiration timeout in milliseconds. If this
      * value is negative the database connections will never expire.
-     * 
+     *
      * @see #DEFAULT_CONNECTION_TIMEOUT
      */
     private long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
     /**
-     * The map of database functions. This maps a name to an SQL 
-     * query or statement. The SQL may contain optional parameters 
-     * with the '?' character. 
+     * The map of database functions. This maps a name to an SQL
+     * query or statement. The SQL may contain optional parameters
+     * with the '?' character.
      */
     private HashMap functions = new HashMap();
 
     /**
      * Loads the specified JDBC database driver. This method must be
-     * called once before attempting to connect with the specified 
+     * called once before attempting to connect with the specified
      * driver. Calling this method several times has no effect.
-     * 
+     *
      * @param driver         the fully qualified classname
-     * 
+     *
      * @throws DatabaseConnectionException if the class couldn't be
-     *             found or loaded correctly 
+     *             found or loaded correctly
      */
-    public static void loadDriver(String driver) 
+    public static void loadDriver(String driver)
         throws DatabaseConnectionException {
 
         String  message;
@@ -118,7 +118,7 @@ public class DatabaseConnector {
     /**
      * Creates a new database connector. This connector properties
      * will initially be empty.
-     * 
+     *
      * @param url            the JDBC database URL
      */
     public DatabaseConnector(String url) {
@@ -127,7 +127,7 @@ public class DatabaseConnector {
 
     /**
      * Creates a new database connector.
-     * 
+     *
      * @param url            the JDBC database URL
      * @param properties     the JDBC database properties
      */
@@ -136,10 +136,10 @@ public class DatabaseConnector {
         this.properties = properties;
         LOG.trace("created database connector for " + url);
     }
-    
+
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
@@ -148,7 +148,7 @@ public class DatabaseConnector {
 
     /**
      * Returns the JDBC database URL.
-     * 
+     *
      * @return the JDBC database URL
      */
     public String getUrl() {
@@ -157,9 +157,9 @@ public class DatabaseConnector {
 
     /**
      * Returns a specified database connector property.
-     * 
+     *
      * @param name           the property name
-     * 
+     *
      * @return the property value, or
      *         null if not found
      */
@@ -169,7 +169,7 @@ public class DatabaseConnector {
 
     /**
      * Returns the database connector properties.
-     * 
+     *
      * @return the database properties
      */
     public Properties getProperties() {
@@ -178,7 +178,7 @@ public class DatabaseConnector {
 
     /**
      * Sets the specified database connector property.
-     * 
+     *
      * @param name           the property name
      * @param value          the property value
      */
@@ -187,28 +187,28 @@ public class DatabaseConnector {
     }
 
     /**
-     * Returns the database connection expiration timeout. If this 
+     * Returns the database connection expiration timeout. If this
      * value is negative the database connections will never expire.
-     * 
+     *
      * @return the connection expiration timeout (in milliseconds), or
      *         a negative value for unlimited
-     * 
+     *
      * @see #setConnectionTimeout
      * @see #DEFAULT_CONNECTION_TIMEOUT
      */
     public long getConnectionTimeout() {
         return connectionTimeout;
-    } 
+    }
 
     /**
-     * Sets the database connection expiration timeout. If this value 
+     * Sets the database connection expiration timeout. If this value
      * is negative the database connections will never expire. By
      * modifying this value already open connections may be caused to
      * expire.
-     * 
+     *
      * @param timeout        the new connection timeout (in milliseconds), or
      *                       a negative value for unlimited
-     * 
+     *
      * @see #getConnectionTimeout
      */
     public void setConnectionTimeout(long timeout) {
@@ -218,14 +218,14 @@ public class DatabaseConnector {
     }
 
     /**
-     * Returns the maximum database connection pool size. By default 
-     * no connection pooling is used, and the pool size is therefore 
+     * Returns the maximum database connection pool size. By default
+     * no connection pooling is used, and the pool size is therefore
      * zero (0). A new connection pool is created the first time the
      * setPoolSize() method is called.
-     * 
+     *
      * @return the database connection pool size
-     * 
-     * @see #setPoolSize 
+     *
+     * @see #setPoolSize
      */
     public int getPoolSize() {
         if (pool == null) {
@@ -234,15 +234,15 @@ public class DatabaseConnector {
             return pool.getMaximumSize();
         }
     }
-    
+
     /**
      * Sets the maximum database connection pool size. The first time
-     * this method is called, a new database connection pool is 
-     * created. The pool minimum size and timeout will be set to 
+     * this method is called, a new database connection pool is
+     * created. The pool minimum size and timeout will be set to
      * default values.
-     * 
+     *
      * @param size           the new maximum connection pool size
-     * 
+     *
      * @see #getPoolSize
      */
     public void setPoolSize(int size) {
@@ -259,9 +259,9 @@ public class DatabaseConnector {
 
     /**
      * Returns the database function with the specified name.
-     * 
+     *
      * @param name           the database function name
-     * 
+     *
      * @return the database function SQL, or
      *         null if not found
      */
@@ -270,20 +270,20 @@ public class DatabaseConnector {
     }
 
     /**
-     * Returns a database connection. This method will either create 
+     * Returns a database connection. This method will either create
      * a new connection, or return a previous connection from the
      * connection pool (if one exists). All connections returned by
-     * this method must be disposed of by calling the 
-     * returnConnection() method.  
-     * 
+     * this method must be disposed of by calling the
+     * returnConnection() method.
+     *
      * @return a database connection
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * 
+     *
      * @see #returnConnection
      */
-    public DatabaseConnection getConnection() 
+    public DatabaseConnection getConnection()
         throws DatabaseConnectionException {
 
         LOG.trace("database connection requested for " + this);
@@ -293,14 +293,14 @@ public class DatabaseConnector {
             return pool.getConnection();
         }
     }
-    
+
     /**
-     * Disposes of a database connection. This method will either 
+     * Disposes of a database connection. This method will either
      * return the connection to the connection pool, or close the
      * connection, depending on if a pool exists or not.
-     * 
+     *
      * @param con            the database connection
-     * 
+     *
      * @see #getConnection
      */
     public void returnConnection(DatabaseConnection con) {
@@ -315,18 +315,18 @@ public class DatabaseConnector {
     /**
      * Loads a set of database functions. The functions are stored in
      * a normal properties file, with the value being the SQL code.
-     * 
+     *
      * @param file           the file containing the functions
-     * 
+     *
      * @throws FileNotFoundException if the file couldn't be found
      * @throws IOException if the file couldn't be read properly
      */
-    public void loadFunctions(File file) 
+    public void loadFunctions(File file)
         throws FileNotFoundException, IOException {
 
         Properties       props = new Properties();
         FileInputStream  input;
-        
+
         input = new FileInputStream(file);
         props.load(input);
         input.close();
@@ -335,15 +335,15 @@ public class DatabaseConnector {
 
     /**
      * Updates the connection pool. This method will step through all
-     * available database connections in the pool, removing all 
-     * broken or timed out connections. The connection pool size may 
+     * available database connections in the pool, removing all
+     * broken or timed out connections. The connection pool size may
      * also be adjusted.
-     * 
-     * Note that any call to this method should be made from a 
-     * background thread, as this method may get stuck waiting for 
+     *
+     * Note that any call to this method should be made from a
+     * background thread, as this method may get stuck waiting for
      * I/O timeouts.
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
      */
     public void update() throws DatabaseConnectionException {
@@ -351,26 +351,26 @@ public class DatabaseConnector {
             pool.update();
         }
     }
-    
+
     /**
-     * Executes a database query or statement. 
-     * 
+     * Executes a database query or statement.
+     *
      * @param query          the database query
-     * 
+     *
      * @return the database query results, or
      *         null for database statements
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the query or statement couldn't 
+     * @throws DatabaseException if the query or statement couldn't
      *             be executed correctly
      */
     public DatabaseResults execute(DatabaseQuery query)
-        throws DatabaseConnectionException, DatabaseException { 
+        throws DatabaseConnectionException, DatabaseException {
 
         DatabaseConnection  con;
         DatabaseResults     res;
-        
+
         con = getConnection();
         try {
             res = con.execute(query);
@@ -382,24 +382,24 @@ public class DatabaseConnector {
     }
 
     /**
-     * Executes a set of SQL statements from a file. Each SQL 
-     * statement must be terminated by a ';' character. 
-     * 
+     * Executes a set of SQL statements from a file. Each SQL
+     * statement must be terminated by a ';' character.
+     *
      * @param file           the file with SQL statements
-     * 
+     *
      * @throws FileNotFoundException if the file couldn't be found
      * @throws IOException if the file couldn't be read properly
-     * @throws DatabaseConnectionException if a database connection 
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if some statement couldn't be 
+     * @throws DatabaseException if some statement couldn't be
      *             executed correctly
      */
-    public void execute(File file) 
-        throws FileNotFoundException, IOException, 
+    public void execute(File file)
+        throws FileNotFoundException, IOException,
                DatabaseConnectionException, DatabaseException {
 
         DatabaseConnection  con;
-        
+
         con = getConnection();
         try {
             con.execute(file);

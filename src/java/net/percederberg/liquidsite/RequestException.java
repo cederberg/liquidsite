@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
 
 /**
- * A request exception. This exception is thrown when a request 
+ * A request exception. This exception is thrown when a request
  * couldn't be processed normally. This can be due to various causes,
  * such as authentification failure, inexistent resource, or internal
  * errors. No new instances are created of this exception, but the
@@ -35,7 +35,7 @@ public class RequestException extends Exception {
 
     /**
      * The internal error constant. This error is used when a problem
-     * was encountered during the request processing, making the 
+     * was encountered during the request processing, making the
      * normal request processing fail.
      */
     public static final RequestException INTERNAL_ERROR =
@@ -43,17 +43,17 @@ public class RequestException extends Exception {
 
     /**
      * The unauthorized access request error. This error is used when
-     * a request for a resource requires user authentification in 
+     * a request for a resource requires user authentification in
      * order to be retrieved.
      */
-    public static final RequestException UNAUTHORIZED = 
+    public static final RequestException UNAUTHORIZED =
         new RequestException(401, "User authentification required");
 
     /**
-     * The forbidden access request error. This error is used when 
+     * The forbidden access request error. This error is used when
      * the user wasn't authorized to access the requested resource.
      */
-    public static final RequestException FORBIDDEN = 
+    public static final RequestException FORBIDDEN =
         new RequestException(403, "Access to resource forbidden");
 
     /**
@@ -70,7 +70,7 @@ public class RequestException extends Exception {
 
     /**
      * Creates a new request exception.
-     * 
+     *
      * @param code           the HTTP error code
      * @param message        the error message
      */
@@ -78,10 +78,10 @@ public class RequestException extends Exception {
         super(message);
         this.errorCode = code;
     }
-    
+
     /**
      * Returns the HTTP error code.
-     * 
+     *
      * @return the HTTP error code
      */
     public int getCode() {

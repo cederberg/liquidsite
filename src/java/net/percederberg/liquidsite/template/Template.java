@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
@@ -53,7 +53,7 @@ public class Template {
 
     /**
      * Creates a new template
-     * 
+     *
      * @param template       the FreeMarker template to use
      */
     Template(freemarker.template.Template template) {
@@ -65,17 +65,17 @@ public class Template {
     }
 
     /**
-     * Processes the template with a request and an output stream. 
-     * All the attributes in the request will be exposed in the 
-     * template data model. 
-     * 
+     * Processes the template with a request and an output stream.
+     * All the attributes in the request will be exposed in the
+     * template data model.
+     *
      * @param request        the request object
      * @param manager        the content manager to use
      * @param out            the output stream writer
-     * 
+     *
      * @throws TemplateException if the template processing failed
      */
-    public void process(Request request, ContentManager manager, Writer out) 
+    public void process(Request request, ContentManager manager, Writer out)
         throws TemplateException {
 
         Map          data = request.getAllAttributes();

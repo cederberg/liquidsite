@@ -48,11 +48,11 @@ public class ContentDocument extends Content {
 
     /**
      * Creates a new document with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param parent         the parent content section
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public ContentDocument(ContentManager manager, ContentSection parent)
@@ -64,17 +64,17 @@ public class ContentDocument extends Content {
 
     /**
      * Creates a new document.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentDocument(ContentManager manager,
-                              ContentData data, 
-                              DatabaseConnection con) 
+                              ContentData data,
+                              DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
@@ -93,7 +93,7 @@ public class ContentDocument extends Content {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
         String     id;
-        
+
         while (iter.hasNext()) {
             id = iter.next().toString();
             if (id.startsWith(PROPERTY_PREFIX)) {
@@ -105,22 +105,22 @@ public class ContentDocument extends Content {
 
     /**
      * Returns an identified document property value.
-     * 
-     * @param id             the document property identifier 
-     * 
+     *
+     * @param id             the document property identifier
+     *
      * @return the document property value, or
      *         an empty string if not found
      */
     public String getProperty(String id) {
         String  value = getAttribute(PROPERTY_PREFIX + id);
-        
+
         return (value == null) ? "" : value;
     }
 
     /**
      * Sets a document property value. If the value specified is
      * null, the specified property will be removed.
-     * 
+     *
      * @param id             the document property identifier
      * @param value          the document property value, or null
      */
@@ -133,19 +133,19 @@ public class ContentDocument extends Content {
 
     /**
      * Returns an identified document property type.
-     * 
-     * @param id             the document property identifier 
-     * 
+     *
+     * @param id             the document property identifier
+     *
      * @return the document property type, or
      *         STRING_TYPE if not set
-     * 
+     *
      * @see DocumentProperty#STRING_TYPE
      * @see DocumentProperty#TAGGED_TYPE
      * @see DocumentProperty#HTML_TYPE
      */
     public int getPropertyType(String id) {
         String  value = getAttribute(PROPERTY_TYPE_PREFIX + id);
-        
+
         if (value == null) {
             return DocumentProperty.STRING_TYPE;
         } else {
@@ -155,7 +155,7 @@ public class ContentDocument extends Content {
 
     /**
      * Sets a document property type.
-     * 
+     *
      * @param id             the document property identifier
      * @param type           the document property type
      */
@@ -164,9 +164,9 @@ public class ContentDocument extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {

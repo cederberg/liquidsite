@@ -49,21 +49,21 @@ public class Domain extends PersistentObject implements Comparable {
      * The domain data object.
      */
     private DomainData data;
-    
+
     /**
      * The domain options. These options are read from and stored to
      * the data object upon reading and writing.
      */
     private HashMap options;
-    
+
     /**
      * Returns an array of all domains in the database.
-     * 
+     *
      * @param manager        the content manager to use
      *
      * @return an array of all domains in the database
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static Domain[] findAll(ContentManager manager)
@@ -90,17 +90,17 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Returns a domain with a specified name.
-     * 
+     *
      * @param manager        the content manager to use
      * @param name           the domain name
-     * 
+     *
      * @return the domain found, or
      *         null if no matching domain existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    static Domain findByName(ContentManager manager, String name) 
+    static Domain findByName(ContentManager manager, String name)
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
@@ -123,8 +123,8 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Creates a new domain with default values.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param name           the domain name
      */
     public Domain(ContentManager manager, String name) {
@@ -136,8 +136,8 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Creates a new domain from a data object.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the domain data object
      */
     private Domain(ContentManager manager, DomainData data) {
@@ -147,14 +147,14 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Checks if this domain equals another object. This method will 
+     * Checks if this domain equals another object. This method will
      * only return true if the other object is a domain with the same
      * name.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical domain, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Object obj) {
         if (obj instanceof Domain) {
@@ -165,17 +165,17 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Compares this object with the specified object for order. 
-     * Returns a negative integer, zero, or a positive integer as 
-     * this object is less than, equal to, or greater than the 
+     * Compares this object with the specified object for order.
+     * Returns a negative integer, zero, or a positive integer as
+     * this object is less than, equal to, or greater than the
      * specified object.
-     * 
+     *
      * @param obj            the object to compare to
-     * 
-     * @return a negative integer, zero, or a positive integer as 
-     *         this object is less than, equal to, or greater than 
+     *
+     * @return a negative integer, zero, or a positive integer as
+     *         this object is less than, equal to, or greater than
      *         the specified object
-     * 
+     *
      * @throws ClassCastException if the object isn't a Domain object
      */
     public int compareTo(Object obj) throws ClassCastException {
@@ -183,15 +183,15 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Compares this object with the specified domain for order. 
-     * Returns a negative integer, zero, or a positive integer as 
-     * this object is less than, equal to, or greater than the 
+     * Compares this object with the specified domain for order.
+     * Returns a negative integer, zero, or a positive integer as
+     * this object is less than, equal to, or greater than the
      * specified object. The ordering is based on domain name.
-     * 
+     *
      * @param domain         the domain to compare to
-     * 
-     * @return a negative integer, zero, or a positive integer as 
-     *         this object is less than, equal to, or greater than 
+     *
+     * @return a negative integer, zero, or a positive integer as
+     *         this object is less than, equal to, or greater than
      *         the specified object
      */
     public int compareTo(Domain domain) {
@@ -200,12 +200,12 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
         StringBuffer  buffer = new StringBuffer();
-        
+
         buffer.append("Domain: ");
         if (getDescription().equals("")) {
             buffer.append(getName());
@@ -217,37 +217,37 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Returns the unique domain name.
-     * 
+     *
      * @return the unique domain name
      */
     public String getName() {
         return data.getString(DomainData.NAME);
     }
-    
+
     /**
      * Returns the domain description.
-     * 
+     *
      * @return the domain description
      */
     public String getDescription() {
         return data.getString(DomainData.DESCRIPTION);
     }
-    
+
     /**
      * Sets the domain description.
-     * 
+     *
      * @param description    the new description
      */
     public void setDescription(String description) {
         data.setString(DomainData.DESCRIPTION, description);
     }
-    
+
     /**
-     * Returns the permissions applicable to this domain object. 
-     * 
+     * Returns the permissions applicable to this domain object.
+     *
      * @return an array of permissions for this object
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Permission[] getPermissions() throws ContentException {
@@ -262,7 +262,7 @@ public class Domain extends PersistentObject implements Comparable {
      * @param user            the user performing the operation
      * @param permissions     the array of new permissions
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have admin permissions
@@ -288,11 +288,11 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Returns the hosts registered to this domain object. 
-     * 
+     * Returns the hosts registered to this domain object.
+     *
      * @return an array of hosts in this domain
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Host[] getHosts() throws ContentException {
@@ -300,21 +300,21 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Returns the domain file directory. This directory is composed 
-     * of the application file directory and the domain name. Note 
-     * that this method will create the domain directory if it does 
-     * not already exist. 
-     * 
+     * Returns the domain file directory. This directory is composed
+     * of the application file directory and the domain name. Note
+     * that this method will create the domain directory if it does
+     * not already exist.
+     *
      * @return the domain file directory
-     * 
-     * @throws ContentException if the domain file directory wasn't 
+     *
+     * @throws ContentException if the domain file directory wasn't
      *             found or couldn't be created
      */
     public File getDirectory() throws ContentException {
         Configuration  config;
         String         basedir;
         File           dir;
-        
+
         config = getContentManager().getApplication().getConfig();
         basedir = config.get(Configuration.FILE_DIRECTORY, null);
         if (basedir == null) {
@@ -335,9 +335,9 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
@@ -346,18 +346,18 @@ public class Domain extends PersistentObject implements Comparable {
         if (getName().equals("")) {
             throw new ContentException("no name set for domain object");
         } else if (!isPersistent() && domain != null) {
-            throw new ContentException("domain '" + getName() + 
+            throw new ContentException("domain '" + getName() +
                                        "' already exists");
         }
     }
 
     /**
      * Inserts the object data into the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doInsert(User user, DatabaseConnection con)
@@ -375,11 +375,11 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
@@ -397,11 +397,11 @@ public class Domain extends PersistentObject implements Comparable {
 
     /**
      * Deletes the object data from the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected void doDelete(User user, DatabaseConnection con)
@@ -415,13 +415,13 @@ public class Domain extends PersistentObject implements Comparable {
         }
         doDelete(getDirectory());
     }
-    
+
     /**
      * Deletes a file or directory. All contents of a directory will
      * be deleted recursively.
-     * 
+     *
      * @param file           the file or directory to delete
-     * 
+     *
      * @throws ContentException if the file or directory couldn't be
      *             deleted properly
      */

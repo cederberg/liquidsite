@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -46,15 +46,15 @@ public class ContentFile extends Content {
 
     /**
      * Creates a new file with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param parent         the parent content object
      * @param name           the file name
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public ContentFile(ContentManager manager, Content parent, String name) 
+    public ContentFile(ContentManager manager, Content parent, String name)
         throws ContentException {
 
         super(manager, parent.getDomain(), Content.FILE_CATEGORY);
@@ -64,17 +64,17 @@ public class ContentFile extends Content {
 
     /**
      * Creates a new file.
-     * 
+     *
      * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentFile(ContentManager manager,
-                          ContentData data, 
-                          DatabaseConnection con) 
+                          ContentData data,
+                          DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
@@ -82,7 +82,7 @@ public class ContentFile extends Content {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
@@ -90,13 +90,13 @@ public class ContentFile extends Content {
     }
 
     /**
-     * Returns the file used for storing the data content. Note that 
-     * this method cannot be called before writing the file content 
-     * object to the database, as it requires the content id to 
+     * Returns the file used for storing the data content. Note that
+     * this method cannot be called before writing the file content
+     * object to the database, as it requires the content id to
      * create a unique file name.
-     * 
+     *
      * @return the file used for storing the data content
-     * 
+     *
      * @throws ContentException if the content base directory wasn't
      *             found or couldn't be created
      */
@@ -106,10 +106,10 @@ public class ContentFile extends Content {
 
     /**
      * Returns the file name. This is the unique file name stored in
-     * the database, and used to access the actual file in the 
-     * content object directory. Note that the file name does NOT 
+     * the database, and used to access the actual file in the
+     * content object directory. Note that the file name does NOT
      * contain the path of the file.
-     * 
+     *
      * @return the file name.
      */
     public String getFileName() {
@@ -117,18 +117,18 @@ public class ContentFile extends Content {
     }
 
     /**
-     * Sets the file name. Note that the specified file name will 
-     * only be used to create the new unique file name that will 
+     * Sets the file name. Note that the specified file name will
+     * only be used to create the new unique file name that will
      * actually be used. Also note that an previous file will NOT be
-     * renamed, effectively making getFile() return a non-existent 
+     * renamed, effectively making getFile() return a non-existent
      * file. After changing the file name, the desired data must be
      * written to the new file. This method has the same requirements
-     * as getFile(). 
-     * 
+     * as getFile().
+     *
      * @param name           the new file name
-     * 
+     *
      * @see #getFile
-     * 
+     *
      * @throws ContentException if the content base directory wasn't
      *             found or couldn't be created
      */
@@ -136,36 +136,36 @@ public class ContentFile extends Content {
         File  dir = getDirectory();
         File  file;
         int   counter = 0;
-        
+
         file = new File(dir, name);
         while (file.exists()) {
             counter++;
-            file = new File(dir, counter + "." + name); 
+            file = new File(dir, counter + "." + name);
         }
         setAttribute(FILE_NAME_ATTRIBUTE, file.getName());
     }
-    
+
     /**
-     * Returns the content directory. This directory is composed of 
-     * the domain file directory and the unique content identifier. 
-     * Note that this method requires that the content object has a 
-     * valid content identifier, or an exception will be thrown. Also 
-     * note that the content directory will be created if it doesn 
-     * not already exist. 
-     * 
+     * Returns the content directory. This directory is composed of
+     * the domain file directory and the unique content identifier.
+     * Note that this method requires that the content object has a
+     * valid content identifier, or an exception will be thrown. Also
+     * note that the content directory will be created if it doesn
+     * not already exist.
+     *
      * @return the content directory
-     * 
+     *
      * @throws ContentException if the content base directory wasn't
      *             found or couldn't be created
      */
     private File getDirectory() throws ContentException {
         File  dir;
-        
+
         if (getId() <= 0) {
             throw new ContentException(
                 "content file hasn't got a valid content id");
         }
-        dir = new File(getDomain().getDirectory(), 
+        dir = new File(getDomain().getDirectory(),
                        String.valueOf(getId()));
         try {
             if (!dir.exists() && !dir.mkdirs()) {
@@ -183,12 +183,12 @@ public class ContentFile extends Content {
      * Returns the MIME type of the file. The MIME types are
      * configured in the application servlet context.
      *
-     * @return the MIME type of the file, or 
+     * @return the MIME type of the file, or
      *         null if unknown
      */
     public String getMimeType() {
         Application  app = getContentManager().getApplication();
-        
+
         return app.getServletContext().getMimeType(getFileName());
     }
 
@@ -252,9 +252,9 @@ public class ContentFile extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
@@ -279,15 +279,15 @@ public class ContentFile extends Content {
 
     /**
      * Deletes this content revision from the database.
-     * 
+     *
      * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public void deleteRevision(User user) 
+    public void deleteRevision(User user)
         throws ContentException, ContentSecurityException {
 
         super.deleteRevision(user);
@@ -296,11 +296,11 @@ public class ContentFile extends Content {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
@@ -312,11 +312,11 @@ public class ContentFile extends Content {
 
     /**
      * Deletes the object data from the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected void doDelete(User user, DatabaseConnection con)
@@ -345,7 +345,7 @@ public class ContentFile extends Content {
      * Removes any unused files in the data directory. An unused file
      * is one that isn't referenced by any revision in the database.
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     private void cleanUnusedFiles() throws ContentException {

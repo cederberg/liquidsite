@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
 
 /**
  * A database connection exception. This exception is thrown when a
- * connection to the database couldn't be established. 
+ * connection to the database couldn't be established.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -37,7 +37,7 @@ public class DatabaseConnectionException extends Exception {
 
     /**
      * Creates a new database connection exception.
-     * 
+     *
      * @param message        the error message
      */
     public DatabaseConnectionException(String message) {
@@ -46,17 +46,17 @@ public class DatabaseConnectionException extends Exception {
 
     /**
      * Creates a new database connection exception.
-     * 
+     *
      * @param cause          the root cause to the error
      */
     public DatabaseConnectionException(Exception cause) {
         this("couldn't connect to database", cause);
     }
-    
+
     /**
      * Creates a new database connection exception.
-     * 
-     * @param message        the error message 
+     *
+     * @param message        the error message
      * @param cause          the root cause to the error
      */
     public DatabaseConnectionException(String message, Exception cause) {

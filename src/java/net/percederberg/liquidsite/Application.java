@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -29,7 +29,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 
 /**
- * The application context. This interface provides the basic 
+ * The application context. This interface provides the basic
  * infrastructure for inter-application communication and for sharing
  * global datastructures.
  *
@@ -39,21 +39,21 @@ import net.percederberg.liquidsite.db.DatabaseConnector;
 public interface Application {
 
     /**
-     * Checks if the application is running correctly. This method 
-     * will return true if no major errors have been encountered, 
+     * Checks if the application is running correctly. This method
+     * will return true if no major errors have been encountered,
      * such as database connections are not working or similar. Note
      * that this method may return true even if the application is
-     * not installed, assuming that the installed has been properly 
-     * launched.  
-     * 
+     * not installed, assuming that the installed has been properly
+     * launched.
+     *
      * @return true if the application is online and working, or
      *         false otherwise
-     */    
+     */
     boolean isOnline();
 
     /**
-     * Restarts the application. This will perform a partial shutdown 
-     * followed by a startup, flushing and rereading all 
+     * Restarts the application. This will perform a partial shutdown
+     * followed by a startup, flushing and rereading all
      * datastructures, such as configuration, database connections,
      * and similar.
      */
@@ -61,14 +61,14 @@ public interface Application {
 
     /**
      * Returns the application build version number.
-     * 
+     *
      * @return the application build version number
      */
     String getBuildVersion();
 
     /**
      * Returns the application build date.
-     * 
+     *
      * @return the application build date
      */
     String getBuildDate();
@@ -77,7 +77,7 @@ public interface Application {
      * Returns the base application directory. This is the directory
      * containing all the application files (i.e. the corresponding
      * webapps directory).
-     * 
+     *
      * @return the base application directory
      */
     File getBaseDir();
@@ -86,28 +86,28 @@ public interface Application {
      * Returns the application configuration. The object returned by
      * this method will not change, unless a reset is made, but the
      * parameter values in the configuration may be modified.
-     * 
+     *
      * @return the application configuration
      */
     Configuration getConfig();
-    
+
     /**
-     * Returns the application database connector. The object 
-     * returned by this method will not change, unless a reset is 
+     * Returns the application database connector. The object
+     * returned by this method will not change, unless a reset is
      * made.
-     * 
+     *
      * @return the application database connector
      */
     DatabaseConnector getDatabase();
-    
+
     /**
-     * Returns the application content manager. The object returned 
+     * Returns the application content manager. The object returned
      * by this method will not change, unless a reset is made.
-     * 
+     *
      * @return the application content manager
      */
     ContentManager getContentManager();
-    
+
     /**
      * Returns the application servlet context.
      *

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -27,7 +27,7 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseQuery;
 
 /**
- * A configuration database peer. This class contains static methods 
+ * A configuration database peer. This class contains static methods
  * that handles all accesses to the LS_CONFIGURATION table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -41,35 +41,35 @@ public class ConfigurationPeer extends AbstractPeer {
     private static final ConfigurationPeer PEER = new ConfigurationPeer();
 
     /**
-     * Returns a list of all configuration data object in the 
+     * Returns a list of all configuration data object in the
      * database.
-     * 
+     *
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of all configuration data objects
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectAll(DatabaseConnection con) 
+    public static ArrayList doSelectAll(DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("config.select.all");
-        
+
         return PEER.selectList(query, con);
     }
 
     /**
      * Inserts a new configuration data object into the database.
-     * 
+     *
      * @param data           the configuration data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doInsert(ConfigurationData data, 
-                                DatabaseConnection con) 
+    public static void doInsert(ConfigurationData data,
+                                DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("config.insert");
@@ -78,23 +78,23 @@ public class ConfigurationPeer extends AbstractPeer {
         query.addParameter(data.getString(ConfigurationData.VALUE));
         PEER.insert(query, con);
     }
-    
+
     /**
      * Deletes all configuration data objects from the database.
-     * 
+     *
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteAll(DatabaseConnection con) 
+    public static void doDeleteAll(DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("config.delete.all");
 
         PEER.delete(query, con);
     }
-    
+
     /**
      * Creates a new configuration database peer.
      */
@@ -104,7 +104,7 @@ public class ConfigurationPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

@@ -35,7 +35,7 @@ public class PreferenceData extends AbstractData {
      */
     public static final Parameter DOMAIN =
         new StringParameter(PreferenceData.class, "DOMAIN", "");
-    
+
     /**
      * The user parameter.
      */

@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
 
 /**
- * A permission data object. This object encapsulates a row of data 
+ * A permission data object. This object encapsulates a row of data
  * from the LS_PERMISSION table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -33,51 +33,51 @@ public class PermissionData extends AbstractData {
     /**
      * The domain parameter.
      */
-    public static final Parameter DOMAIN = 
+    public static final Parameter DOMAIN =
         new StringParameter(PermissionData.class, "DOMAIN", "");
 
     /**
      * The content parameter.
      */
-    public static final Parameter CONTENT = 
+    public static final Parameter CONTENT =
         new IntegerParameter(PermissionData.class, "CONTENT", 0);
 
     /**
      * The user parameter.
      */
-    public static final Parameter USER = 
+    public static final Parameter USER =
         new StringParameter(PermissionData.class, "USER", "");
 
     /**
      * The group parameter.
      */
-    public static final Parameter GROUP = 
+    public static final Parameter GROUP =
         new StringParameter(PermissionData.class, "GROUP", "");
-    
+
     /**
      * The read parameter.
      */
-    public static final Parameter READ = 
+    public static final Parameter READ =
         new BooleanParameter(PermissionData.class, "READ", false);
-    
+
     /**
      * The write parameter.
      */
-    public static final Parameter WRITE = 
+    public static final Parameter WRITE =
         new BooleanParameter(PermissionData.class, "WRITE", false);
-    
+
     /**
      * The publish parameter.
      */
-    public static final Parameter PUBLISH = 
+    public static final Parameter PUBLISH =
         new BooleanParameter(PermissionData.class, "PUBLISH", false);
-    
+
     /**
      * The admin parameter.
      */
-    public static final Parameter ADMIN = 
+    public static final Parameter ADMIN =
         new BooleanParameter(PermissionData.class, "ADMIN", false);
-    
+
     /**
      * Creates a new permission data object with default values.
      */

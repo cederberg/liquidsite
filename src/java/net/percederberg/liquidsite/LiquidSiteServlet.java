@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -45,7 +45,7 @@ import net.percederberg.liquidsite.template.TemplateManager;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class LiquidSiteServlet extends HttpServlet 
+public class LiquidSiteServlet extends HttpServlet
     implements Application {
 
     /**
@@ -67,7 +67,7 @@ public class LiquidSiteServlet extends HttpServlet
      * The application configuration.
      */
     private Configuration config = null;
-    
+
     /**
      * The application database connector.
      */
@@ -82,23 +82,23 @@ public class LiquidSiteServlet extends HttpServlet
      * The main request processor.
      */
     private RequestProcessor processor = null;
-    
+
     /**
      * The application online flag.
      */
     private boolean online = false;
 
     /**
-     * Checks if the application is running correctly. This method 
-     * will return true if no major errors have been encountered, 
+     * Checks if the application is running correctly. This method
+     * will return true if no major errors have been encountered,
      * such as database connections are not working or similar. Note
      * that this method may return true even if the application is
-     * not installed, assuming that the installed has been properly 
-     * launched.  
-     * 
+     * not installed, assuming that the installed has been properly
+     * launched.
+     *
      * @return true if the application is online and working, or
      *         false otherwise
-     */    
+     */
     public boolean isOnline() {
         return online;
     }
@@ -121,7 +121,7 @@ public class LiquidSiteServlet extends HttpServlet
     }
 
     /**
-     * Starts up the application. This will initialize the 
+     * Starts up the application. This will initialize the
      * configuration, the database, and the relevant request
      * processor.
      */
@@ -143,7 +143,7 @@ public class LiquidSiteServlet extends HttpServlet
             Log.initialize(new File(configDir, "logging.properties"));
         } catch (IOException e) {
             errors++;
-            LOG.error("couldn't read logging configuration: " + 
+            LOG.error("couldn't read logging configuration: " +
                       e.getMessage());
         }
 
@@ -175,10 +175,10 @@ public class LiquidSiteServlet extends HttpServlet
             database.loadFunctions(new File(configDir, "database.properties"));
         } catch (IOException e) {
             errors++;
-            LOG.error("couldn't read database configuration: " + 
+            LOG.error("couldn't read database configuration: " +
                       e.getMessage());
         }
-        
+
         // Read configuration table
         try {
             if (config.isInitialized()) {
@@ -204,11 +204,11 @@ public class LiquidSiteServlet extends HttpServlet
         } else {
             processor = new DefaultRequestProcessor(this);
         }
-        
+
         // Set the online status
         online = (errors == 0);
     }
-    
+
     /**
      * Shuts down the application. This will deinitialize the request
      * processor and the database connector.
@@ -225,8 +225,8 @@ public class LiquidSiteServlet extends HttpServlet
     }
 
     /**
-     * Restarts the application. This will perform a partial shutdown 
-     * followed by a startup, flushing and rereading all 
+     * Restarts the application. This will perform a partial shutdown
+     * followed by a startup, flushing and rereading all
      * datastructures, such as configuration, database connections,
      * and similar.
      */
@@ -237,34 +237,34 @@ public class LiquidSiteServlet extends HttpServlet
 
     /**
      * Handles an incoming HTTP GET request.
-     * 
+     *
      * @param request        the HTTP request object
      * @param response       the HTTP response object
-     * 
+     *
      * @throws ServletException if the request couldn't be handled by
      *             this servlet
      * @throws IOException if an IO error occured while attempting to
      *             service this request
      */
-    protected void doGet(HttpServletRequest request, 
-                         HttpServletResponse response) 
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
         throws ServletException, IOException {
 
         String   contentType = request.getContentType();
         Request  r;
-        
+
         // Create request object
         if (contentType != null && contentType.startsWith("multipart")) {
-            r = new MultiPartRequest(request, 
+            r = new MultiPartRequest(request,
                                      response,
                                      getConfig());
         } else {
             r = new Request(request, response);
         }
-        
+
         // TODO: handle offline state gracefully
         // TODO: handle exceptions and error responses
-        
+
         // Process request
         LOG.debug("Incoming request: " + r);
         try {
@@ -273,28 +273,28 @@ public class LiquidSiteServlet extends HttpServlet
                 r.commit(getServletContext());
             } else {
                 LOG.debug("Unhandled request: " + r);
-                response.sendError(HttpServletResponse.SC_NOT_FOUND); 
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (RequestException e) {
-            LOG.debug("Erroneous request: " + r + ", Message: " + 
+            LOG.debug("Erroneous request: " + r + ", Message: " +
                       e.getMessage());
-            response.sendError(e.getCode(), e.getMessage()); 
+            response.sendError(e.getCode(), e.getMessage());
         }
         r.dispose();
     }
-    
+
     /**
      * Handles an incoming HTTP POST request.
-     * 
+     *
      * @param request        the HTTP request object
      * @param response       the HTTP response object
-     * 
+     *
      * @throws ServletException if the request couldn't be handled by
      *             this servlet
      * @throws IOException if an IO error occured while attempting to
      *             service this request
      */
-    protected void doPost(HttpServletRequest request, 
+    protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
         throws ServletException, IOException {
 
@@ -303,7 +303,7 @@ public class LiquidSiteServlet extends HttpServlet
 
     /**
      * Returns the application build version number.
-     * 
+     *
      * @return the application build version number
      */
     public String getBuildVersion() {
@@ -312,7 +312,7 @@ public class LiquidSiteServlet extends HttpServlet
 
     /**
      * Returns the application build date.
-     * 
+     *
      * @return the application build date
      */
     public String getBuildDate() {
@@ -323,7 +323,7 @@ public class LiquidSiteServlet extends HttpServlet
      * Returns the base application directory. This is the directory
      * containing all the application files (i.e. the corresponding
      * webapps directory).
-     * 
+     *
      * @return the base application directory
      */
     public File getBaseDir() {
@@ -334,28 +334,28 @@ public class LiquidSiteServlet extends HttpServlet
      * Returns the application configuration. The object returned by
      * this method will not change, unless a reset is made, but the
      * parameter values in the configuration may be modified.
-     * 
+     *
      * @return the application configuration
      */
     public Configuration getConfig() {
         return config;
     }
-    
+
     /**
-     * Returns the application database connector. The object 
-     * returned by this method will not change, unless a reset is 
+     * Returns the application database connector. The object
+     * returned by this method will not change, unless a reset is
      * made.
-     * 
+     *
      * @return the application database connector
      */
     public DatabaseConnector getDatabase() {
         return database;
     }
-    
+
     /**
-     * Returns the application content manager. The object returned 
+     * Returns the application content manager. The object returned
      * by this method will not change, unless a reset is made.
-     * 
+     *
      * @return the application content manager
      */
     public ContentManager getContentManager() {
@@ -372,43 +372,43 @@ public class LiquidSiteServlet extends HttpServlet
     private class ApplicationMonitor implements Runnable {
 
         /**
-         * The loop delay in milliseconds. The thread will wait for 
-         * this period of time in each pass of the monitor loop.   
+         * The loop delay in milliseconds. The thread will wait for
+         * this period of time in each pass of the monitor loop.
          */
         private static final int LOOP_DELAY = 100;
-        
+
         /**
          * The stop timeout in milliseconds.
          */
         private static final int STOP_TIMEOUT = 1000;
 
         /**
-         * The database update threshold. This is the number of loop 
-         * iterations to skip in between calls to update() in the 
+         * The database update threshold. This is the number of loop
+         * iterations to skip in between calls to update() in the
          * database connector.
          */
         private static final int DATABASE_UPDATE_THRESHOLD = 600;
 
         /**
-         * The alive flag. If this flag is set to false, the thread 
+         * The alive flag. If this flag is set to false, the thread
          * is supposed to die.
          */
         private boolean alive = true;
 
         /**
-         * The database update counter. This counter is increased 
+         * The database update counter. This counter is increased
          * every second and is used to determine when the database
          * update method should be called.
          */
         private int databaseCounter = 0;
 
         /**
-         * Creates a new application monitor. This will also create 
+         * Creates a new application monitor. This will also create
          * and start the actual thread running this monitor.
          */
         public ApplicationMonitor() {
             Thread  thread;
-            
+
             thread = new Thread(this);
             thread.start();
         }
@@ -447,7 +447,7 @@ public class LiquidSiteServlet extends HttpServlet
             }
             notifyAll();
         }
-        
+
         /**
          * Stops the monitor thread. Once the thread is stopped, it
          * cannot be started again. This method will not return until

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -43,11 +43,11 @@ public class ContentSection extends Content {
 
     /**
      * Creates a new root section with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param domain         the domain
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public ContentSection(ContentManager manager, Domain domain)
@@ -59,11 +59,11 @@ public class ContentSection extends Content {
 
     /**
      * Creates a new section with default values.
-     * 
+     *
      * @param manager        the content manager to use
      * @param parent         the parent content section
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public ContentSection(ContentManager manager, ContentSection parent)
@@ -75,30 +75,30 @@ public class ContentSection extends Content {
 
     /**
      * Creates a new section.
-     * 
+     *
      * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentSection(ContentManager manager,
-                             ContentData data, 
-                             DatabaseConnection con) 
+                             ContentData data,
+                             DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
     }
 
     /**
-     * Returns all document properties for this section. The document 
-     * properties define the available properties for any document 
-     * created in this section. If this array does contain any 
-     * properties at all, the parent section properties should be 
-     * used. The document properties array is ordered by increasing 
+     * Returns all document properties for this section. The document
+     * properties define the available properties for any document
+     * created in this section. If this array does contain any
+     * properties at all, the parent section properties should be
+     * used. The document properties array is ordered by increasing
      * positions.
-     * 
+     *
      * @return an array of all document properties for this section
      */
     public DocumentProperty[] getAllDocumentProperties() {
@@ -106,7 +106,7 @@ public class ContentSection extends Content {
         Iterator            iter = getAttributeNames();
         DocumentProperty[]  res;
         String              name;
-        
+
         while (iter.hasNext()) {
             name = iter.next().toString();
             if (name.startsWith(DOCUMENT_PREFIX)) {
@@ -121,20 +121,20 @@ public class ContentSection extends Content {
     }
 
     /**
-     * Returns an identified document property. The document 
-     * properties define the available properties for any document 
+     * Returns an identified document property. The document
+     * properties define the available properties for any document
      * created in this section. Note that a given document does not
      * have to specify any of the properties specified in it's parent
      * section, as documents can be moved between sections.
-     * 
-     * @param id             the document property identifier 
-     * 
+     *
+     * @param id             the document property identifier
+     *
      * @return the document property, or
      *         null if not found
      */
     public DocumentProperty getDocumentProperty(String id) {
         String  str;
-        
+
         str = getAttribute(DOCUMENT_PREFIX + id);
         if (str == null) {
             return null;
@@ -146,7 +146,7 @@ public class ContentSection extends Content {
     /**
      * Sets a document property. If the document property specified
      * is null, the specified document property will be removed.
-     * 
+     *
      * @param id             the document property identifier
      * @param property       the document property, or null
      */
@@ -159,9 +159,9 @@ public class ContentSection extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -28,7 +28,7 @@ import net.percederberg.liquidsite.content.Domain;
 
 /**
  * The request processing environment. This class is used to store
- * objects used during the request processing. 
+ * objects used during the request processing.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0

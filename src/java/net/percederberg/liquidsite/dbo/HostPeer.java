@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -42,31 +42,31 @@ public class HostPeer extends AbstractPeer {
 
     /**
      * Returns a list of all hosts in the database.
-     * 
+     *
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of all hosts in the database
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectAll(DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.select.all");
-        
+
         return PEER.selectList(query, con);
     }
 
     /**
      * Returns a list of all hosts in a certain domain.
-     * 
+     *
      * @param domain         the domain name
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of all hosts in the domain
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByDomain(String domain,
@@ -74,43 +74,43 @@ public class HostPeer extends AbstractPeer {
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.select.domain");
-        
+
         query.addParameter(domain);
         return PEER.selectList(query, con);
     }
 
     /**
      * Returns a host with a specified name.
-     * 
+     *
      * @param name           the host name
      * @param con            the database connection to use
-     * 
+     *
      * @return the host found, or
      *         null if no matching host existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static HostData doSelectByName(String name, 
+    public static HostData doSelectByName(String name,
                                           DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.select.name");
-        
+
         query.addParameter(name);
         return (HostData) PEER.select(query, con);
     }
 
     /**
      * Inserts a new host into the database.
-     * 
+     *
      * @param data           the host data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doInsert(HostData data, DatabaseConnection con) 
+    public static void doInsert(HostData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.insert");
@@ -121,17 +121,17 @@ public class HostPeer extends AbstractPeer {
         query.addParameter(data.getString(HostData.OPTIONS));
         PEER.insert(query, con);
     }
-    
+
     /**
      * Updates a host in the database.
-     * 
+     *
      * @param data           the host data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doUpdate(HostData data, DatabaseConnection con) 
+    public static void doUpdate(HostData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.update");
@@ -141,17 +141,17 @@ public class HostPeer extends AbstractPeer {
         query.addParameter(data.getString(HostData.NAME));
         PEER.update(query, con);
     }
-    
+
     /**
      * Deletes a host from the database.
-     * 
+     *
      * @param data           the host data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDelete(HostData data, DatabaseConnection con) 
+    public static void doDelete(HostData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.delete");
@@ -162,15 +162,15 @@ public class HostPeer extends AbstractPeer {
 
     /**
      * Deletes all hosts in a domain from the database.
-     * 
+     *
      * @param domain         the domain name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, 
-                                      DatabaseConnection con) 
+    public static void doDeleteDomain(String domain,
+                                      DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.delete.domain");
@@ -188,7 +188,7 @@ public class HostPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

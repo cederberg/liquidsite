@@ -95,18 +95,18 @@ public abstract class Content extends PersistentObject {
     private int oldRevision = 0;
 
     /**
-     * The content attribute data objects. The data objects are 
+     * The content attribute data objects. The data objects are
      * indexed by the attribute name.
      */
     private HashMap attributes = new HashMap();
 
     /**
-     * The names of content attributes added. 
+     * The names of content attributes added.
      */
     private ArrayList attributesAdded = new ArrayList();
 
     /**
-     * The content attribute data objects removed. 
+     * The content attribute data objects removed.
      */
     private ArrayList attributesRemoved = new ArrayList();
 
@@ -114,8 +114,8 @@ public abstract class Content extends PersistentObject {
      * Creates a new content object with default values. The content
      * identifier will be set to the next available one after storing
      * to the database, and the content revision is set to zero (0).
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param domain         the domain
      * @param category       the category
      */
@@ -130,17 +130,17 @@ public abstract class Content extends PersistentObject {
     /**
      * Creates a new content object. This constructor will also read
      * all content attributes from the database.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected Content(ContentManager manager,
-                      ContentData data, 
-                      DatabaseConnection con) 
+                      ContentData data,
+                      DatabaseConnection con)
         throws ContentException {
 
         super(manager, true);
@@ -153,16 +153,16 @@ public abstract class Content extends PersistentObject {
             throw new ContentException(e);
         }
     }
-    
+
     /**
-     * Checks if this content object equals another object. This 
+     * Checks if this content object equals another object. This
      * method will only return true if the other object is a content
      * object with the same id.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is identical, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Object obj) {
         if (obj instanceof Content) {
@@ -173,14 +173,14 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Checks if this content object equals another object. This 
+     * Checks if this content object equals another object. This
      * method will only return true if the other object is a content
      * object with the same id.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is identical, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Content obj) {
         return obj != null && getId() == obj.getId();
@@ -188,7 +188,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
@@ -196,11 +196,11 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Checks if this content object revision is online. Note that 
-     * this method does NOT take other revisions into account. A 
+     * Checks if this content object revision is online. Note that
+     * this method does NOT take other revisions into account. A
      * later revision may set different online and offline dates,
-     * causing the content object to actually be offline.   
-     * 
+     * causing the content object to actually be offline.
+     *
      * @return true if the content object revision is online, or
      *         false otherwise
      */
@@ -208,26 +208,26 @@ public abstract class Content extends PersistentObject {
         Date  online = getOnlineDate();
         Date  offline = getOfflineDate();
         Date  now = new Date();
-        
-        return online != null 
+
+        return online != null
             && online.before(now)
             && (offline == null || offline.after(now));
     }
 
     /**
      * Returns the content domain.
-     * 
+     *
      * @return the content domain
-     * 
+     *
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
         return getContentManager().getDomain(getDomainName());
     }
-    
+
     /**
      * Returns the content domain name.
-     * 
+     *
      * @return the content domain name
      */
     public String getDomainName() {
@@ -236,7 +236,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content identifier.
-     * 
+     *
      * @return the content identifier
      */
     public int getId() {
@@ -245,7 +245,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content revision number.
-     * 
+     *
      * @return the content revision number
      */
     public int getRevisionNumber() {
@@ -253,13 +253,13 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Sets the content revision number. Note that the revision zero 
-     * (0) is treated specially in several ways. First, when moving 
+     * Sets the content revision number. Note that the revision zero
+     * (0) is treated specially in several ways. First, when moving
      * from revision zero, the old zero revision will be deleted from
      * the database (corresponding to a revision promotion). Also,
      * when storing a non-zero revision, permissions to publish are
-     * required by save(). 
-     * 
+     * required by save().
+     *
      * @param revision       the new content revision number
      */
     public void setRevisionNumber(int revision) {
@@ -276,7 +276,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content category.
-     * 
+     *
      * @return the content category
      */
     public int getCategory() {
@@ -285,7 +285,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content name.
-     * 
+     *
      * @return the content name
      */
     public String getName() {
@@ -294,7 +294,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Sets the content name.
-     * 
+     *
      * @param name           the new name
      */
     public void setName(String name) {
@@ -303,15 +303,15 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content parent.
-     * 
+     *
      * @return the content parent
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Content getParent() throws ContentException {
         int  parent = getParentId();
-        
+
         if (parent <= 0) {
             return null;
         } else {
@@ -321,7 +321,7 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Sets the content parent.
-     * 
+     *
      * @param parent         the new parent, or null for none
      */
     public void setParent(Content parent) {
@@ -334,36 +334,36 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content parent identifier.
-     * 
+     *
      * @return the content parent identifier
      */
     public int getParentId() {
         return data.getInt(ContentData.PARENT);
     }
-    
+
     /**
      * Sets the content parent identifier.
-     * 
+     *
      * @param parent         the new parent identifier
      */
     public void setParentId(int parent) {
         data.setInt(ContentData.PARENT, parent);
     }
-    
+
     /**
      * Returns the content publishing online date.
-     * 
+     *
      * @return the content publishing online date
      */
     public Date getOnlineDate() {
         Date  date = data.getDate(ContentData.ONLINE);
-        
+
         return (date.getTime() == 0) ? null : date;
     }
 
     /**
      * Sets the content publishing online date.
-     * 
+     *
      * @param online         the new publishing online date
      */
     public void setOnlineDate(Date online) {
@@ -375,18 +375,18 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content publishing offline date.
-     * 
+     *
      * @return the content publishing offline date
      */
     public Date getOfflineDate() {
         Date  date = data.getDate(ContentData.OFFLINE);
-        
+
         return (date.getTime() == 0) ? null : date;
     }
 
     /**
      * Sets the content publishing offline date.
-     * 
+     *
      * @param offline        the new publishing offline date
      */
     public void setOfflineDate(Date offline) {
@@ -398,20 +398,20 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the content last modification date.
-     * 
+     *
      * @return the content last modification date
      */
     public Date getModifiedDate() {
-        return data.getDate(ContentData.MODIFIED); 
+        return data.getDate(ContentData.MODIFIED);
     }
 
     /**
      * Returns the content last modification author. The author name
      * is set automatically by the save method.
-     * 
+     *
      * @return the content last modification author
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public User getAuthor() throws ContentException {
@@ -421,34 +421,34 @@ public abstract class Content extends PersistentObject {
     /**
      * Returns the content last modification author. The author name
      * is set automatically by the save method.
-     * 
+     *
      * @return the content last modification author
      */
     public String getAuthorName() {
         return data.getString(ContentData.AUTHOR);
     }
-    
+
     /**
      * Returns the content revision comment.
-     * 
+     *
      * @return the content revision comment
      */
     public String getComment() {
         return data.getString(ContentData.COMMENT);
     }
-    
+
     /**
      * Sets the content revision comment.
-     * 
+     *
      * @param comment        the content revision comment
      */
     public void setComment(String comment) {
         data.setString(ContentData.COMMENT, comment);
     }
-    
+
     /**
      * Returns an iterator for all the attribute names.
-     * 
+     *
      * @return an iterator for all the attribute names
      */
     protected Iterator getAttributeNames() {
@@ -457,33 +457,33 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns a content attribute value.
-     * 
+     *
      * @param name           the content attribute name
-     * 
+     *
      * @return the content attribute value, or
      *         null if not found
      */
     protected String getAttribute(String name) {
         AttributeData  attr;
-        
+
         attr = (AttributeData) attributes.get(name);
         if (attr == null) {
-            return null; 
+            return null;
         } else {
             return attr.getString(AttributeData.DATA);
         }
     }
-    
+
     /**
-     * Sets a content attribute value. If the attribute does not 
+     * Sets a content attribute value. If the attribute does not
      * exist it will be created.
-     * 
+     *
      * @param name           the content attribute name
      * @param value          the content attribute value
      */
     protected void setAttribute(String name, String value) {
         AttributeData  attr;
-        
+
         attr = (AttributeData) attributes.get(name);
         if (value == null) {
             if (attr != null) {
@@ -506,13 +506,13 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the specified content object revision.
-     * 
+     *
      * @param revision       the content revision
-     * 
+     *
      * @return the content object revision found, or
      *         null if no matching content existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Content getRevision(int revision) throws ContentException {
@@ -523,10 +523,10 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns an array of all content object revisions.
-     * 
+     *
      * @return an array of the content object revisions found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Content[] getAllRevisions() throws ContentException {
@@ -535,12 +535,12 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the lock applicable to this content object. If no lock
-     * has been set on this object, null will be returned. 
-     * 
+     * has been set on this object, null will be returned.
+     *
      * @return the content lock object found, or
      *         null if this object is not locked
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Lock getLock() throws ContentException {
@@ -548,12 +548,12 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns the permissions applicable to this content object. 
-     * This method will not return the inherited permissions. 
-     * 
+     * Returns the permissions applicable to this content object.
+     * This method will not return the inherited permissions.
+     *
      * @return an array of permissions for this object
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Permission[] getPermissions() throws ContentException {
@@ -568,7 +568,7 @@ public abstract class Content extends PersistentObject {
      * @param user            the user performing the operation
      * @param permissions     the array of new permissions
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have admin permissions
@@ -594,16 +594,16 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
         if (getDomain().equals("")) {
             throw new ContentException("no domain set for content object");
         } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() + 
+            throw new ContentException("domain '" + getDomainName() +
                                        "'does not exist");
         } else if (getName().equals("")) {
             throw new ContentException("no name set for content object");
@@ -612,15 +612,15 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Deletes this content revision from the database.
-     * 
+     *
      * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public void deleteRevision(User user) 
+    public void deleteRevision(User user)
         throws ContentException, ContentSecurityException {
 
         DatabaseConnection  con = getDatabaseConnection(getContentManager());
@@ -642,11 +642,11 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Inserts the object data into the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doInsert(User user, DatabaseConnection con)
@@ -667,11 +667,11 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
@@ -699,20 +699,20 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Deletes the object data from the database. This method will 
+     * Deletes the object data from the database. This method will
      * also delete any child content object recursively.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected void doDelete(User user, DatabaseConnection con)
         throws ContentException {
 
         Content[]  children;
-        
+
         children = InternalContent.findByParent(getContentManager(), this);
         try {
             for (int i = 0; i < children.length; i++) {
@@ -729,22 +729,22 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Reads the content attributes from the database. This method 
-     * will add all found attributes to the attributes map. 
-     * 
+     * Reads the content attributes from the database. This method
+     * will add all found attributes to the attributes map.
+     *
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    private void doReadAttributes(DatabaseConnection con) 
-        throws DatabaseObjectException {     
+    private void doReadAttributes(DatabaseConnection con)
+        throws DatabaseObjectException {
 
         ArrayList      list;
         AttributeData  attr;
 
-        list = AttributePeer.doSelectByRevision(getId(), 
-                                                getRevisionNumber(), 
+        list = AttributePeer.doSelectByRevision(getId(),
+                                                getRevisionNumber(),
                                                 con);
         for (int i = 0; i < list.size(); i++) {
             attr = (AttributeData) list.get(i);
@@ -753,14 +753,14 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Writes the content attributes to the database. This method 
-     * will either insert of update each attribute depending on 
-     * whether it is present in the added attributes list or not. 
-     * 
+     * Writes the content attributes to the database. This method
+     * will either insert of update each attribute depending on
+     * whether it is present in the added attributes list or not.
+     *
      * @param con            the database connection to use
      * @param insert         the force insert flag
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     private void doWriteAttributes(DatabaseConnection con, boolean insert)

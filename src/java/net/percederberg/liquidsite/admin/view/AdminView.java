@@ -93,10 +93,10 @@ public class AdminView {
     }
 
     /**
-     * Shows the error message page. When the user presses the 
+     * Shows the error message page. When the user presses the
      * confirmation button on the error page, the browser will be
      * redirected to the specified page.
-     * 
+     *
      * @param request        the request object
      * @param message        the error message
      * @param page           the redirect page
@@ -109,7 +109,7 @@ public class AdminView {
 
     /**
      * Finds all domains readable by a user. The domains will not be
-     * added directly to the result list, but rather only the domain 
+     * added directly to the result list, but rather only the domain
      * names.
      *
      * @param user           the user
@@ -136,20 +136,20 @@ public class AdminView {
     /**
      * Finds all content folders in a site. The folders will not be
      * added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each folder will 
+     * hash map containing only the id and name of each folder will
      * be added.
      *
      * @param user           the user
      * @param site           the content site
      * @param exclude        the folder to exclude, or null
-     * 
+     *
      * @return the list of folders found (in maps)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ArrayList findFolders(User user,
-                                    ContentSite site, 
+                                    ContentSite site,
                                     ContentFolder exclude)
         throws ContentException {
 
@@ -161,19 +161,19 @@ public class AdminView {
     /**
      * Finds all content folders in a site. The folders will not be
      * added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each folder will 
+     * hash map containing only the id and name of each folder will
      * be added.
-     * 
+     *
      * @param user           the user
      * @param baseName       the base name
      * @param parent         the parent site or folder
      * @param exclude        the folder to exclude, or null
      * @param result         the list of folders found (in maps)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private void findFolders(User user, 
+    private void findFolders(User user,
                              String baseName,
                              Content parent,
                              ContentFolder exclude,
@@ -213,24 +213,24 @@ public class AdminView {
      * Finds all content templates in a domain. The templates will
      * not be added directly to the result list, but rather a
      * simplified hash map containing only the id and name of each
-     * template will be added.  
+     * template will be added.
      *
      * @param user           the user
      * @param domain         the domain
      * @param exclude        the template to exclude, or null
      *
      * @return the list of templates found (in maps)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ArrayList findTemplates(User user,
-                                      Domain domain, 
+                                      Domain domain,
                                       ContentTemplate exclude)
         throws ContentException {
 
         ArrayList  result = new ArrayList();
-        
+
         findTemplates(user, "", domain, exclude, result);
         return result;
     }
@@ -239,18 +239,18 @@ public class AdminView {
      * Finds all content templates in a domain. The templates will
      * not be added directly to the result list, but rather a
      * simplified hash map containing only the id and name of each
-     * template will be added.  
-     * 
+     * template will be added.
+     *
      * @param user           the user
      * @param baseName       the base name
      * @param parent         the parent domain or content object
      * @param exclude        the template to exclude, or null
      * @param result         the list of templates found (in maps)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private void findTemplates(User user, 
+    private void findTemplates(User user,
                                String baseName,
                                Object parent,
                                ContentTemplate exclude,
@@ -290,25 +290,25 @@ public class AdminView {
     /**
      * Finds all content sections in a domain. The sections will not
      * be added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each section will 
+     * hash map containing only the id and name of each section will
      * be added.
-     * 
+     *
      * @param user           the user
      * @param domain         the domain
      * @param exclude        the section to exclude, or null
-     * 
+     *
      * @return the list of sections found (in maps)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ArrayList findSections(User user,
-                                     Domain domain, 
+                                     Domain domain,
                                      ContentSection exclude)
         throws ContentException {
 
         ArrayList  result = new ArrayList();
-        
+
         findSections(user, "", domain, exclude, result);
         return result;
     }
@@ -316,19 +316,19 @@ public class AdminView {
     /**
      * Finds all content sections in a domain. The sections will not
      * be added directly to the result list, but rather a simplified
-     * hash map containing only the id and name of each section will 
-     * be added.  
-     * 
+     * hash map containing only the id and name of each section will
+     * be added.
+     *
      * @param user           the user
      * @param baseName       the base name
      * @param parent         the parent domain or content object
      * @param exclude        the section to exclude, or null
      * @param result         the list of sections found (in maps)
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private void findSections(User user, 
+    private void findSections(User user,
                               String baseName,
                               Object parent,
                               ContentSection exclude,

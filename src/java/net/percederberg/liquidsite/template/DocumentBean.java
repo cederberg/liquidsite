@@ -77,7 +77,7 @@ public class DocumentBean implements TemplateHashModel {
 
     /**
      * Creates a new document template bean.
-     * 
+     *
      * @param document       the content document, or null
      */
     DocumentBean(ContentDocument document) {
@@ -86,7 +86,7 @@ public class DocumentBean implements TemplateHashModel {
 
     /**
      * Creates a new document template bean.
-     * 
+     *
      * @param document       the content document, or null
      * @param baseSection    the base section for the document
      */
@@ -95,10 +95,10 @@ public class DocumentBean implements TemplateHashModel {
         this.baseSection = baseSection;
         this.metadata = new MetaDataBean(document);
     }
-    
+
     /**
      * Checks if the hash model is empty.
-     * 
+     *
      * @return false as the hash model is never empty
      */
     public boolean isEmpty() {
@@ -107,11 +107,11 @@ public class DocumentBean implements TemplateHashModel {
 
     /**
      * Returns a document property as a template model. The special
-     * properties "name" and "meta" return the document name and 
+     * properties "name" and "meta" return the document name and
      * meta-data object respectively.
-     * 
+     *
      * @param id             the document property id
-     * 
+     *
      * @return the template model object, or
      *         null if the document property wasn't found
      */
@@ -146,7 +146,7 @@ public class DocumentBean implements TemplateHashModel {
 
     /**
      * Returns the name of a content object. The name will include
-     * any document section up to the base section. 
+     * any document section up to the base section.
      *
      * @param content        the content object
      *
@@ -155,7 +155,7 @@ public class DocumentBean implements TemplateHashModel {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getName(Content content) 
+    private String getName(Content content)
         throws ContentException {
 
         if (content instanceof ContentSection) {
@@ -169,7 +169,7 @@ public class DocumentBean implements TemplateHashModel {
             if (baseSection == null) {
                 return document.getName();
             } else {
-                return getName(document.getParent()) + 
+                return getName(document.getParent()) +
                        document.getName();
             }
         } else {
@@ -189,7 +189,7 @@ public class DocumentBean implements TemplateHashModel {
     private String processPlainText(String str) {
         StringBuffer  buffer = new StringBuffer();
         char          c;
-        
+
         for (int i = 0; i < str.length(); i++) {
             c = str.charAt(i);
             if (c == '<') {
@@ -304,7 +304,7 @@ public class DocumentBean implements TemplateHashModel {
 
         return buffer.toString();
     }
-        
+
     /**
      * Checks if a string starts with an HTML block tag.
      *
@@ -328,13 +328,13 @@ public class DocumentBean implements TemplateHashModel {
     private class MetaDataBean implements TemplateHashModel {
 
         /**
-         * The document being encapsulated. 
+         * The document being encapsulated.
          */
         private ContentDocument document;
 
         /**
          * Creates a new meta-data bean.
-         * 
+         *
          * @param document       the content document
          */
         public MetaDataBean(ContentDocument document) {
@@ -343,7 +343,7 @@ public class DocumentBean implements TemplateHashModel {
 
         /**
          * Checks if the hash model is empty.
-         * 
+         *
          * @return false as the hash model is never empty
          */
         public boolean isEmpty() {
@@ -352,9 +352,9 @@ public class DocumentBean implements TemplateHashModel {
 
         /**
          * Returns a meta-data property as a template model.
-         * 
+         *
          * @param name           the property name
-         * 
+         *
          * @return the template model object, or
          *         null if the property wasn't found
          */

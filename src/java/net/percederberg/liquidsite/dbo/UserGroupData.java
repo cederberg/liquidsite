@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
 
 /**
- * A user group data object. This object encapsulates a row of data 
+ * A user group data object. This object encapsulates a row of data
  * from the LS_USER_GROUP table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -35,7 +35,7 @@ public class UserGroupData extends AbstractData {
      */
     public static final Parameter DOMAIN =
         new StringParameter(UserGroupData.class, "DOMAIN", "");
-    
+
     /**
      * The user parameter.
      */

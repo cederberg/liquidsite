@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -30,7 +30,7 @@ import net.percederberg.liquidsite.db.DatabaseQuery;
 import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
- * A content database peer. This class contains static methods that 
+ * A content database peer. This class contains static methods that
  * handles all accesses to the LS_CONTENT table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -49,47 +49,47 @@ public class ContentPeer extends AbstractPeer {
     private static final ContentPeer PEER = new ContentPeer();
 
     /**
-     * Returns a list of all content object revisions with the 
+     * Returns a list of all content object revisions with the
      * specified id.
-     * 
+     *
      * @param id             the content id
      * @param con            the database connection to use
-     * 
+     *
      * @return the list of content objects found
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectById(int id, 
+    public static ArrayList doSelectById(int id,
                                          DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.select.id");
-        
+
         query.addParameter(id);
         return PEER.selectList(query, con);
     }
 
     /**
      * Returns the content object with the specified id and revision.
-     * 
+     *
      * @param id             the content id
      * @param revision       the content revision
      * @param con            the database connection to use
-     * 
+     *
      * @return the content found, or
      *         null if no matching content existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ContentData doSelectByRevision(int id,
-                                                 int revision, 
+                                                 int revision,
                                                  DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.select.revision");
-        
+
         query.addParameter(id);
         query.addParameter(revision);
         return (ContentData) PEER.select(query, con);
@@ -99,15 +99,15 @@ public class ContentPeer extends AbstractPeer {
      * Returns the content object with the specified id and highest
      * revision. A flag can be set to regard the revision number zero
      * (0) as the highest one.
-     * 
+     *
      * @param id             the content id
      * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
-     * 
+     *
      * @return the content found, or
      *         null if no matching content existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ContentData doSelectByMaxRevision(int id,
@@ -136,15 +136,15 @@ public class ContentPeer extends AbstractPeer {
      * revision of each content object will be returned. A flag can
      * be set to regard the revision number zero (0) as the highest
      * one.
-     * 
+     *
      * @param domain         the domain name
      * @param parent         the parent content id
      * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of all matching content objects
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByParent(String domain,
@@ -157,7 +157,7 @@ public class ContentPeer extends AbstractPeer {
         DatabaseResults  res;
         ArrayList        list = new ArrayList();
         ContentData      data;
-        
+
         query.addParameter(domain);
         query.addParameter(parent);
         res = PEER.execute("reading content list", query, con);
@@ -191,8 +191,8 @@ public class ContentPeer extends AbstractPeer {
      * @param con            the database connection to use
      *
      * @return a list of all matching content objects
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByParents(String domain,
@@ -239,7 +239,7 @@ public class ContentPeer extends AbstractPeer {
      * If multiple objects should match, any one of them can be
      * returned. Matches of old revisions of content objects will be
      * discarded, and only the highest revision of a matching object
-     * is returned. A flag can be set to regard the revision number 
+     * is returned. A flag can be set to regard the revision number
      * zero (0) as the highest one.
      *
      * @param domain         the domain name
@@ -251,7 +251,7 @@ public class ContentPeer extends AbstractPeer {
      * @return the content found, or
      *         null if no matching content existed
      *
-     * @throws DatabaseObjectException if the database couldn't be 
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ContentData doSelectByName(String domain,
@@ -264,7 +264,7 @@ public class ContentPeer extends AbstractPeer {
         DatabaseQuery    query = new DatabaseQuery("content.select.name");
         DatabaseResults  res;
         ContentData      data;
-        
+
         query.addParameter(domain);
         query.addParameter(parent);
         query.addParameter(name);
@@ -286,20 +286,20 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
-     * Returns a list of content objects having the specified 
+     * Returns a list of content objects having the specified
      * category. Only the highest revision of each content object
      * will be returned. A flag can be set to regard the revision
      * number zero (0) as the highest one.
-     * 
+     *
      * @param domain         the domain name
      * @param parent         the parent content id
      * @param category       the category
      * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of all matching content objects
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByCategory(String domain,
@@ -313,7 +313,7 @@ public class ContentPeer extends AbstractPeer {
         DatabaseResults  res;
         ArrayList        list = new ArrayList();
         ContentData      data;
-        
+
         query.addParameter(domain);
         query.addParameter(parent);
         query.addParameter(category);
@@ -333,17 +333,17 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
-     * Inserts a new content object into the database. This method 
+     * Inserts a new content object into the database. This method
      * will assign a new content id if it is set to zero (0).
-     * 
+     *
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static synchronized void doInsert(ContentData data, 
-                                             DatabaseConnection con) 
+    public static synchronized void doInsert(ContentData data,
+                                             DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.insert");
@@ -364,17 +364,17 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(data.getString(ContentData.COMMENT));
         PEER.insert(query, con);
     }
-    
+
     /**
      * Updates a content object in the database.
-     * 
+     *
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doUpdate(ContentData data, DatabaseConnection con) 
+    public static void doUpdate(ContentData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.update");
@@ -390,20 +390,20 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(data.getInt(ContentData.REVISION));
         PEER.update(query, con);
     }
-    
+
     /**
      * Deletes a content object from the database. This method will
-     * delete all revisions, as well as related attributes, 
-     * permissions and locks. Note, however, that it will NOT delete 
+     * delete all revisions, as well as related attributes,
+     * permissions and locks. Note, however, that it will NOT delete
      * referenced child objects.
-     * 
+     *
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDelete(ContentData data, DatabaseConnection con) 
+    public static void doDelete(ContentData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete");
@@ -415,16 +415,16 @@ public class ContentPeer extends AbstractPeer {
         PermissionPeer.doDeleteContent(id, con);
         LockPeer.doDeleteContent(id, con);
     }
-    
+
     /**
-     * Deletes all content objects in a domain from the database. 
+     * Deletes all content objects in a domain from the database.
      * This method also deletes all attributes, permissions and locks
      * in the domain.
-     * 
+     *
      * @param domain         the domain name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static void doDeleteDomain(String domain, DatabaseConnection con)
@@ -438,20 +438,20 @@ public class ContentPeer extends AbstractPeer {
         PermissionPeer.doDeleteDomain(domain, con);
         LockPeer.doDeleteDomain(domain, con);
     }
-    
+
     /**
-     * Deletes a content object revision from the database. This 
+     * Deletes a content object revision from the database. This
      * method also deletes all related attributes.
-     * 
+     *
      * @param id             the content identifier
      * @param revision       the content revision
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteRevision(int id, 
-                                        int revision, 
+    public static void doDeleteRevision(int id,
+                                        int revision,
                                         DatabaseConnection con)
         throws DatabaseObjectException {
 
@@ -462,20 +462,20 @@ public class ContentPeer extends AbstractPeer {
         PEER.delete(query, con);
         AttributePeer.doDeleteRevision(id, revision, con);
     }
-    
+
     /**
-     * Returns a new unique content identifier. This method will 
-     * search the database for the maximum content identifier 
+     * Returns a new unique content identifier. This method will
+     * search the database for the maximum content identifier
      * currently used and add one to it.
-     * 
+     *
      * @param con            the database connection to use
-     * 
+     *
      * @return the new unique content identifier
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    private static int getNewId(DatabaseConnection con) 
+    private static int getNewId(DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery    query = new DatabaseQuery("content.select.maxid");
@@ -510,7 +510,7 @@ public class ContentPeer extends AbstractPeer {
             for (int i = 0; i < value.length(); i++) {
                 c = value.charAt(i);
                 if (c == '\'') {
-                    sql.append("\\'"); 
+                    sql.append("\\'");
                 } else {
                     sql.append(c);
                 }
@@ -545,7 +545,7 @@ public class ContentPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

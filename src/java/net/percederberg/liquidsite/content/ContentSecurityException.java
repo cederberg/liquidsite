@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
 
 /**
- * A content security exception. This exception is thrown when the 
+ * A content security exception. This exception is thrown when the
  * content object couldn't be read or written by a specific user.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -37,7 +37,7 @@ public class ContentSecurityException extends Exception {
 
     /**
      * Creates a new content security exception.
-     * 
+     *
      * @param message        the error message
      */
     public ContentSecurityException(String message) {
@@ -46,7 +46,7 @@ public class ContentSecurityException extends Exception {
 
     /**
      * Creates a new content security exception.
-     * 
+     *
      * @param user           the user attempting the operation
      * @param op             the operation name
      * @param obj            the object accessed
@@ -58,7 +58,7 @@ public class ContentSecurityException extends Exception {
 
     /**
      * Creates a new content security exception.
-     * 
+     *
      * @param user           the user attempting the operation
      * @param op             the operation name
      * @param obj            the object accessed
@@ -70,7 +70,7 @@ public class ContentSecurityException extends Exception {
 
     /**
      * Creates a new content security exception.
-     * 
+     *
      * @param user           the user attempting the operation
      * @param op             the operation name
      * @param obj            the object accessed
@@ -82,7 +82,7 @@ public class ContentSecurityException extends Exception {
 
     /**
      * Creates a new content security exception.
-     * 
+     *
      * @param user           the user attempting the operation
      * @param op             the operation name
      * @param obj            the object accessed
@@ -94,7 +94,7 @@ public class ContentSecurityException extends Exception {
 
     /**
      * Returns the detailed error message.
-     * 
+     *
      * @return the detailed error message
      */
     public String getMessage() {

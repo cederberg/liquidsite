@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin;
@@ -25,8 +25,8 @@ import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 
 /**
- * The administration base dialog request handler. This class 
- * provides some of the basic dialog handling for all administration 
+ * The administration base dialog request handler. This class
+ * provides some of the basic dialog handling for all administration
  * workflows.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -35,12 +35,12 @@ import net.percederberg.liquidsite.admin.view.AdminView;
 abstract class AdminDialogHandler extends AdminFormHandler {
 
     /**
-     * Creates a new administration dialog handler. If the content 
-     * lock flag is set, a referenced content object will be locked 
-     * when starting the workflow. Upon further requests the 
-     * existance of the lock will be checked. When the workflow 
+     * Creates a new administration dialog handler. If the content
+     * lock flag is set, a referenced content object will be locked
+     * when starting the workflow. Upon further requests the
+     * existance of the lock will be checked. When the workflow
      * exits, finally, the lock will be removed.
-     * 
+     *
      * @param start          the start page (originating page)
      * @param page           the form page
      * @param lock           the content locking flag
@@ -52,7 +52,7 @@ abstract class AdminDialogHandler extends AdminFormHandler {
     /**
      * Displays the workflow finished page. By default this method
      * sends a redirect to the start page.
-     *  
+     *
      * @param request        the request object
      */
     protected void displayDone(Request request) {
@@ -60,10 +60,10 @@ abstract class AdminDialogHandler extends AdminFormHandler {
     }
 
     /**
-     * Displays the workflow error page. By default this method 
+     * Displays the workflow error page. By default this method
      * displays the site view error page and then redirects to the
      * start page.
-     * 
+     *
      * @param request        the request object
      * @param message        the error message
      */

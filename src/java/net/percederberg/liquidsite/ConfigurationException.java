@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
 
 /**
- * A configuration exception. This exception is thrown when the 
- * configuration file or database table couldn't be properly read or 
+ * A configuration exception. This exception is thrown when the
+ * configuration file or database table couldn't be properly read or
  * written.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -38,7 +38,7 @@ public class ConfigurationException extends Exception {
 
     /**
      * Creates a new configuration exception.
-     * 
+     *
      * @param message        the error message
      */
     public ConfigurationException(String message) {
@@ -47,16 +47,16 @@ public class ConfigurationException extends Exception {
 
     /**
      * Creates a new configuration exception.
-     * 
+     *
      * @param cause          the root cause to the error
      */
     public ConfigurationException(Exception cause) {
         this("configuration error", cause);
     }
-    
+
     /**
      * Creates a new configuration exception.
-     * 
+     *
      * @param message        the error message
      * @param cause          the root cause to the error
      */

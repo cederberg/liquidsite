@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 /**
  * A content cache manager. This class will be used to cache objects
- * upon retrieval from a caching content manager. Only a single 
+ * upon retrieval from a caching content manager. Only a single
  * instance exists, in order to easily guarantee cache consistency.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -41,7 +41,7 @@ class CacheManager {
 
     /**
      * The cache manager instance.
-     * 
+     *
      * @return the cache manager instance
      */
     public static CacheManager getInstance() {
@@ -62,7 +62,7 @@ class CacheManager {
 
     /**
      * The site cache. This is a map of site arrays, containing the
-     * highest revision of each one (no work revisions). It may 
+     * highest revision of each one (no work revisions). It may
      * contain sites that are currently offline. The site arrays are
      * indexed by their domain name.
      */
@@ -76,10 +76,10 @@ class CacheManager {
 
     /**
      * Adds a persistent object to the cache.
-     * 
+     *
      * @param obj            the object to add
      */
-    public void add(PersistentObject obj) { 
+    public void add(PersistentObject obj) {
         remove(obj);
         if (obj instanceof Domain) {
             domains.put(((Domain) obj).getName(), obj);
@@ -87,7 +87,7 @@ class CacheManager {
             hosts.put(((Host) obj).getName(), obj);
         }
     }
-    
+
     /**
      * Adds a set of persistent objects to the cache. The objects
      * will be added individually. That is, the array itself will not
@@ -103,7 +103,7 @@ class CacheManager {
 
     /**
      * Adds an array of content sites to the cache.
-     * 
+     *
      * @param domain         the domain to use for retrieval
      * @param content        the array of content sites
      */
@@ -113,7 +113,7 @@ class CacheManager {
 
     /**
      * Removes a specified persistent object from the cache.
-     * 
+     *
      * @param obj            the object to remove
      */
     public void remove(PersistentObject obj) {
@@ -137,8 +137,8 @@ class CacheManager {
     }
 
     /**
-     * Returns a collection of all domains in the cache. 
-     * 
+     * Returns a collection of all domains in the cache.
+     *
      * @return the collection of domains in the cache
      */
     public Collection getAllDomains() {
@@ -146,10 +146,10 @@ class CacheManager {
     }
 
     /**
-     * Returns a domain from the cache. 
-     * 
+     * Returns a domain from the cache.
+     *
      * @param name           the domain name
-     * 
+     *
      * @return the domain found, or
      *         null if not present in the cache
      */
@@ -171,9 +171,9 @@ class CacheManager {
 
     /**
      * Returns all sites in a domain.
-     * 
+     *
      * @param domain         the domain
-     * 
+     *
      * @return the array of sites in the domain, or
      *         null if not present in the cache
      */

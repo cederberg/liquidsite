@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin;
@@ -43,7 +43,7 @@ import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
- * The site add request handler. This class handles the add workflow 
+ * The site add request handler. This class handles the add workflow
  * for the site view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -61,14 +61,14 @@ class SiteAddFormHandler extends AdminFormHandler {
     /**
      * Displays a form for the specified workflow step. This method
      * will NOT be called when returning to the start page.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
@@ -97,20 +97,20 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Validates a form for the specified workflow step. If the form
-     * validation fails in this step, the form page for the workflow 
-     * step will be displayed again with an 'error' attribute 
+     * validation fails in this step, the form page for the workflow
+     * step will be displayed again with an 'error' attribute
      * containing the message in the validation exception.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @throws FormValidationException if the form request data 
+     *
+     * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        SiteEditFormHandler  edit = SiteEditFormHandler.getInstance(); 
+        SiteEditFormHandler  edit = SiteEditFormHandler.getInstance();
         String               category = request.getParameter("category", "");
         FileParameter        param;
         String               message;
@@ -125,7 +125,7 @@ class SiteAddFormHandler extends AdminFormHandler {
             if (category.equals("file")) {
                 param = request.getFileParameter("upload");
                 if (param == null || param.getSize() <= 0) {
-                    message = "No file upload specified"; 
+                    message = "No file upload specified";
                     throw new FormValidationException("upload", message);
                 }
             }
@@ -135,26 +135,26 @@ class SiteAddFormHandler extends AdminFormHandler {
     /**
      * Handles a validated form for the specified workflow step. This
      * method returns the next workflow step, i.e. the step used when
-     * calling the display method. If the special zero (0) workflow 
+     * calling the display method. If the special zero (0) workflow
      * step is returned, the workflow is assumed to have terminated.
-     * Note that this method also allows additional validation to 
-     * occur. By returning the incoming workflow step number and 
+     * Note that this method also allows additional validation to
+     * occur. By returning the incoming workflow step number and
      * setting the appropriate request attributes the same results as
      * in the normal validate method can be achieved. For recoverable
      * errors, this is the recommended course of action.
-     *  
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @return the next workflow step, or 
+     *
+     * @return the next workflow step, or
      *         zero (0) if the workflow has finished
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    protected int handleStep(Request request, int step) 
+    protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
         String  category = request.getParameter("category", "");
@@ -180,24 +180,24 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Handles the add domain form. The parent domain object must be
-     * specified in case the uses chooses to go back to the 
+     * specified in case the uses chooses to go back to the
      * previous step.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent domain object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddDomain(Request request, Domain parent) 
+    private void handleAddDomain(Request request, Domain parent)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Domain          domain;
         Host            host;
-        
+
         domain = new Domain(manager, request.getParameter("name"));
         domain.setDescription(request.getParameter("description"));
         domain.save(request.getUser());
@@ -209,22 +209,22 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Handles the add site form.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent domain object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddSite(Request request, Domain parent) 
+    private void handleAddSite(Request request, Domain parent)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         User            user = request.getUser();
         ContentSite     site;
-        
+
         site = new ContentSite(manager, parent);
         site.setName(request.getParameter("name"));
         site.setProtocol(request.getParameter("protocol"));
@@ -239,22 +239,22 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Handles the add folder form.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddFolder(Request request, Content parent) 
+    private void handleAddFolder(Request request, Content parent)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         User            user = request.getUser();
         ContentFolder   folder;
-        
+
         folder = new ContentFolder(manager, parent);
         folder.setName(request.getParameter("name"));
         folder.setComment(request.getParameter("comment"));
@@ -264,16 +264,16 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Handles the add page form.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddPage(Request request, Content parent) 
+    private void handleAddPage(Request request, Content parent)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
@@ -283,7 +283,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         String          name;
         String          value;
         int             id;
-        
+
         page = new ContentPage(manager, parent);
         page.setName(request.getParameter("name"));
         try {
@@ -312,23 +312,23 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Handles the add file form.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddFile(Request request, Content parent) 
+    private void handleAddFile(Request request, Content parent)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         User            user = request.getUser();
         FileParameter   param;
         ContentFile     file;
-        
+
         try {
             param = request.getFileParameter("upload");
             file = new ContentFile(manager, parent, param.getName());
@@ -344,16 +344,16 @@ class SiteAddFormHandler extends AdminFormHandler {
 
     /**
      * Handles the add template form.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent domain or template object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddTemplate(Request request, Object parent) 
+    private void handleAddTemplate(Request request, Object parent)
         throws ContentException, ContentSecurityException {
 
         ContentManager   manager = AdminUtils.getContentManager();
@@ -362,7 +362,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         Iterator         iter = params.keySet().iterator();
         String           name;
         String           value;
-        
+
         if (parent instanceof Domain) {
             template = new ContentTemplate(manager, (Domain) parent);
         } else {

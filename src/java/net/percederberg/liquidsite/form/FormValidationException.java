@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.form;
 
 /**
- * A form validation exception. This exception is thrown when an 
+ * A form validation exception. This exception is thrown when an
  * error is encountered while validating form input.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -34,10 +34,10 @@ public class FormValidationException extends Exception {
      * The field name.
      */
     private String field;
-    
+
     /**
      * Creates a new form validation exception.
-     * 
+     *
      * @param field          the field name
      * @param message        the error message
      */
@@ -48,7 +48,7 @@ public class FormValidationException extends Exception {
 
     /**
      * Returns the field name.
-     * 
+     *
      * @return the field name
      */
     public String getField() {

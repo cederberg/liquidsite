@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
 
 /**
- * A configuration data object. This object encapsulates a row of 
+ * A configuration data object. This object encapsulates a row of
  * data from the LS_CONFIGURATION table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -41,7 +41,7 @@ public class ConfigurationData extends AbstractData {
      */
     public static final Parameter VALUE =
         new StringParameter(ConfigurationData.class, "VALUE", "");
-    
+
     /**
      * Creates a new configuration data object with default values.
      */

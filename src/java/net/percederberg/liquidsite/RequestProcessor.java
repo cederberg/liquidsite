@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -59,7 +59,7 @@ public abstract class RequestProcessor {
 
     /**
      * Creates a new request processor.
-     * 
+     *
      * @param manager        the content manager to use
      * @param baseDir        the base directory for application files
      */
@@ -67,10 +67,10 @@ public abstract class RequestProcessor {
         this.manager = manager;
         this.baseDir = baseDir;
     }
-    
+
     /**
      * Returns the content manager used by this processor.
-     * 
+     *
      * @return the content manager used by this processor
      */
     protected ContentManager getContentManager() {
@@ -80,9 +80,9 @@ public abstract class RequestProcessor {
     /**
      * Returns an application file. The file path should be specified
      * relative to the base application directory.
-     * 
+     *
      * @param path           the relative file path
-     * 
+     *
      * @return the absolute file path
      */
     protected File getFile(String path) {
@@ -91,9 +91,9 @@ public abstract class RequestProcessor {
 
     /**
      * Processes a request.
-     * 
+     *
      * @param request        the request to process
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      */
     public abstract void process(Request request) throws RequestException;
@@ -112,13 +112,13 @@ public abstract class RequestProcessor {
      * @param request        the request object
      * @param parent         the content parent
      * @param path           the request path after the parent
-     * 
+     *
      * @return the content object corresponding to the path, or
      *         null if no matching content was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     * @throws ContentSecurityException if the specified content 
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
      *             object wasn't readable by the user
      */
     protected Content locatePage(Request request, Content parent, String path)
@@ -162,13 +162,13 @@ public abstract class RequestProcessor {
      * @param request        the request object
      * @param parent         the content parent
      * @param name           the child name
-     * 
+     *
      * @return the content object corresponding to the name, or
      *         null if no matching content was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     * @throws ContentSecurityException if the specified content 
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
      *             object wasn't readable by the user
      */
     private Content locateChild(Request request,
@@ -207,13 +207,13 @@ public abstract class RequestProcessor {
      * @param request        the request object
      * @param page           the content page
      * @param name           the child name
-     * 
+     *
      * @return the content document corresponding to the name, or
      *         null if no matching content was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     * @throws ContentSecurityException if the specified content 
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
      *             object wasn't readable by the user
      */
     private Content locateDocument(Request request,
@@ -238,24 +238,24 @@ public abstract class RequestProcessor {
     }
 
     /**
-     * Finds the index page for a content parent. This method does 
-     * NOT control access permissions and should thus ONLY be used 
+     * Finds the index page for a content parent. This method does
+     * NOT control access permissions and should thus ONLY be used
      * internally in the request processing.
-     * 
+     *
      * @param request        the request object
      * @param parent         the content parent
-     * 
+     *
      * @return the index content object, or
      *         null if no matching content was found
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     * @throws ContentSecurityException if the specified content 
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
      *             object wasn't readable by the user
      */
-    private Content locateIndexPage(Request request, Content parent) 
+    private Content locateIndexPage(Request request, Content parent)
         throws ContentException, ContentSecurityException {
-            
+
         String[]  index = { "index.html", "index.htm" };
         Content   page;
 
@@ -273,17 +273,17 @@ public abstract class RequestProcessor {
      *
      * @param request        the request object
      * @param content        the content object requested
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly 
-     * @throws ContentSecurityException if the requested content 
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the requested content
      *             object wasn't readable by the user
-     * @throws TemplateException if the page template couldn't be 
-     *             processed correctly 
+     * @throws TemplateException if the page template couldn't be
+     *             processed correctly
      * @throws RequestException if the content wasn't found
      */
     protected void sendContent(Request request, Content content)
-        throws ContentException, ContentSecurityException, 
+        throws ContentException, ContentSecurityException,
                TemplateException, RequestException {
 
         if (content instanceof ContentSite) {
@@ -318,11 +318,11 @@ public abstract class RequestProcessor {
      *
      * @param request        the request object
      * @param page           the page requested
-     * 
-     * @throws TemplateException if the page template couldn't be 
-     *             processed correctly 
+     *
+     * @throws TemplateException if the page template couldn't be
+     *             processed correctly
      */
-    private void sendContentPage(Request request, ContentPage page) 
+    private void sendContentPage(Request request, ContentPage page)
         throws TemplateException {
 
         User          user = request.getUser();

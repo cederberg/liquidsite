@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * A database query. This class encapsulates an SQL query or 
+ * A database query. This class encapsulates an SQL query or
  * statement that can be executed on a database connection.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -49,31 +49,31 @@ public class DatabaseQuery {
      * The query parameters.
      */
     private ArrayList params = new ArrayList();
-    
+
     /**
      * Creates a new empty database query. In order to execute this
      * query, the SQL text must be set.
-     * 
+     *
      * @see #setSql
      */
     public DatabaseQuery() {
     }
 
     /**
-     * Creates a new database query with the specified name. The 
+     * Creates a new database query with the specified name. The
      * query name can be used by the database connector to retrieve
      * the SQL for the query.
-     * 
+     *
      * @param name           the query name
      */
     public DatabaseQuery(String name) {
         this.name = name;
     }
-    
+
     /**
-     * Checks if this query has SQL text. This method will return 
-     * false for named queries, until they have been executed once. 
-     * 
+     * Checks if this query has SQL text. This method will return
+     * false for named queries, until they have been executed once.
+     *
      * @return true if the query has SQL text, or
      *         false otherwise
      */
@@ -82,10 +82,10 @@ public class DatabaseQuery {
     }
 
     /**
-     * Checks if this database query will create a result. This 
+     * Checks if this database query will create a result. This
      * method will always return false, if no SQL has been set to
      * the query.
-     * 
+     *
      * @return true if the query will return a result, or
      *         false otherwise
      */
@@ -95,13 +95,13 @@ public class DatabaseQuery {
         if (sql != null) {
             str = sql.trim().toUpperCase();
         }
-        return str.startsWith("SELECT ") 
+        return str.startsWith("SELECT ")
             || str.startsWith("SHOW ");
-    }    
+    }
 
     /**
      * Returns the query name.
-     * 
+     *
      * @return the query name, or
      *         null if no name has been set
      */
@@ -111,9 +111,9 @@ public class DatabaseQuery {
 
     /**
      * Returns the SQL text for the query.
-     * 
+     *
      * @return the SQL text for the query, or
-     *         null if no SQL text has been set 
+     *         null if no SQL text has been set
      */
     public String getSql() {
         return sql;
@@ -123,7 +123,7 @@ public class DatabaseQuery {
      * Sets the SQL text for the query. This is normally not needed
      * when using named queries, as the database connector will then
      * retrieve the SQL text and call this method.
-     * 
+     *
      * @param sql            the SQL text
      */
     public void setSql(String sql) {
@@ -132,18 +132,18 @@ public class DatabaseQuery {
 
     /**
      * Returns the number of query parameters.
-     * 
+     *
      * @return the number of query parameters
      */
     public int getParameterCount() {
         return params.size();
     }
-    
+
     /**
      * Returns a query parameter.
-     * 
+     *
      * @param pos            the parameter position, 0 <= pos < count
-     * 
+     *
      * @return the query parameter object
      */
     public Object getParameter(int pos) {
@@ -153,7 +153,7 @@ public class DatabaseQuery {
     /**
      * Adds a query parameter. Note that this method DOES NOT support
      * adding arrays are parameters.
-     * 
+     *
      * @param obj            the query parameter
      */
     public void addParameter(Object obj) {
@@ -162,21 +162,21 @@ public class DatabaseQuery {
         }
         params.add(obj);
     }
-    
+
     /**
      * Adds an integer query parameter.
-     * 
+     *
      * @param value          the query parameter value
      */
     public void addParameter(int value) {
         addParameter(new Integer(value));
     }
-    
+
     /**
-     * Adds a boolean query parameter. This method converts the 
-     * boolean value to an integer before adding it, using zero (0) 
+     * Adds a boolean query parameter. This method converts the
+     * boolean value to an integer before adding it, using zero (0)
      * for false and one (1) for true.
-     * 
+     *
      * @param value          the query parameter value
      */
     public void addParameter(boolean value) {
@@ -186,10 +186,10 @@ public class DatabaseQuery {
             addParameter(0);
         }
     }
-    
+
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {

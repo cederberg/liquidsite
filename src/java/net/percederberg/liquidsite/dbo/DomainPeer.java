@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -42,54 +42,54 @@ public final class DomainPeer extends AbstractPeer {
 
     /**
      * Returns a list of all domains in the database.
-     * 
+     *
      * @param con            the database connection to use
-     * 
+     *
      * @return a list of all domains in the database
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectAll(DatabaseConnection con) 
+    public static ArrayList doSelectAll(DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.select.all");
-        
+
         return PEER.selectList(query, con);
     }
 
     /**
      * Returns a domain with a specified name.
-     * 
+     *
      * @param name           the domain name
      * @param con            the database connection to use
-     * 
+     *
      * @return the domain found, or
      *         null if no matching domain existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static DomainData doSelectByName(String name, 
+    public static DomainData doSelectByName(String name,
                                             DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.select.name");
-        
+
         query.addParameter(name);
         return (DomainData) PEER.select(query, con);
     }
 
     /**
      * Inserts a new domain into the database.
-     * 
+     *
      * @param data           the domain data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doInsert(DomainData data, DatabaseConnection con) 
+    public static void doInsert(DomainData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.insert");
@@ -99,17 +99,17 @@ public final class DomainPeer extends AbstractPeer {
         query.addParameter(data.getString(DomainData.OPTIONS));
         PEER.insert(query, con);
     }
-    
+
     /**
      * Updates a domain in the database.
-     * 
+     *
      * @param data           the domain data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doUpdate(DomainData data, DatabaseConnection con) 
+    public static void doUpdate(DomainData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.update");
@@ -119,17 +119,17 @@ public final class DomainPeer extends AbstractPeer {
         query.addParameter(data.getString(DomainData.NAME));
         PEER.update(query, con);
     }
-    
+
     /**
      * Deletes a domain from the database.
-     * 
+     *
      * @param data           the domain data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDelete(DomainData data, DatabaseConnection con) 
+    public static void doDelete(DomainData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.delete");
@@ -142,7 +142,7 @@ public final class DomainPeer extends AbstractPeer {
         HostPeer.doDeleteDomain(domain, con);
         ContentPeer.doDeleteDomain(domain, con);
     }
-    
+
     /**
      * Creates a new domain database peer.
      */
@@ -152,7 +152,7 @@ public final class DomainPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

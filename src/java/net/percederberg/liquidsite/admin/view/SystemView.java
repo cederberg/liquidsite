@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin.view;
@@ -24,7 +24,7 @@ package net.percederberg.liquidsite.admin.view;
 import net.percederberg.liquidsite.Request;
 
 /**
- * A helper class for the system view. This class contains methods 
+ * A helper class for the system view. This class contains methods
  * for creating the HTML responses to the pages in the system view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>

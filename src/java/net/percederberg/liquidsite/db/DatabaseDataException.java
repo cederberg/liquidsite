@@ -16,16 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
 
 /**
- * A database data exception. This exception is thrown when the 
+ * A database data exception. This exception is thrown when the
  * results of a database query or statement didn't match the expected
- * results. This is normally due to references to an invalid column 
- * name, an incompatible data type, or a row or column index being 
+ * results. This is normally due to references to an invalid column
+ * name, an incompatible data type, or a row or column index being
  * out of bounds.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -35,7 +35,7 @@ public class DatabaseDataException extends Exception {
 
     /**
      * Creates a new database data exception.
-     * 
+     *
      * @param message        the error message
      */
     public DatabaseDataException(String message) {

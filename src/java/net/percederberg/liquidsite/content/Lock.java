@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -49,14 +49,14 @@ public class Lock extends PersistentObject {
 
     /**
      * Returns the lock object with the specified content id.
-     * 
+     *
      * @param manager        the content manager to use
      * @param content        the content object
-     * 
+     *
      * @return the lock found, or
      *         null if no matching lock existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static Lock findByContent(ContentManager manager, Content content)
@@ -82,8 +82,8 @@ public class Lock extends PersistentObject {
 
     /**
      * Creates a new lock with default values.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param content        the content object
      */
     public Lock(ContentManager manager, Content content) {
@@ -97,8 +97,8 @@ public class Lock extends PersistentObject {
 
     /**
      * Creates a new lock from a data object.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the lock data object
      */
     private Lock(ContentManager manager, LockData data) {
@@ -107,14 +107,14 @@ public class Lock extends PersistentObject {
     }
 
     /**
-     * Checks if this lock equals another object. This method will 
-     * only return true if the other object is a lock with the same 
+     * Checks if this lock equals another object. This method will
+     * only return true if the other object is a lock with the same
      * content identifier.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical lock, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Object obj) {
         if (obj instanceof Permission) {
@@ -125,14 +125,14 @@ public class Lock extends PersistentObject {
     }
 
     /**
-     * Checks if this lock equals another object. This method will 
-     * only return true if the other object is a lock with the same 
+     * Checks if this lock equals another object. This method will
+     * only return true if the other object is a lock with the same
      * content identifier.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical lock, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Lock obj) {
         return getContentId() == obj.getContentId();
@@ -140,12 +140,12 @@ public class Lock extends PersistentObject {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
         StringBuffer  buffer = new StringBuffer();
-        
+
         buffer.append("Domain: ");
         buffer.append(getDomainName());
         buffer.append(", Content: ");
@@ -157,46 +157,46 @@ public class Lock extends PersistentObject {
 
         return buffer.toString();
     }
-    
+
     /**
      * Checks if the specified user is the lock owner.
-     * 
+     *
      * @param user           the user to check
-     * 
+     *
      * @return true if the user is the lock owner, or
      *         false otherwise
      */
     public boolean isOwner(User user) {
         return user != null
-            && getUserName().equals(user.getName()); 
+            && getUserName().equals(user.getName());
     }
 
     /**
      * Returns the content domain.
-     * 
+     *
      * @return the content domain
-     * 
+     *
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
         return getContentManager().getDomain(getDomainName());
     }
-    
+
     /**
      * Returns the content domain name
-     * 
+     *
      * @return the content domain name
      */
     public String getDomainName() {
         return data.getString(LockData.DOMAIN);
     }
-    
+
     /**
      * Returns the content object.
-     * 
+     *
      * @return the content object
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Content getContent() throws ContentException {
@@ -205,7 +205,7 @@ public class Lock extends PersistentObject {
 
     /**
      * Returns the content identifier.
-     * 
+     *
      * @return the content identifier
      */
     public int getContentId() {
@@ -214,10 +214,10 @@ public class Lock extends PersistentObject {
 
     /**
      * Returns the lock owner user.
-     * 
+     *
      * @return the lock owner user
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public User getUser() throws ContentException {
@@ -226,7 +226,7 @@ public class Lock extends PersistentObject {
 
     /**
      * Returns the lock owner user name.
-     * 
+     *
      * @return the lock owner user name
      */
     public String getUserName() {
@@ -235,7 +235,7 @@ public class Lock extends PersistentObject {
 
     /**
      * Returns the lock acquired date.
-     * 
+     *
      * @return the lock acquired date
      */
     public Date getAcquiredDate() {
@@ -243,16 +243,16 @@ public class Lock extends PersistentObject {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
         if (getDomainName().equals("")) {
             throw new ContentException("no domain set for lock object");
         } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() + 
+            throw new ContentException("domain '" + getDomainName() +
                                        "'does not exist");
         } else if (getContentId() <= 0) {
             throw new ContentException("no content object set for lock");
@@ -261,11 +261,11 @@ public class Lock extends PersistentObject {
 
     /**
      * Inserts the object data into the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doInsert(User user, DatabaseConnection con)
@@ -284,11 +284,11 @@ public class Lock extends PersistentObject {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
@@ -299,11 +299,11 @@ public class Lock extends PersistentObject {
 
     /**
      * Deletes the object data from the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected void doDelete(User user, DatabaseConnection con)

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -48,24 +48,24 @@ public abstract class PersistentObject {
     private ContentManager manager;
 
     /**
-     * The persistent data flag. This flag should be set when the 
-     * object is read or written to the database. 
+     * The persistent data flag. This flag should be set when the
+     * object is read or written to the database.
      */
     private boolean persistent = false;
 
     /**
      * Returns the content manager database connector.
-     * 
+     *
      * @param manager        the content manager to use
-     * 
+     *
      * @return the content manager database connector
-     * 
+     *
      * @throws ContentException if no database connector was
      *             available
      */
-    static DatabaseConnector getDatabase(ContentManager manager) 
+    static DatabaseConnector getDatabase(ContentManager manager)
         throws ContentException {
-        
+
         DatabaseConnector  db;
 
         db = manager.getApplication().getDatabase();
@@ -78,17 +78,17 @@ public abstract class PersistentObject {
 
     /**
      * Returns a database connection.
-     * 
+     *
      * @param manager        the content manager to use
      *
      * @return a database connection
-     * 
+     *
      * @throws ContentException if no database connector is available
      *             or no database connection could be made
      */
-    static DatabaseConnection getDatabaseConnection(ContentManager manager) 
+    static DatabaseConnection getDatabaseConnection(ContentManager manager)
         throws ContentException {
-        
+
         try {
             return getDatabase(manager).getConnection();
         } catch (DatabaseConnectionException e) {
@@ -99,7 +99,7 @@ public abstract class PersistentObject {
 
     /**
      * Disposes of a database connection.
-     * 
+     *
      * @param manager        the content manager to use
      * @param con            the database connection
      */
@@ -114,14 +114,14 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Encodes a map into a string. The map values or keys must 
+     * Encodes a map into a string. The map values or keys must
      * consist of normal ASCII characters, and may NOT contain the
      * ':' or '=' characters as they are used in the encoding.
      *
      * @param map            the map to encode
-     *  
+     *
      * @return the encoded map string
-     * 
+     *
      * @see #decodeMap
      */
     protected static String encodeMap(HashMap map) {
@@ -150,9 +150,9 @@ public abstract class PersistentObject {
      * been encoded with the encodeMap method.
      *
      * @param str            the encoded string
-     *  
+     *
      * @return the unencoded map
-     * 
+     *
      * @see #encodeMap
      */
     protected static HashMap decodeMap(String str) {
@@ -187,7 +187,7 @@ public abstract class PersistentObject {
     /**
      * Creates a new persistent object.
      *
-     * @param manager        the content manager to use 
+     * @param manager        the content manager to use
      * @param persistent     the persistent flag
      */
     protected PersistentObject(ContentManager manager,
@@ -198,9 +198,9 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Checks if this object is persistent. I.e. if it has been 
+     * Checks if this object is persistent. I.e. if it has been
      * stored to the database.
-     * 
+     *
      * @return true if the object is persistent, or
      *         false otherwise
      */
@@ -209,13 +209,13 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Checks the read access for a user. 
+     * Checks the read access for a user.
      *
      * @param user           the user to check, or null for none
-     * 
+     *
      * @return true if the user has read access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -229,10 +229,10 @@ public abstract class PersistentObject {
      * Checks the write access for a user.
      *
      * @param user           the user to check, or null for none
-     * 
+     *
      * @return true if the user has write access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -246,10 +246,10 @@ public abstract class PersistentObject {
      * Checks the publish access for a user.
      *
      * @param user           the user to check, or null for none
-     * 
+     *
      * @return true if the user has publish access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -263,14 +263,14 @@ public abstract class PersistentObject {
      * Checks the admin access for a user.
      *
      * @param user           the user to check, or null for none
-     * 
+     *
      * @return true if the user has admin access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public final boolean hasAdminAccess(User user) 
+    public final boolean hasAdminAccess(User user)
         throws ContentException {
 
         return SecurityManager.getInstance().hasAdminAccess(user, this);
@@ -278,7 +278,7 @@ public abstract class PersistentObject {
 
     /**
      * Returns the content manager used by this object.
-     * 
+     *
      * @return the content manager used by this object
      */
     public ContentManager getContentManager() {
@@ -287,15 +287,15 @@ public abstract class PersistentObject {
 
     /**
      * Saves this object to the database.
-     * 
+     *
      * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public final void save(User user) 
+    public final void save(User user)
         throws ContentException, ContentSecurityException {
 
         DatabaseConnection  con;
@@ -314,12 +314,12 @@ public abstract class PersistentObject {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public final void save(User user, DatabaseConnection con) 
+    public final void save(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
         // Save to database
@@ -338,15 +338,15 @@ public abstract class PersistentObject {
 
     /**
      * Deletes this object from the database.
-     * 
+     *
      * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public final void delete(User user) 
+    public final void delete(User user)
         throws ContentException, ContentSecurityException {
 
         DatabaseConnection  con;
@@ -365,7 +365,7 @@ public abstract class PersistentObject {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
@@ -386,11 +386,11 @@ public abstract class PersistentObject {
 
     /**
      * Inserts the object data into the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected abstract void doInsert(User user, DatabaseConnection con)
@@ -398,11 +398,11 @@ public abstract class PersistentObject {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected abstract void doUpdate(User user, DatabaseConnection con)
@@ -410,11 +410,11 @@ public abstract class PersistentObject {
 
     /**
      * Deletes the object data from the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected abstract void doDelete(User user, DatabaseConnection con)

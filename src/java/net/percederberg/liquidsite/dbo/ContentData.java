@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -35,69 +35,69 @@ public class ContentData extends AbstractData {
     /**
      * The domain parameter.
      */
-    public static final Parameter DOMAIN = 
+    public static final Parameter DOMAIN =
         new StringParameter(ContentData.class, "DOMAIN", "");
 
     /**
      * The id parameter.
      */
-    public static final Parameter ID = 
+    public static final Parameter ID =
         new IntegerParameter(ContentData.class, "ID", -1);
 
     /**
      * The revision parameter.
      */
-    public static final Parameter REVISION = 
+    public static final Parameter REVISION =
         new IntegerParameter(ContentData.class, "REVISION", 0);
 
     /**
      * The category parameter.
      */
-    public static final Parameter CATEGORY = 
+    public static final Parameter CATEGORY =
         new IntegerParameter(ContentData.class, "CATEGORY", 0);
 
     /**
      * The name parameter.
      */
-    public static final Parameter NAME = 
+    public static final Parameter NAME =
         new StringParameter(ContentData.class, "NAME", "");
 
     /**
      * The parent parameter.
      */
-    public static final Parameter PARENT = 
+    public static final Parameter PARENT =
         new IntegerParameter(ContentData.class, "PARENT", 0);
 
     /**
      * The online parameter.
      */
-    public static final Parameter ONLINE = 
+    public static final Parameter ONLINE =
         new DateParameter(ContentData.class, "ONLINE", new Date(0));
-    
+
     /**
      * The offline parameter.
      */
-    public static final Parameter OFFLINE = 
+    public static final Parameter OFFLINE =
         new DateParameter(ContentData.class, "OFFLINE", new Date(0));
-    
+
     /**
      * The modified parameter.
      */
-    public static final Parameter MODIFIED = 
+    public static final Parameter MODIFIED =
         new DateParameter(ContentData.class, "MODIFIED", new Date(0));
-    
+
     /**
      * The author parameter.
      */
-    public static final Parameter AUTHOR = 
+    public static final Parameter AUTHOR =
         new StringParameter(ContentData.class, "AUTHOR", "");
-    
+
     /**
      * The comment parameter.
      */
-    public static final Parameter COMMENT = 
+    public static final Parameter COMMENT =
         new StringParameter(ContentData.class, "COMMENT", "");
-    
+
     /**
      * Creates a new content data object with default values.
      */

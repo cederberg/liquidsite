@@ -114,7 +114,7 @@ public class DocumentProperty implements Comparable {
      */
     public int compareTo(Object obj) throws ClassCastException {
         DocumentProperty  prop = (DocumentProperty) obj;
-        int               diff = position - prop.position; 
+        int               diff = position - prop.position;
 
         if (diff == 0) {
             return name.compareTo(prop.name);
@@ -284,7 +284,7 @@ public class DocumentProperty implements Comparable {
      * @param data           the encoded data string
      */
     private void decodeXmlTag(String tag,
-                              String attributes, 
+                              String attributes,
                               String data) {
 
         if (tag.equals("name")) {

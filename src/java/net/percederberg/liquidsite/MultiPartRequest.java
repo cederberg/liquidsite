@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -61,16 +61,16 @@ public class MultiPartRequest extends Request {
     private HashMap files = new HashMap();
 
     /**
-     * Creates a new multi-part request. 
-     * 
+     * Creates a new multi-part request.
+     *
      * @param request        the HTTP request
      * @param response       the HTTP response
      * @param config         the configuration to use
-     * 
-     * @throws ServletException if the request couldn't be parsed 
+     *
+     * @throws ServletException if the request couldn't be parsed
      *             correctly
      */
-    public MultiPartRequest(HttpServletRequest request, 
+    public MultiPartRequest(HttpServletRequest request,
                             HttpServletResponse response,
                             Configuration config)
         throws ServletException {
@@ -87,14 +87,14 @@ public class MultiPartRequest extends Request {
 
     /**
      * Parses the incoming multi-part HTTP request.
-     * 
+     *
      * @param request        the HTTP request
      * @param config         the configuration to use
-     * 
+     *
      * @throws FileUploadException if the request couldn't be parsed
      *             correctly
      */
-    private void parse(HttpServletRequest request, Configuration config) 
+    private void parse(HttpServletRequest request, Configuration config)
         throws FileUploadException {
 
         DiskFileUpload  parser = new DiskFileUpload();
@@ -130,7 +130,7 @@ public class MultiPartRequest extends Request {
 
     /**
      * Returns a map with all the request parameter names and values.
-     * 
+     *
      * @return the map with request parameter names and values
      */
     public Map getAllParameters() {
@@ -149,13 +149,13 @@ public class MultiPartRequest extends Request {
      */
     public String getParameter(String name, String defVal) {
         String  value = (String) parameters.get(name);
-        
+
         return (value == null) ? defVal : value;
     }
 
     /**
      * Returns the specified file request parameter.
-     * 
+     *
      * @param name           the request parameter name
      *
      * @return the request file parameter, or
@@ -166,7 +166,7 @@ public class MultiPartRequest extends Request {
     }
 
     /**
-     * Disposes of all resources used by this request object. This 
+     * Disposes of all resources used by this request object. This
      * method shouldn't be called until a response has been written.
      */
     public void dispose() {
@@ -181,15 +181,15 @@ public class MultiPartRequest extends Request {
         parameters = null;
         files = null;
     }
-    
-    
+
+
     /**
      * A request file parameter.
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
      */
-    private class MultiPartFile implements FileParameter { 
+    private class MultiPartFile implements FileParameter {
 
         /**
          * The file item.
@@ -198,7 +198,7 @@ public class MultiPartRequest extends Request {
 
         /**
          * Creates a new request file parameter.
-         * 
+         *
          * @param item           the file item
          */
         MultiPartFile(FileItem item) {
@@ -209,12 +209,12 @@ public class MultiPartRequest extends Request {
          * Returns the base file name including the extension. The
          * file name returned is guaranteed to not contain any file
          * path or directory name.
-         * 
+         *
          * @return the base file name (with extension)
          */
         public String getName() {
             String  name = item.getName();
-            
+
             if (name.lastIndexOf("/") >= 0) {
                 name = name.substring(name.lastIndexOf("/") + 1);
             }
@@ -223,24 +223,24 @@ public class MultiPartRequest extends Request {
             }
             return name;
         }
-        
+
         /**
          * Returns the file size.
-         * 
+         *
          * @return the file size
          */
         public long getSize() {
             return item.getSize();
         }
-        
+
         /**
          * Writes this file to the specified destination file. After
          * calling this method, only the dispose() method can be
          * called.
-         * 
+         *
          * @param dest           the destination file
-         * 
-         * @throws IOException if the file parameter couldn't be 
+         *
+         * @throws IOException if the file parameter couldn't be
          *             written to the specified file
          */
         public void write(File dest) throws IOException {
@@ -249,15 +249,15 @@ public class MultiPartRequest extends Request {
             try {
                 item.write(dest);
             } catch (Exception e) {
-                error = "couldn't move request file to " + dest + 
+                error = "couldn't move request file to " + dest +
                         ": " + e.getMessage();
                 throw new IOException(error);
             }
         }
 
         /**
-         * Disposes of all resources used by this object. This method 
-         * shouldn't be called until the file parameter should no 
+         * Disposes of all resources used by this object. This method
+         * shouldn't be called until the file parameter should no
          * longer be used.
          */
         void dispose() {

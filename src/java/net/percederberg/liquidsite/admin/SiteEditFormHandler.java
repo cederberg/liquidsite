@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin;
@@ -39,7 +39,7 @@ import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
 
 /**
- * The site edit request handler. This class handles the edit 
+ * The site edit request handler. This class handles the edit
  * workflow for the site view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -83,10 +83,10 @@ class SiteEditFormHandler extends AdminFormHandler {
     private FormValidator template = new FormValidator();
 
     /**
-     * Returns an instance of this class. If a prior instance has 
+     * Returns an instance of this class. If a prior instance has
      * been created, it will be returned instead of creating a new
-     * one. 
-     * 
+     * one.
+     *
      * @return an instance of a site edit form handler
      */
     public static SiteEditFormHandler getInstance() {
@@ -117,7 +117,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         String  hostChars = lowerCase + numbers + ".-_";
         String  nameChars = upperCase + lowerCase + numbers + ".-_";
         String  error;
-        
+
         // Add and edit domain validator
         domain.addRequiredConstraint("name", "No domain name specified");
         error = "Domain name cannot be longer than 30 characters";
@@ -153,7 +153,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         error = "Folder name contains invalid character";
         folder.addCharacterConstraint("name", nameChars, error);
         folder.addRequiredConstraint("comment", "No comment specified");
-    
+
         // Add and edit page validator
         page.addRequiredConstraint("name", "No page name specified");
         error = "Page name contains invalid character";
@@ -176,14 +176,14 @@ class SiteEditFormHandler extends AdminFormHandler {
     /**
      * Displays a form for the specified workflow step. This method
      * will NOT be called when returning to the start page.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
@@ -211,14 +211,14 @@ class SiteEditFormHandler extends AdminFormHandler {
 
     /**
      * Validates a form for the specified workflow step. If the form
-     * validation fails in this step, the form page for the workflow 
-     * step will be displayed again with an 'error' attribute 
+     * validation fails in this step, the form page for the workflow
+     * step will be displayed again with an 'error' attribute
      * containing the message in the validation exception.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @throws FormValidationException if the form request data 
+     *
+     * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
@@ -248,26 +248,26 @@ class SiteEditFormHandler extends AdminFormHandler {
     /**
      * Handles a validated form for the specified workflow step. This
      * method returns the next workflow step, i.e. the step used when
-     * calling the display method. If the special zero (0) workflow 
+     * calling the display method. If the special zero (0) workflow
      * step is returned, the workflow is assumed to have terminated.
-     * Note that this method also allows additional validation to 
-     * occur. By returning the incoming workflow step number and 
+     * Note that this method also allows additional validation to
+     * occur. By returning the incoming workflow step number and
      * setting the appropriate request attributes the same results as
      * in the normal validate method can be achieved. For recoverable
      * errors, this is the recommended course of action.
-     *  
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @return the next workflow step, or 
+     *
+     * @return the next workflow step, or
      *         zero (0) if the workflow has finished
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    protected int handleStep(Request request, int step) 
+    protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
         Object  ref = AdminUtils.getReference(request);
@@ -290,16 +290,16 @@ class SiteEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit site form.
-     * 
+     *
      * @param request        the request object
      * @param site           the site object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditSite(Request request, ContentSite site) 
+    private void handleEditSite(Request request, ContentSite site)
         throws ContentException, ContentSecurityException {
 
         site.setRevisionNumber(0);
@@ -314,16 +314,16 @@ class SiteEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit folder form.
-     * 
+     *
      * @param request        the request object
      * @param folder         the folder content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditFolder(Request request, ContentFolder folder) 
+    private void handleEditFolder(Request request, ContentFolder folder)
         throws ContentException, ContentSecurityException {
 
         int  id;
@@ -342,17 +342,17 @@ class SiteEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit page form.
-     * 
+     *
      * @param request        the request object
      * @param page           the page content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditPage(Request request, 
-                                ContentPage page) 
+    private void handleEditPage(Request request,
+                                ContentPage page)
         throws ContentException, ContentSecurityException {
 
         Map              params = request.getAllParameters();
@@ -401,22 +401,22 @@ class SiteEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit file form.
-     * 
+     *
      * @param request        the request object
      * @param file           the file content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditFile(Request request, ContentFile file) 
+    private void handleEditFile(Request request, ContentFile file)
         throws ContentException, ContentSecurityException {
 
         FileParameter  param;
         int            id;
         String         name;
-        
+
         try {
             file.setRevisionNumber(0);
             file.setName(request.getParameter("name"));
@@ -449,17 +449,17 @@ class SiteEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit template form.
-     * 
+     *
      * @param request        the request object
      * @param template       the template content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditTemplate(Request request, 
-                                    ContentTemplate template) 
+    private void handleEditTemplate(Request request,
+                                    ContentTemplate template)
         throws ContentException, ContentSecurityException {
 
         Map              params = request.getAllParameters();

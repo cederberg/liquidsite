@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -27,7 +27,7 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseQuery;
 
 /**
- * A content permission database peer. This class contains static 
+ * A content permission database peer. This class contains static
  * methods that handles all accesses to the LS_PERMISSION table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -41,26 +41,26 @@ public class PermissionPeer extends AbstractPeer {
     private static final PermissionPeer PEER = new PermissionPeer();
 
     /**
-     * Returns a list of all permission objects with the specified 
-     * domain and content id. If the content id is zero (0), the 
+     * Returns a list of all permission objects with the specified
+     * domain and content id. If the content id is zero (0), the
      * permissions for the domain root is returned.
-     * 
+     *
      * @param domain         the domain name
      * @param content        the content id, or zero (0)
      * @param con            the database connection to use
-     * 
+     *
      * @return the list of permission objects found
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByContent(String domain,
-                                              int content, 
+                                              int content,
                                               DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.select.content");
-        
+
         query.addParameter(domain);
         query.addParameter(content);
         return PEER.selectList(query, con);
@@ -69,28 +69,28 @@ public class PermissionPeer extends AbstractPeer {
     /**
      * Returns the permission object with the specified domain,
      * content id, user, and group.
-     * 
+     *
      * @param domain         the domain name
      * @param id             the content id
      * @param user           the permission user name
      * @param group          the permission group name
      * @param con            the database connection to use
-     * 
+     *
      * @return the permission found, or
      *         null if no matching permission existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static PermissionData doSelectByUser(String domain,
                                                 int id,
                                                 String user,
-                                                String group, 
+                                                String group,
                                                 DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.select.user");
-        
+
         query.addParameter(domain);
         query.addParameter(id);
         query.addParameter(user);
@@ -100,14 +100,14 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Inserts a new permission object into the database.
-     * 
+     *
      * @param data           the permission data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doInsert(PermissionData data, DatabaseConnection con) 
+    public static void doInsert(PermissionData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.insert");
@@ -122,17 +122,17 @@ public class PermissionPeer extends AbstractPeer {
         query.addParameter(data.getBoolean(PermissionData.ADMIN));
         PEER.insert(query, con);
     }
-    
+
     /**
      * Updates a permission in the database.
-     * 
+     *
      * @param data           the permission data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doUpdate(PermissionData data, DatabaseConnection con) 
+    public static void doUpdate(PermissionData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.update");
@@ -150,11 +150,11 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Deletes a permission object from the database.
-     * 
+     *
      * @param data           the permission data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static void doDelete(PermissionData data, DatabaseConnection con)
@@ -168,14 +168,14 @@ public class PermissionPeer extends AbstractPeer {
         query.addParameter(data.getString(PermissionData.GROUP));
         PEER.delete(query, con);
     }
-    
+
     /**
      * Deletes all permissions for a content object from the database.
-     * 
+     *
      * @param id             the content object id
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static void doDeleteContent(int id, DatabaseConnection con)
@@ -189,11 +189,11 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Deletes all permissions for a domain from the database.
-     * 
+     *
      * @param domain         the domain name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static void doDeleteDomain(String domain, DatabaseConnection con)
@@ -207,16 +207,16 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Deletes all permissions for a user from the database.
-     * 
+     *
      * @param domain         the domain name
      * @param user           the user name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteUser(String domain, 
-                                    String user, 
+    public static void doDeleteUser(String domain,
+                                    String user,
                                     DatabaseConnection con)
         throws DatabaseObjectException {
 
@@ -229,16 +229,16 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Deletes all permissions for a group from the database.
-     * 
+     *
      * @param domain         the domain name
      * @param group          the group name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteGroup(String domain, 
-                                     String group, 
+    public static void doDeleteGroup(String domain,
+                                     String group,
                                      DatabaseConnection con)
         throws DatabaseObjectException {
 
@@ -258,7 +258,7 @@ public class PermissionPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

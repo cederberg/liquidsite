@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -43,8 +43,8 @@ public class ContentTemplate extends Content {
 
     /**
      * Creates a new template with default values.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param domain         the template domain
      */
     public ContentTemplate(ContentManager manager, Domain domain) {
@@ -53,14 +53,14 @@ public class ContentTemplate extends Content {
 
     /**
      * Creates a new template with default values.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param parent         the parent template
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public ContentTemplate(ContentManager manager, ContentTemplate parent) 
+    public ContentTemplate(ContentManager manager, ContentTemplate parent)
         throws ContentException {
 
         this(manager, parent.getDomain());
@@ -69,30 +69,30 @@ public class ContentTemplate extends Content {
 
     /**
      * Creates a new template.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentTemplate(ContentManager manager,
-                              ContentData data, 
-                              DatabaseConnection con) 
+                              ContentData data,
+                              DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
     }
 
     /**
-     * Returns all page element names in this template and it's 
-     * parents. The returned collection is guaranteed to not contain 
+     * Returns all page element names in this template and it's
+     * parents. The returned collection is guaranteed to not contain
      * any duplicates.
-     * 
+     *
      * @return a collection of page element names
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public Collection getAllElementNames() throws ContentException {
@@ -100,7 +100,7 @@ public class ContentTemplate extends Content {
         Collection       res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
-        
+
         if (getParentId() > 0) {
             parent = (ContentTemplate) getParent();
             iter = parent.getAllElementNames().iterator();
@@ -117,16 +117,16 @@ public class ContentTemplate extends Content {
     /**
      * Returns all page element names in this template. If a page
      * element is not present in this collection, it may still be
-     * present in a parent template and thus returned by 
+     * present in a parent template and thus returned by
      * getElement().
-     * 
+     *
      * @return a collection of page element names
      */
     public Collection getLocalElementNames() {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
         String     name;
-        
+
         while (iter.hasNext()) {
             name = iter.next().toString();
             if (name.startsWith(ELEMENT_PREFIX)) {
@@ -137,36 +137,36 @@ public class ContentTemplate extends Content {
     }
 
     /**
-     * Returns a named page element. The element data will be 
+     * Returns a named page element. The element data will be
      * retrieved from this template if possible, or from one of the
-     * parent templates. The templates will be searched in the 
+     * parent templates. The templates will be searched in the
      * inheritance order, starting from this template.
-     * 
+     *
      * @param name           the page element name
-     * 
+     *
      * @return the page element data, or
      *         null if the page element didn't exist
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public String getElement(String name) throws ContentException {
         ContentTemplate  parent;
         String           data;
-        
+
         data = getAttribute(ELEMENT_PREFIX + name.toLowerCase());
         if (data == null && getParentId() > 0) {
             parent = (ContentTemplate) getParent();
             data = parent.getElement(name);
         }
-        return data; 
+        return data;
     }
-    
+
     /**
      * Sets the data for a named page element. The element will be
      * removed from this template if the data value is null. The page
      * element values in the parent templates will NOT be modified.
-     * 
+     *
      * @param name           the page element name
      * @param data           the page element data, or null
      */
@@ -175,9 +175,9 @@ public class ContentTemplate extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {

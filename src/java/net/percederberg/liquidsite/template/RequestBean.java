@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
@@ -33,7 +33,7 @@ import net.percederberg.liquidsite.Request;
 public class RequestBean {
 
     /**
-     * The request being processed. 
+     * The request being processed.
      */
     private Request request;
 

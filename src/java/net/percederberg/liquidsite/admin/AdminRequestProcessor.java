@@ -62,7 +62,7 @@ public class AdminRequestProcessor extends RequestProcessor {
     private ArrayList workflows = new ArrayList();
 
     /**
-     * Creates a new administration request processor. 
+     * Creates a new administration request processor.
      *
      * @param app            the application context
      */
@@ -100,18 +100,18 @@ public class AdminRequestProcessor extends RequestProcessor {
      */
     public void process(Request request) {
     }
-    
+
     /**
      * Processes an authorized request. This is a request from a user
      * with permissions to access the admin site.
      *
      * @param request        the request object
      * @param path           the request path
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
-    public void processAuthorized(Request request, String path) 
+    public void processAuthorized(Request request, String path)
         throws RequestException {
 
         if (path.equals("style.css")) {
@@ -158,7 +158,7 @@ public class AdminRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Processes an unauthorized request. This is a request from a 
+     * Processes an unauthorized request. This is a request from a
      * user without permissions to access the admin site.
      *
      * @param request        the request object
@@ -172,7 +172,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         } else if (path.startsWith("images/")) {
             request.sendFile(getFile(path));
         } else if (path.endsWith(".js")) {
-            request.sendData("text/javascript", 
+            request.sendData("text/javascript",
                              "window.location.reload(1);\n");
         } else if (path.equals("")
                 || path.equals("index.html")
@@ -183,8 +183,8 @@ public class AdminRequestProcessor extends RequestProcessor {
                 || path.equals("system.html")) {
 
             if (request.getUser() != null) {
-                request.setAttribute("error", 
-                                     "Access denied for your current user."); 
+                request.setAttribute("error",
+                                     "Access denied for your current user.");
             }
             request.sendTemplate("admin/login.ftl");
         } else {
@@ -192,10 +192,10 @@ public class AdminRequestProcessor extends RequestProcessor {
             request.sendRedirect(str);
         }
     }
-    
+
     /**
      * Processes a logout request.
-     * 
+     *
      * @param request        the request object
      */
     private void processLogout(Request request) {
@@ -205,15 +205,15 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a form workflow request. This method will check the
-     * specified page for a matching workflow. If no workflow is 
+     * specified page for a matching workflow. If no workflow is
      * found, no processing takes place.
-     * 
+     *
      * @param request        the request object
      * @param page           the request page
      */
     private void processWorkflow(Request request, String page) {
         AdminFormHandler  formHandler;
-        
+
         for (int i = 0; i < workflows.size(); i++) {
             formHandler = (AdminFormHandler) workflows.get(i);
             if (formHandler.getFormPage().equals(page)) {
@@ -225,13 +225,13 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a view site request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
-    private void processViewSite(Request request) 
+    private void processViewSite(Request request)
         throws RequestException {
 
         try {
@@ -247,13 +247,13 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a view content request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
-    private void processViewContent(Request request) 
+    private void processViewContent(Request request)
         throws RequestException {
 
         try {
@@ -266,12 +266,12 @@ public class AdminRequestProcessor extends RequestProcessor {
             AdminView.BASE.viewError(request, e.getMessage(), "index.html");
         }
     }
-    
+
     /**
      * Processes a view users request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
@@ -313,9 +313,9 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a JavaScript load site tree item request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
@@ -335,9 +335,9 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a JavaScript load content tree item request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
@@ -357,9 +357,9 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a JavaScript open site tree item request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
@@ -379,9 +379,9 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a JavaScript open content tree item request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
@@ -401,9 +401,9 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a JavaScript open template request.
-     * 
+     *
      * @param request        the request object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      *             correctly
      */
@@ -434,7 +434,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a sesssion keep-alive ping request.
-     * 
+     *
      * @param request        the request object
      */
     private void processSessionPing(Request request) {
@@ -444,7 +444,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes the preview requests.
-     * 
+     *
      * @param request        the request object
      * @param path           the preview path
      *
@@ -489,7 +489,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a preview request for a specific site.
-     * 
+     *
      * @param request        the request object
      * @param site           the content site object
      * @param path           the preview path (within the site)
@@ -498,15 +498,15 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the request referred to an 
+     * @throws ContentSecurityException if the request referred to an
      *             object that wasn't readable by the user
-     * @throws TemplateException if the page template couldn't be 
-     *             processed correctly 
+     * @throws TemplateException if the page template couldn't be
+     *             processed correctly
      */
     private void processPreview(Request request,
                                 ContentSite site,
                                 String path)
-        throws RequestException, ContentException, 
+        throws RequestException, ContentException,
                ContentSecurityException, TemplateException {
 
         Content  content;
@@ -519,7 +519,7 @@ public class AdminRequestProcessor extends RequestProcessor {
             content = content.getRevision(Integer.parseInt(revision));
         }
         request.getEnvironment().setDomain(site.getDomain());
-        dir = request.getEnvironment().getSite().getDirectory() + 
+        dir = request.getEnvironment().getSite().getDirectory() +
               "preview/" + site.getId() + "/";
         site.setDirectory(dir);
         request.getEnvironment().setSite(site);
@@ -528,7 +528,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a preview request for a content template.
-     * 
+     *
      * @param request        the request object
      * @param template       the content template object
      *
@@ -558,7 +558,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a preview request for a specific document.
-     * 
+     *
      * @param request        the request object
      * @param doc            the content document object
      * @param path           the preview path (within the document)
@@ -567,7 +567,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the request referred to an 
+     * @throws ContentSecurityException if the request referred to an
      *             object that wasn't readable by the user
      */
     private void processPreview(Request request,
@@ -600,7 +600,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a preview request for a content section.
-     * 
+     *
      * @param request        the request object
      * @param section        the content section object
      *
@@ -630,7 +630,7 @@ public class AdminRequestProcessor extends RequestProcessor {
 
     /**
      * Processes the statistics requests.
-     * 
+     *
      * @param request        the request object
      * @param path           the statistics path
      *

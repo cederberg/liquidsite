@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
@@ -37,7 +37,7 @@ import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 
 /**
- * A LiquidSite template bean. This class is used to insert the 
+ * A LiquidSite template bean. This class is used to insert the
  * "liquidsite" namespace into the template data model.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -51,7 +51,7 @@ public class LiquidSiteBean {
     private static final Log LOG = new Log(LiquidSiteBean.class);
 
     /**
-     * The request being processed. 
+     * The request being processed.
      */
     private Request request;
 
@@ -79,10 +79,10 @@ public class LiquidSiteBean {
      * The relative path to the site root directory. The path is
      * relative to the request URL and may be empty if the request
      * refers to an object in the site root directory. Otherwise the
-     * path ends with an "/" character. 
+     * path ends with an "/" character.
      */
     private String sitePath = null;
-    
+
     /**
      * The relative path to the page directory. The path is relative
      * to the request URL and may be empty if the request refers to
@@ -94,7 +94,7 @@ public class LiquidSiteBean {
 
     /**
      * Creates a new LiquidSite template bean.
-     * 
+     *
      * @param request        the request object
      * @param manager        the content manager to use
      */
@@ -122,7 +122,7 @@ public class LiquidSiteBean {
     }
 
     /**
-     * Returns the request bean. 
+     * Returns the request bean.
      *
      * @return the request bean
      */
@@ -134,7 +134,7 @@ public class LiquidSiteBean {
     }
 
     /**
-     * Returns the document bean. 
+     * Returns the document bean.
      *
      * @return the document bean
      */
@@ -146,7 +146,7 @@ public class LiquidSiteBean {
     }
 
     /**
-     * Returns the user bean for the current user. 
+     * Returns the user bean for the current user.
      *
      * @return the user bean for the current user
      */
@@ -164,7 +164,7 @@ public class LiquidSiteBean {
      * path ends with an "/" character. The result of this method
      * will be stored in an instance variable to avoid calculations
      * on further requests.
-     * 
+     *
      * @return the relative path to the site root directory
      */
     private String getSitePath() {
@@ -176,15 +176,15 @@ public class LiquidSiteBean {
         }
         return sitePath;
     }
-    
+
     /**
      * Returns the relative path to the page directory. The path is
      * relative to the request URL and may be empty if the request
      * refers directly to an object in the page directory. Otherwise
-     * the path ends with an "/" character. Note that the page path 
+     * the path ends with an "/" character. Note that the page path
      * is NOT always an empty string (consider dynamic pages linked
      * to sections).
-     * 
+     *
      * @return the relative path to the page directory
      */
     private String getPagePath() {
@@ -232,8 +232,8 @@ public class LiquidSiteBean {
     /**
      * Returns the relative path to a specified base path. The
      * specified path is assumed to be a part of the complete request
-     * path. This method will return an empty string if the request 
-     * refers to a object in the specified directory.  
+     * path. This method will return an empty string if the request
+     * refers to a object in the specified directory.
      *
      * @param basePath       the absolute base path
      *
@@ -257,7 +257,7 @@ public class LiquidSiteBean {
      * Returns a relative link to an object in the same site. If the
      * specified path starts with '/' it is assumed to be relative to
      * the site root directory, otherwise it is assumed to be
-     * relative to the page directory. Note that the page directory 
+     * relative to the page directory. Note that the page directory
      * is NOT always an empty string (consider dynamic pages linked
      * to sections).
      *
@@ -343,7 +343,7 @@ public class LiquidSiteBean {
         }
         return result;
     }
-    
+
     /**
      * Finds a specified content section or document.
      *
@@ -394,7 +394,7 @@ public class LiquidSiteBean {
 
     /**
      * Finds a named child object. The parent may be either a domain
-     * or a content section. The child returned can be either a 
+     * or a content section. The child returned can be either a
      * content section or some content object present directly in the
      * section.
      *
@@ -409,7 +409,7 @@ public class LiquidSiteBean {
      * @throws ContentSecurityException if the section couldn't be
      *             read by the current user
      */
-    private Content findChild(Object parent, String name) 
+    private Content findChild(Object parent, String name)
         throws ContentException, ContentSecurityException {
 
         Content[]  children;
@@ -436,9 +436,9 @@ public class LiquidSiteBean {
     /**
      * Finds all subsections to a specified section. The specified
      * section will be included in the result.
-     * 
+     *
      * @param section        the content section
-     * 
+     *
      * @return the array of sections found
      *
      * @throws ContentException if the database couldn't be accessed
@@ -483,10 +483,10 @@ public class LiquidSiteBean {
     /**
      * Finds all documents in the specified sections. The documents
      * will be added (as document beans) to the specified list.
-     * 
+     *
      * @param sections       the content sections
      * @param results        the list with results
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.db;
@@ -39,12 +39,12 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     private static final Log LOG = new Log(MySQLDatabaseConnector.class);
 
     /**
-     * Loads the MySQL database driver. This method must be called 
+     * Loads the MySQL database driver. This method must be called
      * once before attempting to connect with the specified driver.
      * Calling this method several times has no effect.
-     * 
+     *
      * @throws DatabaseConnectionException if the driver couldn't be
-     *             found or loaded correctly 
+     *             found or loaded correctly
      */
     public static void loadDriver() throws DatabaseConnectionException {
         loadDriver("com.mysql.jdbc.Driver");
@@ -52,13 +52,13 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
     /**
      * Creates a new MySQL database connector.
-     * 
+     *
      * @param host           the host name
      * @param user           the user name
      * @param password       the user password
      */
-    public MySQLDatabaseConnector(String host, 
-                                  String user, 
+    public MySQLDatabaseConnector(String host,
+                                  String user,
                                   String password) {
 
         super("jdbc:mysql://" + host + "/");
@@ -70,13 +70,13 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
     /**
      * Creates a new MySQL database connector.
-     * 
+     *
      * @param host           the host name
      * @param database       the database name
      * @param user           the user name
      * @param password       the user password
      */
-    public MySQLDatabaseConnector(String host, 
+    public MySQLDatabaseConnector(String host,
                                   String database,
                                   String user,
                                   String password) {
@@ -90,22 +90,22 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
     /**
      * Checks if the database user is an administrator.
-     * 
+     *
      * @return true if the database user is an administrator, or
      *         false otherwise
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if user privileges couldn't be 
+     * @throws DatabaseException if user privileges couldn't be
      *             determined
      */
-    public boolean isAdministrator() 
+    public boolean isAdministrator()
         throws DatabaseConnectionException, DatabaseException {
 
         DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
         String           str;
-        
+
         // Retrieve basic privileges
         try {
             query.setSql("SHOW GRANTS FOR " + getDatabaseUser());
@@ -126,17 +126,17 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
     /**
      * Returns the database user being used. This is a string in the
-     * form "user@host", where the host name is the name of the 
+     * form "user@host", where the host name is the name of the
      * connecting host.
-     * 
+     *
      * @return the database user
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database user couldn't be 
+     * @throws DatabaseException if the database user couldn't be
      *             determined
      */
-    public String getDatabaseUser() 
+    public String getDatabaseUser()
         throws DatabaseConnectionException, DatabaseException {
 
         DatabaseQuery    query = new DatabaseQuery();
@@ -154,12 +154,12 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
     /**
      * Lists the visible databases.
-     * 
+     *
      * @return a list of the database names
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the list of databases couldn't be 
+     * @throws DatabaseException if the list of databases couldn't be
      *             retrieved
      */
     public ArrayList listDatabases()
@@ -168,7 +168,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         ArrayList        list = new ArrayList();
         DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
-        
+
         try {
             query.setSql("SHOW DATABASES");
             res = execute(query);
@@ -181,19 +181,19 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         }
         return list;
     }
-    
+
     /**
      * Lists the tables in a database. Note that this operation will
      * return a database exception if the database user hasn't got
      * privileges to list the tables in the database.
-     * 
+     *
      * @param database       the database name
-     * 
+     *
      * @return a list of the database table names
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the list of tables couldn't be 
+     * @throws DatabaseException if the list of tables couldn't be
      *             retrieved
      */
     public ArrayList listTables(String database)
@@ -202,7 +202,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         ArrayList        list = new ArrayList();
         DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
-        
+
         try {
             query.setSql("SHOW TABLES IN " + database);
             res = execute(query);
@@ -215,17 +215,17 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         }
         return list;
     }
-    
+
     /**
      * Lists the users in a database. Note that this operation will
      * return a database exception if the database user hasn't got
      * administrator privileges.
-     * 
+     *
      * @return a list of database user names
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the list of users couldn't be 
+     * @throws DatabaseException if the list of users couldn't be
      *             retrieved
      */
     public ArrayList listUsers()
@@ -235,7 +235,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         DatabaseQuery    query = new DatabaseQuery();
         DatabaseResults  res;
         String           str;
-        
+
         try {
             query.setSql("SELECT DISTINCT User FROM mysql.user");
             res = execute(query);
@@ -253,18 +253,18 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     }
 
     /**
-     * Creates a new database. This operation requires that the 
-     * database user is an administrator, or a database exception 
+     * Creates a new database. This operation requires that the
+     * database user is an administrator, or a database exception
      * will be thrown.
-     * 
+     *
      * @param database       the database name
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database couldn't be created 
+     * @throws DatabaseException if the database couldn't be created
      *             properly
      */
-    public void createDatabase(String database) 
+    public void createDatabase(String database)
         throws DatabaseConnectionException, DatabaseException {
 
         DatabaseQuery  query = new DatabaseQuery();
@@ -274,18 +274,18 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     }
 
     /**
-     * Deletes an existing database. This operation requires that the 
-     * database user has the correct permissions to the database, or 
+     * Deletes an existing database. This operation requires that the
+     * database user has the correct permissions to the database, or
      * a database exception will be thrown.
-     * 
+     *
      * @param database       the database name
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database couldn't be deleted 
+     * @throws DatabaseException if the database couldn't be deleted
      *             properly
      */
-    public void deleteDatabase(String database) 
+    public void deleteDatabase(String database)
         throws DatabaseConnectionException, DatabaseException {
 
         DatabaseQuery  query = new DatabaseQuery();
@@ -295,18 +295,18 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     }
 
     /**
-     * Creates a new database user. This operation requires that the 
-     * current database user is an administrator, or a database 
-     * exception will be thrown. Also note that the new user will 
-     * only be given access privilege from the same host as the 
+     * Creates a new database user. This operation requires that the
+     * current database user is an administrator, or a database
+     * exception will be thrown. Also note that the new user will
+     * only be given access privilege from the same host as the
      * current user.
-     * 
+     *
      * @param user           the new database user name
      * @param password       the new database user password
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database user couldn't be 
+     * @throws DatabaseException if the database user couldn't be
      *             created properly
      */
     public void createUser(String user, String password)
@@ -314,7 +314,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
         String         host = getDatabaseUser();
         DatabaseQuery  query = new DatabaseQuery();
-        
+
         host = host.substring(host.indexOf("@"));
         query.setSql("GRANT USAGE ON *.* TO " + user + host +
                      " IDENTIFIED BY '" + password + "'");
@@ -322,15 +322,15 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     }
 
     /**
-     * Deletes an existing database user. This operation requires 
-     * that the current database user is an administrator, or a 
+     * Deletes an existing database user. This operation requires
+     * that the current database user is an administrator, or a
      * database exception will be thrown.
-     * 
+     *
      * @param user           the database user name
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database user couldn't be 
+     * @throws DatabaseException if the database user couldn't be
      *             deleted properly
      */
     public void deleteUser(String user)
@@ -341,7 +341,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String           host = getDatabaseUser();
         String           privilege;
         int              pos;
-        
+
         // Revoke user privileges
         host = host.substring(host.indexOf("@") + 1);
         try {
@@ -369,7 +369,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
         // Delete user
         query = new DatabaseQuery();
-        query.setSql("DELETE FROM mysql.user WHERE User = '" + user + 
+        query.setSql("DELETE FROM mysql.user WHERE User = '" + user +
                      "' AND Host = '" + host + "'");
         execute(query);
         query = new DatabaseQuery();
@@ -379,18 +379,18 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
     /**
      * Adds normal access privileges to a database for a user. The
-     * access privileges are select, insert, update and delete. This 
-     * operation requires that the current database user is an 
-     * administrator, or a database exception will be thrown. Also 
-     * note that the user will only be given access privilege from 
-     * the same host as the current user. 
-     * 
+     * access privileges are select, insert, update and delete. This
+     * operation requires that the current database user is an
+     * administrator, or a database exception will be thrown. Also
+     * note that the user will only be given access privilege from
+     * the same host as the current user.
+     *
      * @param database       the database name
      * @param user           the database user name
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database privileges couldn't 
+     * @throws DatabaseException if the database privileges couldn't
      *             be set properly
      */
     public void addAccessPrivileges(String database, String user)
@@ -398,27 +398,27 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
         String         host = getDatabaseUser();
         DatabaseQuery  query = new DatabaseQuery();
-        
+
         host = host.substring(host.indexOf("@"));
-        query.setSql("GRANT SELECT,INSERT,UPDATE,DELETE ON " + 
+        query.setSql("GRANT SELECT,INSERT,UPDATE,DELETE ON " +
                      database + ".* TO " + user + host);
         execute(query);
     }
 
     /**
      * Removes normal access privileges to a database for a user. The
-     * access privileges are select, insert, update and delete. This 
-     * operation requires that the current database user is an 
-     * administrator, or a database exception will be thrown. Also 
+     * access privileges are select, insert, update and delete. This
+     * operation requires that the current database user is an
+     * administrator, or a database exception will be thrown. Also
      * note that only the access privileges from the same host as the
-     * current user will be removed. 
-     * 
+     * current user will be removed.
+     *
      * @param database       the database name
      * @param user           the database user name
-     * 
-     * @throws DatabaseConnectionException if a database connection 
+     *
+     * @throws DatabaseConnectionException if a database connection
      *             couldn't be established
-     * @throws DatabaseException if the database privileges couldn't 
+     * @throws DatabaseException if the database privileges couldn't
      *             be set properly
      */
     public void removeAccessPrivilege(String database, String user)
@@ -426,9 +426,9 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
 
         String         host = getDatabaseUser();
         DatabaseQuery  query = new DatabaseQuery();
-        
+
         host = host.substring(host.indexOf("@"));
-        query.setSql("REVOKE SELECT,INSERT,UPDATE,DELETE ON " + 
+        query.setSql("REVOKE SELECT,INSERT,UPDATE,DELETE ON " +
                      database + ".* FROM " + user + host);
         execute(query);
     }

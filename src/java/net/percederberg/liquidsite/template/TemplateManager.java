@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
@@ -51,7 +51,7 @@ public class TemplateManager {
     static final Log LOG = new Log(TemplateManager.class);
 
     /**
-     * The application object. 
+     * The application object.
      */
     private static Application application = null;
 
@@ -72,13 +72,13 @@ public class TemplateManager {
 
     /**
      * Initializes the template manager.
-     * 
+     *
      * @param app            the application object
-     * 
-     * @throws TemplateException if the template base directory 
+     *
+     * @throws TemplateException if the template base directory
      *             couldn't be read properly
      */
-    public static void initialize(Application app) 
+    public static void initialize(Application app)
         throws TemplateException {
 
         application = app;
@@ -91,7 +91,7 @@ public class TemplateManager {
             fileConfig.setDirectoryForTemplateLoading(app.getBaseDir());
         } catch (IOException e) {
             LOG.error(e.getMessage());
-            throw new TemplateException("couldn't read " + 
+            throw new TemplateException("couldn't read " +
                                         app.getBaseDir());
         }
         pageConfig = new Configuration();
@@ -101,10 +101,10 @@ public class TemplateManager {
         pageConfig.setLocalizedLookup(false);
         pageConfig.setTemplateLoader(pageLoader);
     }
-    
+
     /**
      * Returns the current template manager application object.
-     * 
+     *
      * @return the current template manager application object
      */
     public static Application getApplication() {
@@ -113,17 +113,17 @@ public class TemplateManager {
 
     /**
      * Returns a template from the file system. The file name must be
-     * specified relative to the base directory used in the 
+     * specified relative to the base directory used in the
      * initialize() call.
-     * 
+     *
      * @param path           the relative file name
-     * 
+     *
      * @return the template found
-     * 
-     * @throws TemplateException if the template couldn't be read 
+     *
+     * @throws TemplateException if the template couldn't be read
      *             correctly
      */
-    public static Template getFileTemplate(String path) 
+    public static Template getFileTemplate(String path)
         throws TemplateException {
 
         try {
@@ -133,16 +133,16 @@ public class TemplateManager {
             throw new TemplateException("couldn't read " + path, e);
         }
     }
-    
+
     /**
      * Returns a template from a content page.
      *
      * @param user           the user performing the operation
      * @param page           the content page
-     * 
+     *
      * @return the template found
-     * 
-     * @throws TemplateException if the template couldn't be read 
+     *
+     * @throws TemplateException if the template couldn't be read
      *             correctly
      */
     public static Template getPageTemplate(User user, ContentPage page)
@@ -164,13 +164,13 @@ public class TemplateManager {
             throw new TemplateException(message, e);
         }
     }
-    
-    
+
+
     /**
      * A page template loader. This class provides the page elements
      * to the FreeMarker template engine. Before a template is loaded
      * with this loader, the corresponding content page must be set
-     * with the setPage() method. This class is thread-safe, as it 
+     * with the setPage() method. This class is thread-safe, as it
      * uses a thread local storage for the pages.
      *
      * @author   Per Cederberg, <per at percederberg dot net>
@@ -198,7 +198,7 @@ public class TemplateManager {
 
         /**
          * Returns the content page to load (for the calling thread).
-         * 
+         *
          * @return the content page to load
          */
         public ContentPage getPage() {
@@ -206,10 +206,10 @@ public class TemplateManager {
         }
 
         /**
-         * Sets the content page to load (for the calling thread). 
-         * This method should be called once before loading the 
+         * Sets the content page to load (for the calling thread).
+         * This method should be called once before loading the
          * template.
-         * 
+         *
          * @param page           the content page to load, or null
          */
         public void setPage(ContentPage page) {
@@ -227,11 +227,11 @@ public class TemplateManager {
         }
 
         /**
-         * Sets the the user performing the operation (for the 
+         * Sets the the user performing the operation (for the
          * calling thread). This method should be called once before
          * loading the template.
-         * 
-         * @param user           the user performing the operation 
+         *
+         * @param user           the user performing the operation
          */
         public void setUser(User user) {
             this.user.set(user);
@@ -239,13 +239,13 @@ public class TemplateManager {
 
         /**
          * Returns the page element data. The template name specified
-         * consists of the page content identifier and the page 
+         * consists of the page content identifier and the page
          * element name.
-         * 
+         *
          * @param name           the template name
-         * 
+         *
          * @return the page element data
-         * 
+         *
          * @throws IOException if the page element couldn't be read
          *             properly
          */
@@ -266,12 +266,12 @@ public class TemplateManager {
                 elemName = name.substring(name.indexOf("/") + 1);
                 return page.getElement(getUser(), elemName);
             } catch (ContentException e) {
-                message = "while reading page element " + name + 
+                message = "while reading page element " + name +
                           ": " + e.getMessage();
                 LOG.error(message);
                 throw new IOException(message);
             } catch (ContentSecurityException e) {
-                message = "while reading page element " + name + 
+                message = "while reading page element " + name +
                           ": " + e.getMessage();
                 LOG.error(message);
                 throw new IOException(message);
@@ -280,11 +280,11 @@ public class TemplateManager {
 
         /**
          * Returns the last modification time for a template. This
-         * method always returns the current system time to avoid 
+         * method always returns the current system time to avoid
          * caching.
-         * 
+         *
          * @param source         the template source
-         * 
+         *
          * @return the current system time
          */
         public long getLastModified(Object source) {
@@ -293,12 +293,12 @@ public class TemplateManager {
 
         /**
          * Returns a reader for a template.
-         * 
+         *
          * @param source         the template source
          * @param encoding       the suggested encoding (ignored)
-         * 
+         *
          * @return a reader for the page element data
-         * 
+         *
          * @throws IOException if a template couldn't be accessed
          *             properly
          */
@@ -314,7 +314,7 @@ public class TemplateManager {
 
         /**
          * Closes the FreeMarker template. This method does nothing.
-         * 
+         *
          * @param source         the template source
          */
         public void closeTemplateSource(Object source) {

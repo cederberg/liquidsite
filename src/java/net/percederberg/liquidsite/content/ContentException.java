@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
 
 /**
- * A content exception. This exception is thrown when the database 
+ * A content exception. This exception is thrown when the database
  * content objects couldn't be read or written.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -37,7 +37,7 @@ public class ContentException extends Exception {
 
     /**
      * Creates a new content exception.
-     * 
+     *
      * @param message        the error message
      */
     public ContentException(String message) {
@@ -46,16 +46,16 @@ public class ContentException extends Exception {
 
     /**
      * Creates a new content exception.
-     * 
+     *
      * @param cause          the root cause to the error
      */
     public ContentException(Exception cause) {
         this("content database error", cause);
     }
-    
+
     /**
      * Creates a new content exception.
-     * 
+     *
      * @param message        the error message
      * @param cause          the root cause to the error
      */

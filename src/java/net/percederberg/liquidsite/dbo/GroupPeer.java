@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -50,7 +50,7 @@ public class GroupPeer extends AbstractPeer {
      *
      * @return a list of matching groups in the domain
      *
-     * @throws DatabaseObjectException if the database couldn't be 
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     public static ArrayList doSelectByDomain(String domain,
@@ -69,24 +69,24 @@ public class GroupPeer extends AbstractPeer {
 
     /**
      * Returns a group with a specified name.
-     * 
+     *
      * @param domain         the domain name
      * @param name           the group name
      * @param con            the database connection to use
-     * 
+     *
      * @return the group found, or
      *         null if no matching group existed
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static GroupData doSelectByName(String domain, 
-                                           String name, 
+    public static GroupData doSelectByName(String domain,
+                                           String name,
                                            DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.select.name");
-        
+
         query.addParameter(domain);
         query.addParameter(name);
         return (GroupData) PEER.select(query, con);
@@ -94,14 +94,14 @@ public class GroupPeer extends AbstractPeer {
 
     /**
      * Inserts a new group into the database.
-     * 
+     *
      * @param data           the group data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doInsert(GroupData data, DatabaseConnection con) 
+    public static void doInsert(GroupData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.insert");
@@ -112,17 +112,17 @@ public class GroupPeer extends AbstractPeer {
         query.addParameter(data.getString(GroupData.COMMENT));
         PEER.insert(query, con);
     }
-    
+
     /**
      * Updates a group in the database.
-     * 
+     *
      * @param data           the group data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doUpdate(GroupData data, DatabaseConnection con) 
+    public static void doUpdate(GroupData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.update");
@@ -133,18 +133,18 @@ public class GroupPeer extends AbstractPeer {
         query.addParameter(data.getString(GroupData.NAME));
         PEER.update(query, con);
     }
-    
+
     /**
-     * Deletes a group from the database. This method also deletes 
+     * Deletes a group from the database. This method also deletes
      * all related user group and permission entries.
-     * 
+     *
      * @param data           the group data object
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be accessed 
+     *
+     * @throws DatabaseObjectException if the database couldn't be accessed
      *             properly
      */
-    public static void doDelete(GroupData data, DatabaseConnection con) 
+    public static void doDelete(GroupData data, DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.delete");
@@ -159,17 +159,17 @@ public class GroupPeer extends AbstractPeer {
     }
 
     /**
-     * Deletes all groups in a domain from the database. This method 
+     * Deletes all groups in a domain from the database. This method
      * also deletes all user group entries in the domain.
-     * 
+     *
      * @param domain         the domain name
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, 
-                                      DatabaseConnection con) 
+    public static void doDeleteDomain(String domain,
+                                      DatabaseConnection con)
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.delete.domain");
@@ -178,7 +178,7 @@ public class GroupPeer extends AbstractPeer {
         PEER.delete(query, con);
         UserGroupPeer.doDeleteDomain(domain, con);
     }
-    
+
     /**
      * Creates a new group database peer.
      */
@@ -188,7 +188,7 @@ public class GroupPeer extends AbstractPeer {
 
     /**
      * Returns a new instance of the data object.
-     * 
+     *
      * @return a new instance of the data object
      */
     protected AbstractData getDataObject() {

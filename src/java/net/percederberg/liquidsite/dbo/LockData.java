@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.dbo;
@@ -24,7 +24,7 @@ package net.percederberg.liquidsite.dbo;
 import java.util.Date;
 
 /**
- * A lock data object. This object encapsulates a row of data from 
+ * A lock data object. This object encapsulates a row of data from
  * the LS_LOCK table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -35,27 +35,27 @@ public class LockData extends AbstractData {
     /**
      * The domain parameter.
      */
-    public static final Parameter DOMAIN = 
+    public static final Parameter DOMAIN =
         new StringParameter(LockData.class, "DOMAIN", "");
 
     /**
      * The content parameter.
      */
-    public static final Parameter CONTENT = 
+    public static final Parameter CONTENT =
         new IntegerParameter(LockData.class, "CONTENT", 0);
 
     /**
      * The user parameter.
      */
-    public static final Parameter USER = 
+    public static final Parameter USER =
         new StringParameter(LockData.class, "USER", "");
 
     /**
      * The acquired parameter.
      */
-    public static final Parameter ACQUIRED = 
+    public static final Parameter ACQUIRED =
         new DateParameter(LockData.class, "ACQUIRED", new Date(0));
-    
+
     /**
      * Creates a new lock data object with default values.
      */

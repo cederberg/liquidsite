@@ -69,7 +69,7 @@ public class Group extends PersistentObject {
      *
      * @return an array of all groups in the domain
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static Group[] findByDomain(ContentManager manager,
@@ -98,15 +98,15 @@ public class Group extends PersistentObject {
 
     /**
      * Returns a group with a specified name.
-     * 
+     *
      * @param manager        the content manager to use
      * @param domain         the domain
      * @param name           the group name
-     * 
+     *
      * @return the group found, or
      *         null if no matching group existed
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static Group findByName(ContentManager manager,
@@ -134,13 +134,13 @@ public class Group extends PersistentObject {
 
     /**
      * Returns an array of all groups a certain user belongs to.
-     * 
+     *
      * @param manager        the content manager to use
      * @param user           the user
-     * 
+     *
      * @return an array of all groups the user belongs to
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     static Group[] findByUser(ContentManager manager, User user)
@@ -155,14 +155,14 @@ public class Group extends PersistentObject {
 
         try {
             list = UserGroupPeer.doSelectByUser(user.getDomainName(),
-                                                user.getName(), 
+                                                user.getName(),
                                                 con);
             res = new Group[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 data = (UserGroupData) list.get(i);
                 name = data.getString(UserGroupData.GROUP);
                 group = GroupPeer.doSelectByName(user.getDomainName(),
-                                                 name, 
+                                                 name,
                                                  con);
                 res[i] = new Group(manager, group);
             }
@@ -177,8 +177,8 @@ public class Group extends PersistentObject {
 
     /**
      * Creates a new group with default values.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param domain         the domain
      * @param name           the group name
      */
@@ -191,8 +191,8 @@ public class Group extends PersistentObject {
 
     /**
      * Creates a new group from a data object.
-     * 
-     * @param manager        the content manager to use 
+     *
+     * @param manager        the content manager to use
      * @param data           the group data object
      */
     private Group(ContentManager manager, GroupData data) {
@@ -201,14 +201,14 @@ public class Group extends PersistentObject {
     }
 
     /**
-     * Checks if this group equals another object. This method will 
+     * Checks if this group equals another object. This method will
      * only return true if the other object is a group with the same
      * domain and group name.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical group, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Object obj) {
         if (obj instanceof Group) {
@@ -219,14 +219,14 @@ public class Group extends PersistentObject {
     }
 
     /**
-     * Checks if this group equals another group. This method will 
+     * Checks if this group equals another group. This method will
      * only return true if the other object is a group with the same
      * domain and group name.
-     * 
+     *
      * @param obj            the object to compare with
-     * 
+     *
      * @return true if the other object is an identical group, or
-     *         false otherwise 
+     *         false otherwise
      */
     public boolean equals(Group obj) {
         return getDomainName().equals(obj.getDomainName())
@@ -235,7 +235,7 @@ public class Group extends PersistentObject {
 
     /**
      * Returns a string representation of this object.
-     * 
+     *
      * @return a string representation of this object
      */
     public String toString() {
@@ -244,63 +244,63 @@ public class Group extends PersistentObject {
 
     /**
      * Returns the group domain.
-     * 
+     *
      * @return the group domain
-     * 
+     *
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
         return getContentManager().getDomain(getDomainName());
     }
-    
+
     /**
      * Returns the group domain name
-     * 
+     *
      * @return the group domain name
      */
     public String getDomainName() {
         return data.getString(GroupData.DOMAIN);
     }
-    
+
     /**
      * Returns the group name.
-     * 
+     *
      * @return the group name
      */
     public String getName() {
         return data.getString(GroupData.NAME);
     }
-    
+
     /**
      * Returns the group description.
-     * 
+     *
      * @return the group description
      */
     public String getDescription() {
         return data.getString(GroupData.DESCRIPTION);
     }
-    
+
     /**
      * Sets the the group description.
-     * 
+     *
      * @param description    the new group description
      */
     public void setDescription(String description) {
         data.setString(GroupData.DESCRIPTION, description);
     }
-    
+
     /**
      * Returns the group comment.
-     * 
+     *
      * @return the group comment
      */
     public String getComment() {
         return data.getString(GroupData.COMMENT);
     }
-    
+
     /**
      * Sets the group comment.
-     * 
+     *
      * @param comment        the new group comment
      */
     public void setComment(String comment) {
@@ -308,13 +308,13 @@ public class Group extends PersistentObject {
     }
 
     /**
-     * Returns the number of users that belong to this group. This 
-     * method will only count the users registered to this group in 
+     * Returns the number of users that belong to this group. This
+     * method will only count the users registered to this group in
      * the database.
      *
      * @return the number of users that belong to this group
      *
-     * @throws ContentException if the database couldn't be accessed 
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     public int getUserCount() throws ContentException {
@@ -324,18 +324,18 @@ public class Group extends PersistentObject {
     /**
      * Returns the users that belong to this group. This method will
      * only return the users registered to this group in the database.
-     * Also, only a limited interval of the matching users will be 
+     * Also, only a limited interval of the matching users will be
      * returned.
      *
      * @param startPos       the list interval start position
      * @param maxLength      the list interval maximum length
-     * 
+     *
      * @return an array of users belonging to this group
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public User[] getUsers(int startPos, int maxLength) 
+    public User[] getUsers(int startPos, int maxLength)
         throws ContentException {
 
         return User.findByGroup(getContentManager(),
@@ -345,10 +345,10 @@ public class Group extends PersistentObject {
     }
 
     /**
-     * Adds the specified user to this  group. This action will not 
+     * Adds the specified user to this  group. This action will not
      * take effect until this object is saved.
-     * 
-     * @param user           the user object 
+     *
+     * @param user           the user object
      */
     public void addUser(User user) {
         if (getDomainName().equals(user.getDomainName())) {
@@ -358,12 +358,12 @@ public class Group extends PersistentObject {
             usersAdded.add(user.getName());
         }
     }
-    
+
     /**
-     * Removes the specified user from this group. This action will 
+     * Removes the specified user from this group. This action will
      * not take effect until this object is saved.
-     * 
-     * @param user           the user object 
+     *
+     * @param user           the user object
      */
     public void removeUser(User user) {
         if (getDomainName().equals(user.getDomainName())) {
@@ -375,16 +375,16 @@ public class Group extends PersistentObject {
     }
 
     /**
-     * Validates this data object. This method checks that all 
+     * Validates this data object. This method checks that all
      * required fields have been filled with suitable values.
-     * 
+     *
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
         if (getDomainName().equals("")) {
             throw new ContentException("no domain set for group object");
         } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() + 
+            throw new ContentException("domain '" + getDomainName() +
                                        "' does not exist");
         } else if (getName().equals("")) {
             throw new ContentException("no name set for group object");
@@ -393,11 +393,11 @@ public class Group extends PersistentObject {
 
     /**
      * Inserts the object data into the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doInsert(User user, DatabaseConnection con)
@@ -415,11 +415,11 @@ public class Group extends PersistentObject {
 
     /**
      * Updates the object data in the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the object data didn't validate or 
+     *
+     * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
@@ -437,11 +437,11 @@ public class Group extends PersistentObject {
 
     /**
      * Deletes the object data from the database.
-     * 
+     *
      * @param user           the user performing the operation
      * @param con            the database connection to use
-     * 
-     * @throws ContentException if the database couldn't be accessed 
+     *
+     * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected void doDelete(User user, DatabaseConnection con)
@@ -457,23 +457,23 @@ public class Group extends PersistentObject {
 
     /**
      * Adds and removes user groups from the database.
-     * 
+     *
      * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
+     *
+     * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
     private void doUserGroups(DatabaseConnection con)
         throws DatabaseObjectException {
 
         UserGroupData  data;
-        
+
         // Handle added users
         if (usersAdded != null) {
             for (int i = 0; i < usersAdded.size(); i++) {
                 data = new UserGroupData();
                 data.setString(UserGroupData.DOMAIN, getDomainName());
-                data.setString(UserGroupData.USER, 
+                data.setString(UserGroupData.USER,
                                usersAdded.get(i).toString());
                 data.setString(UserGroupData.GROUP, getName());
                 UserGroupPeer.doInsert(data, con);
@@ -486,7 +486,7 @@ public class Group extends PersistentObject {
             for (int i = 0; i < usersRemoved.size(); i++) {
                 data = new UserGroupData();
                 data.setString(UserGroupData.DOMAIN, getDomainName());
-                data.setString(UserGroupData.USER, 
+                data.setString(UserGroupData.USER,
                                usersRemoved.get(i).toString());
                 data.setString(UserGroupData.GROUP, getName());
                 UserGroupPeer.doDelete(data, con);

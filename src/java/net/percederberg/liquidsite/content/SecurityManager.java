@@ -16,16 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
 
 /**
  * A content security manager. This class will be called to check all
- * protected operations on domain and content objects. Other database 
- * objects may use the security manager to check the permissions on 
- * related domain or content objects. 
+ * protected operations on domain and content objects. Other database
+ * objects may use the security manager to check the permissions on
+ * related domain or content objects.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -33,22 +33,22 @@ package net.percederberg.liquidsite.content;
 class SecurityManager {
 
     /**
-     * The read access level. 
+     * The read access level.
      */
     private static final int READ = 1;
 
     /**
-     * The write access level. 
+     * The write access level.
      */
     private static final int WRITE = 2;
 
     /**
-     * The publish access level. 
+     * The publish access level.
      */
     private static final int PUBLISH = 3;
 
     /**
-     * The admin access level. 
+     * The admin access level.
      */
     private static final int ADMIN = 4;
 
@@ -59,7 +59,7 @@ class SecurityManager {
 
     /**
      * The security manager instance.
-     * 
+     *
      * @return the security manager instance
      */
     public static SecurityManager getInstance() {
@@ -77,32 +77,32 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @return true if the user has read access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean hasReadAccess(User user, PersistentObject obj) 
+    public boolean hasReadAccess(User user, PersistentObject obj)
         throws ContentException {
 
         return hasAccess(user, obj, READ);
     }
-    
+
     /**
      * Checks the write access for a user on a persistent object.
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @return true if the user has write access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean hasWriteAccess(User user, PersistentObject obj) 
+    public boolean hasWriteAccess(User user, PersistentObject obj)
         throws ContentException {
 
         return hasAccess(user, obj, WRITE);
@@ -110,19 +110,19 @@ class SecurityManager {
 
     /**
      * Checks the publish access for a user on a persistent object.
-     * Note that false if always returned for the object where 
+     * Note that false if always returned for the object where
      * publish access isn't applicable.
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @return true if the user has publish access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean hasPublishAccess(User user, PersistentObject obj) 
+    public boolean hasPublishAccess(User user, PersistentObject obj)
         throws ContentException {
 
         return hasAccess(user, obj, PUBLISH);
@@ -130,19 +130,19 @@ class SecurityManager {
 
     /**
      * Checks the admin access for a user on a persistent object.
-     * Note that false if always returned for the object where 
+     * Note that false if always returned for the object where
      * admin access isn't applicable.
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @return true if the user has admin access, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public boolean hasAdminAccess(User user, PersistentObject obj) 
+    public boolean hasAdminAccess(User user, PersistentObject obj)
         throws ContentException {
 
         return hasAccess(user, obj, ADMIN);
@@ -156,10 +156,10 @@ class SecurityManager {
      * @param user           the user to check, or null for none
      * @param obj            the persistent object to check
      * @param access         the access level to check for
-     * 
+     *
      * @return true if the user has the specified access level, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -205,16 +205,16 @@ class SecurityManager {
     }
 
     /**
-     * Checks the domain access for a user. In the absence of 
+     * Checks the domain access for a user. In the absence of
      * permissions, false is returned.
      *
      * @param user           the user to check, or null for none
      * @param domain         the domain to check
      * @param access         the access level to check for
-     * 
+     *
      * @return true if the user has the specified access level, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -223,12 +223,12 @@ class SecurityManager {
 
         Permission[]  perms = domain.getPermissions();
         Group[]       groups = null;
-        
+
         // Check for superuser and empty permission list
         if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0) {
-            return false; 
+            return false;
         }
 
         // Check domain permissions
@@ -245,34 +245,34 @@ class SecurityManager {
     }
 
     /**
-     * Checks the content access for a user. If no content 
-     * permissions are set for the content object, the parent 
-     * permissions will be checked instead. In the absence of a 
+     * Checks the content access for a user. If no content
+     * permissions are set for the content object, the parent
+     * permissions will be checked instead. In the absence of a
      * content parent, the domain permissions will be checked.
      *
      * @param user           the user to check, or null for none
      * @param content        the content object to check
      * @param access         the access level to check for
-     * 
+     *
      * @return true if the user has the specified access level, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private boolean hasAccess(User user, Content content, int access) 
+    private boolean hasAccess(User user, Content content, int access)
         throws ContentException {
 
         Permission[]  perms = content.getPermissions();
         Group[]       groups = null;
-        
+
         // Check for superuser or inherited permissions
         if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0 && content.getParentId() <= 0) {
             return hasAccess(user, content.getDomain(), access);
         } else if (perms.length == 0) {
-            return hasAccess(user, content.getParent(), access); 
+            return hasAccess(user, content.getParent(), access);
         }
 
         // Check content permissions
@@ -287,7 +287,7 @@ class SecurityManager {
 
         return false;
     }
-    
+
     /**
      * Checks the user object access for a user. Any user can read a
      * user object, but only domain administrators and the user
@@ -296,7 +296,7 @@ class SecurityManager {
      * @param user           the user, or null for none
      * @param obj            the user object to check
      * @param access         the access level to check for
-     * 
+     *
      * @return true if the user has the specified access level, or
      *         false otherwise
      *
@@ -311,7 +311,7 @@ class SecurityManager {
         } else if (access == WRITE && user != null) {
             return user.isSuperUser()
                 || user.equals(obj)
-                || (obj.getDomain() != null && 
+                || (obj.getDomain() != null &&
                     hasAccess(user, obj.getDomain(), ADMIN));
         } else {
             return false;
@@ -329,7 +329,7 @@ class SecurityManager {
      *
      * @return true if the user has the specified access level, or
      *         false otherwise
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -348,18 +348,18 @@ class SecurityManager {
 
     /**
      * Checks the access level for a user on a permission.
-     * 
+     *
      * @param user           the user to check, or null for none
      * @param groups         the user groups, or null for none
      * @param perm           the permission to check
      * @param access         the access level to check for
-     * 
+     *
      * @return true if the user has the specified access level, or
      *         false otherwise
      */
-    private boolean hasAccess(User user, 
-                              Group[] groups, 
-                              Permission perm, 
+    private boolean hasAccess(User user,
+                              Group[] groups,
+                              Permission perm,
                               int access) {
 
         if (!perm.isMatch(user, groups)) {
@@ -376,13 +376,13 @@ class SecurityManager {
             return false;
         }
     }
-    
+
     /**
      * Verifies that a user has access to insert a persistent object.
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the
@@ -415,7 +415,7 @@ class SecurityManager {
             checkWriteAccess(user, (Group) obj);
         } else {
             throw new ContentSecurityException("persistent object " +
-                                               "class unknown: " + 
+                                               "class unknown: " +
                                                obj.getClass());
         }
     }
@@ -425,7 +425,7 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the
@@ -459,7 +459,7 @@ class SecurityManager {
             checkWriteAccess(user, (Group) obj);
         } else {
             throw new ContentSecurityException("persistent object " +
-                                               "class unknown: " + 
+                                               "class unknown: " +
                                                obj.getClass());
         }
     }
@@ -469,13 +469,13 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param obj            the persistent object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the
      *             specified access
      */
-    public void checkDelete(User user, PersistentObject obj) 
+    public void checkDelete(User user, PersistentObject obj)
         throws ContentException, ContentSecurityException {
 
         if (obj instanceof Domain) {
@@ -498,18 +498,18 @@ class SecurityManager {
             checkWriteAccess(user, (Group) obj);
         } else {
             throw new ContentSecurityException("persistent object " +
-                                               "class unknown: " + 
+                                               "class unknown: " +
                                                obj.getClass());
         }
     }
-    
+
     /**
      * Verifies that a user has superuser access. The domain being
      * modified must also be specified.
      *
      * @param user           the user to check, or null for none
      * @param domain         the domain object
-     * 
+     *
      * @throws ContentSecurityException if the user didn't have the
      *             specified access
      */
@@ -526,7 +526,7 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param content        the content object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the
@@ -583,7 +583,7 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param content        the content object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the
@@ -602,7 +602,7 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param domain         the domain object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the
@@ -621,7 +621,7 @@ class SecurityManager {
      *
      * @param user           the user to check, or null for none
      * @param content        the content object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have the

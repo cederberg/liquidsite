@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite;
@@ -53,7 +53,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
     private AdminRequestProcessor admin;
 
     /**
-     * Creates a new default request processor. 
+     * Creates a new default request processor.
      *
      * @param app            the application context
      */
@@ -74,7 +74,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
      * Processes a request.
      *
      * @param request        the request object to process
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      */
     public void process(Request request) throws RequestException {
@@ -86,9 +86,9 @@ public class DefaultRequestProcessor extends RequestProcessor {
 
         // Find domain & site
         try {
-            site = getContentManager().findSite(request.getProtocol(), 
-                                                request.getHost(), 
-                                                request.getPort(), 
+            site = getContentManager().findSite(request.getProtocol(),
+                                                request.getHost(),
+                                                request.getPort(),
                                                 request.getPath());
             if (site == null) {
                 return;
@@ -134,13 +134,13 @@ public class DefaultRequestProcessor extends RequestProcessor {
             throw RequestException.FORBIDDEN;
         }
     }
-    
+
     /**
      * Processes a request for a content object.
      *
      * @param request        the request object
      * @param content        the content object
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      */
     private void processContent(Request request, Content content)
@@ -162,14 +162,14 @@ public class DefaultRequestProcessor extends RequestProcessor {
 
     /**
      * Processes a login request. This will set the request user if
-     * successful, and send a redirect to the requested page. If 
+     * successful, and send a redirect to the requested page. If
      * unsuccessful, a request error attribute is set. Note that the
-     * request must be further processed in the case of an 
+     * request must be further processed in the case of an
      * unsuccessful login, as the login page must be displayed again.
      *
      * @param request        the request object
      * @param site           the site
-     * 
+     *
      * @throws RequestException if the request couldn't be processed
      */
     private void processLogin(Request request, ContentSite site)
@@ -178,7 +178,7 @@ public class DefaultRequestProcessor extends RequestProcessor {
         String  name = request.getParameter("liquidsite.login");
         String  password = request.getParameter("liquidsite.password");
         User    user;
-        
+
         try {
             user = getContentManager().getUser(site.getDomain(), name);
         } catch (ContentException e) {
