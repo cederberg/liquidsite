@@ -25,6 +25,7 @@
           for storing the application data.</p>
 
           <form method="post" action="install.html">
+            <input type="hidden" name="step" value="1" />
             <input type="submit" value="   Next &gt;&gt;   "/>
           </form>
           
