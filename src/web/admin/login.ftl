@@ -24,8 +24,8 @@
           <h1>Liquid Site Administration</h1>
         </td>
         <td class="extra">
-          Version&nbsp;${liquidSiteVersion}<br />
-          ${liquidSiteDate}
+          Version&nbsp;${liquidsite.version}<br />
+          ${liquidsite.date}
         </td>
       </tr>
       <tr>

@@ -36,6 +36,8 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
+import net.percederberg.liquidsite.template.TemplateException;
+import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
  * A front controller servlet. This class handles all incoming HTTP
@@ -195,8 +197,8 @@ public class LiquidSiteServlet extends HttpServlet
             LOG.error(e.getMessage());
         }
         try {
-            TemplateManager.initialize(getBaseDir());
-        } catch (IOException e) {
+            TemplateManager.initialize(this);
+        } catch (TemplateException e) {
             errors++;
             LOG.error(e.getMessage());
         }
@@ -263,8 +265,6 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             controller.process(r);
             if (r.hasResponse()) {
-                r.setAttribute("liquidSiteVersion", getBuildVersion());
-                r.setAttribute("liquidSiteDate", getBuildDate());
                 r.commit(getServletContext());
             } else {
                 LOG.debug("Unhandled request: " + r);

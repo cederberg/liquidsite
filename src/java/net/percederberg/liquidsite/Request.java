@@ -35,11 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.template.Template;
+import net.percederberg.liquidsite.template.TemplateException;
+import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
  * A document request.
@@ -467,18 +466,15 @@ public class Request {
      *             commit the response
      */
     private void commitTemplate() throws IOException {
-        PrintWriter               out;
-        Template                  template;
-        TemplateExceptionHandler  handler;
+        PrintWriter  out;
+        Template     template;
 
         LOG.debug("Handling request for " + this + " with template " +
                   responseData);
-        template = TemplateManager.getFileTemplate(responseData);
         response.setContentType("text/html");
         out = new PrintWriter(response.getOutputStream());
         try {
-            handler = TemplateExceptionHandler.RETHROW_HANDLER;
-            template.setTemplateExceptionHandler(handler);
+            template = TemplateManager.getFileTemplate(responseData);
             template.process(getAllAttributes(), out);
         } catch (TemplateException e) {
             LOG.error("while processing " + responseData + "template", e);
