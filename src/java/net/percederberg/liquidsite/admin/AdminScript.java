@@ -57,19 +57,34 @@ class AdminScript {
     /**
      * Returns the JavaScript for selecting an item in a tree view.
      * 
-     * @param type           the item type
-     * @param id             the item id
+     * @param domain         the domain object to select
      * 
      * @return the JavaScript for selecting the item
      */
-    public String getTreeViewSelect(Object type, Object id) {
+    public String getTreeViewSelect(Domain domain) {
+        StringBuffer  buffer = new StringBuffer();
+
+        buffer.append("treeSelect('domain', '");
+        buffer.append(domain.getName());
+        buffer.append("');\n");
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for selecting an item in a tree view.
+     * 
+     * @param content        the content object to select
+     * 
+     * @return the JavaScript for selecting the item
+     */
+    public String getTreeViewSelect(Content content) {
         StringBuffer  buffer = new StringBuffer();
 
         buffer.append("treeSelect('");
-        buffer.append(type);
-        buffer.append("', '");
-        buffer.append(id);
-        buffer.append("');\n");
+        buffer.append(getContentCategory(content));
+        buffer.append("', ");
+        buffer.append(content.getId());
+        buffer.append(");\n");
         return buffer.toString();
     }
 
