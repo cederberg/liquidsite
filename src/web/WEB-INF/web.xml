@@ -61,6 +61,16 @@
   </servlet-mapping>
 
   <servlet-mapping>
+    <servlet-name>TomcatDefaultServlet</servlet-name>
+    <url-pattern>*.png</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>TomcatDefaultServlet</servlet-name>
+    <url-pattern>*.js</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
     <servlet-name>TomcatJspServlet</servlet-name>
     <url-pattern>*.jsp</url-pattern>
   </servlet-mapping>
