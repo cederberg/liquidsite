@@ -21,6 +21,9 @@
 
 package net.percederberg.liquidsite;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
@@ -53,6 +56,12 @@ public class AdminController extends Controller {
      * The modified status constant.
      */
     private static final int MODIFIED_STATUS = 2;
+
+    /**
+     * The date format used by this class.
+     */
+    private static final SimpleDateFormat DATE_FORMAT = 
+        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * Creates a new administration controller. 
@@ -232,7 +241,7 @@ public class AdminController extends Controller {
             buffer.append("', '");
             buffer.append(children[i].getName());
             buffer.append("', '");
-            // TODO: add description 
+            buffer.append(children[i].toString());
             buffer.append("', ");
             // TODO: add real status
             buffer.append(ONLINE_STATUS);
@@ -277,6 +286,25 @@ public class AdminController extends Controller {
             buffer.append(content.getName());
         }
         buffer.append("');\n");
+        if (domain != null) {
+            buffer.append("objectAddProperty('Name', '");
+            buffer.append(domain.getDescription());
+            buffer.append("');\n");
+        } else {
+            buffer.append("objectAddUrlProperty('");
+            // TODO: add content URL
+            buffer.append(content.toString());
+            buffer.append("');\n");
+            buffer.append("objectAddOnlineProperty(");
+            buffer.append(getDateString(content.getOnlineDate()));
+            buffer.append(", ");
+            buffer.append(getDateString(content.getOfflineDate()));
+            buffer.append(");\n");
+            buffer.append("objectAddStatusProperty(");
+            // TODO: get correct status value
+            buffer.append(ONLINE_STATUS);
+            buffer.append(", null);\n");
+        }
         request.sendData("text/javascript", buffer.toString());
     }
 
@@ -373,6 +401,21 @@ public class AdminController extends Controller {
             return "site";
         default:
             return "";
+        }
+    }
+    
+    /**
+     * Returns a JavaScript string representation of a date.
+     * 
+     * @param date           the date to present, or null
+     * 
+     * @return a JavaScript string representation of the date
+     */
+    private String getDateString(Date date) {
+        if (date == null) {
+            return "null";
+        } else {
+            return "'" + DATE_FORMAT.format(date) + "'"; 
         }
     }
 }
