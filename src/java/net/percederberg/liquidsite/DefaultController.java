@@ -81,6 +81,7 @@ public class DefaultController extends Controller {
                                                 request.getHost(), 
                                                 request.getPort(), 
                                                 request.getPath());
+            request.setSite(site);
             if (site == null) {
                 return;
             }

@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
@@ -114,6 +115,11 @@ public class Request {
     private String responseData = null;
 
     /**
+     * The request site.
+     */
+    private Site site = null;
+
+    /**
      * Creates a new request. 
      * 
      * @param request        the HTTP request
@@ -181,6 +187,26 @@ public class Request {
      */
     public String getServletPath() {
         return request.getContextPath();
+    }
+
+    /**
+     * Returns the request site. The site is set for the request upon 
+     * dispatching the request. 
+     * 
+     * @return the request site object
+     */
+    public Site getSite() {
+        return site;
+    }
+    
+    /**
+     * Sets the request site. This method is called by the request
+     * dispatcher to associate the request with a site.
+     * 
+     * @param site           the request site
+     */
+    public void setSite(Site site) {
+        this.site = site;
     }
 
     /**

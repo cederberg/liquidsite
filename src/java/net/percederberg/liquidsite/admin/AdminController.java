@@ -370,7 +370,11 @@ public class AdminController extends Controller {
     private void processDeleteDomain(Request request, Domain domain) 
         throws ContentException, ContentSecurityException {
 
-        // TODO: check if domain is current site domain!
+        if (domain.equals(request.getSite().getDomain())) {
+            throw new ContentSecurityException(
+                "cannot remove the domain containing the site " +
+                "currently being used");
+        }
         domain.delete(request.getUser());
         view.setSiteTreeFocus(request, null);
         view.dialogClose(request);
@@ -393,7 +397,10 @@ public class AdminController extends Controller {
 
         Content  parent;
 
-        // TODO: check if content is current site domain!
+        if (content.equals(request.getSite())) {
+            throw new ContentSecurityException(
+                "cannot remove the site currently being used");
+        }
         content.delete(request.getUser());
         parent = content.getParent();
         if (parent == null) {
