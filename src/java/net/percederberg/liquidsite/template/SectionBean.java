@@ -21,9 +21,11 @@
 
 package net.percederberg.liquidsite.template;
 
+import java.util.ArrayList;
+
 import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentSection;
 
 /**
  * A section template bean. This class is used to access sections from
@@ -40,6 +42,11 @@ public class SectionBean {
     private static final Log LOG = new Log(SectionBean.class);
 
     /**
+     * The base template bean.
+     */
+    private LiquidSiteBean baseBean;
+
+    /**
      * The section being encapsulated.
      */
     private ContentSection section;
@@ -48,15 +55,17 @@ public class SectionBean {
      * Creates a new empty section template bean.
      */
     SectionBean() {
-        this(null);
+        this(null, null);
     }
 
     /**
      * Creates a new section template bean.
      *
-     * @param section         the content section, or null
+     * @param baseBean       the base template bean
+     * @param section        the content section, or null
      */
-    SectionBean(ContentSection section) {
+    SectionBean(LiquidSiteBean baseBean, ContentSection section) {
+        this.baseBean = baseBean;
         this.section = section;
     }
 
@@ -71,5 +80,30 @@ public class SectionBean {
         } else {
             return section.getId();
         }
+    }
+
+    /**
+     * Returns all documents in this section and any subsections. At
+     * most the specified number of documents will be returned. The
+     * documents will be ordered by last modification date.
+     *
+     * @param offset         the number of documents to skip
+     * @param count          the maximum number of documents
+     *
+     * @return a list of the documents found (as document beans)
+     */
+    public ArrayList findDocuments(int offset, int count) {
+        ArrayList  results = new ArrayList();
+
+        // TODO: add sorting (and remove the one that exists)
+        // TODO: add filtering
+        if (section != null) {
+            try {
+                baseBean.findDocuments(section, offset, count, results);
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return results;
     }
 }

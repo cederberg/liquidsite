@@ -148,7 +148,7 @@ public class LiquidSiteBean {
 
         if (sectionBean == null) {
             section = request.getEnvironment().getSection();
-            sectionBean = new SectionBean(section);
+            sectionBean = new SectionBean(this, section);
         }
         return sectionBean;
     }
@@ -337,7 +337,7 @@ public class LiquidSiteBean {
      * @return a list of the documents found (as document beans)
      */
     public ArrayList findDocuments(String path, int offset, int count) {
-        ArrayList       result = new ArrayList();
+        ArrayList       results = new ArrayList();
         Domain          domain;
         Content         content;
         ContentSection  section;
@@ -348,16 +348,10 @@ public class LiquidSiteBean {
             domain = request.getEnvironment().getDomain();
             content = findContent(path, domain);
             if (content instanceof ContentSection) {
-                section = (ContentSection) content;
-                findDocuments(findSections(section), result);
-                // TODO: implement offset and count in SQL
-                while (offset > 0 && result.size() > 0) {
-                    result.remove(0);
-                    offset--;
-                }
-                while (result.size() > count) {
-                    result.remove(result.size() - 1);
-                }
+                findDocuments((ContentSection) content,
+                              offset,
+                              count,
+                              results);
             } else {
                 LOG.error("failed to find section: " + path);
             }
@@ -366,7 +360,7 @@ public class LiquidSiteBean {
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
         }
-        return result;
+        return results;
     }
 
     /**
@@ -385,7 +379,7 @@ public class LiquidSiteBean {
             domain = request.getEnvironment().getDomain();
             content = findContent(path, domain);
             if (content instanceof ContentSection) {
-                return new SectionBean((ContentSection) content);
+                return new SectionBean(this, (ContentSection) content);
             } else {
                 LOG.error("failed to find section: " + path);
             }
@@ -487,6 +481,47 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Finds all documents in the specified section and subsection.
+     * The documents will be added (as document beans) to the
+     * specified list.
+     *
+     * @param section        the content section
+     * @param offset         the number of documents to skip
+     * @param count          the maximum number of documents
+     * @param results        the list with results
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    void findDocuments(ContentSection section,
+                       int offset,
+                       int count,
+                       ArrayList results)
+        throws ContentException {
+
+        ContentSection[]  sections;
+        Content[]         children;
+        DocumentBean      doc;
+
+        sections = findSections(section);
+        children = manager.getContentChildren(request.getUser(), sections);
+        // TODO: implement offset and count in SQL
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] instanceof ContentDocument) {
+                if (offset > 0) {
+                    offset--;
+                } else if (count > 0) {
+                    count--;
+                    doc = new DocumentBean((ContentDocument) children[i],
+                                           section,
+                                           getSitePath());
+                    results.add(doc);
+                }
+            }
+        }
+    }
+
+    /**
      * Finds all subsections to a specified section. The specified
      * section will be included in the result.
      *
@@ -530,34 +565,6 @@ public class LiquidSiteBean {
                                               Content.SECTION_CATEGORY);
         for (int i = 0; i < children.length; i++) {
             findSubSections((ContentSection) children[i], result);
-        }
-    }
-
-    /**
-     * Finds all documents in the specified sections. The documents
-     * will be added (as document beans) to the specified list.
-     *
-     * @param sections       the content sections
-     * @param results        the list with results
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private void findDocuments(ContentSection[] sections,
-                               ArrayList results)
-        throws ContentException {
-
-        Content[]     children;
-        DocumentBean  doc;
-
-        children = manager.getContentChildren(request.getUser(), sections);
-        for (int i = 0; i < children.length; i++) {
-            if (children[i] instanceof ContentDocument) {
-                doc = new DocumentBean((ContentDocument) children[i],
-                                       sections[0],
-                                       getSitePath());
-                results.add(doc);
-            }
         }
     }
 }
