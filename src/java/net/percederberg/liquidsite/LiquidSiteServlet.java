@@ -258,6 +258,63 @@ public class LiquidSiteServlet extends HttpServlet
                          HttpServletResponse response)
         throws ServletException, IOException {
 
+        process(request, response, true);
+    }
+
+    /**
+     * Handles an incoming HTTP HEAD request.
+     *
+     * @param request        the HTTP request object
+     * @param response       the HTTP response object
+     *
+     * @throws ServletException if the request couldn't be handled by
+     *             this servlet
+     * @throws IOException if an IO error occured while attempting to
+     *             service this request
+     */
+    protected void doHead(HttpServletRequest request,
+                          HttpServletResponse response)
+        throws ServletException, IOException {
+
+        process(request, response, false);
+    }
+
+    /**
+     * Handles an incoming HTTP POST request.
+     *
+     * @param request        the HTTP request object
+     * @param response       the HTTP response object
+     *
+     * @throws ServletException if the request couldn't be handled by
+     *             this servlet
+     * @throws IOException if an IO error occured while attempting to
+     *             service this request
+     */
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
+        throws ServletException, IOException {
+
+        process(request, response, true);
+    }
+
+    /**
+     * Handles an incoming HTTP request. The response can be sent
+     * either completely or solely with the response headers.
+     *
+     * @param request        the HTTP request object
+     * @param response       the HTTP response object
+     * @param content        the complete content response flag
+     *
+     * @throws ServletException if the request couldn't be handled by
+     *             this servlet
+     * @throws IOException if an IO error occured while attempting to
+     *             service this request
+     */
+    private void process(HttpServletRequest request,
+                         HttpServletResponse response,
+                         boolean content)
+        throws ServletException, IOException {
+
         String   contentType = request.getContentType();
         Request  r;
 
@@ -278,7 +335,7 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             processor.process(r);
             if (r.hasResponse()) {
-                r.commit(getServletContext());
+                r.commit(getServletContext(), content);
             } else {
                 LOG.info("Unhandled request: " + r);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -289,24 +346,6 @@ public class LiquidSiteServlet extends HttpServlet
             response.sendError(e.getCode(), e.getMessage());
         }
         r.dispose();
-    }
-
-    /**
-     * Handles an incoming HTTP POST request.
-     *
-     * @param request        the HTTP request object
-     * @param response       the HTTP response object
-     *
-     * @throws ServletException if the request couldn't be handled by
-     *             this servlet
-     * @throws IOException if an IO error occured while attempting to
-     *             service this request
-     */
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-        throws ServletException, IOException {
-
-        doGet(request, response);
     }
 
     /**

@@ -505,27 +505,29 @@ public class Request {
      * Sends the request response to the underlying HTTP response
      * object. This method shouldn't be called more than once per
      * request, and should not be called in case no response has been
-     * stored in the request.
+     * stored in the request. The response can be committed either
+     * completely or solely with the response headers.
      *
      * @param context        the servlet context
+     * @param content        the complete content response flag
      *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      * @throws ServletException if a configuration error was
      *             encountered while sending the response
      */
-    public void commit(ServletContext context)
+    public void commit(ServletContext context, boolean content)
         throws IOException, ServletException {
 
         switch (responseType) {
         case DATA_RESPONSE:
-            commitData();
+            commitData(content);
             break;
         case FILE_RESPONSE:
-            commitFile(context);
+            commitFile(context, content);
             break;
         case TEMPLATE_RESPONSE:
-            commitTemplate();
+            commitTemplate(content);
             break;
         case REDIRECT_RESPONSE:
             commitRedirect();
@@ -565,11 +567,15 @@ public class Request {
 
     /**
      * Sends the data response to the underlying HTTP response object.
+     * The response can be committed either completely or solely with
+     * the response headers.
+     *
+     * @param content        the complete content response flag
      *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      */
-    private void commitData() throws IOException {
+    private void commitData(boolean content) throws IOException {
         PrintWriter  out;
 
         LOG.info("Handling request for " + this + " with string data");
@@ -579,20 +585,27 @@ public class Request {
         } else {
             response.setContentType(responseMimeType + "; charset=UTF-8");
         }
-        out = response.getWriter();
-        out.write(responseData);
-        out.close();
+        if (content) {
+            out = response.getWriter();
+            out.write(responseData);
+            out.close();
+        }
     }
 
     /**
      * Sends the file response to the underlying HTTP response object.
+     * The response can be committed either completely or solely with
+     * the response headers.
      *
      * @param context        the servlet context
+     * @param content        the complete content response flag
      *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      */
-    private void commitFile(ServletContext context) throws IOException {
+    private void commitFile(ServletContext context, boolean content)
+        throws IOException {
+
         File             file;
         long             modified;
         FileInputStream  input;
@@ -611,31 +624,35 @@ public class Request {
             return;
         }
         commitStaticHeaders(file.lastModified());
-        try {
-            input = new FileInputStream(file);
-        } catch (IOException e) {
-            LOG.error("failed to read HTTP response file " + file, e);
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
         response.setContentType(context.getMimeType(responseData));
         response.setContentLength((int) file.length());
-        output = response.getOutputStream();
-        while ((length = input.read(buffer)) > 0) {
-            output.write(buffer, 0, length);
+        if (content) {
+            try {
+                input = new FileInputStream(file);
+            } catch (IOException e) {
+                LOG.error("failed to read HTTP response file " + file, e);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            output = response.getOutputStream();
+            while ((length = input.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+            input.close();
+            output.close();
         }
-        input.close();
-        output.close();
     }
 
     /**
      * Sends the processed template response to the underlying HTTP
      * response object.
      *
+     * @param content        the complete content response flag
+     *
      * @throws IOException if an IO error occured while attempting to
      *             commit the response
      */
-    private void commitTemplate() throws IOException {
+    private void commitTemplate(boolean content) throws IOException {
         PrintWriter  out;
         Template     template;
 
@@ -643,15 +660,17 @@ public class Request {
                  responseData);
         commitDynamicHeaders();
         response.setContentType("text/html; charset=UTF-8");
-        out = response.getWriter();
-        try {
-            template = TemplateManager.getFileTemplate(responseData);
-            template.process(this, null, out);
-        } catch (TemplateException e) {
-            LOG.error("while processing " + responseData + " template", e);
-            throw new IOException(e.getMessage());
-        } finally {
-            out.close();
+        if (content) {
+            out = response.getWriter();
+            try {
+                template = TemplateManager.getFileTemplate(responseData);
+                template.process(this, null, out);
+            } catch (TemplateException e) {
+                LOG.error("while processing " + responseData + " template", e);
+                throw new IOException(e.getMessage());
+            } finally {
+                out.close();
+            }
         }
     }
 
