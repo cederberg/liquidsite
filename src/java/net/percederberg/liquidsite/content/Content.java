@@ -53,6 +53,11 @@ public abstract class Content extends PersistentObject implements Comparable {
     public static final int SITE_CATEGORY = 1;
 
     /**
+     * The file content category.
+     */
+    public static final int FILE_CATEGORY = 2;
+
+    /**
      * The content data object.
      */
     private ContentData data;
@@ -227,6 +232,8 @@ public abstract class Content extends PersistentObject implements Comparable {
         switch (data.getInt(ContentData.CATEGORY)) {
         case SITE_CATEGORY:
             return new Site(data, latest, con);
+        case FILE_CATEGORY:
+            return new FileContent(data, latest, con);
         default:
             throw new ContentException(
                 "content category " + data.getInt(ContentData.CATEGORY) +
