@@ -250,6 +250,18 @@ public class User extends PersistentObject {
     }
 
     /**
+     * Checks if this user is a super user. A super user should have
+     * access to all objects in the system, and does not belong to 
+     * any domain.
+     * 
+     * @return true if the user represents a super user, or
+     *         false otherwise
+     */
+    public boolean isSuperUser() {
+        return getDomainName().equals("");
+    }
+
+    /**
      * Returns the user domain.
      * 
      * @return the user domain, or null if the user is a superuser

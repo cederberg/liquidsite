@@ -266,7 +266,7 @@ public class Domain extends PersistentObject implements Comparable {
         Group[]       groups = null;
         
         // Check for superuser and empty permission list
-        if (user != null && user.getDomainName().equals("")) {
+        if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0) {
             return false; 
@@ -302,7 +302,7 @@ public class Domain extends PersistentObject implements Comparable {
         Group[]       groups = null;
         
         // Check for superuser and empty permission list
-        if (user != null && user.getDomainName().equals("")) {
+        if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0) {
             return false; 

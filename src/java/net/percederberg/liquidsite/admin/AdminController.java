@@ -447,7 +447,7 @@ public class AdminController extends Controller {
         try {
             if (type.equals("domain")) {
                 domain = getActiveDomain(request); 
-                if (user.getDomainName().equals("")) {
+                if (user.isSuperUser()) {
                     request.setAttribute("enableDomain", true);
                 }
                 if (domain.hasWriteAccess(user)) {
