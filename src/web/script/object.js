@@ -204,7 +204,7 @@ function objectAddEditButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddDeleteButton(url) {
-    var script = "utilOpenDialog('" + url + "',580,310)";
+    var script = "utilOpenDialog('" + url + "',560,310)";
 
     objectInternalAddButton("Delete", "delete.png", script);
 }
@@ -215,7 +215,7 @@ function objectAddDeleteButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddPublishButton(url) {
-    var script = "utilOpenDialog('" + url + "',580,330)";
+    var script = "utilOpenDialog('" + url + "',550,300)";
 
     objectInternalAddButton("Publish", "online.png", script);
 }
@@ -226,7 +226,7 @@ function objectAddPublishButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddUnpublishButton(url) {
-    var script = "utilOpenDialog('" + url + "',580,300)";
+    var script = "utilOpenDialog('" + url + "',550,300)";
 
     objectInternalAddButton("Unpublish", "offline.png", script);
 }
@@ -237,7 +237,7 @@ function objectAddUnpublishButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddRevertButton(url) {
-    var script = "utilOpenDialog('" + url + "',580,300)";
+    var script = "utilOpenDialog('" + url + "',550,300)";
 
     objectInternalAddButton("Revert", "revert.png", script);
 }
@@ -248,7 +248,7 @@ function objectAddRevertButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddPermissionsButton(url) {
-    var script = "utilOpenDialog('" + url + "',700,500)";
+    var script = "utilOpenDialog('" + url + "',650,500)";
 
     objectInternalAddButton("Permissions", "permissions.png", script);
 }
@@ -259,7 +259,7 @@ function objectAddPermissionsButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddUnlockButton(url) {
-    var script = "utilOpenDialog('" + url + "',580,300)";
+    var script = "utilOpenDialog('" + url + "',550,300)";
 
     objectInternalAddButton("Unlock", "lock.png", script);
 }
