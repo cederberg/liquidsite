@@ -67,8 +67,6 @@ class HomeEditFormHandler extends AdminFormHandler {
         editUser.addRequiredConstraint("name", error);
 
         // Edit password validator
-        error = "Existing password not specified";
-        editPassword.addRequiredConstraint("password0", error);
         error = "New password not specified";
         editPassword.addRequiredConstraint("password1", error);
         error = "Verification of new password not specified";
