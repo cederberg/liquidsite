@@ -1,6 +1,7 @@
 <#assign title = "Liquid Site Section Preview">
-<#assign hideadmin = true>
-<#include "header.ftl">
+<#assign hidefooter = true>
+<#include "../header.ftl">
+<@menu />
 
     <h2>Section Description</h2>
 
@@ -42,4 +43,4 @@
 </#list>
     </table>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">

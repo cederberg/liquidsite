@@ -1,94 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<#assign title = "Liquid Site Administration">
+<#include "../header.ftl">
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "DTD/xhtml1-strict.dtd">
+<#macro entries>
+  <#if liquidsite.user.login?has_content>
+    <@menuentry "Home", "home.html", true />
+    <@menuentry "Site", "site.html" />
+    <@menuentry "Content", "content.html" />
+    <#if liquidsite.user.domainadmin>
+      <@menuentry "Users", "users.html" />
+    </#if>
+    <#if liquidsite.user.superuser>
+      <@menuentry "System", "system.html" />
+    </#if>
+  <#else>
+    <@menuentry "Login" />
+  </#if>
+</#macro>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
-    <meta http-equiv="Content-Style-Type" content="text/css" />
-    <meta http-equiv="Content-Language" content="en" />
-    <meta name="robots" content="noindex,nofollow" />
-    <link rel="stylesheet" href="${liquidsite.linkTo('/style.css')}" type="text/css" />
-<#if title?has_content>
-    <title>${title}</title>
-<#else>
-    <title>Liquid Site Administration</title>
-</#if>
-  </head>
-
-<#if onload?has_content>
-  <body onload="${onload}">
-<#else>
-  <body>
-</#if>
-
-    <table class="menu">
-      <tr>
-        <td class="logo" rowspan="2">
-          <img src="${liquidsite.linkTo('/images/liquidsite.jpeg')}" alt="Liquid Site" />
-        </td>
-        <td class="title" colspan="12">
-<#if title?has_content>
-          <h1>${title}</h1>
-<#else>
-          <h1>Liquid Site Administration</h1>
-</#if>
-        </td>
-        <td class="end" rowspan="2">
+<#macro info>
           Version&nbsp;${liquidsite.version}<br />
           ${liquidsite.date}<br />
           <br />
-<#if liquidsite.user.login?has_content>
+  <#if liquidsite.user.login?has_content>
           <a href="logout.html">Logout</a>
-<#else>
-          &nbsp;
-</#if>
-        </td>
-      </tr>
-      <tr>
-        <td class="space">&nbsp;</td>
-<#macro menutab name page isindex=false>
-  <#local url = liquidsite.request.path>
-        <td class="space">&nbsp;</td>
-  <#if url?ends_with(page)>
-        <td class="active"
-            onclick="window.location='${page}'"
-            onmouseover="this.className='hover'"
-            onmouseout="this.className='active'">
-          <a href="${page}">${name}</a>
-        </td>
-  <#elseif isindex && (url?ends_with("/") || url?ends_with("index.html"))>
-        <td class="active"
-            onclick="window.location='${page}'"
-            onmouseover="this.className='hover'"
-            onmouseout="this.className='active'">
-          <a href="${page}">${name}</a>
-        </td>
   <#else>
-        <td class="inactive"
-            onclick="window.location='${page}'"
-            onmouseover="this.className='hover'"
-            onmouseout="this.className='inactive'">
-          <a href="${page}">${name}</a>
-        </td>
+          &nbsp;
   </#if>
 </#macro>
-<#if hideadmin?exists>
-  <#-- Print nothing -->
-<#elseif liquidsite.user.login?has_content>
-  <@menutab name="Home" page="home.html" isindex=true />
-  <@menutab name="Site" page="site.html" />
-  <@menutab name="Content" page="content.html" />
-  <#if liquidsite.user.domainadmin>
-    <@menutab name="Users" page="users.html" />
-  </#if>
-  <#if liquidsite.user.superuser>
-    <@menutab name="System" page="system.html" />
-  </#if>
-<#else>
-  <@menutab name="Login" page=liquidsite.request.path />
-</#if>
-        <td class="filler">&nbsp;</td>
-      </tr>
-    </table>
+
+<@menu entries, info />

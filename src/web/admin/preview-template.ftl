@@ -1,6 +1,7 @@
 <#assign title = "Liquid Site Template Preview">
-<#assign hideadmin = true>
-<#include "header.ftl">
+<#assign hidefooter = true>
+<#include "../header.ftl">
+<@menu />
 
     <table class="border">
 <#list locals.keySet() as elem>
@@ -25,4 +26,4 @@
 </#list>
     </table>
 
-<#include "footer.ftl">
+<#include "../footer.ftl">
