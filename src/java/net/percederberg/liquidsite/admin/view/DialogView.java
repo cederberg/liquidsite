@@ -21,7 +21,9 @@
 
 package net.percederberg.liquidsite.admin.view;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
@@ -30,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
+import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -39,7 +42,7 @@ import net.percederberg.liquidsite.content.User;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DialogView {
+public class DialogView extends AdminView {
 
     /**
      * Creates a new dialog view helper.
@@ -214,6 +217,63 @@ public class DialogView {
     }
 
     /**
+     * Shows the permissions editing dialog.
+     *
+     * @param request         the request object
+     * @param obj             the domain or content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewPermissions(Request request, Object obj) 
+        throws ContentException {
+
+        Domain     domain;
+        Content    content;
+        ArrayList  inherited;
+        ArrayList  local;
+        HashMap    map;
+        int        index = 0;
+        String     str;
+
+        AdminUtils.setReference(request, obj);
+        if (obj instanceof Domain) {
+            domain = (Domain) obj;
+            inherited = getInheritedPermissions(domain);
+            local = getPermissions(domain.getPermissions(), false);
+        } else {
+            content = (Content) obj;
+            domain = content.getDomain();
+            inherited = getInheritedPermissions(content);
+            local = getPermissions(content.getPermissions(), false);
+        }
+        if (request.getParameter("perm_0_type") != null) {
+            local.clear();
+            while (request.getParameter("perm_" + index + "_type") != null) {
+                map = new HashMap();
+                str = request.getParameter("perm_" + index + "_user", "");
+                map.put("user", str);
+                str = request.getParameter("perm_" + index + "_group", "");
+                map.put("group", str);
+                str = request.getParameter("perm_" + index + "_read");
+                map.put("read", (str == null) ? "false" : "true");
+                str = request.getParameter("perm_" + index + "_write");
+                map.put("write", (str == null) ? "false" : "true");
+                str = request.getParameter("perm_" + index + "_publish");
+                map.put("publish", (str == null) ? "false" : "true");
+                str = request.getParameter("perm_" + index + "_admin");
+                map.put("admin", (str == null) ? "false" : "true");
+                local.add(map);
+                index++;
+            }
+        }
+        request.setAttribute("groups", findGroups(domain, ""));
+        request.setAttribute("inherited", inherited);
+        request.setAttribute("local", local);
+        request.sendTemplate("admin/dialog/permissions-object.ftl");
+    }
+
+    /**
      * Shows the content unlock dialog.
      * 
      * @param request        the request object
@@ -222,5 +282,88 @@ public class DialogView {
     public void viewUnlock(Request request, Content content) {
         AdminUtils.setReference(request, content);
         request.sendTemplate("admin/dialog/unlock-object.ftl");
+    }
+
+    /**
+     * Finds all inherited permissions for a domain. The permissions
+     * will not be added directly to the result list, but rather a
+     * simplified hash map containing the fields of each permission
+     * will be added.
+     *
+     * @param domain         the domain object
+     *
+     * @return the list of permissions found (in maps)
+     */
+    private ArrayList getInheritedPermissions(Domain domain) {
+        return getPermissions(new Permission[0], true);
+    }
+
+    /**
+     * Finds all inherited permissions for a content object. The
+     * permissions will not be added directly to the result list, but
+     * rather a simplified hash map containing the fields of each
+     * permission will be added.
+     *
+     * @param content         the content object
+     *
+     * @return the list of permissions found (in maps)
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ArrayList getInheritedPermissions(Content content)
+        throws ContentException {
+
+        Permission[]  permissions;
+        Content       parent = content;
+        
+        do {
+            parent = parent.getParent();
+            if (parent == null) {
+                permissions = content.getDomain().getPermissions();
+            } else {
+                permissions = parent.getPermissions();
+            }
+        } while (permissions.length == 0 && parent != null);
+
+        return getPermissions(permissions, true);
+    }
+
+    /**
+     * Returns a list of simplified permission maps.
+     *
+     * @param permissions     the array of permission objects
+     * @param addEmpty        the add empty permission flag
+     *
+     * @return the list of permission maps
+     */
+    private ArrayList getPermissions(Permission[] permissions,
+                                     boolean addEmpty) {
+
+        ArrayList  result = new ArrayList();
+        HashMap    map;
+        
+        if (permissions.length == 0 && addEmpty) {
+            map = new HashMap();
+            map.put("user", "");
+            map.put("group", "");
+            map.put("read", "false");
+            map.put("write", "false");
+            map.put("publish", "false");
+            map.put("admin", "false");
+            result.add(map);
+        }
+        for (int i = 0; i < permissions.length; i++) {
+            map = new HashMap();
+            map.put("user", permissions[i].getUserName());
+            map.put("group", permissions[i].getGroupName());
+            map.put("read", String.valueOf(permissions[i].getRead()));
+            map.put("write", String.valueOf(permissions[i].getWrite()));
+            map.put("publish", String.valueOf(permissions[i].getPublish()));
+            map.put("admin", String.valueOf(permissions[i].getAdmin()));
+            result.add(map);
+        }
+
+        return result;
     }
 }

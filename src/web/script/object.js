@@ -248,7 +248,7 @@ function objectAddRevertButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddPermissionsButton(url) {
-    var script = "utilOpenDialog('" + url + "',600,500)";
+    var script = "utilOpenDialog('" + url + "',700,500)";
 
     objectInternalAddButton("Permissions", "permissions.png", script);
 }

@@ -79,6 +79,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         workflows.add(new UnpublishDialogHandler());
         workflows.add(new RevertDialogHandler());
         workflows.add(new DeleteDialogHandler());
+        workflows.add(new PermissionsDialogHandler());
         workflows.add(new UnlockDialogHandler());
         workflows.add(new UsersAddFormHandler());
         workflows.add(new UsersEditFormHandler());
