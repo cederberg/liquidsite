@@ -78,6 +78,11 @@ public abstract class Content extends PersistentObject implements Comparable {
     public static final int SECTION_CATEGORY = 11;
 
     /**
+     * The document content category.
+     */
+    public static final int DOCUMENT_CATEGORY = 12;
+
+    /**
      * The content data object.
      */
     private ContentData data;
@@ -303,6 +308,8 @@ public abstract class Content extends PersistentObject implements Comparable {
             return new ContentTemplate(data, latest, con);
         case SECTION_CATEGORY:
             return new ContentSection(data, latest, con);
+        case DOCUMENT_CATEGORY:
+            return new ContentDocument(data, latest, con);
         default:
             throw new ContentException(
                 "content category " + data.getInt(ContentData.CATEGORY) +
