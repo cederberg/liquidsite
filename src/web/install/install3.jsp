@@ -2,16 +2,15 @@
 String host = (String) request.getAttribute("host");
 String rootUsername = (String) request.getAttribute("rootUsername");
 String rootPassword = (String) request.getAttribute("rootPassword");
-String dbchoice = (String) request.getAttribute("dbchoice");
 String dbsel = (String) request.getAttribute("dbsel");
 String database = (String) request.getAttribute("database");
-String userchoice = (String) request.getAttribute("userchoice");
 String usersel = (String) request.getAttribute("usersel");
 String username = (String) request.getAttribute("username");
 String password = (String) request.getAttribute("password");
 String verify = (String) request.getAttribute("verify");
 
-java.util.Vector users = (java.util.Vector) request.getAttribute("users");
+java.util.ArrayList users = 
+    (java.util.ArrayList) request.getAttribute("users");
 String user;
 
 boolean error = 
@@ -48,54 +47,44 @@ boolean errorConnection =
     <input type="hidden" name="host" value="<%= host %>" />
     <input type="hidden" name="rootUsername" value="<%= rootUsername %>" />
     <input type="hidden" name="rootPassword" value="<%= rootPassword %>" />
-    <input type="hidden" name="dbchoice" value="<%= dbchoice %>" />
     <input type="hidden" name="database" value="<%= database %>" />
     <input type="hidden" name="dbsel" value="<%= dbsel %>" />
 
     <table>
       <tr>
-        <td>
-<% if (userchoice.compareTo("select") == 0) { %>
-          <input checked type="radio" name="userchoice" value="select" />
-<% } else { %>
-          <input type="radio" name="userchoice" value="select" />
-<% } %>
-        </td>
-        <td class="fieldname">Select a user:</td>
-        <td>
-	  <select name="usersel">
-            <option value="">Select a user</option>
-<% if (users != null) {
-       for (int i=0; i<users.size(); i++) {
-           user = (String) users.elementAt(i);
-           if (user.compareTo(usersel) == 0) {
+        <td colspan="2" class="fieldname">Select a user:</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+<% for (int i=0; i<users.size(); i++) {
+       user = (String) users.get(i);
+       if (usersel.equals(user)) {
 %>
-            <option selected value="<%= user %>"><%= user %></option>
-<%         } else { %>
-            <option value="<%= user %>"><%= user %></option>
-<%         }
-       } 
+          <input checked type="radio" name="usersel" 
+            value="<%= user %>" /> <%= user %> <br />
+<%     } else { %>
+          <input type="radio" name="usersel" 
+            value="<%= user %>" /> <%= user %> <br />
+<%     }
    }
+   if (usersel.equals("")) { 
 %>
-          </select></td>
-      </tr>
-
-      <tr>
-        <td>
-<% if (userchoice.compareTo("create") == 0) { %>
-          <input checked type="radio" name="userchoice" value="create" />
+          <input checked type="radio" name="usersel" value="" />
 <% } else { %>
-          <input type="radio" name="userchoice" value="create" />
+          <input type="radio" name="usersel" value="" />
 <% } %>
-        </td>
-        <td>Create new user:</td>
-        <td>
-          <input type="text" name="username" value="<%= username %>" />
+          Create new user: 
         </td>
       </tr>
 
       <tr>
-        <td></td>
+        <td>Username</td>
+        <td>
+          <input type="input" name="username" value="<%= username %>" />
+        </td>
+      </tr>
+      
+      <tr>
         <td>
 <% if (errorVerify) { %>
           <span class="incorrect">Password:</span>
@@ -109,7 +98,6 @@ boolean errorConnection =
       </tr>
 
       <tr>
-        <td></td>
         <td>
 <% if (errorVerify) { %>
           <span class="incorrect">Re-type password:</span>
@@ -123,7 +111,7 @@ boolean errorConnection =
       </tr>
 
       <tr>
-        <td colspan="3">
+        <td colspan="2">
           <input type="button" name="submit" value="&lt;&lt; Previous" 
             onclick="submit();" />
           <input type="submit" name="submit" value="Next &gt;&gt;" /></td>
