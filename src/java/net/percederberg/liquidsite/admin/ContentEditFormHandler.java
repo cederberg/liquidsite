@@ -635,13 +635,25 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         FileParameter   param;
         String          name;
+        StringBuffer    buffer = new StringBuffer();
         File            file;
+        char            c;
 
         try {
             param = request.getFileParameter("upload");
             name = param.getName();
             file = param.write();
-            request.getSession().addFile(name, file);
+            for (int i = 0; i < name.length(); i++) {
+                c = name.charAt(i);
+                if (c == ' ') {
+                    buffer.append("_");
+                } else if (CONTENT_CHARS.indexOf(c) >= 0) {
+                    buffer.append(c);
+                } else {
+                    buffer.append("-");
+                }
+            }
+            request.getSession().addFile(buffer.toString(), file);
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
