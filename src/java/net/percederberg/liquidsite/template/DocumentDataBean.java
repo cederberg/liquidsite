@@ -25,6 +25,7 @@ import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.text.HtmlFormatter;
@@ -39,6 +40,11 @@ import net.percederberg.liquidsite.text.TaggedFormatter;
  * @version  1.0
  */
 public class DocumentDataBean implements TemplateHashModel {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(DocumentDataBean.class);
 
     /**
      * The bean context.
@@ -92,14 +98,22 @@ public class DocumentDataBean implements TemplateHashModel {
         } else {
             str = document.getProperty(id);
             type = document.getPropertyType(id);
-            if (type == DocumentProperty.TAGGED_TYPE) {
-                str = TaggedFormatter.formatHtml(str, getDocContext());
-            } else if (type == DocumentProperty.HTML_TYPE) {
-                str = HtmlFormatter.formatHtml(str, getDocContext());
-            } else {
-                str = PlainFormatter.formatHtml(str);
+            try {
+                if (type == DocumentProperty.TAGGED_TYPE) {
+                    str = TaggedFormatter.formatHtml(str, getDocContext());
+                } else if (type == DocumentProperty.HTML_TYPE) {
+                    str = HtmlFormatter.formatHtml(str, getDocContext());
+                } else {
+                    str = PlainFormatter.formatHtml(str);
+                }
+                return new SimpleScalar(str);
+            } catch (Exception e) {
+                e.printStackTrace();
+                str = "runtime exception encountered while formatting '" +
+                      id + "' of type " + type;
+                LOG.error(str, e);
+                return new SimpleScalar("");
             }
-            return new SimpleScalar(str);
         }
     }
 

@@ -118,15 +118,15 @@ class DocumentFormattingContext implements FormattingContext {
             }
         } else if (section != null) {
             while (content != null) {
+                if (section.getId() == content.getId()) {
+                    return path;
+                }
                 path = content.getName() + "/" + path;
                 try {
                     content = content.getParent();
                 } catch (ContentException e) {
                     LOG.error(e.getMessage());
                     return null;
-                }
-                if (section.getId() == content.getId()) {
-                    return path;
                 }
             }
         }
