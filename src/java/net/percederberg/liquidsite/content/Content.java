@@ -559,8 +559,8 @@ public abstract class Content extends PersistentObject {
     /**
      * Checks the read access for a user. If no content permissions 
      * are set for this object, the parent permissions will be 
-     * checked instead. In the absence of both content permissions 
-     * and a parent object, false is returned. 
+     * checked instead. In the absence of a content parent, the 
+     * domain permissions will be checked. 
      *
      * @param user           the user to check, or null for none
      * 
@@ -575,14 +575,14 @@ public abstract class Content extends PersistentObject {
 
         Permission[]  perms = getPermissions();
         Group[]       groups = null;
-        Content       parent;
         
         // Check for superuser or inherited permissions
         if (user != null && user.getDomainName().equals("")) {
             return true;
+        } else if (perms.length == 0 && getParentId() <= 0) {
+            return getDomain().hasReadAccess(user);
         } else if (perms.length == 0) {
-            parent = getParent();
-            return (parent == null) ? false : parent.hasReadAccess(user); 
+            return getParent().hasReadAccess(user); 
         }
 
         // Check content permissions
@@ -601,8 +601,8 @@ public abstract class Content extends PersistentObject {
     /**
      * Checks the write access for a user. If no content permissions 
      * are set for this object, the parent permissions will be 
-     * checked instead. In the absence of both content permissions 
-     * and a parent object, false is returned.
+     * checked instead. In the absence of a content parent, the 
+     * domain permissions will be checked.
      *
      * @param user           the user to check, or null for none
      * 
@@ -617,14 +617,14 @@ public abstract class Content extends PersistentObject {
 
         Permission[]  perms = getPermissions();
         Group[]       groups = null;
-        Content       parent;
         
         // Check for superuser or inherited permissions
         if (user != null && user.getDomainName().equals("")) {
             return true;
+        } else if (perms.length == 0 && getParentId() <= 0) {
+            return getDomain().hasReadAccess(user);
         } else if (perms.length == 0) {
-            parent = getParent();
-            return (parent == null) ? false : parent.hasWriteAccess(user); 
+            return getParent().hasReadAccess(user); 
         }
 
         // Check content permissions

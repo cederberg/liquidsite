@@ -173,8 +173,11 @@ public class AdminController extends Controller {
      * Displays the site page.
      *
      * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
      */
-    private void displaySite(Request request) {
+    private void displaySite(Request request) throws RequestException {
         request.setAttribute("initialize", 
                              getSiteInitializeScript(request.getUser()));
         request.forward("/admin/site.jsp");
@@ -340,11 +343,22 @@ public class AdminController extends Controller {
      * @param user           the user performing the operation
      * 
      * @return the JavaScript for initializing the site view
+     * 
+     * @throws RequestException if the database couldn't be accessed
+     *             properly
      */
-    private String getSiteInitializeScript(User user) {
-        StringBuffer  buffer = new StringBuffer();
-        Domain[]      domains = getContentManager().getDomains(user);
+    private String getSiteInitializeScript(User user) 
+        throws RequestException {
 
+        StringBuffer  buffer = new StringBuffer();
+        Domain[]      domains;
+        
+        try {
+            domains = getContentManager().getDomains(user);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
         for (int i = 0; i < domains.length; i++) {
             buffer.append("        treeAddItem(0, '");
             buffer.append(domains[i].getName());

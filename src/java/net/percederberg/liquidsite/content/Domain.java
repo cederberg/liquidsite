@@ -192,41 +192,87 @@ public class Domain extends PersistentObject {
     }
     
     /**
-     * Checks the read access for a user. All users in the same 
-     * domain have read access, in addition to superusers.
+     * Returns the permissions applicable to this domain object. 
+     * 
+     * @return an array of permissions for this object
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Permission[] getPermissions() throws ContentException {
+        return Permission.findByDomain(this);
+    }
+
+    /**
+     * Checks the read access for a user. In the absence of 
+     * permissions, false is returned.
      *
      * @param user           the user to check, or null for none
      * 
      * @return true if the user has read access, or
      *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public boolean hasReadAccess(User user) {
-        if (user == null) {
-            return false;
-        } else if (user.getDomainName().equals("")) {
+    public boolean hasReadAccess(User user) throws ContentException {
+        Permission[]  perms = getPermissions();
+        Group[]       groups = null;
+        
+        // Check for superuser and empty permission list
+        if (user != null && user.getDomainName().equals("")) {
             return true;
-        } else {
-            return getName().equals(user.getDomainName());
+        } else if (perms.length == 0) {
+            return false; 
         }
+
+        // Check content permissions
+        if (user != null) {
+            groups = user.getGroups();
+        }
+        for (int i = 0; i < perms.length; i++) {
+            if (perms[i].isMatch(user, groups) && perms[i].getRead()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * Checks the write access for a user. All users in the same 
-     * domain have write access, in addition to superusers.
+     * Checks the write access for a user. In the absence of 
+     * permissions, false is returned.
      *
      * @param user           the user to check, or null for none
      * 
      * @return true if the user has write access, or
      *         false otherwise
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public boolean hasWriteAccess(User user) {
-        if (user == null) {
-            return false;
-        } else if (user.getDomainName().equals("")) {
+    public boolean hasWriteAccess(User user) throws ContentException {
+        Permission[]  perms = getPermissions();
+        Group[]       groups = null;
+        
+        // Check for superuser and empty permission list
+        if (user != null && user.getDomainName().equals("")) {
             return true;
-        } else {
-            return getName().equals(user.getDomainName());
+        } else if (perms.length == 0) {
+            return false; 
         }
+
+        // Check content permissions
+        if (user != null) {
+            groups = user.getGroups();
+        }
+        for (int i = 0; i < perms.length; i++) {
+            if (perms[i].isMatch(user, groups) && perms[i].getWrite()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

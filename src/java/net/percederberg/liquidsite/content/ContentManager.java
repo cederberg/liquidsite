@@ -128,15 +128,16 @@ public class ContentManager {
     }
 
     /**
-     * Returns an array of all domains readable by a user. This 
-     * method will only consult the internal cache, and not the 
-     * database.
+     * Returns an array of all domains readable by a user.
      * 
      * @param user           the user requesting the list
      * 
      * @return an array of all user readable domains
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    public Domain[] getDomains(User user) {
+    public Domain[] getDomains(User user) throws ContentException {
         Iterator   iter = domains.values().iterator();
         ArrayList  list = new ArrayList();
         Domain[]   res;
@@ -160,8 +161,7 @@ public class ContentManager {
     }
 
     /**
-     * Returns a domain with the specified name. This method will 
-     * only consult the internal cache, and not the database. 
+     * Returns a domain with the specified name. 
      * 
      * @param name           the domain name
      * 
@@ -173,9 +173,7 @@ public class ContentManager {
     }
 
     /**
-     * Returns a domain with the specified name readable by a user. 
-     * This method will only consult the internal cache, and not the
-     * database. 
+     * Returns a domain with the specified name readable by a user.
      * 
      * @param user           the user requesting the domain
      * @param name           the domain name
@@ -183,11 +181,13 @@ public class ContentManager {
      * @return the domain found, or
      *         null if no such domain exists
      * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      * @throws ContentSecurityException if the specified domain 
      *             wasn't readable by the user
      */
     public Domain getDomain(User user, String name) 
-        throws ContentSecurityException {
+        throws ContentException, ContentSecurityException {
 
         Domain  domain = getDomain(name);
         
@@ -198,8 +198,7 @@ public class ContentManager {
     }
 
     /**
-     * Returns a host with the specified name. This method will only
-     * consult the internal cache, and not the database.
+     * Returns a host with the specified name.
      *
      * @param name           the host name
      *
@@ -211,9 +210,7 @@ public class ContentManager {
     }
 
     /**
-     * Returns all sites in a domain. This method will retrieve the
-     * sites from the cache if possible, otherwise the sites will be
-     * read from the database and added to the cache.
+     * Returns all sites in a domain.
      * 
      * @param domain         the domain
      * 
@@ -235,9 +232,7 @@ public class ContentManager {
     }
 
     /**
-     * Returns all user readable sites in a domain. This method will 
-     * retrieve the sites from the cache if possible, otherwise the 
-     * sites will be read from the database and added to the cache.
+     * Returns all user readable sites in a domain.
      * 
      * @param user           the user requesting the sites
      * @param domain         the domain
@@ -266,8 +261,7 @@ public class ContentManager {
 
     /**
      * Returns the content object with the specified identifier and 
-     * highest revision. This method may return a content object from
-     * the cache.
+     * highest revision.
      * 
      * @param id             the content identifier
      * 
@@ -283,8 +277,7 @@ public class ContentManager {
     
     /**
      * Returns the content object with the specified identifier and 
-     * highest revision readable by the user. This method may return 
-     * a content object from the cache.
+     * highest revision readable by the user.
      * 
      * @param user           the user requesting the content
      * @param id             the content identifier
@@ -310,8 +303,7 @@ public class ContentManager {
     
     /**
      * Returns the content object with the specified identifier and 
-     * revision. This method may return a content object from the 
-     * cache.
+     * revision.
      * 
      * @param id             the content identifier
      * @param revision       the content revision
