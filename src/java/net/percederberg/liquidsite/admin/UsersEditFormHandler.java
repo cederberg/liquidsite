@@ -50,6 +50,12 @@ public class UsersEditFormHandler extends AdminFormHandler {
     private static UsersEditFormHandler instance = null;
 
     /**
+     * The permitted user and group name characters.
+     */
+    private static final String USER_CHARS =
+        UPPER_CASE + LOWER_CASE + NUMBERS + "-_";
+
+    /**
      * The user form validator.
      */
     private FormValidator user = new FormValidator();
@@ -87,21 +93,17 @@ public class UsersEditFormHandler extends AdminFormHandler {
      * Initializes all the form validators.
      */
     private void initialize() {
-        String  upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String  lowerCase = "abcdefghijklmonpqrstuvwxyz";
-        String  numbers = "0123456789";
-        String  nameChars = upperCase + lowerCase + numbers + "-_";
         String  error;
 
         // Add and edit user validator
         user.addRequiredConstraint("name", "No login name specified");
         error = "Login name contains invalid character";
-        user.addCharacterConstraint("name", nameChars, error);
+        user.addCharacterConstraint("name", USER_CHARS, error);
 
         // Add and edit group validator
         group.addRequiredConstraint("name", "No group name specified");
         error = "Group name contains invalid character";
-        group.addCharacterConstraint("name", nameChars, error);
+        group.addCharacterConstraint("name", USER_CHARS, error);
     }
 
     /**
