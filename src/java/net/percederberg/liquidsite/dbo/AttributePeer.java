@@ -161,6 +161,24 @@ public class AttributePeer extends AbstractPeer {
     }
     
     /**
+     * Deletes all attributes for a domain from the database.
+     * 
+     * @param domain         the domain name
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static void doDeleteDomain(String domain, DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("attribute.delete.domain");
+
+        query.addParameter(domain);
+        PEER.delete(query, con);
+    }
+    
+    /**
      * Deletes all attributes for a content object from the database.
      * 
      * @param id             the content object id
@@ -179,20 +197,25 @@ public class AttributePeer extends AbstractPeer {
     }
     
     /**
-     * Deletes all attributes for a domain from the database.
+     * Deletes all attributes for a content revision from the 
+     * database.
      * 
-     * @param domain         the domain name
+     * @param id             the content object id
+     * @param revision       the content revision
      * @param con            the database connection to use
      * 
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, DatabaseConnection con)
+    public static void doDeleteRevision(int id, 
+                                        int revision,
+                                        DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery  query = new DatabaseQuery("attribute.delete.domain");
+        DatabaseQuery  query = new DatabaseQuery("attribute.delete.revision");
 
-        query.addParameter(domain);
+        query.addParameter(id);
+        query.addParameter(revision);
         PEER.delete(query, con);
     }
     

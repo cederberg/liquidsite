@@ -735,6 +735,7 @@ public class InstallController extends Controller {
             user.setPassword(adminPassword);
             user.save(user);
             site.setName("Admin Site");
+            site.setRevisionNumber(1);
             site.setProtocol("http");
             site.setHost("*");
             site.setPort(0);

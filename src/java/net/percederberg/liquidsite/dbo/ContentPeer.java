@@ -310,6 +310,30 @@ public class ContentPeer extends AbstractPeer {
     }
     
     /**
+     * Deletes a content object revision from the database. This 
+     * method also deletes all related attributes.
+     * 
+     * @param id             the content identifier
+     * @param revision       the content revision
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static void doDeleteRevision(int id, 
+                                        int revision, 
+                                        DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("content.delete.revision");
+
+        query.addParameter(id);
+        query.addParameter(revision);
+        PEER.delete(query, con);
+        AttributePeer.doDeleteRevision(id, revision, con);
+    }
+    
+    /**
      * Returns a new unique content identifier. This method will 
      * search the database for the maximum content identifier 
      * currently used and add one to it.

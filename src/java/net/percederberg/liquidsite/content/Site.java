@@ -105,7 +105,7 @@ public class Site extends Content {
      * @param domain         the site domain
      */
     public Site(Domain domain) {
-        super(domain, 1, Content.SITE_CATEGORY);
+        super(domain, Content.SITE_CATEGORY);
         setAttribute(PROTOCOL_ATTRIBUTE, "http");
         setAttribute(HOST_ATTRIBUTE, "*");
         setAttribute(PORT_ATTRIBUTE, "0");

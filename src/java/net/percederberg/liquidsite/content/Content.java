@@ -58,6 +58,13 @@ public abstract class Content extends PersistentObject implements Comparable {
     private ContentData data;
 
     /**
+     * The previous content revision number. This number is set only
+     * when reading a content data object from the database, and is
+     * used to track changes to the revision number.
+     */
+    private int oldRevision = 0;
+
+    /**
      * The content attribute data objects. The data objects are 
      * indexed by the attribute name.
      */
@@ -227,35 +234,17 @@ public abstract class Content extends PersistentObject implements Comparable {
     }
 
     /**
-     * Creates a new content object with default values.
+     * Creates a new content object with default values. The content
+     * identifier will be set to the next available one after storing
+     * to the database, and the content revision is set to zero (0).
      * 
      * @param domain         the domain
-     * @param revision       the revision
      * @param category       the category
      */
-    protected Content(Domain domain, int revision, int category) {
+    protected Content(Domain domain, int category) {
         super(false, false);
         this.data = new ContentData();
         this.data.setString(ContentData.DOMAIN, domain.getName());
-        this.data.setInt(ContentData.REVISION, revision);
-        this.data.setInt(ContentData.CATEGORY, category);
-        this.data.setDate(ContentData.MODIFIED, new Date());
-    }
-
-    /**
-     * Creates a new revision of a content object with default values.
-     * 
-     * @param domain         the domain
-     * @param id             the content identifier
-     * @param revision       the revision
-     * @param category       the category
-     */
-    protected Content(Domain domain, int id, int revision, int category) {
-        super(false, false);
-        this.data = new ContentData();
-        this.data.setString(ContentData.DOMAIN, domain.getName());
-        this.data.setInt(ContentData.ID, id);
-        this.data.setInt(ContentData.REVISION, revision);
         this.data.setInt(ContentData.CATEGORY, category);
         this.data.setDate(ContentData.MODIFIED, new Date());
     }
@@ -278,6 +267,7 @@ public abstract class Content extends PersistentObject implements Comparable {
 
         super(true, latest);
         this.data = data;
+        this.oldRevision = data.getInt(ContentData.REVISION);
         doReadAttributes(con);
     }
     
@@ -422,6 +412,27 @@ public abstract class Content extends PersistentObject implements Comparable {
         return data.getInt(ContentData.REVISION);
     }
 
+    /**
+     * Sets the content revision number. Note that the revision zero 
+     * (0) is treated specially in several ways. First, when moving 
+     * from revision zero, the old zero revision will be deleted from
+     * the database (corresponding to a revision promotion). Also,
+     * when storing a non-zero revision, permissions to publish are
+     * required by save(). 
+     * 
+     * @param revision       the new content revision number
+     */
+    public void setRevisionNumber(int revision) {
+        AttributeData  attr;
+        Iterator       iter;
+
+        data.setInt(ContentData.REVISION, revision);
+        iter = attributes.values().iterator();
+        while (iter.hasNext()) {
+            attr = (AttributeData) iter.next();
+            attr.setInt(AttributeData.REVISION, revision);
+        }
+    }
 
     /**
      * Returns the content category.
@@ -806,7 +817,8 @@ public abstract class Content extends PersistentObject implements Comparable {
         data.setDate(ContentData.MODIFIED, new Date());
         try {
             ContentPeer.doInsert(data, con);
-            doWriteAttributes(con);
+            doWriteAttributes(con, true);
+            oldRevision = getRevisionNumber();
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -836,8 +848,17 @@ public abstract class Content extends PersistentObject implements Comparable {
         data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
         try {
-            ContentPeer.doInsert(data, con);
-            doWriteAttributes(con);
+            if (oldRevision != getRevisionNumber()) {
+                ContentPeer.doInsert(data, con);
+                doWriteAttributes(con, true);
+                if (oldRevision == 0) {
+                    ContentPeer.doDeleteRevision(getId(), 0, con);
+                }
+                oldRevision = getRevisionNumber();
+            } else {
+                ContentPeer.doUpdate(data, con);
+                doWriteAttributes(con, false);
+            }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -885,7 +906,7 @@ public abstract class Content extends PersistentObject implements Comparable {
         AttributeData  attr;
 
         list = AttributePeer.doSelectByRevision(getId(), 
-                                                getCategory(), 
+                                                getRevisionNumber(), 
                                                 con);
         for (int i = 0; i < list.size(); i++) {
             attr = (AttributeData) list.get(i);
@@ -899,11 +920,12 @@ public abstract class Content extends PersistentObject implements Comparable {
      * whether it is present in the added attributes list or not. 
      * 
      * @param con            the database connection to use
+     * @param insert         the force insert flag
      * 
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    private void doWriteAttributes(DatabaseConnection con)
+    private void doWriteAttributes(DatabaseConnection con, boolean insert)
         throws DatabaseObjectException {
 
         Iterator       iter = attributes.keySet().iterator();
@@ -916,7 +938,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             if (attr.getInt(AttributeData.CONTENT) <= 0) {
                 attr.setInt(AttributeData.CONTENT, getId());
             }
-            if (attributesAdded.contains(name)) {
+            if (insert || attributesAdded.contains(name)) {
                 AttributePeer.doInsert(attr, con);
             } else {
                 AttributePeer.doUpdate(attr, con);
