@@ -21,9 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
@@ -35,9 +32,6 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
-import net.percederberg.liquidsite.content.Lock;
-import net.percederberg.liquidsite.content.Permission;
-import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -54,10 +48,9 @@ public class AdminController extends Controller {
     private static final Log LOG = new Log(AdminController.class);
 
     /**
-     * The date format used by this class.
+     * The admin script helper.
      */
-    private static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private AdminScript script = new AdminScript();
 
     /**
      * Creates a new administration controller. 
@@ -249,26 +242,22 @@ public class AdminController extends Controller {
         Object        type = request.getSessionAttribute("site.view.type");
         Object        id = request.getSessionAttribute("site.view.id");
         Domain[]      domains;
-        StringBuffer  script = new StringBuffer();
+        StringBuffer  buffer = new StringBuffer();
         
         try {
             domains = getContentManager().getDomains(request.getUser());
-            script.append(getTreeViewScript(domains));
+            buffer.append(script.getTreeView(domains));
             if (type != null && !type.equals("domain")) {
                 // TODO: add all parent content objects
             } 
             if (type != null) {
-                script.append("treeSelect('");
-                script.append(type);
-                script.append("', '");
-                script.append(id);
-                script.append("');\n");
+                buffer.append(script.getTreeViewSelect(type, id));
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         }
-        request.setAttribute("initialize", script.toString());
+        request.setAttribute("initialize", buffer.toString());
         request.sendTemplate("admin/site.ftl");
     }
 
@@ -315,17 +304,17 @@ public class AdminController extends Controller {
         Domain          domain;
         Content         content;
         Content[]       children; 
-        String          script;
+        String          buffer;
 
         try {
             if (type.equals("domain")) {
                 domain = cm.getDomain(user, id);
                 children = cm.getSites(user, domain);
-                script = getTreeViewScript(domain, children);
+                buffer = script.getTreeView(domain, children);
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
                 children = cm.getContentChildren(user, content);
-                script = getTreeViewScript(content, children);
+                buffer = script.getTreeView(content, children);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -333,7 +322,7 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
         }
-        request.sendData("text/javascript", script);
+        request.sendData("text/javascript", buffer);
     }
     
     /**
@@ -351,17 +340,17 @@ public class AdminController extends Controller {
         User            user = request.getUser();
         Domain          domain;
         Content         content;
-        String          script;
+        String          buffer;
 
         try {
             request.setSessionAttribute("site.view.type", type);
             request.setSessionAttribute("site.view.id", id);
             if (type.equals("domain")) {
                 domain = cm.getDomain(user, id);
-                script = getObjectViewScript(user, domain);
+                buffer = script.getObjectView(user, domain);
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
-                script = getObjectViewScript(user, content);
+                buffer = script.getObjectView(user, content);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -369,7 +358,7 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
         }
-        request.sendData("text/javascript", script);
+        request.sendData("text/javascript", buffer);
     }
 
     /**
@@ -420,426 +409,5 @@ public class AdminController extends Controller {
                              request.getParameter("description", ""));
         request.setAttribute("host", request.getParameter("host", ""));
         request.sendTemplate("admin/add-domain.ftl");
-    }
-
-    /**
-     * Returns the JavaScript for presenting a tree view.
-     * 
-     * @param domains        the root domain objects
-     * 
-     * @return the JavaScript for presenting a tree view
-     * 
-     * @throws RequestException if the database couldn't be accessed
-     *             properly
-     */
-    private String getTreeViewScript(Domain[] domains) 
-        throws RequestException {
-
-        StringBuffer  buffer = new StringBuffer();
-        
-        for (int i = 0; i < domains.length; i++) {
-            buffer.append("treeAddItem(0, '");
-            buffer.append(domains[i].getName());
-            buffer.append("', 'domain', '");
-            buffer.append(domains[i].getName());
-            buffer.append("', '");
-            buffer.append(domains[i].getDescription());
-            buffer.append("', 1);\n");
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting a tree view.
-     * 
-     * @param domain         the domain object
-     * @param children       the child content objects
-     * 
-     * @return the JavaScript for presenting a tree view
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getTreeViewScript(Domain domain, Content[] children) 
-        throws ContentException {
-
-        StringBuffer    buffer = new StringBuffer();
-
-        buffer.append("treeAddContainer('");
-        buffer.append(domain.getName());
-        buffer.append("');\n");
-        for (int i = 0; i < children.length; i++) {
-            buffer.append("treeAddItem('");
-            buffer.append(domain.getName());
-            buffer.append("', ");
-            buffer.append(children[i].getId());
-            buffer.append(", '");
-            buffer.append(getScriptContentCategory(children[i]));
-            buffer.append("', '");
-            buffer.append(children[i].getName());
-            buffer.append("', '");
-            buffer.append(children[i].toString());
-            buffer.append("', ");
-            buffer.append(getScriptContentStatus(children[i]));
-            buffer.append(");\n");
-        }
-        buffer.append("treeOpen('domain', '");
-        buffer.append(domain.getName());
-        buffer.append("');\n");
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting a tree view.
-     * 
-     * @param parent         the parent content object
-     * @param children       the child content objects
-     * 
-     * @return the JavaScript for presenting a tree view
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getTreeViewScript(Content parent, Content[] children) 
-        throws ContentException {
-
-        StringBuffer    buffer = new StringBuffer();
-
-        buffer.append("treeAddContainer(");
-        buffer.append(parent.getId());
-        buffer.append(");\n");
-        for (int i = 0; i < children.length; i++) {
-            buffer.append("treeAddItem(");
-            buffer.append(parent.getId());
-            buffer.append(", ");
-            buffer.append(children[i].getId());
-            buffer.append(", '");
-            buffer.append(getScriptContentCategory(children[i]));
-            buffer.append("', '");
-            buffer.append(children[i].getName());
-            buffer.append("', '");
-            buffer.append(children[i].toString());
-            buffer.append("', ");
-            buffer.append(getScriptContentStatus(children[i]));
-            buffer.append(");\n");
-        }
-        buffer.append("treeOpen('");
-        buffer.append(getScriptContentCategory(parent));
-        buffer.append("', ");
-        buffer.append(parent.getId());
-        buffer.append(");\n");
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting an object view.
-     * 
-     * @param user           the current user
-     * @param domain         the domain object
-     * 
-     * @return the JavaScript for presenting an object view
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getObjectViewScript(User user, Domain domain) 
-        throws ContentException {
-
-        StringBuffer  buffer = new StringBuffer();
-
-        buffer.append("objectShow('domain', '");
-        buffer.append(domain.getName());
-        buffer.append("', '");
-        buffer.append(domain.getName());
-        buffer.append("');\n");
-        buffer.append("objectAddProperty('Description', '");
-        buffer.append(domain.getDescription());
-        buffer.append("');\n");
-        buffer.append(getButtonsScript(user, domain));
-        buffer.append(getPermissionsScript(domain));
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting an object view.
-     * 
-     * @param user           the current user
-     * @param content        the content object
-     * 
-     * @return the JavaScript for presenting an object view
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getObjectViewScript(User user, Content content) 
-        throws ContentException {
-
-        StringBuffer  buffer = new StringBuffer();
-
-        buffer.append("objectShow('");
-        buffer.append(getScriptContentCategory(content));
-        buffer.append("', ");
-        buffer.append(content.getId());
-        buffer.append(", '");
-        buffer.append(content.getName());
-        buffer.append("');\n");
-        buffer.append("objectAddUrlProperty('");
-        buffer.append(getScriptContentUrl(content));
-        buffer.append("');\n");
-        buffer.append("objectAddOnlineProperty(");
-        buffer.append(getScriptDate(content.getOnlineDate()));
-        buffer.append(", ");
-        buffer.append(getScriptDate(content.getOfflineDate()));
-        buffer.append(");\n");
-        buffer.append("objectAddStatusProperty(");
-        buffer.append(getScriptContentStatus(content));
-        buffer.append(", ");
-        buffer.append(getScriptLock(content.getLock()));
-        buffer.append(");\n");
-        buffer.append(getButtonsScript(user, content));
-        buffer.append(getPermissionsScript(content));
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting domain buttons.
-     * 
-     * @param user           the current user
-     * @param domain         the domain object
-     * 
-     * @return the JavaScript for presenting domain buttons
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getButtonsScript(User user, Domain domain) 
-        throws ContentException {
-
-        StringBuffer  buffer = new StringBuffer();
-        
-        if (domain.hasWriteAccess(user)) {
-            buffer.append("objectAddNewButton('add-site.html');\n");
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting domain buttons.
-     * 
-     * @param user           the current user
-     * @param content        the content object
-     * 
-     * @return the JavaScript for presenting domain buttons
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getButtonsScript(User user, Content content) 
-        throws ContentException {
-
-        StringBuffer  buffer = new StringBuffer();
-        
-        if (content.hasWriteAccess(user)) {
-            buffer.append("objectAddNewButton('add-site.html');\n");
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting domain permissions.
-     * 
-     * @param domain         the domain object
-     * 
-     * @return the JavaScript for presenting domain permissions
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getPermissionsScript(Domain domain) 
-        throws ContentException {
-
-        StringBuffer  buffer = new StringBuffer();
-        Permission[]  permissions;
-        
-        permissions = domain.getPermissions();
-        if (permissions.length == 0) {
-            buffer.append(getPermissionScript(null, true));
-        }
-        for (int i = 0; i < permissions.length; i++) {
-            buffer.append(getPermissionScript(permissions[i], false));
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting content permissions.
-     * 
-     * @param content        the content object
-     * 
-     * @return the JavaScript for presenting content permissions
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private String getPermissionsScript(Content content) 
-        throws ContentException {
-
-        StringBuffer  buffer = new StringBuffer();
-        Permission[]  permissions;
-        Content       parent = content;
-        boolean       inherited = false;
-        
-        // Find permissions
-        permissions = content.getPermissions();
-        while (permissions.length == 0 && parent != null) {
-            inherited = true;
-            parent = parent.getParent();
-            if (parent != null) {
-                permissions = parent.getPermissions();
-            }
-        }
-        if (parent == null) {
-            return getPermissionsScript(content.getDomain());
-        }
-
-        // Create permission script
-        for (int i = 0; i < permissions.length; i++) {
-            buffer.append(getPermissionScript(permissions[i], inherited));
-        }
-
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting a permission.
-     * 
-     * @param perm           the permission object, or null
-     * @param inherited      the inherited flag
-     * 
-     * @return the JavaScript for presenting a permission
-     */
-    private String getPermissionScript(Permission perm, boolean inherited) {
-        StringBuffer  buffer = new StringBuffer();
-        
-        buffer.append("objectAddPermission(");
-        if (perm == null) {
-            buffer.append("null, null, false, false, false, false");
-        } else {
-            buffer.append(getScriptString(perm.getUserName()));
-            buffer.append(", ");
-            buffer.append(getScriptString(perm.getGroupName()));
-            buffer.append(", ");
-            buffer.append(perm.getRead());
-            buffer.append(", ");
-            buffer.append(perm.getWrite());
-            buffer.append(", ");
-            buffer.append(perm.getPublish());
-            buffer.append(", ");
-            buffer.append(perm.getAdmin());
-        }
-        buffer.append(", ");
-        buffer.append(!inherited);
-        buffer.append(");\n");
-
-        return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript representation of a content category.
-     * 
-     * @param content        the content object
-     * 
-     * @return the JavaScript representation of a content category
-     */
-    private String getScriptContentCategory(Content content) {
-        switch (content.getCategory()) {
-        case Content.SITE_CATEGORY:
-            return "site";
-        default:
-            return "";
-        }
-    }
-
-    /**
-     * Returns the JavaScript representation of a content URL.
-     * 
-     * @param content        the content object
-     * 
-     * @return the JavaScript representation of a content URL
-     */
-    private String getScriptContentUrl(Content content) {
-        if (content instanceof Site) {
-            return content.toString();
-        } else {
-            return "N/A";
-        }
-    }
-
-    /**
-     * Returns the JavaScript representation of a content status.
-     * 
-     * @param content        the content object
-     * 
-     * @return the JavaScript representation of a content status
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private int getScriptContentStatus(Content content) 
-        throws ContentException {
-
-        if (!content.isOnline()) {
-            return 0;
-        } else if (content.getRevision(0) != null) {
-            return 2;
-        } else {
-            return 1;
-        }
-    }
-
-    /**
-     * Returns the JavaScript representation of a lock object.
-     * 
-     * @param lock           the lock object, or null
-     * 
-     * @return the JavaScript representation of a lock object
-     */
-    private String getScriptLock(Lock lock) {
-        if (lock == null) {
-            return "null";
-        } else {
-            return "'" + lock.getUserName() + "'";
-        }
-    }
-
-    /**
-     * Returns the JavaScript representation of a date.
-     * 
-     * @param date           the date to present, or null
-     * 
-     * @return a JavaScript representation of the date
-     */
-    private String getScriptDate(Date date) {
-        if (date == null) {
-            return "null";
-        } else {
-            return "'" + DATE_FORMAT.format(date) + "'"; 
-        }
-    }
-
-    /**
-     * Returns the JavaScript representation of a string. This method
-     * will present empty strings as null.
-     * 
-     * @param str            the string to present, or null
-     * 
-     * @return a JavaScript representation of the string
-     */
-    private String getScriptString(String str) {
-        if (str == null || str.equals("")) {
-            return "null";
-        } else {
-            return "'" + str + "'";
-        }
     }
 }
