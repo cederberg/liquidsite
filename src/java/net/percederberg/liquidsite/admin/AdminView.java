@@ -315,6 +315,31 @@ class AdminView {
     }
 
     /**
+     * Shows the edit user page.
+     * 
+     * @param request        the request object
+     */
+    public void pageEditUser(Request request) {
+        User    user = request.getUser();
+        String  str;
+
+        str = request.getParameter("name", user.getRealName());
+        request.setAttribute("name", str);
+        str = request.getParameter("email", user.getEmail());
+        request.setAttribute("email", str);
+        request.sendTemplate("admin/edit-user.ftl");
+    }
+
+    /**
+     * Shows the edit password page.
+     * 
+     * @param request        the request object
+     */
+    public void pageEditPassword(Request request) {
+        request.sendTemplate("admin/edit-password.ftl");
+    }
+
+    /**
      * Shows the add object page.
      * 
      * @param request        the request object
@@ -365,15 +390,6 @@ class AdminView {
         request.sendTemplate("admin/add-domain.ftl");
     }
     
-    /**
-     * Shows the edit password page.
-     * 
-     * @param request        the request object
-     */
-    public void pageEditPassword(Request request) {
-        request.sendTemplate("admin/edit-password.ftl");
-    }
-
     /**
      * Shows the add or edit site page.
      * 

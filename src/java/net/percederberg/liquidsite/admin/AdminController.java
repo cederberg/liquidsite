@@ -202,7 +202,11 @@ public class AdminController extends Controller {
                     processEditPassword(request);
                 }
             } else {
-                request.sendRedirect("home.html");
+                if (request.getParameter("step") == null) {
+                    view.pageEditUser(request);
+                } else {
+                    processEditUserDetails(request);
+                }
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -210,6 +214,33 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
             view.pageError(request, e);
+        }
+    }
+
+    /**
+     * Processes the edit user details requests for the home view.
+     * 
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processEditUserDetails(Request request) 
+        throws ContentException, ContentSecurityException {
+        
+        User  user = request.getUser();
+        
+        try {
+            validator.validateEditUser(request);
+            user.setRealName(request.getParameter("name"));
+            user.setEmail(request.getParameter("email"));
+            user.save(user);
+            request.sendRedirect("home.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.pageEditUser(request);
         }
     }
 

@@ -38,7 +38,7 @@
             Admin&nbsp;User:
           </th>
           <td class="field">
-            <input type="text" name="user" value="${user}" size="12" />
+            <input type="text" name="user" value="${user}" size="20" />
             <p>This is the default Liquid Site administrator user. 
             This user cannot be removed unless a new Liquid Site 
             administrator is created.</p>

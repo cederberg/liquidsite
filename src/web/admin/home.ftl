@@ -34,21 +34,19 @@
             ${liquidsite.user.login}
           </td>
         </tr>
+<#if liquidsite.user.superuser>
         <tr>
           <th>
             Superuser:
           </th>
           <td>
-<#if liquidsite.user.superuser>
             Yes
-<#else>
-            No
-</#if>
           </td>
         </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" name="edit">
+            <button type="submit" name="edituser">
               <img src="images/icons/24x24/edit.png" />
               Edit
             </button>

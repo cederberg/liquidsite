@@ -58,6 +58,11 @@ public class AdminValidator {
         new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
+     * The edit user form validator.
+     */
+    private FormValidator editUser = new FormValidator();
+
+    /**
      * The edit password form validator.
      */
     private FormValidator editPassword = new FormValidator();
@@ -101,6 +106,10 @@ public class AdminValidator {
         String  error;
         String  chars;
         
+        // Edit user validator
+        error = "No user name specified";
+        editUser.addRequiredConstraint("name", error);
+
         // Edit password validator
         error = "Existing password not specified";
         editPassword.addRequiredConstraint("password0", error);
@@ -163,6 +172,17 @@ public class AdminValidator {
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
         publish.addDateConstraint("date", DATE_FORMAT, error); 
         publish.addRequiredConstraint("comment", "No comment specified");
+    }
+
+    /**
+     * Validates the parameters in an edit user request.
+     * 
+     * @param request        the edit user request
+     * 
+     * @throws FormException if the form validation failed
+     */
+    public void validateEditUser(Request request) throws FormException {
+        editUser.validate(request);
     }
 
     /**
