@@ -50,6 +50,11 @@ public class AdminController extends Controller {
     private static final Log LOG = new Log(AdminController.class);
 
     /**
+     * The administration application content manager.
+     */
+    private ContentManager manager;
+
+    /**
      * The admin form handlers (workflows).
      */
     private ArrayList workflows = new ArrayList();
@@ -61,7 +66,8 @@ public class AdminController extends Controller {
      */
     public AdminController(Application app) {
         super(app);
-        AdminUtils.setContentManager(new ContentManager(app, true));
+        manager = new ContentManager(app, true);
+        AdminUtils.setContentManager(manager);
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
@@ -373,7 +379,7 @@ public class AdminController extends Controller {
 
         try {
             id = Integer.parseInt(request.getParameter("id", "0"));
-            content = getContentManager().getContent(request.getUser(), id);
+            content = manager.getContent(request.getUser(), id);
             if (content instanceof ContentTemplate) {
                 template = (ContentTemplate) content;
                 AdminView.SITE.viewOpenTemplateScript(request, template);
@@ -386,6 +392,7 @@ public class AdminController extends Controller {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
             throw RequestException.FORBIDDEN;
         }
     }
