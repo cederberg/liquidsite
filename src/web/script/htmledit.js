@@ -144,6 +144,9 @@ function htmlEditInternalAddToolbar(parent, editor) {
     img = htmlEditInternalAddButton(div, "Redo", "redo.png");
     img.onclick = new Function("htmlEditInternalCommandSelect(" + editor +
                                ", 'redo');");
+    utilAddTextElement(div, "\u00A0\u00A0");
+    img = htmlEditInternalAddButton(div, "Help", "help.png");
+    img.onclick = new Function("htmlEditInternalHelp();");
     td = utilAddElement(tr, "td");
     img = htmlEditInternalAddButton(td, "Toggle HTML View", "source.png");
     img.onclick = new Function("htmlEditInternalViewSource(" + editor + ");");
@@ -313,6 +316,39 @@ function htmlEditInternalInsertImage(editor, url) {
     if (url != "") {
         htmlEditInternalExecCommand(editor, "insertimage", url);
     }
+}
+
+/**
+ * Handles a help event.
+ */
+function htmlEditInternalHelp() {
+    var  html;
+
+    html = "<tr>\n" +
+           "<td>\n" +
+           "<h3>Editing</h3>\n" +
+           "<p>Editing in the HTML editor is done just as in a normal text\n" +
+           "editor. Use the button toolbar for formatting text is special\n" +
+           "ways. If you know HTML and prefer editing the code directly,\n" +
+           "you can use the view source button to switch editing mode.</p>\n" +
+           "<h3>Links &amp; Images</h3>\n" +
+           "<p>Links and images can be inserted in the HTML editor, but\n" +
+           "will not work directly from the editor. That is, many links\n" +
+           "and images will appear broken in the editor although they are\n" +
+           "correct. Please use the document preview function for checking\n" +
+           "links and images before publishing.<br/><br/>\n" +
+           "URLs in links and images are relative to the document\n" +
+           "unless they start with a <code>/</code> character and becomes\n" +
+           "relative to the web site. Absolute links starting with\n" +
+           "&rdquo;<code>http://</code>&rdquo; are also supported.</p>\n" +
+           "</td>\n" +
+           "</tr>\n";
+    utilCreateDialog("HTML Editor Help",
+                     "Help information for the HTML text editor.",
+                     html,
+                     "window.close();",
+                     500,
+                     450);
 }
 
 /**

@@ -83,7 +83,7 @@ function utilCreateDialog(title, text, form, script, width, height) {
            "         color: white; }\n" +
            "p      { margin-top: 0.5em; margin-bottom: 0.5em; }\n" +
            "table  { font-size: 10pt; }\n" +
-           "th     { text-align: left; }\n" +
+           "th, td { text-align: left; vertical-align: top; }\n" +
            "button { margin: 7px; font-weight: bold; }\n" +
            "</style>\n" +
            "<script type='text/javascript'>\n" +

@@ -110,6 +110,9 @@ function tagEditInternalAddToolbar(parent, editor) {
     img.onclick = new Function("tagEditInternalUndo(" + editor + ");");
     img = tagEditInternalAddButton(td, "Redo", "redo.png");
     img.onclick = new Function("tagEditInternalRedo(" + editor + ");");
+    utilAddTextElement(td, "\u00A0\u00A0");
+    img = tagEditInternalAddButton(td, "Help", "help.png");
+    img.onclick = new Function("tagEditInternalHelp();");
 }
 
 /**
@@ -378,6 +381,82 @@ function tagEditInternalInsertImage(editor, url, layout) {
     }
     tagEditInternalInsert(editor, tag, null);
     tagEditInternalStoreUndo(editor);
+}
+
+/**
+ * Handles a help event.
+ */
+function tagEditInternalHelp() {
+    var  html;
+
+    html = "<tr>\n" +
+           "<th width='15%'>text</th>\n" +
+           "<td width='85%' style='padding-bottom: 1em;'>\n" +
+           "Plain text. No special tags are needed for\n" +
+           "plain text. Linebreaks are respected so do not use unless\n" +
+           "required. A single empty line is used as a paragraph break.\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "<tr>\n" +
+           "<th style='padding-bottom: 1em;'>&lt;h1&gt;<br/>\n" +
+           "&lt;h2&gt;<br/>\n" +
+           "&lt;h3&gt;</th>\n" +
+           "<td style='padding-bottom: 1em;'>\n" +
+           "Heading levels 1 through 3. The heading levels control the\n" +
+           "size and formatting of the heading. Level 1 is usually\n" +
+           "reserved for the document title.\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "<tr>\n" +
+           "<th>&lt;b&gt;</th>\n" +
+           "<td style='padding-bottom: 1em;'>\n" +
+           "Bold text. This tag is used inside a paragraph to mark text\n" +
+           "that should be shown in boldface.\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "<tr>\n" +
+           "<th>&lt;i&gt;</th>\n" +
+           "<td style='padding-bottom: 1em;'>\n" +
+           "Italic text. This tag is used inside a paragraph to mark text\n" +
+           "that should be shown in italics.\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "<tr>\n" +
+           "<th>&lt;link&gt;</th>\n" +
+           "<td style='padding-bottom: 1em;'>\n" +
+           "Used for linking to web pages or mail addresses. The link tag\n" +
+           "has the attributes <strong>url</strong> for the link URL and\n" +
+           "<strong>window</strong> for the target browser window. The URL\n" +
+           "of the link is relative to the document unless it starts with\n" +
+           "a <code>/</code> character and becomes relative to the web\n" +
+           "site.<br/><br/>\n" +
+           "Examples:<br/>\n" +
+           "<code>&lt;link url=attach.pdf&gt;link text&lt;/link&gt;<br/>\n" +
+           "&lt;link url=/forums/index.html&gt;link text&lt;/link&gt;<br/>\n" +
+           "&lt;link url=http://www.liquidsite.org window=new&gt;link " +
+           "text&lt;/link&gt;</code>\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "<tr>\n" +
+           "<th>&lt;image&gt;</th>\n" +
+           "<td style='padding-bottom: 1em;'>\n" +
+           "Used for inserting images. The image tag has the attributes\n" +
+           "<strong>url</strong> for the image URL and\n" +
+           "<strong>layout</strong> for the layout style to use. The URL\n" +
+           "of the image is relative to the document unless it starts\n" +
+           "with a <code>/</code> character and becomes relative to the\n" +
+           "web site.<br/><br/>\n" +
+           "Examples:<br/>\n" +
+           "<code>&lt;image url=image.gif&gt;<br/>\n" +
+           "&lt;image url=/images/logo.jpeg layout=right&gt;</code>\n" +
+           "</td>\n" +
+           "</tr>\n";
+    utilCreateDialog("Tag Editor Help",
+                     "Quick reference for the tagged text editor.",
+                     html,
+                     "window.close();",
+                     650,
+                     500);
 }
 
 /**
