@@ -209,6 +209,25 @@ public class Request {
     }
 
     /**
+     * Returns the full request URL with protocol, hostname and path.
+     * No query parameters will be included in the URL, however.
+     *
+     * @return the full request URL
+     */
+    public String getUrl() {
+        return request.getRequestURL().toString();
+    }
+
+    /**
+     * Returns the IP address of the request sender.
+     *
+     * @return the IP address of the request sender
+     */
+    public String getRemoteAddr() {
+        return request.getRemoteAddr();
+    }
+
+    /**
      * Returns the value of a request attribute.
      *
      * @param name           the attribute name

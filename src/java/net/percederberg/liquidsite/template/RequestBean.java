@@ -80,17 +80,7 @@ public class RequestBean {
      * @return the complete request URL
      */
     public String getUrl() {
-        StringBuffer  buffer = new StringBuffer();
-
-        buffer.append(request.getProtocol());
-        buffer.append("://");
-        buffer.append(request.getHost());
-        if (request.getPort() != 80) {
-            buffer.append(":");
-            buffer.append(request.getPort());
-        }
-        buffer.append(request.getPath());
-        return buffer.toString();
+        return request.getUrl();
     }
 
     /**
