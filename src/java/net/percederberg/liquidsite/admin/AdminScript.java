@@ -339,7 +339,7 @@ class AdminScript {
         
         if (lock != null) {
             if (content.hasWriteAccess(user)) {
-                buffer.append("objectAddUnlockButton('unlock-site.html");
+                buffer.append("objectAddUnlockButton('unlock.html");
                 buffer.append(getLinkParameters(content));
                 buffer.append("');\n");
             }

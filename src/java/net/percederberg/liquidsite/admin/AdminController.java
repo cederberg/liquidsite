@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
@@ -33,7 +32,6 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
 
@@ -49,12 +47,6 @@ public class AdminController extends Controller {
      * The class logger.
      */
     private static final Log LOG = new Log(AdminController.class);
-
-    /**
-     * The date format used by this class.
-     */
-    private static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The admin view helper.
@@ -84,6 +76,7 @@ public class AdminController extends Controller {
         workflows.add(new UnpublishDialogHandler());
         workflows.add(new RevertDialogHandler());
         workflows.add(new DeleteDialogHandler());
+        workflows.add(new UnlockDialogHandler());
     }
 
     /**
@@ -136,8 +129,6 @@ public class AdminController extends Controller {
             processLogout(request);
         } else if (path.equals("edit-home.html")) {
             processEditUser(request);
-        } else if (path.equals("unlock-site.html")) {
-            processUnlockObject(request);
         } else if (path.equals("view.html")) {
             processView(request);
         } else if (path.equals("loadsite.js")) {
@@ -315,36 +306,6 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Processes the unlock object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processUnlockObject(Request request) 
-        throws RequestException {
-
-        Content  content;
-        
-        try {
-            content = (Content) view.getRequestReference(request);
-            if (request.getParameter("confirmed") == null) {
-                view.dialogUnlock(request, content);
-            } else {
-                removeLock(content, request.getUser(), true);
-                view.dialogClose(request);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.dialogError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.dialogError(request, e);
-        }
-    }
-
-    /**
      * Processes the view content object requests.
      * 
      * @param request        the request object
@@ -418,32 +379,6 @@ public class AdminController extends Controller {
             throw RequestException.INTERNAL_ERROR;
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
-        }
-    }
-    
-    /**
-     * Removes a content lock. This method will quietly ignore a 
-     * missing lock or a lock owner by another user. If the force
-     * flag is specified, an existing lock will be removed.
-     * 
-     * @param content        the content object
-     * @param user           the user owning the lock
-     * @param force          the force removal flag
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have 
-     *             permission to remove the lock 
-     */
-    private void removeLock(Content content, User user, boolean force)
-        throws ContentException, ContentSecurityException {
-
-        Lock  lock = content.getLock();
-
-        if (lock == null) {
-            // Do nothing
-        } else if (lock.isOwner(user) || force) {
-            lock.delete(user);
         }
     }
 }

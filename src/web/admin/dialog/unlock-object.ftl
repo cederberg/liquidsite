@@ -2,9 +2,10 @@
 <#include "header.ftl">
 
     <form method="post" accept-charset="UTF-8">
+      <input type="hidden" name="liquidsite.step" value="1" />
+      <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
-      <input type="hidden" name="confirmed" value="true" />
       <table class="dialog">
         <tr>
           <td class="decoration" rowspan="4">
@@ -26,7 +27,7 @@
         </tr>
         <tr>
           <td class="buttons">
-            <button tabindex="2" onclick="window.close();">
+            <button type="button" tabindex="2" onclick="window.close();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
