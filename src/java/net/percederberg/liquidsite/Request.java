@@ -146,15 +146,22 @@ public class Request {
     }
     
     /**
-     * Returns the request path with file name.
+     * Returns the request path with file name. This will include the
+     * servlet portion of the path.
      * 
      * @return the request path with file name
      */
     public String getPath() {
-        String  context = request.getContextPath();
-        String  path = request.getRequestURI(); 
+        return request.getRequestURI(); 
+    }
 
-        return path.substring(context.length());
+    /**
+     * Returns the servlet portion of the request path.
+     * 
+     * @return the servlet portion of the request path
+     */
+    public String getServletPath() {
+        return request.getContextPath();
     }
 
     /**

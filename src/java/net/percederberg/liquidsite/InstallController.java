@@ -148,6 +148,7 @@ public class InstallController extends Controller {
         String  path = request.getPath();
         String  step = request.getParameter("step", "");
 
+        path = path.substring(request.getServletPath().length());
         lastError = null;
         if (path.equals("/style.css") || path.startsWith("/images")) {
             request.sendFile(getFile(path));
@@ -351,7 +352,7 @@ public class InstallController extends Controller {
             createTables();
             writeConfiguration();
             getApplication().restart();
-            writeDefaultData();
+            writeDefaultData(request.getServletPath());
         } catch (DatabaseConnectionException e) {
             LOG.error("couldn't finish installation", e);
             lastError = e.getMessage();
@@ -730,9 +731,13 @@ public class InstallController extends Controller {
     }
 
     /**
-     * Writes the Liquid Site database default data.
+     * Writes the Liquid Site database default data. The servlet path
+     * will be used to place the admin site in the correct base 
+     * directory.
+     * 
+     * @param path           the servlet path 
      */
-    private void writeDefaultData() {
+    private void writeDefaultData(String path) {
         Domain      domain = new Domain("ROOT");
         User        user = new User(domain, adminUser);
         Site        site = new Site(domain);
@@ -748,7 +753,7 @@ public class InstallController extends Controller {
             site.setProtocol("http");
             site.setHost("*");
             site.setPort(0);
-            site.setDirectory("/");
+            site.setDirectory(path);
             site.setAdmin(true);
             site.setOnlineDate(new Date());
             site.setOfflineDate(null);

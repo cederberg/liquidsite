@@ -73,6 +73,7 @@ public class DefaultController extends Controller {
     public void process(Request request) throws RequestException {
         Domain  domain;
         Site    site;
+        String  path = request.getPath();
         
         // Find site
         try {
@@ -90,9 +91,11 @@ public class DefaultController extends Controller {
         }
 
         // Handle page
+        path = path.substring(site.getDirectory().length());
         if (site.isAdmin()) {
-            admin.process(request);
+            admin.process(request, path);
         }
+        // TODO: handle normal sites and page processing
     }
 
     /**

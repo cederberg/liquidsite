@@ -56,9 +56,17 @@ public class AdminController extends Controller {
      * @param request        the request object to process
      */
     public void process(Request request) {
-        String  path = request.getPath();
-
-        if (path.equals("/style.css") || path.startsWith("/images")) {
+        process(request, request.getPath());
+    }
+    
+    /**
+     * Processes a request.
+     *
+     * @param request        the request object to process
+     * @param path           the path to use
+     */
+    public void process(Request request, String path) {
+        if (path.equals("style.css") || path.startsWith("images/")) {
             request.sendFile(getFile(path));
         } else {
             displayLogin(request, null);
