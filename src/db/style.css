@@ -1,0 +1,119 @@
+/*
+ * style.css: API documentation style sheet
+ *
+ * Copyright (c) 2003 Per Cederberg. Permission is granted to copy this 
+ * document verbatim in any medium, provided that this copyright notice 
+ * is left intact.
+ */
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Default Styles
+ *
+ */
+
+/* Normal document settings */
+body {
+    background-color: white;
+}
+
+/* Header formats */
+h2 {
+    font-size: 150%;
+    font-weight: bold;
+    background-color: #ccccff;
+    border-style: solid;
+    border-width: 1px;
+    padding: 3px;
+}
+
+h4 {
+    font-size: 120%;
+}
+
+/* Table style*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    font-size: 150%;
+    font-weight: bold;
+    background-color: #ccccff;
+    border-style: outset;
+    border-width: 2px;
+    border-color: #808080;
+    padding: 3px;
+    text-align: left;
+    vertical-align: top;
+}
+td {
+    border-style: outset;
+    border-width: 2px;
+    border-color: #808080;
+    padding: 3px;
+    text-align: left;
+    vertical-align: top;
+}
+
+/* Header and footer */
+.header table {
+    width: auto;
+}
+.header td {
+    background-color: #eeeeff;
+    border-style: none;
+    padding: 4px;
+}
+.header table th {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    background-color: #00008b;
+    color: white;
+    border-style: none;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+.header table td {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    background-color: #eeeeff;
+    color: black;
+    border-style: none;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.header td.end {
+    font-weight: bold;
+    background: white;
+    width: 100%;
+    text-align: right;
+}
+.footer {
+    font-size: smaller;
+}
+
+
+
+
+/* Table colors */
+.TableSubHeadingColor  { background: #EEEEFF } /* Light mauve */
+
+/* Font used in left-hand frame lists */
+.FrameTitleFont   { font-size: 10pts; font-family: Helvetica, Arial, san-serif }
+.FrameHeadingFont { font-size: 10pts; font-family: Helvetica, Arial, san-serif }
+.FrameItemFont    { font-size: 10pts; font-family: Helvetica, Arial, san-serif }
+
+/* Example of smaller, sans-serif font in frames */
+/* .FrameItemFont  { font-size: 10pt; font-family: Helvetica, Arial, sans-serif } */
+
+/* Navigation bar fonts and colors */
+.NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
+.NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
+

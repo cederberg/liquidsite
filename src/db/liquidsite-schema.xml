@@ -1,25 +1,249 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 
-<!DOCTYPE database SYSTEM
-    "http://jakarta.apache.org/turbine/dtd/database_3_1.dtd">
+<database name="liquidsite">
+  <description>
+    The Liquid Site database. All web content for the Liquid Site
+    system is stored in these tables, except for binary files that are
+    stored separately.
+  </description>
 
-<database name="liquidsite" 
-          defaultIdMethod="idbroker">
 
-  <table name="CONFIGURATION" 
-         idMethod="none" 
-         description="Configuration Table">
-    <column name="NAME"
-            required="true"
-            primaryKey="true"
-            type="VARCHAR"
-            size="255"
-            description="Configuration parameter name"/>
-    <column name="VALUE"
-            required="true"
-            type="VARCHAR"
-            size="255"
-            description="Configuration parameter value"/>
+  <table name="CONFIGURATION">
+    <description>
+      The configuration parameter table. All parameters are stored
+      here except for the database connection parameters that are all
+      stored in the 'WEB-INF/database.properties' file. The special
+      configuration parameter 'liquidsite.version' contains the
+      Liquid Site version number being used with this database.
+    </description>
+
+    <column name="NAME">
+      <description>
+        The configuration parameter name. The parameter names normally
+        consist of ASCII alphanumeric characters with optional '.'
+        characters separating different parts of the name. Please see
+        separate documentation on configuration for more details on
+        the configuration parameters available.
+      </description>
+      <type name="VARCHAR" size="50" required="true" />
+    </column>
+
+    <column name="VALUE">
+      <description>
+        The configuration parameter value. The parameter values are
+        strings, possibly representing numbers or other types. Please
+        see the separate documentation on configuration for the
+        allowed values for any specific configuration parameter.
+      </description>
+      <type name="VARCHAR" size="200" required="true" />
+    </column>
+
+    <primarykey>
+      <description>
+        The configuration parameters are indexed by name.
+      </description>
+      <column name="NAME" />
+    </primarykey>
+  </table>
+
+
+
+  <table name="SITE">
+    <description>
+      The web site table. A web site consists of a pages and content
+      that can be served from a single web location. Each site is
+      normally identified by a host name, but it is also possible to
+      distinguish sites by port numbers or directories. Web sites
+      cannot share content, such as pages, files, users, or similar.
+    </description>
+
+    <column name="ID">
+      <description>
+        The unique site identifier. The site identifier may NOT be
+        modified after creation, as other tables contain references to
+        this identifier. If a site is to be removed, care must be
+        taken to also remove all content and files belonging to the
+        site.
+      </description>
+      <type name="SMALLINT" required="true" />
+    </column>
+
+    <column name="NAME">
+      <description>
+        The site name. The site name is only used when administrating
+        the site, and is not visible in URL:s or on web pages.
+      </description>
+      <type name="VARCHAR" size="100" required="true" />
+    </column>
+
+    <column name="HOST">
+      <description>
+        The site host name. The host name can be either an IP address
+        or the fully qualified machine name (i.e. host and domain
+        names). The host name is used to match incoming requests to a
+        single web site. The special host name '*' matches any
+        incoming requests, but if a site with an exact match exists it
+        will take precedence.
+      </description>
+      <type name="VARCHAR" size="100" required="true" />
+    </column>
+
+    <column name="PORT">
+      <description>
+        The site port number. The port number is normally 80 for
+        normal web servers, or 443 for secure (SSL) connections. The
+        port number is used to match incoming requests to a single web
+        site. The special port number zero (0) matches any incoming
+        requests, but if a site with an exact match exists it will
+        take precedence.
+      </description>
+      <type name="SMALLINT" required="true" />
+    </column>
+
+    <column name="DIRECTORY">
+      <description>
+        The base site directory. The directory name must terminate
+        with a '/' character. The directory is used to match incoming
+        requests to a single web site. The special directory '/'
+        matches any incoming requests, but if a site with a longer
+        match exists it will take precedence.
+      </description>
+      <type name="VARCHAR" size="100" required="true" />
+    </column>
+
+    <primarykey>
+      <description>
+        The sites are indexed by the unique identifier.
+      </description>
+      <column name="ID" />
+    </primarykey>
+
+    <index name="SITE_IDX_1" unique="true">
+      <description>
+        The combination of host, port and directory uniquely
+        identifies a web site.
+      </description>
+      <column name="HOST" />
+      <column name="PORT" />
+      <column name="DIRECTORY" />
+    </index>
+  </table>
+
+
+
+  <table name="CONTENT">
+    <description>
+      The page content table. This table contains all texual page
+      content for all the sites. Binary data is not stored in this
+      table, but filenames for all binary data are stored.
+    </description>
+
+    <column name="ID">
+      <description>
+        The unique content identifier. The site identifier may NOT be
+        modified after creation, as this and other tabless contain
+        references to this identifier. If a content object is to be
+        removed, care must be taken to also remove all referencing
+        objects or files.
+      </description>
+      <type name="INTEGER" required="true" />
+    </column>
+
+    <column name="SITE">
+      <description>
+        The content site identifier. All content belongs to a
+        single web site that determines how it can be accessed.
+      </description>
+      <type name="SMALLINT" required="true" />
+      <reference table="SITE" column="ID" />
+    </column>
+
+    <column name="CATEGORY">
+      <description>
+        The content category (or type). All content belongs to a
+        single category that determines how it is interpreted.
+        Examples of categories are 'page.element', 'news.title' or
+        'link.file'.
+      </description>
+      <type name="VARCHAR" size="30" required="true" />
+    </column>
+
+    <column name="PARENT">
+      <description>
+      </description>
+      <type name="INTEGER" required="true" />
+      <reference table="CONTENT" column="ID" />
+    </column>
+
+    <column name="ONLINE">
+      <description>
+      </description>
+      <type name="DATETIME" required="true" />
+    </column>
+
+    <column name="OFFLINE">
+      <description>
+      </description>
+      <type name="DATETIME" required="true" />
+    </column>
+
+    <column name="LANGUAGE">
+      <description>
+      </description>
+      <type name="VARCHAR" size="10" required="true" />
+    </column>
+
+    <column name="DATATYPE">
+      <description>
+      </description>
+      <type name="VARCHAR" size="30" required="true" />
+    </column>
+
+    <column name="DATA">
+      <description>
+      </description>
+      <type name="MEDIUMTEXT" required="true" />
+    </column>
+
+    <column name="REVISION">
+      <description>
+      </description>
+      <type name="SMALLINT" required="true" />
+    </column>
+
+    <column name="USER">
+      <description>
+      </description>
+      <type name="VARCHAR" size="30" required="true" />
+    </column>
+
+    <column name="COMMENT">
+      <description>
+      </description>
+      <type name="VARCHAR" size="200" required="true" />
+    </column>
+
+    <primarykey>
+      <description>
+        The content is uniquely indexed by the identifier.
+      </description>
+      <column name="ID" />
+    </primarykey>
+
+    <index name="CONTEXT_IDX_1">
+      <description>
+        The content is commonly searched by site and category.
+      </description>
+      <column name="SITE" />
+      <column name="CATEGORY" />
+    </index>
+
+    <index name="CONTEXT_IDX_2">
+      <description>
+        The content is commonly searched by parent identifier.
+      </description>
+      <column name="PARENT" />
+    </index>
   </table>
 
 </database>

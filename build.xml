@@ -49,7 +49,7 @@
 
 <!-- COMPILATION TARGETS -->
   <target name="compile" 
-          depends="init,compile-clean,compile-java">
+          depends="init,compile-clean,compile-db,compile-java">
     <jar jarfile="${build.dir}/lib/liquidsite-${build.version}.jar"
          includesfile="${build.dir}/LICENSE.txt">
       <fileset dir="${build.dir}" includes="*.txt" />
@@ -75,7 +75,18 @@
                includes="liquidsite.war" />
     </delete>
     <mkdir dir="${build.dir}/classes" />
+    <mkdir dir="${build.dir}/classes/sql" />
     <mkdir dir="${build.dir}/lib" />
+  </target>
+
+  <target name="compile-db">
+    <xslt style="${build.dir}/src/db/sql-create.xsl"
+          in="${build.dir}/src/db/liquidsite-schema.xml"
+          out="${build.dir}/classes/sql/liquidsite-create-tables.sql">
+      <param name="date" expression="${build.printdate}" />
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+    </xslt>
   </target>
 
   <target name="compile-java">
@@ -94,13 +105,14 @@
 
 
 <!-- DOCUMENTATION TARGETS -->
-  <target name="doc" depends="init,doc-clean,doc-text,doc-html,doc-java">
+  <target name="doc" depends="init,doc-clean,doc-text,doc-html,doc-db,doc-java">
   </target>
 
   <target name="doc-clean">
     <delete dir="${build.dir}/doc" />
     <mkdir dir="${build.dir}/doc" />
     <mkdir dir="${build.dir}/doc/manual" />
+    <mkdir dir="${build.dir}/doc/db" />
     <mkdir dir="${build.dir}/doc/api" />
   </target>
 
@@ -141,6 +153,38 @@
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
       <param name="url" expression="http://www.liquidsite.org/" />
+    </xslt>
+  </target>
+
+  <target name="doc-db">
+    <copy file="${build.dir}/src/db/style.css"
+          todir="${build.dir}/doc/db" />
+    <xslt style="${build.dir}/src/db/doc-overview-html.xsl"
+          in="${build.dir}/src/db/liquidsite-schema.xml"
+          out="${build.dir}/doc/db/index.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/liquidsite-schema.xml"
+          out="${build.dir}/doc/db/table.CONFIGURATION.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="CONFIGURATION" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/liquidsite-schema.xml"
+          out="${build.dir}/doc/db/table.SITE.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="SITE" />
+    </xslt>
+    <xslt style="${build.dir}/src/db/doc-table-html.xsl"
+          in="${build.dir}/src/db/liquidsite-schema.xml"
+          out="${build.dir}/doc/db/table.CONTENT.html">
+      <param name="name" expression="Liquid Site" />
+      <param name="version" expression="${build.version}" />
+      <param name="table" expression="CONTENT" />
     </xslt>
   </target>
 
