@@ -163,7 +163,7 @@ td {
 
 /* Form style */
 button {
-        height: 30px;
+        height: 32px;
         margin-top: 8px;
         margin-bottom: 8px;
         padding-left: 10px; 
@@ -251,13 +251,18 @@ table.menu td.filler {
 
 /* Form style */
 table.form {
-        margin-left: 10%; 
         border: 1px solid black;
         padding: 10px;
         background: rgb(255, 255, 245);
 }
 table.form td.decoration {
         padding-top: 40px;
+}
+table.form td.buttons {
+        text-align: right;
+}
+table.form button {
+        margin-left: 15px;
 }
 
 /* Treeview style */
@@ -279,9 +284,11 @@ table.form td.decoration {
         border: 1px dashed black;
         background: rgb(240, 237, 235);
 }
+.treeview a {
+        color: rgb(80, 80, 80);
+}
 .treeview a:hover {
-        text-decoration: none;
-        background: rgb(240, 237, 235);
+        background: none;
         text-decoration: none;
 }
 
