@@ -44,32 +44,39 @@ public class ContentSection extends Content {
     /**
      * Creates a new root section with default values.
      * 
+     * @param manager        the content manager to use
      * @param domain         the domain
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public ContentSection(Domain domain) throws ContentException {
-        super(domain, Content.SECTION_CATEGORY);
+    public ContentSection(ContentManager manager, Domain domain)
+        throws ContentException {
+
+        super(manager, domain, Content.SECTION_CATEGORY);
         setParent(null);
     }
 
     /**
      * Creates a new section with default values.
      * 
+     * @param manager        the content manager to use
      * @param parent         the parent content section
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public ContentSection(ContentSection parent) throws ContentException {
-        super(parent.getDomain(), Content.SECTION_CATEGORY);
+    public ContentSection(ContentManager manager, ContentSection parent)
+        throws ContentException {
+
+        super(manager, parent.getDomain(), Content.SECTION_CATEGORY);
         setParent(parent);
     }
 
     /**
      * Creates a new section.
      * 
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param latest         the latest revision flag
      * @param con            the database connection to use
@@ -77,12 +84,13 @@ public class ContentSection extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected ContentSection(ContentData data, 
+    protected ContentSection(ContentManager manager,
+                             ContentData data, 
                              boolean latest, 
                              DatabaseConnection con) 
         throws ContentException {
 
-        super(data, latest, con);
+        super(manager, data, latest, con);
     }
 
     /**

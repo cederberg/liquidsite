@@ -73,7 +73,7 @@ public class Host extends PersistentObject {
             list = HostPeer.doSelectAll(con);
             res = new Host[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Host((HostData) list.get(i));
+                res[i] = new Host(manager, (HostData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -106,7 +106,7 @@ public class Host extends PersistentObject {
             list = HostPeer.doSelectByDomain(domain.getName(), con);
             res = new Host[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Host((HostData) list.get(i));
+                res[i] = new Host(manager, (HostData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -146,18 +146,19 @@ public class Host extends PersistentObject {
         if (data == null) {
             return null;
         } else {
-            return new Host(data);
+            return new Host(manager, data);
         }
     }
 
     /**
      * Creates a new host with default values.
      * 
+     * @param manager        the content manager to use 
      * @param domain         the domain
      * @param name           the host name
      */
-    public Host(Domain domain, String name) {
-        super(false, true);
+    public Host(ContentManager manager, Domain domain, String name) {
+        super(manager, false, true);
         this.data = new HostData();
         this.data.setString(HostData.DOMAIN, domain.getName());
         this.data.setString(HostData.NAME, name);
@@ -167,10 +168,11 @@ public class Host extends PersistentObject {
     /**
      * Creates a new host from a data object.
      * 
+     * @param manager        the content manager to use 
      * @param data           the host data object
      */
-    private Host(HostData data) {
-        super(true, true);
+    private Host(ContentManager manager, HostData data) {
+        super(manager, true, true);
         this.data = data;
         this.options = decodeMap(data.getString(HostData.OPTIONS));
     }

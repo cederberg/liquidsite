@@ -77,7 +77,7 @@ public class Domain extends PersistentObject implements Comparable {
             list = DomainPeer.doSelectAll(con);
             res = new Domain[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Domain((DomainData) list.get(i));
+                res[i] = new Domain(manager, (DomainData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -117,17 +117,18 @@ public class Domain extends PersistentObject implements Comparable {
         if (data == null) {
             return null;
         } else {
-            return new Domain(data);
+            return new Domain(manager, data);
         }
     }
 
     /**
      * Creates a new domain with default values.
      * 
+     * @param manager        the content manager to use 
      * @param name           the domain name
      */
-    public Domain(String name) {
-        super(false, true);
+    public Domain(ContentManager manager, String name) {
+        super(manager, false, true);
         this.data = new DomainData();
         this.data.setString(DomainData.NAME, name);
         this.options = new HashMap();
@@ -136,10 +137,11 @@ public class Domain extends PersistentObject implements Comparable {
     /**
      * Creates a new domain from a data object.
      * 
+     * @param manager        the content manager to use 
      * @param data           the domain data object
      */
-    private Domain(DomainData data) {
-        super(true, true);
+    private Domain(ContentManager manager, DomainData data) {
+        super(manager, true, true);
         this.data = data;
         this.options = decodeMap(data.getString(DomainData.OPTIONS));
     }

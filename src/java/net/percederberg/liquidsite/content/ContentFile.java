@@ -42,16 +42,17 @@ public class ContentFile extends Content {
     /**
      * Creates a new file with default values.
      * 
+     * @param manager        the content manager to use
      * @param parent         the parent content object
      * @param name           the file name
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public ContentFile(Content parent, String name) 
+    public ContentFile(ContentManager manager, Content parent, String name) 
         throws ContentException {
 
-        super(parent.getDomain(), Content.FILE_CATEGORY);
+        super(manager, parent.getDomain(), Content.FILE_CATEGORY);
         setParent(parent);
         setAttribute(FILE_NAME_ATTRIBUTE, name);
     }
@@ -59,6 +60,7 @@ public class ContentFile extends Content {
     /**
      * Creates a new file.
      * 
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param latest         the latest revision flag
      * @param con            the database connection to use
@@ -66,12 +68,13 @@ public class ContentFile extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected ContentFile(ContentData data, 
+    protected ContentFile(ContentManager manager,
+                          ContentData data, 
                           boolean latest, 
                           DatabaseConnection con) 
         throws ContentException {
 
-        super(data, latest, con);
+        super(manager, data, latest, con);
     }
 
     /**

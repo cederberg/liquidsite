@@ -383,7 +383,7 @@ abstract class AdminFormHandler extends FormHandler {
         Lock  lock = content.getLock();
 
         if (lock == null && acquire) {
-            lock = new Lock(content);
+            lock = new Lock(AdminUtils.getContentManager(), content);
             lock.save(user);
         } else if (lock == null) {
             throw new ContentSecurityException(

@@ -81,7 +81,7 @@ public class Group extends PersistentObject {
             list = GroupPeer.doSelectByDomain(domain.getName(), con);
             res = new Group[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Group((GroupData) list.get(i));
+                res[i] = new Group(manager, (GroupData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -124,7 +124,7 @@ public class Group extends PersistentObject {
         if (data == null) {
             return null;
         } else {
-            return new Group(data);
+            return new Group(manager, data);
         }
     }
 
@@ -160,7 +160,7 @@ public class Group extends PersistentObject {
                 group = GroupPeer.doSelectByName(user.getDomainName(),
                                                  name, 
                                                  con);
-                res[i] = new Group(group);
+                res[i] = new Group(manager, group);
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -174,11 +174,12 @@ public class Group extends PersistentObject {
     /**
      * Creates a new group with default values.
      * 
+     * @param manager        the content manager to use 
      * @param domain         the domain
      * @param name           the group name
      */
-    public Group(Domain domain, String name) {
-        super(false, true);
+    public Group(ContentManager manager, Domain domain, String name) {
+        super(manager, false, true);
         this.data = new GroupData();
         this.data.setString(GroupData.DOMAIN, domain.getName());
         this.data.setString(GroupData.NAME, name);
@@ -187,10 +188,11 @@ public class Group extends PersistentObject {
     /**
      * Creates a new group from a data object.
      * 
+     * @param manager        the content manager to use 
      * @param data           the group data object
      */
-    private Group(GroupData data) {
-        super(true, true);
+    private Group(ContentManager manager, GroupData data) {
+        super(manager, true, true);
         this.data = data;
     }
 

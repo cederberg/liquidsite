@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
@@ -193,13 +194,14 @@ class SiteAddFormHandler extends AdminFormHandler {
     private void handleAddDomain(Request request, Domain parent) 
         throws ContentException, ContentSecurityException {
 
-        Domain  domain;
-        Host    host;
+        ContentManager  manager = AdminUtils.getContentManager();
+        Domain          domain;
+        Host            host;
         
-        domain = new Domain(request.getParameter("name"));
+        domain = new Domain(manager, request.getParameter("name"));
         domain.setDescription(request.getParameter("description"));
         domain.save(request.getUser());
-        host = new Host(domain, request.getParameter("host"));
+        host = new Host(manager, domain, request.getParameter("host"));
         host.setDescription("Default domain host");
         host.save(request.getUser());
         AdminView.SITE.setSiteTreeFocus(request, domain);
@@ -219,10 +221,11 @@ class SiteAddFormHandler extends AdminFormHandler {
     private void handleAddSite(Request request, Domain parent) 
         throws ContentException, ContentSecurityException {
 
-        User         user = request.getUser();
-        ContentSite  site;
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        ContentSite     site;
         
-        site = new ContentSite(parent);
+        site = new ContentSite(manager, parent);
         site.setName(request.getParameter("name"));
         site.setProtocol(request.getParameter("protocol"));
         site.setHost(request.getParameter("host"));
@@ -248,10 +251,11 @@ class SiteAddFormHandler extends AdminFormHandler {
     private void handleAddFolder(Request request, Content parent) 
         throws ContentException, ContentSecurityException {
 
-        User           user = request.getUser();
-        ContentFolder  folder;
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        ContentFolder   folder;
         
-        folder = new ContentFolder(parent);
+        folder = new ContentFolder(manager, parent);
         folder.setName(request.getParameter("name"));
         folder.setComment(request.getParameter("comment"));
         folder.save(user);
@@ -272,14 +276,15 @@ class SiteAddFormHandler extends AdminFormHandler {
     private void handleAddPage(Request request, Content parent) 
         throws ContentException, ContentSecurityException {
 
-        ContentPage  page;
-        Map          params = request.getAllParameters();
-        Iterator     iter = params.keySet().iterator();
-        String       name;
-        String       value;
-        int          id;
+        ContentManager  manager = AdminUtils.getContentManager();
+        ContentPage     page;
+        Map             params = request.getAllParameters();
+        Iterator        iter = params.keySet().iterator();
+        String          name;
+        String          value;
+        int             id;
         
-        page = new ContentPage(parent);
+        page = new ContentPage(manager, parent);
         page.setName(request.getParameter("name"));
         try {
             id = Integer.parseInt(request.getParameter("template"));
@@ -313,13 +318,14 @@ class SiteAddFormHandler extends AdminFormHandler {
     private void handleAddFile(Request request, Content parent) 
         throws ContentException, ContentSecurityException {
 
-        User           user = request.getUser();
-        FileParameter  param;
-        ContentFile    file;
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        FileParameter   param;
+        ContentFile     file;
         
         try {
             param = request.getFileParameter("content");
-            file = new ContentFile(parent, param.getName());
+            file = new ContentFile(manager, parent, param.getName());
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
             file.save(user);
@@ -344,6 +350,7 @@ class SiteAddFormHandler extends AdminFormHandler {
     private void handleAddTemplate(Request request, Object parent) 
         throws ContentException, ContentSecurityException {
 
+        ContentManager   manager = AdminUtils.getContentManager();
         ContentTemplate  template;
         Map              params = request.getAllParameters();
         Iterator         iter = params.keySet().iterator();
@@ -351,9 +358,9 @@ class SiteAddFormHandler extends AdminFormHandler {
         String           value;
         
         if (parent instanceof Domain) {
-            template = new ContentTemplate((Domain) parent);
+            template = new ContentTemplate(manager, (Domain) parent);
         } else {
-            template = new ContentTemplate((ContentTemplate) parent);
+            template = new ContentTemplate(manager, (ContentTemplate) parent);
         }
         template.setName(request.getParameter("name"));
         template.setComment(request.getParameter("comment"));

@@ -68,6 +68,7 @@ public class Permission extends PersistentObject {
         DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Permission[]        res;
+        PermissionData      data;
 
         try {
             list = PermissionPeer.doSelectByContent(domain.getName(),
@@ -75,7 +76,8 @@ public class Permission extends PersistentObject {
                                                     con);
             res = new Permission[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Permission((PermissionData) list.get(i));
+                data = (PermissionData) list.get(i);
+                res[i] = new Permission(manager, data);
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -108,6 +110,7 @@ public class Permission extends PersistentObject {
         DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         Permission[]        res;
+        PermissionData      data;
 
         try {
             list = PermissionPeer.doSelectByContent(content.getDomainName(),
@@ -115,7 +118,8 @@ public class Permission extends PersistentObject {
                                                     con);
             res = new Permission[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Permission((PermissionData) list.get(i));
+                data = (PermissionData) list.get(i);
+                res[i] = new Permission(manager, data);
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -165,7 +169,7 @@ public class Permission extends PersistentObject {
         if (data == null) {
             return null;
         } else {
-            return new Permission(data);
+            return new Permission(manager, data);
         }
     }
 
@@ -173,12 +177,17 @@ public class Permission extends PersistentObject {
      * Creates a new permission with default values. This permission
      * is valid for the domain root.
      * 
+     * @param manager        the content manager to use 
      * @param domain         the domain object
      * @param user           the user, or null for any user
      * @param group          the gruop, or null for any group
      */
-    public Permission(Domain domain, User user, Group group) {
-        super(false, true);
+    public Permission(ContentManager manager,
+                      Domain domain,
+                      User user,
+                      Group group) {
+
+        super(manager, false, true);
         this.data = new PermissionData();
         this.data.setString(PermissionData.DOMAIN, domain.getName());
         this.data.setInt(PermissionData.CONTENT, 0);
@@ -193,12 +202,17 @@ public class Permission extends PersistentObject {
     /**
      * Creates a new permission with default values.
      * 
+     * @param manager        the content manager to use 
      * @param content        the content object
      * @param user           the user, or null for any user
      * @param group          the gruop, or null for any group
      */
-    public Permission(Content content, User user, Group group) {
-        super(false, true);
+    public Permission(ContentManager manager,
+                      Content content,
+                      User user,
+                      Group group) {
+
+        super(manager, false, true);
         this.data = new PermissionData();
         this.data.setString(PermissionData.DOMAIN, content.getDomainName());
         this.data.setInt(PermissionData.CONTENT, content.getId());
@@ -213,10 +227,11 @@ public class Permission extends PersistentObject {
     /**
      * Creates a new permission from a data object.
      * 
+     * @param manager        the content manager to use 
      * @param data           the permission data object
      */
-    private Permission(PermissionData data) {
-        super(true, true);
+    private Permission(ContentManager manager, PermissionData data) {
+        super(manager, true, true);
         this.data = data;
     }
 

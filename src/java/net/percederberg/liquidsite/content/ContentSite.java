@@ -83,6 +83,7 @@ public class ContentSite extends Content {
         DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
         ContentSite[]       res;
+        ContentData         data;
 
         try {
             list = ContentPeer.doSelectByCategory(domain.getName(),
@@ -90,7 +91,8 @@ public class ContentSite extends Content {
                                                   con);
             res = new ContentSite[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new ContentSite((ContentData) list.get(i), true, con);
+                data = (ContentData) list.get(i);
+                res[i] = new ContentSite(manager, data, true, con);
             }
         } catch (DatabaseObjectException e) {
             throw new ContentException(e);
@@ -103,10 +105,11 @@ public class ContentSite extends Content {
     /**
      * Creates a new site with default values.
      * 
+     * @param manager        the content manager to use
      * @param domain         the site domain
      */
-    public ContentSite(Domain domain) {
-        super(domain, Content.SITE_CATEGORY);
+    public ContentSite(ContentManager manager, Domain domain) {
+        super(manager, domain, Content.SITE_CATEGORY);
         setAttribute(PROTOCOL_ATTRIBUTE, "http");
         setAttribute(HOST_ATTRIBUTE, "*");
         setAttribute(PORT_ATTRIBUTE, "0");
@@ -117,6 +120,7 @@ public class ContentSite extends Content {
     /**
      * Creates a new site.
      * 
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param latest         the latest revision flag
      * @param con            the database connection to use
@@ -124,12 +128,13 @@ public class ContentSite extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected ContentSite(ContentData data, 
+    protected ContentSite(ContentManager manager,
+                          ContentData data, 
                           boolean latest, 
                           DatabaseConnection con) 
         throws ContentException {
 
-        super(data, latest, con);
+        super(manager, data, latest, con);
     }
 
     /**

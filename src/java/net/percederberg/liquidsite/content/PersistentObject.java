@@ -43,6 +43,11 @@ public abstract class PersistentObject {
     private static final Log LOG = new Log(PersistentObject.class);
 
     /**
+     * The content manager used for this object.
+     */
+    private ContentManager manager;
+
+    /**
      * The persistent data flag. This flag should be set when the 
      * object is read or written to the database. 
      */
@@ -52,21 +57,8 @@ public abstract class PersistentObject {
      * The cacheable flag. This flag should be set when the object 
      * supports being cached in the content manager. 
      */
+    // TODO: remove this flag
     private boolean cacheable = false;
-
-    /**
-     * Returns the current content manager.
-     * 
-     * @return the current content manager
-     * 
-     * @throws ContentException if no content manager is available
-     */
-    // TODO: remove this method
-    static ContentManager getContentManager() 
-        throws ContentException {
-
-        return ContentManager.getInstance();
-    }
 
     /**
      * Returns the content manager database connector.
@@ -201,11 +193,16 @@ public abstract class PersistentObject {
 
     /**
      * Creates a new persistent object.
-     * 
+     *
+     * @param manager        the content manager to use 
      * @param persistent     the persistent flag
      * @param cacheable      the cacheable flag
      */
-    protected PersistentObject(boolean persistent, boolean cacheable) {
+    protected PersistentObject(ContentManager manager,
+                               boolean persistent,
+                               boolean cacheable) {
+
+        this.manager = manager;
         this.persistent = persistent;
         this.cacheable = cacheable;
     }
@@ -301,6 +298,15 @@ public abstract class PersistentObject {
     }
 
     /**
+     * Returns the content manager used by this object.
+     * 
+     * @return the content manager used by this object
+     */
+    public ContentManager getContentManager() {
+        return manager;
+    }
+
+    /**
      * Saves this object to the database.
      * 
      * @param user           the user performing the operation
@@ -331,14 +337,10 @@ public abstract class PersistentObject {
         }
 
         // Save to cache
-        try {
-            if (cacheable) {
-                getContentManager().cacheAdd(this);
-            } else {
-                getContentManager().cacheRemove(this);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
+        if (cacheable) {
+            getContentManager().cacheAdd(this);
+        } else {
+            getContentManager().cacheRemove(this);
         }
     }
     
@@ -366,11 +368,7 @@ public abstract class PersistentObject {
         }
 
         // Delete from cache
-        try {
-            getContentManager().cacheRemove(this);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-        }
+        getContentManager().cacheRemove(this);
     }
 
     /**

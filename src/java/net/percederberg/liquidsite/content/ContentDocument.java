@@ -44,19 +44,23 @@ public class ContentDocument extends Content {
     /**
      * Creates a new document with default values.
      * 
+     * @param manager        the content manager to use
      * @param parent         the parent content section
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public ContentDocument(ContentSection parent) throws ContentException {
-        super(parent.getDomain(), Content.DOCUMENT_CATEGORY);
+    public ContentDocument(ContentManager manager, ContentSection parent)
+        throws ContentException {
+
+        super(manager, parent.getDomain(), Content.DOCUMENT_CATEGORY);
         setParent(parent);
     }
 
     /**
      * Creates a new document.
      * 
+     * @param manager        the content manager to use 
      * @param data           the content data object
      * @param latest         the latest revision flag
      * @param con            the database connection to use
@@ -64,12 +68,13 @@ public class ContentDocument extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected ContentDocument(ContentData data, 
+    protected ContentDocument(ContentManager manager,
+                              ContentData data, 
                               boolean latest, 
                               DatabaseConnection con) 
         throws ContentException {
 
-        super(data, latest, con);
+        super(manager, data, latest, con);
     }
 
     /**

@@ -44,30 +44,33 @@ public class ContentTemplate extends Content {
     /**
      * Creates a new template with default values.
      * 
+     * @param manager        the content manager to use 
      * @param domain         the template domain
      */
-    public ContentTemplate(Domain domain) {
-        super(domain, Content.TEMPLATE_CATEGORY);
+    public ContentTemplate(ContentManager manager, Domain domain) {
+        super(manager, domain, Content.TEMPLATE_CATEGORY);
     }
 
     /**
      * Creates a new template with default values.
      * 
+     * @param manager        the content manager to use 
      * @param parent         the parent template
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public ContentTemplate(ContentTemplate parent) 
+    public ContentTemplate(ContentManager manager, ContentTemplate parent) 
         throws ContentException {
 
-        this(parent.getDomain());
+        this(manager, parent.getDomain());
         setParent(parent);
     }
 
     /**
      * Creates a new template.
      * 
+     * @param manager        the content manager to use 
      * @param data           the content data object
      * @param latest         the latest revision flag
      * @param con            the database connection to use
@@ -75,12 +78,13 @@ public class ContentTemplate extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected ContentTemplate(ContentData data, 
+    protected ContentTemplate(ContentManager manager,
+                              ContentData data, 
                               boolean latest, 
                               DatabaseConnection con) 
         throws ContentException {
 
-        super(data, latest, con);
+        super(manager, data, latest, con);
     }
 
     /**

@@ -35,19 +35,23 @@ public class ContentFolder extends Content {
     /**
      * Creates a new folder with default values.
      * 
+     * @param manager        the content manager to use
      * @param parent         the parent content object
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public ContentFolder(Content parent) throws ContentException {
-        super(parent.getDomain(), Content.FOLDER_CATEGORY);
+    public ContentFolder(ContentManager manager, Content parent)
+        throws ContentException {
+
+        super(manager, parent.getDomain(), Content.FOLDER_CATEGORY);
         setParent(parent);
     }
 
     /**
      * Creates a new folder.
      * 
+     * @param manager        the content manager to use
      * @param data           the content data object
      * @param latest         the latest revision flag
      * @param con            the database connection to use
@@ -55,12 +59,13 @@ public class ContentFolder extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected ContentFolder(ContentData data, 
+    protected ContentFolder(ContentManager manager,
+                            ContentData data, 
                             boolean latest, 
                             DatabaseConnection con) 
         throws ContentException {
 
-        super(data, latest, con);
+        super(manager, data, latest, con);
     }
 
     /**

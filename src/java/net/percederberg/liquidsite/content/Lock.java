@@ -76,17 +76,18 @@ public class Lock extends PersistentObject {
         if (data == null) {
             return null;
         } else {
-            return new Lock(data);
+            return new Lock(manager, data);
         }
     }
 
     /**
      * Creates a new lock with default values.
      * 
+     * @param manager        the content manager to use 
      * @param content        the content object
      */
-    public Lock(Content content) {
-        super(false, false);
+    public Lock(ContentManager manager, Content content) {
+        super(manager, false, false);
         this.data = new LockData();
         this.data.setString(LockData.DOMAIN, content.getDomainName());
         this.data.setInt(LockData.CONTENT, content.getId());
@@ -97,10 +98,11 @@ public class Lock extends PersistentObject {
     /**
      * Creates a new lock from a data object.
      * 
+     * @param manager        the content manager to use 
      * @param data           the lock data object
      */
-    private Lock(LockData data) {
-        super(true, false);
+    private Lock(ContentManager manager, LockData data) {
+        super(manager, true, false);
         this.data = data;
     }
 

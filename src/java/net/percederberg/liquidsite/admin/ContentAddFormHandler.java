@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
@@ -161,18 +162,19 @@ public class ContentAddFormHandler extends AdminFormHandler {
     private void handleAddSection(Request request, Object parent) 
         throws ContentException, ContentSecurityException {
 
-        ContentSection      section;
-        Map                 params = request.getAllParameters();
-        Iterator            iter = params.keySet().iterator();
-        DocumentProperty    property;
-        String              name;
-        String              id;
-        String              str;
+        ContentManager    manager = AdminUtils.getContentManager();
+        ContentSection    section;
+        Map               params = request.getAllParameters();
+        Iterator          iter = params.keySet().iterator();
+        DocumentProperty  property;
+        String            name;
+        String            id;
+        String            str;
 
         if (parent instanceof Domain) {
-            section = new ContentSection((Domain) parent);
+            section = new ContentSection(manager, (Domain) parent);
         } else {
-            section = new ContentSection((ContentSection) parent);
+            section = new ContentSection(manager, (ContentSection) parent);
         }
         section.setName(request.getParameter("name"));
         section.setComment(request.getParameter("comment"));
@@ -219,12 +221,13 @@ public class ContentAddFormHandler extends AdminFormHandler {
     private void handleAddDocument(Request request, ContentSection parent) 
         throws ContentException, ContentSecurityException {
 
+        ContentManager   manager = AdminUtils.getContentManager();
         ContentDocument  doc;
         Map              params = request.getAllParameters();
         Iterator         iter = params.keySet().iterator();
         String           name;
 
-        doc = new ContentDocument(parent);
+        doc = new ContentDocument(manager, parent);
         doc.setName(request.getParameter("name"));
         doc.setComment(request.getParameter("comment"));
         while (iter.hasNext()) {

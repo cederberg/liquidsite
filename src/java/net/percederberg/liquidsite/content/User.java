@@ -94,7 +94,7 @@ public class User extends PersistentObject {
             list = UserPeer.doSelectByDomain(domainName, con);
             res = new User[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new User((UserData) list.get(i));
+                res[i] = new User(manager, (UserData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -141,7 +141,7 @@ public class User extends PersistentObject {
         if (data == null) {
             return null;
         } else {
-            return new User(data);
+            return new User(manager, data);
         }
     }
 
@@ -177,7 +177,7 @@ public class User extends PersistentObject {
                 user = UserPeer.doSelectByName(group.getDomainName(),
                                                name, 
                                                con);
-                res[i] = new User(user);
+                res[i] = new User(manager, user);
             }
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
@@ -191,11 +191,12 @@ public class User extends PersistentObject {
     /**
      * Creates a new user with default values.
      * 
+     * @param manager        the content manager to use 
      * @param domain         the domain, or null for a superuser
      * @param name           the user name
      */
-    public User(Domain domain, String name) {
-        super(false, true);
+    public User(ContentManager manager, Domain domain, String name) {
+        super(manager, false, true);
         this.data = new UserData();
         if (domain == null) {
             this.data.setString(UserData.DOMAIN, "");
@@ -208,10 +209,11 @@ public class User extends PersistentObject {
     /**
      * Creates a new user from a data object.
      * 
+     * @param manager        the content manager to use 
      * @param data           the user data object
      */
-    private User(UserData data) {
-        super(true, true);
+    private User(ContentManager manager, UserData data) {
+        super(manager, true, true);
         this.data = data;
     }
 
