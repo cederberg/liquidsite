@@ -650,6 +650,18 @@ public class Request {
         long getSize();
 
         /**
+         * Writes this file to a temporary file in the upload
+         * directory. After calling this method, no other methods in
+         * this interfaced should be called.
+         *
+         * @return the file created
+         *
+         * @throws IOException if the file parameter couldn't be
+         *             written
+         */
+        File write() throws IOException;
+
+        /**
          * Writes this file to the specified destination file. After
          * calling this method, no other methods in this interface
          * should be called.

@@ -21,10 +21,12 @@
 
 package net.percederberg.liquidsite.admin.view;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
@@ -39,6 +41,7 @@ import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 import net.percederberg.liquidsite.web.Request.FileParameter;
+import net.percederberg.liquidsite.web.RequestSession;
 
 /**
  * A helper class for the content view. This class contains methods
@@ -317,6 +320,7 @@ public class ContentView extends AdminView {
             publish = reference.hasPublishAccess(request.getUser()) &&
                       AdminUtils.isOnline(reference);
         }
+        findSessionFiles(request.getSession(), files);
 
         // Adjust for incoming request
         if (request.getParameter("name") != null) {
@@ -682,5 +686,38 @@ public class ContentView extends AdminView {
             res.add(map);
         }
         return res;
+    }
+
+    /**
+     * Finds all files in the session and adds them to a list. This
+     * method will not add the files themselves, but rather a hash map
+     * with selected attributes.
+     *
+     * @param session        the request session
+     * @param list           the list where files should be added
+     *
+     * @throws ContentException if no content manager was found
+     */
+    private void findSessionFiles(RequestSession session, ArrayList list)
+        throws ContentException {
+
+        Application  app = AdminUtils.getContentManager().getApplication();
+        Iterator     iter;
+        String       name;
+        File         file;
+        HashMap      map;
+
+        iter = session.getAllFiles().keySet().iterator();
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            file = session.getFile(name);
+            map = new HashMap();
+            map.put("id", "0");
+            map.put("name", name);
+            map.put("fileSize",
+                    AdminUtils.formatFileSize(file.length()));
+            map.put("mimeType", app.getServletContext().getMimeType(name));
+            list.add(map);
+        }
     }
 }

@@ -54,6 +54,16 @@ public class MultiPartRequest extends Request {
     private static final Log LOG = new Log(MultiPartRequest.class);
 
     /**
+     * The temporary upload directory.
+     */
+    private String uploadDir = "";
+
+    /**
+     * The maximum upload size.
+     */
+    private int uploadSize = 0;
+
+    /**
      * The normal query or post parameters.
      */
     private HashMap parameters = new HashMap();
@@ -79,8 +89,10 @@ public class MultiPartRequest extends Request {
         throws ServletException {
 
         super(request, response);
+        uploadDir = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
+        uploadSize = config.getInt(Configuration.UPLOAD_MAX_SIZE, 10000000);
         try {
-            parse(request, config);
+            parse(request);
         } catch (FileUploadException e) {
             LOG.error(e.getMessage());
             throw new ServletException(
@@ -92,26 +104,21 @@ public class MultiPartRequest extends Request {
      * Parses the incoming multi-part HTTP request.
      *
      * @param request        the HTTP request
-     * @param config         the configuration to use
      *
      * @throws FileUploadException if the request couldn't be parsed
      *             correctly
      */
-    private void parse(HttpServletRequest request, Configuration config)
+    private void parse(HttpServletRequest request)
         throws FileUploadException {
 
         DiskFileUpload  parser = new DiskFileUpload();
         List            list;
         FileItem        item;
-        String          dir;
-        int             size;
         String          value;
 
         // Create multi-part parser
-        dir = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
-        size = config.getInt(Configuration.UPLOAD_MAX_SIZE, 10000000);
-        parser.setRepositoryPath(dir);
-        parser.setSizeMax(size);
+        parser.setRepositoryPath(uploadDir);
+        parser.setSizeMax(uploadSize);
         parser.setSizeThreshold(4096);
 
         // Parse request
@@ -245,6 +252,28 @@ public class MultiPartRequest extends Request {
          */
         public long getSize() {
             return item.getSize();
+        }
+
+        /**
+         * Writes this file to a temporary file in the upload
+         * directory. After calling this method, only the dispose()
+         * method can be called.
+         *
+         * @return the file created
+         *
+         * @throws IOException if the file parameter couldn't be
+         *             written
+         */
+        public File write() throws IOException {
+            String  name = getName();
+            File    file;
+
+            file = new File(uploadDir, name);
+            for (int i = 1; file.exists(); i++) {
+                file = new File(uploadDir, i + "." + name);
+            }
+            write(file);
+            return file;
         }
 
         /**

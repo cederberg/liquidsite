@@ -37,6 +37,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.PersistentObject;
+import net.percederberg.liquidsite.web.FormHandlingException;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.Request;
 import net.percederberg.liquidsite.web.Request.FileParameter;
@@ -104,10 +105,11 @@ public class ContentAddFormHandler extends AdminFormHandler {
         throws FormValidationException {
 
         ContentEditFormHandler  edit = ContentEditFormHandler.getInstance();
-        String                  category = request.getParameter("category", "");
+        String                  category;
         FileParameter           param;
         String                  message;
 
+        category = request.getParameter("category", "");
         if (step == 1) {
             if (category.equals("")) {
                 message = "No content category specified";
@@ -150,15 +152,22 @@ public class ContentAddFormHandler extends AdminFormHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        String  category = request.getParameter("category", "");
-        Object  parent = AdminUtils.getReference(request);
+        ContentEditFormHandler  edit = ContentEditFormHandler.getInstance();
+        Object                  parent = AdminUtils.getReference(request);
+        String                  category;
 
+        category = request.getParameter("category", "");
         if (step == 1) {
             return 2;
         } else if (category.equals("section")) {
             handleAddSection(request, parent);
         } else if (category.equals("document")) {
-            handleAddDocument(request, (ContentSection) parent);
+            if (request.getParameter("action", "").equals("upload")) {
+                edit.handleSessionFileUpload(request);
+                return step;
+            } else {
+                handleAddDocument(request, (ContentSection) parent);
+            }
         } else if (category.equals("file")) {
             handleAddFile(request, (ContentDocument) parent);
         }
@@ -242,13 +251,14 @@ public class ContentAddFormHandler extends AdminFormHandler {
     private void handleAddDocument(Request request, ContentSection parent)
         throws ContentException, ContentSecurityException {
 
-        ContentManager   manager = AdminUtils.getContentManager();
-        ContentDocument  doc;
-        Map              params = request.getAllParameters();
-        Iterator         iter = params.keySet().iterator();
-        String           id;
-        int              type;
-        String           str;
+        ContentEditFormHandler  edit = ContentEditFormHandler.getInstance();
+        ContentManager          manager = AdminUtils.getContentManager();
+        ContentDocument         doc;
+        Map                     params = request.getAllParameters();
+        Iterator                iter = params.keySet().iterator();
+        String                  id;
+        int                     type;
+        String                  str;
 
         doc = new ContentDocument(manager, parent);
         doc.setName(request.getParameter("name"));
@@ -277,6 +287,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
         }
         doc.save(request.getUser());
         AdminView.CONTENT.setContentTreeFocus(request, doc);
+        edit.handleAddDocumentFiles(request, doc);
     }
 
     /**
@@ -312,5 +323,22 @@ public class ContentAddFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * This method removes any files attached to the user session. It
+     * also calls the superclass implementation to unlock any locked
+     * objects.
+     *
+     * @param request        the request object
+     *
+     * @throws FormHandlingException if an error was encountered
+     *             while processing the form
+     */
+    protected void workflowExited(Request request)
+        throws FormHandlingException {
+
+        super.workflowExited(request);
+        request.getSession().removeAllFiles();
     }
 }

@@ -16,6 +16,11 @@
         document.forms.item(0).submit();
     }
 
+    function doUpload() {
+        utilGetElement("action").value = "upload";
+        document.forms.item(0).submit();
+    }
+
     function doSave() {
         utilGetElement("action").value = "save";
         return true;
@@ -27,7 +32,8 @@
     }
     </script>
 
-    <form method="post" accept-charset="UTF-8" onsubmit="htmlEditSubmit()">
+    <form method="post" enctype="multipart/form-data" accept-charset="UTF-8"
+          onsubmit="htmlEditSubmit()">
 <#if startpage?has_content>
       <input type="hidden" name="liquidsite.startpage" value="${startpage}" />
 </#if>
@@ -43,7 +49,7 @@
       <input type="hidden" name="category" value="document" />
       <table class="form">
         <tr>
-          <td class="decoration" rowspan="10">
+          <td class="decoration" rowspan="15">
 <#if isadd>
             <img src="images/icons/48x48/edit.png" alt="Add" />
 <#else>
@@ -149,18 +155,25 @@
 </#if>
 <#list files as file>
               <tr>
-                <td>${file.name}</td>
+                <td>${file.name}
+  <#if file.id = "0">
+                (New)
+  </#if>
+                </td>
                 <td>${file.fileSize}</td>
                 <td>${file.mimeType}</td>
               </tr>
 </#list>
             </table>
-<!--
-            <button type="button" tabindex="103" onclick="return false;">
+
+            <p><strong>Add File:
+            <input type="file" tabindex="98"
+                   name="upload" value="" />
+            &nbsp;
+            <button type="button" tabindex="99" onclick="doUpload()">
               <img src="images/icons/24x24/add.png" />
-              Add File
-            </button>
--->
+              Add
+            </button></p>
           </td>
         </tr>
         <tr>

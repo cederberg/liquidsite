@@ -21,6 +21,7 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
@@ -31,13 +32,16 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
+import net.percederberg.liquidsite.web.FormHandlingException;
 import net.percederberg.liquidsite.web.FormValidationException;
 import net.percederberg.liquidsite.web.FormValidator;
 import net.percederberg.liquidsite.web.Request;
 import net.percederberg.liquidsite.web.Request.FileParameter;
+import net.percederberg.liquidsite.web.RequestSession;
 
 /**
  * The content edit request handler. This class handles the edit
@@ -158,13 +162,27 @@ public class ContentEditFormHandler extends AdminFormHandler {
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        String  category = request.getParameter("category", "");
-        String  message;
+        RequestSession  session = request.getSession();
+        String          category = request.getParameter("category", "");
+        FileParameter   param;
+        String          message;
 
         if (category.equals("section")) {
             section.validate(request);
         } else if (category.equals("document")) {
-            document.validate(request);
+            if (request.getParameter("action", "").equals("upload")) {
+                param = request.getFileParameter("upload");
+                if (param == null || param.getSize() <= 0) {
+                    message = "No file to add specified";
+                    throw new FormValidationException("upload", message);
+                } else if (session.getFile(param.getName()) != null) {
+                    message = "Another file named '" + param.getName() +
+                              "' already exists";
+                    throw new FormValidationException("upload", message);
+                }
+            } else {
+                document.validate(request);
+            }
         } else if (category.equals("file")) {
             SiteEditFormHandler.getInstance().validateStep(request, step);
         } else {
@@ -203,7 +221,12 @@ public class ContentEditFormHandler extends AdminFormHandler {
         if (ref instanceof ContentSection) {
             handleEditSection(request, (ContentSection) ref);
         } else if (ref instanceof ContentDocument) {
-            handleEditDocument(request, (ContentDocument) ref);
+            if (request.getParameter("action", "").equals("upload")) {
+                handleSessionFileUpload(request);
+                return step;
+            } else {
+                handleEditDocument(request, (ContentDocument) ref);
+            }
         } else if (ref instanceof ContentFile) {
             handleEditFile(request, (ContentFile) ref);
         } else {
@@ -345,6 +368,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
             doc.setOfflineDate(null);
         }
         doc.save(request.getUser());
+        handleAddDocumentFiles(request, doc);
     }
 
     /**
@@ -392,5 +416,91 @@ public class ContentEditFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles a session file upload. The file will be added to the
+     * request session.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the file couldn't be added to the
+     *             session correctly
+     */
+    public void handleSessionFileUpload(Request request)
+        throws ContentException {
+
+        FileParameter   param;
+        String          name;
+        File            file;
+
+        try {
+            param = request.getFileParameter("upload");
+            name = param.getName();
+            file = param.write();
+            request.getSession().addFile(name, file);
+        } catch (IOException e) {
+            throw new ContentException(e.getMessage());
+        }
+    }
+
+    /**
+     * Handles adding all session files to a document.
+     *
+     * @param request        the request object
+     * @param doc            the document content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     */
+    public void handleAddDocumentFiles(Request request, ContentDocument doc)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        RequestSession  session = request.getSession();
+        ContentFile     file;
+        Iterator        iter;
+        String          name;
+        File            data;
+        String          error;
+
+        iter = session.getAllFiles().keySet().iterator();
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            data = session.getFile(name);
+            file = new ContentFile(manager, doc, name);
+            file.setName(name);
+            file.setComment(doc.getComment());
+            file.setRevisionNumber(1);
+            file.setOnlineDate(new Date());
+            file.save(request.getUser());
+            try {
+                data.renameTo(file.getFile());
+            } catch (Exception e) {
+                error = "couldn't move session file " + data + " to " +
+                        file.getFile() + ": " + e.getMessage();
+                throw new ContentException(name);
+            }
+        }
+        session.removeAllFiles();
+    }
+
+    /**
+     * This method removes any files attached to the user session. It
+     * also calls the superclass implementation to unlock any locked
+     * objects.
+     *
+     * @param request        the request object
+     *
+     * @throws FormHandlingException if an error was encountered
+     *             while processing the form
+     */
+    protected void workflowExited(Request request)
+        throws FormHandlingException {
+
+        super.workflowExited(request);
+        request.getSession().removeAllFiles();
     }
 }
