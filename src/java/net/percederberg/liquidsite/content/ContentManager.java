@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Log;
@@ -52,10 +53,16 @@ public class ContentManager {
     private Application app;
 
     /**
-     * The domain cache. This is a list of all domains known to the 
-     * content manager.
+     * The domain cache. This is a map of all domains known to the 
+     * content manager. The domains are indexed by their names.
      */
-    private ArrayList domains = new ArrayList();
+    private HashMap domains = new HashMap();
+
+    /**
+     * The host cache. This is a map of all hosts known to the 
+     * content manager. The hosts are indexed by their names.
+     */
+    private HashMap hosts = new HashMap();
 
     /**
      * Returns the content manager currently in use.
@@ -84,12 +91,21 @@ public class ContentManager {
      *             initialized properly
      */
     public ContentManager(Application app) throws ContentException {
+        ArrayList  list;
+
         instance = this;
         this.app = app;
         if (app.isInstalled()) {
-            LOG.trace("reading content manager domain cache...");
-            domains = DomainPeer.doSelectAll();
-            LOG.trace("done reading content manager domain cache");
+            LOG.trace("initializing content manager cache...");
+            list = DomainPeer.doSelectAll();
+            for (int i = 0; i < list.size(); i++) {
+                addDomain((Domain) list.get(i));
+            }
+            list = HostPeer.doSelectAll();
+            for (int i = 0; i < list.size(); i++) {
+                addHost((Host) list.get(i));
+            }
+            LOG.trace("done initializing content manager cache");
         }
     }
 
@@ -109,10 +125,8 @@ public class ContentManager {
      * @param domain         the domain to add or update
      */
     public void addDomain(Domain domain) {
-        if (domains.contains(domain)) {
-            removeDomain(domain);
-        }
-        domains.add(domain);
+        removeDomain(domain);
+        domains.put(domain.getName(), domain);
     }
     
     /**
@@ -121,11 +135,27 @@ public class ContentManager {
      * @param domain         the domain to remove
      */
     public void removeDomain(Domain domain) {
-        int  index = domains.indexOf(domain);
-        
-        if (index >= 0) {
-            domains.remove(index);
-        }
+        domains.remove(domain.getName());
+    }
+
+    /**
+     * Adds a host to the host cache. This method also updates 
+     * existing entries for the same host.
+     * 
+     * @param host           the host to add or update
+     */
+    public void addHost(Host host) {
+        removeHost(host);
+        hosts.put(host.getName(), host);
+    }
+    
+    /**
+     * Removes a host from the host cache.
+     * 
+     * @param host           the host to remove
+     */
+    public void removeHost(Host host) {
+        hosts.remove(host.getName());
     }
 
     /**
@@ -136,6 +166,8 @@ public class ContentManager {
     public void close() {
         domains.clear();
         domains = null;
+        hosts.clear();
+        hosts = null;
         if (instance == this) {
             instance = null;
         }
