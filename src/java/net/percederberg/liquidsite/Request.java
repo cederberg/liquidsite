@@ -209,7 +209,9 @@ public class Request {
      */
     public void setUser(User user) {
         if (user == null) {
-            request.getSession().invalidate();
+            if (request.getSession(false) != null) {
+                request.getSession().invalidate();
+            }
         } else {
             setSessionAttribute("user", user);
         }
