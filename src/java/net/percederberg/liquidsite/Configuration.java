@@ -303,7 +303,7 @@ public class Configuration {
         String           message;
 
         try {
-            res = database.execute("config.list");
+            res = database.execute("config.select");
             for (int i = 0; i < res.getRowCount(); i++) {
                 name = res.getRow(i).getString("NAME");
                 value = res.getRow(i).getString("VALUE");
