@@ -49,11 +49,13 @@ class SiteEditFormHandler extends AdminFormHandler {
     }
 
     /**
-     * Displays a form for the specified workflow step. This method
-     * will NOT be called when returning to the start page.
+     * Displays a form for the specified workflow step. The special
+     * workflow step zero (0) is used for indicating display of the
+     * originating page outside the form workflow. Normally that 
+     * would cause a redirect.
      * 
      * @param request        the request object
-     * @param step           the workflow step
+     * @param step           the workflow step, or zero (0)
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
@@ -65,7 +67,9 @@ class SiteEditFormHandler extends AdminFormHandler {
 
         Object  ref = getReference(request);
 
-        if (ref instanceof ContentSite) {
+        if (step == 0) {
+            request.sendRedirect(getStartPage());
+        } else if (ref instanceof ContentSite) {
             SITE_VIEW.pageEditSite(request, (ContentSite) ref);
         } else if (ref instanceof ContentFolder) {
             SITE_VIEW.pageEditFolder(request, null, (ContentFolder) ref);

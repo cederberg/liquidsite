@@ -136,27 +136,25 @@ abstract class AdminFormHandler extends FormHandler {
     protected final void display(Request request, int step) 
         throws FormHandlingException {
 
-        if (step == 0) {
-            request.sendRedirect(startPage);
-        } else {
-            try {
-                displayStep(request, step);
-            } catch (ContentException e) {
-                LOG.error(e.getMessage());
-                throw new FormHandlingException(e);
-            } catch (ContentSecurityException e) {
-                LOG.warning(e.getMessage());
-                throw new FormHandlingException(e);
-            }
+        try {
+            displayStep(request, step);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw new FormHandlingException(e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            throw new FormHandlingException(e);
         }
     }
 
     /**
-     * Displays a form for the specified workflow step. This method
-     * will NOT be called when returning to the start page.
+     * Displays a form for the specified workflow step. The special
+     * workflow step zero (0) is used for indicating display of the
+     * originating page outside the form workflow. Normally that 
+     * would cause a redirect.
      * 
      * @param request        the request object
-     * @param step           the workflow step
+     * @param step           the workflow step, or zero (0)
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
