@@ -209,7 +209,7 @@ public class Permission extends PersistentObject {
     /**
      * Checks if this permission equals another object. This method 
      * will only return true if the other object is a permission with 
-     * the same content identifier.
+     * the same domain, content identifier, user and group.
      * 
      * @param obj            the object to compare with
      * 
