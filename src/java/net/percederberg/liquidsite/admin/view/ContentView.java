@@ -394,6 +394,7 @@ public class ContentView extends AdminView {
     public void viewEditFile(Request request, PersistentObject reference)
         throws ContentException {
 
+        Application    app = AdminUtils.getApplication();
         ContentFile    file;
         String         name;
         String         upload = "";
@@ -407,7 +408,7 @@ public class ContentView extends AdminView {
         if (reference instanceof ContentFile) {
             file = (ContentFile) reference;
             name = file.getName();
-            content = file.getTextContent();
+            content = file.getTextContent(app.getServletContext());
             if (file.getRevisionNumber() == 0) {
                 comment = file.getComment();
             } else {
@@ -909,6 +910,7 @@ public class ContentView extends AdminView {
     private ArrayList findDocumentFiles(User user, Content content)
         throws ContentException {
 
+        Application     app = AdminUtils.getApplication();
         ContentManager  manager = AdminUtils.getContentManager();
         ArrayList       res = new ArrayList();
         Content[]       children;
@@ -925,7 +927,7 @@ public class ContentView extends AdminView {
             map.put("name", file.getName());
             map.put("fileSize",
                     AdminUtils.formatFileSize(file.getFile().length()));
-            map.put("mimeType", file.getMimeType());
+            map.put("mimeType", file.getMimeType(app.getServletContext()));
             res.add(map);
         }
         return res;
@@ -938,13 +940,11 @@ public class ContentView extends AdminView {
      *
      * @param session        the request session
      * @param list           the list where files should be added
-     *
-     * @throws ContentException if no content manager was found
      */
-    private void findSessionFiles(RequestSession session, ArrayList list)
-        throws ContentException {
+    private void findSessionFiles(RequestSession session,
+                                  ArrayList list) {
 
-        Application  app = AdminUtils.getContentManager().getApplication();
+        Application  app = AdminUtils.getApplication();
         Iterator     iter;
         String       name;
         File         file;
@@ -959,7 +959,8 @@ public class ContentView extends AdminView {
             map.put("name", name);
             map.put("fileSize",
                     AdminUtils.formatFileSize(file.length()));
-            map.put("mimeType", ContentFile.getMimeType(app, name));
+            map.put("mimeType",
+                    ContentFile.getMimeType(app.getServletContext(), name));
             list.add(map);
         }
     }

@@ -21,13 +21,13 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.Application;
-
+import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -50,9 +50,14 @@ public class ContentManager {
     private static final Log LOG = new Log(ContentManager.class);
 
     /**
-     * The application context.
+     * The database connector.
      */
-    private Application app;
+    private DatabaseConnector db;
+
+    /**
+     * The content file base directory.
+     */
+    private File baseDir;
 
     /**
      * The admin flag. When this flag is set, the content manager may
@@ -62,19 +67,35 @@ public class ContentManager {
     private boolean admin;
 
     /**
-     * Creates a new content manager. All new content handling
-     * requests will pass through the newly created content manager.
-     * If the admin content manager flag is set, the content manager
-     * will NOT cache content objects and the latest revision
-     * returned will always be a work revision if one is available.
+     * Creates a new content manager. If the admin content manager
+     * flag is set, the content manager will NOT cache content
+     * objects and the latest revision returned will always be a work
+     * revision if one is available.
      *
-     *
-     * @param app            the application context
+     * @param db             the database connector
+     * @param baseDir        the content base directory
      * @param admin          the admin content manager flag
      */
-    public ContentManager(Application app, boolean admin) {
-        this.app = app;
+    public ContentManager(DatabaseConnector db,
+                          File baseDir,
+                          boolean admin) {
+
+        this.db = db;
+        this.baseDir = baseDir;
         this.admin = admin;
+    }
+
+    /**
+     * Creates a new content manager. If the admin content manager
+     * flag is set, the content manager will NOT cache content
+     * objects and the latest revision returned will always be a work
+     * revision if one is available.
+     *
+     * @param manager        the content manager to modify
+     * @param admin          the admin content manager flag
+     */
+    public ContentManager(ContentManager manager, boolean admin) {
+        this(manager.getDatabase(), manager.getBaseDir(), admin);
     }
 
     /**
@@ -146,12 +167,21 @@ public class ContentManager {
     }
 
     /**
-     * Returns the application context for this content manager.
+     * Returns the database connector for this content manager.
      *
-     * @return the application context for this content manager
+     * @return the database connector for this content manager.
      */
-    public Application getApplication() {
-        return app;
+    public DatabaseConnector getDatabase() {
+        return db;
+    }
+
+    /**
+     * Returns the content base directory.
+     *
+     * @return the content base directory.
+     */
+    public File getBaseDir() {
+        return baseDir;
     }
 
     /**

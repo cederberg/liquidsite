@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.admin.view;
 import java.util.Date;
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
@@ -335,6 +336,7 @@ public class ScriptView {
     private String getFileProperties(ContentFile file)
         throws ContentException {
 
+        Application   app = AdminUtils.getApplication();
         StringBuffer  buffer = new StringBuffer();
         String        str;
 
@@ -342,7 +344,7 @@ public class ScriptView {
         buffer.append(AdminUtils.formatFileSize(file.getFile().length()));
         buffer.append("');\n");
         buffer.append("objectAddProperty('Type', ");
-        str = file.getMimeType();
+        str = file.getMimeType(app.getServletContext());
         if (str == null) {
             buffer.append("'Unknown'");
         } else {

@@ -27,7 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Application;
+import javax.servlet.ServletContext;
 
 import org.liquidsite.core.data.ContentData;
 import org.liquidsite.core.data.DataSource;
@@ -47,16 +47,18 @@ public class ContentFile extends Content {
 
     /**
      * Returns the MIME type of a file. The MIME types are configured
-     * in the application servlet context.
+     * in the servlet context.
      *
-     * @param app            the application object
+     * @param context        the servlet context
      * @param fileName       the file name
      *
      * @return the MIME type of the file, or
      *         a default binary MIME type if unknown
      */
-    public static String getMimeType(Application app, String fileName) {
-        String  type = app.getServletContext().getMimeType(fileName);
+    public static String getMimeType(ServletContext context,
+                                     String fileName) {
+
+        String  type = context.getMimeType(fileName);
 
         return (type == null) ? "application/octet-stream" : type;
     }
@@ -198,19 +200,22 @@ public class ContentFile extends Content {
 
     /**
      * Returns the MIME type of the file. The MIME types are
-     * configured in the application servlet context.
+     * configured in the servlet context.
+     *
+     * @param context        the servlet context
      *
      * @return the MIME type of the file, or
      *         a default binary MIME type if unknown
      */
-    public String getMimeType() {
-        return getMimeType(getContentManager().getApplication(),
-                           getFileName());
+    public String getMimeType(ServletContext context) {
+        return getMimeType(context, getFileName());
     }
 
     /**
      * Returns the text content of a file. If the file isn't a text
      * file or if the file size is too big, null will be returned.
+     *
+     * @param context        the servlet context (for the MIME type)
      *
      * @return the text file contents, or
      *         null for non-text files
@@ -218,9 +223,11 @@ public class ContentFile extends Content {
      * @throws ContentException if the file data couldn't be read
      *             properly
      */
-    public String getTextContent() throws ContentException {
+    public String getTextContent(ServletContext context)
+        throws ContentException {
+
         File        file = getFile();
-        String      mimeType = getMimeType();
+        String      mimeType = getMimeType(context);
         FileReader  reader;
         char[]      buffer;
         int         length;

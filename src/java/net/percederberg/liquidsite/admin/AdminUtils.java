@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Configuration;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -54,9 +55,9 @@ public class AdminUtils {
     private static final Log LOG = new Log(AdminUtils.class);
 
     /**
-     * The configuration used for administration.
+     * The application used.
      */
-    private static Configuration config = null;
+    private static Application application = null;
 
     /**
      * The content manager used for administration.
@@ -64,21 +65,21 @@ public class AdminUtils {
     private static ContentManager manager = null;
 
     /**
-     * Returns the configuration currently used
+     * Returns the application currently used
      *
-     * @return the configuraiton currently used
+     * @return the application currently used
      */
-    public static Configuration getConfiguration() {
-        return config;
+    public static Application getApplication() {
+        return application;
     }
 
     /**
-     * Sets the configuration currently used.
+     * Sets the application currently used.
      *
-     * @param config         the configuration to use
+     * @param application    the application to use
      */
-    static void setConfiguration(Configuration config) {
-        AdminUtils.config = config;
+    static void setApplication(Application application) {
+        AdminUtils.application = application;
     }
 
     /**
@@ -113,9 +114,11 @@ public class AdminUtils {
      *         null if not readable
      */
     public static File getBackupDir() {
+        Configuration  config;
         String         basedir;
         File           dir;
 
+        config = getApplication().getConfig();
         basedir = config.get(Configuration.FILE_DIRECTORY, null);
         if (basedir == null) {
             LOG.error("application base file directory not configured");
@@ -144,9 +147,11 @@ public class AdminUtils {
      *         null if not configured or readable
      */
     public static File getStatisticsDir(Domain domain) {
-        String  dir;
-        File    file;
+        Configuration  config;
+        String         dir;
+        File           file;
 
+        config = getApplication().getConfig();
         dir = config.get(Configuration.STATS_DIRECTORY, null);
         if (dir == null) {
             return null;

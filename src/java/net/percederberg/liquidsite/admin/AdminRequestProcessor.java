@@ -74,8 +74,9 @@ public class AdminRequestProcessor extends RequestProcessor {
      * @param app            the application context
      */
     public AdminRequestProcessor(Application app) {
-        super(new ContentManager(app, true), app.getBaseDir());
-        AdminUtils.setConfiguration(app.getConfig());
+        super(new ContentManager(app.getContentManager(), true),
+              app.getBaseDir());
+        AdminUtils.setApplication(app);
         AdminUtils.setContentManager(getContentManager());
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());

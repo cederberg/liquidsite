@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.template;
 
+import javax.servlet.ServletContext;
+
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 
@@ -74,6 +76,9 @@ public class DocumentFileBean extends ContentBean {
      * @return the file MIME type
      */
     public String getMimeType() {
-        return ((ContentFile) getContent()).getMimeType();
+        ServletContext  context;
+
+        context = getContext().getRequest().getServletContext();
+        return ((ContentFile) getContent()).getMimeType(context);
     }
 }

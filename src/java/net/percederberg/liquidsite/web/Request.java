@@ -91,6 +91,11 @@ public class Request {
     private static final int REDIRECT_RESPONSE = 4;
 
     /**
+     * The HTTP servlet context.
+     */
+    private ServletContext context;
+
+    /**
      * The HTTP request.
      */
     private HttpServletRequest request;
@@ -134,12 +139,15 @@ public class Request {
     /**
      * Creates a new request.
      *
+     * @param context        the servlet context
      * @param request        the HTTP request
      * @param response       the HTTP response
      */
-    public Request(HttpServletRequest request,
+    public Request(ServletContext context,
+                   HttpServletRequest request,
                    HttpServletResponse response) {
 
+        this.context = context;
         this.request = request;
         this.response = response;
         if (request.getCharacterEncoding() == null) {
@@ -212,6 +220,15 @@ public class Request {
         } else {
             return request.getContextPath() + path;
         }
+    }
+
+    /**
+     * Returns the servlet context.
+     *
+     * @return the servlet context
+     */
+    public ServletContext getServletContext() {
+        return context;
     }
 
     /**

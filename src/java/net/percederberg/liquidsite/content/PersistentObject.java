@@ -26,7 +26,6 @@ import java.util.Iterator;
 
 import org.liquidsite.core.data.DataObjectException;
 import org.liquidsite.core.data.DataSource;
-import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -54,29 +53,6 @@ public abstract class PersistentObject {
     private boolean persistent = false;
 
     /**
-     * Returns the content manager database connector.
-     *
-     * @param manager        the content manager to use
-     *
-     * @return the content manager database connector
-     *
-     * @throws ContentException if no database connector was
-     *             available
-     */
-    static DatabaseConnector getDatabase(ContentManager manager)
-        throws ContentException {
-
-        DatabaseConnector  db;
-
-        db = manager.getApplication().getDatabase();
-        if (db == null) {
-            LOG.error("no database connector available");
-            throw new ContentException("no database connector available");
-        }
-        return db;
-    }
-
-    /**
      * Returns a data source with an open connection.
      *
      * @param manager        the content manager to use
@@ -92,7 +68,7 @@ public abstract class PersistentObject {
         DataSource  src;
 
         try {
-            src = new DataSource(getDatabase(manager));
+            src = new DataSource(manager.getDatabase());
             src.open();
             return src;
         } catch (DataObjectException e) {

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -486,6 +487,7 @@ public class SiteView extends AdminView {
     public void viewEditFile(Request request, Content reference)
         throws ContentException {
 
+        Application    app = AdminUtils.getApplication();
         ContentFile    file;
         ContentSite    site;
         String         name;
@@ -506,7 +508,7 @@ public class SiteView extends AdminView {
             parent = file.getParentId();
             site = findSite(file);
             folders = findFolders(request.getUser(), site, null, true);
-            content = file.getTextContent();
+            content = file.getTextContent(app.getServletContext());
             if (file.getRevisionNumber() == 0) {
                 comment = file.getComment();
             } else {

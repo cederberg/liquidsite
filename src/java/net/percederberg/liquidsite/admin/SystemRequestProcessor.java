@@ -145,17 +145,10 @@ class SystemRequestProcessor {
      * @param request        the request object
      */
     private void handleRestart(Request request) {
-        try {
-            AdminUtils.getContentManager().getApplication().restart();
-            AdminView.BASE.viewInfo(request,
-                                    "System restarted successfully",
-                                    "system.html");
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            AdminView.BASE.viewError(request,
-                                     "Failed to restart: " + e.getMessage(),
-                                     "system.html");
-        }
+        AdminUtils.getApplication().restart();
+        AdminView.BASE.viewInfo(request,
+                                "System restarted successfully",
+                                "system.html");
     }
 
     /**

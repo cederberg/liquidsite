@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.Configuration;
-
 import org.liquidsite.core.data.DataObjectException;
 import org.liquidsite.core.data.DataSource;
 import org.liquidsite.core.data.DomainData;
@@ -281,17 +279,14 @@ public class Domain extends PersistentObject implements Comparable {
      *             found or couldn't be created
      */
     public File getDirectory() throws ContentException {
-        Configuration  config;
-        String         basedir;
-        File           dir;
+        File  dir;
 
-        config = getContentManager().getApplication().getConfig();
-        basedir = config.get(Configuration.FILE_DIRECTORY, null);
-        if (basedir == null) {
+        dir = getContentManager().getBaseDir();
+        if (dir == null) {
             throw new ContentException(
                 "application base file directory not configured");
         }
-        dir = new File(basedir, getName());
+        dir = new File(dir, getName());
         try {
             if (!dir.exists() && !dir.mkdirs()) {
                 throw new ContentException(

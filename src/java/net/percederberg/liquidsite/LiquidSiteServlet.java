@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.liquidsite.util.log.Log;
-
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.install.InstallRequestProcessor;
 import net.percederberg.liquidsite.template.TemplateException;
@@ -43,6 +41,7 @@ import net.percederberg.liquidsite.web.Request;
 import org.liquidsite.util.db.DatabaseConnectionException;
 import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.db.MySQLDatabaseConnector;
+import org.liquidsite.util.log.Log;
 import org.liquidsite.util.mail.MailException;
 import org.liquidsite.util.mail.MailQueue;
 
@@ -135,7 +134,7 @@ public class LiquidSiteServlet extends HttpServlet
      */
     public void startup() {
         int     errors = 0;
-        File    configDir;
+        File    dir;
         URL     url;
         String  host;
         String  name;
@@ -145,10 +144,10 @@ public class LiquidSiteServlet extends HttpServlet
         int     size;
 
         // Initialize configuration
-        configDir = new File(getBaseDir(), "WEB-INF");
-        config = new Configuration(new File(configDir, "config.properties"));
+        dir = new File(getBaseDir(), "WEB-INF");
+        config = new Configuration(new File(dir, "config.properties"));
         try {
-            Log.initialize(new File(configDir, "logging.properties"));
+            Log.initialize(new File(dir, "logging.properties"));
         } catch (IOException e) {
             errors++;
             LOG.error("couldn't read logging configuration: " +
@@ -180,7 +179,7 @@ public class LiquidSiteServlet extends HttpServlet
         database = new MySQLDatabaseConnector(host, name, user, password);
         database.setPoolSize(size);
         try {
-            database.loadFunctions(new File(configDir, "database.properties"));
+            database.loadFunctions(new File(dir, "database.properties"));
         } catch (IOException e) {
             errors++;
             LOG.error("couldn't read database configuration: " +
@@ -208,7 +207,9 @@ public class LiquidSiteServlet extends HttpServlet
         MailQueue.getInstance().setFooter(str);
 
         // Initialize content and template managers
-        contentManager = new ContentManager(this, false);
+        str = config.get(Configuration.FILE_DIRECTORY, null);
+        dir = (str == null) ? null : new File(str);
+        contentManager = new ContentManager(database, dir, false);
         try {
             TemplateManager.initialize(this);
         } catch (TemplateException e) {
@@ -331,7 +332,8 @@ public class LiquidSiteServlet extends HttpServlet
         // Create request object
         if (contentType != null && contentType.startsWith("multipart")) {
             try {
-                r = new MultiPartRequest(request,
+                r = new MultiPartRequest(getServletContext(),
+                                         request,
                                          response,
                                          getConfig());
             } catch (ServletException e) {
@@ -342,7 +344,7 @@ public class LiquidSiteServlet extends HttpServlet
                 return;
             }
         } else {
-            r = new Request(request, response);
+            r = new Request(getServletContext(), request, response);
         }
 
         // TODO: handle offline state gracefully

@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,6 +78,7 @@ public class MultiPartRequest extends Request {
     /**
      * Creates a new multi-part request.
      *
+     * @param context        the servlet context
      * @param request        the HTTP request
      * @param response       the HTTP response
      * @param config         the configuration to use
@@ -84,12 +86,13 @@ public class MultiPartRequest extends Request {
      * @throws ServletException if the request couldn't be parsed
      *             correctly
      */
-    public MultiPartRequest(HttpServletRequest request,
+    public MultiPartRequest(ServletContext context,
+                            HttpServletRequest request,
                             HttpServletResponse response,
                             Configuration config)
         throws ServletException {
 
-        super(request, response);
+        super(context, request, response);
         uploadDir = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
         uploadSize = config.getInt(Configuration.UPLOAD_MAX_SIZE, 10000000);
         try {
