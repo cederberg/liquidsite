@@ -238,6 +238,18 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
+     * Returns the hosts registered to this domain object. 
+     * 
+     * @return an array of hosts in this domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Host[] getHosts() throws ContentException {
+        return Host.findByDomain(this);
+    }
+
+    /**
      * Checks the read access for a user. In the absence of 
      * permissions, false is returned.
      *
