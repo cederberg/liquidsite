@@ -396,7 +396,7 @@ public class DatabaseConnection {
                 if (line.equals("") || line.startsWith("--")) {
                     // Do nothing
                 } else if (line.endsWith(";")) {
-                    sql.append(line.substring(line.length() - 1));
+                    sql.append(line.substring(0, line.length() - 1));
                     executeSql(sql.toString());
                     sql.setLength(0);
                 } else {
