@@ -72,6 +72,8 @@ public class HomeView {
      * @param request        the request object
      */
     public void viewEditPassword(Request request) {
+        request.setAttribute("passwordSuggestion",
+                             User.generatePassword());
         AdminUtils.sendTemplate(request, "admin/edit-password.ftl");
     }
 }

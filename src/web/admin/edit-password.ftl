@@ -47,6 +47,8 @@
           <td class="field">
             <input type="password" tabindex="2" size="20"
                    name="password1" />
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Suggestion: <strong>${passwordSuggestion?html}</strong>
             <p>Enter the new password.</p>
           </td>
         </tr>
