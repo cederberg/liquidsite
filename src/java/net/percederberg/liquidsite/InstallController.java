@@ -277,7 +277,7 @@ public class InstallController extends Controller {
         // check database info
         checkDbInfo();
 
-        if (! errorTech) {
+        if (!errorTech) {
             // if error, get the databases information,  
             // if not error, get the list of users
             if (error) {
@@ -510,7 +510,7 @@ public class InstallController extends Controller {
         } else {
             boolean contained = false;
 
-            for (int i=0; i<dbsInfo.size() && !contained; i++) {
+            for (int i = 0; i < dbsInfo.size() && !contained; i++) {
                 if (dbsel.equals((String) 
                     ((Hashtable) dbsInfo.get(i)).get("name"))) {
                     contained = true;
@@ -646,8 +646,7 @@ public class InstallController extends Controller {
      * Creates a connector to the database.
      *
      * @param host           the host name
-     * @param database       the database name
-     * @param user           the user name
+     * @param username       the user name
      * @param password       the user password
      */
     private void createConnector(String host, 
@@ -756,7 +755,6 @@ public class InstallController extends Controller {
      * beginning with "LS_".
      * 
      * @param db             a database name
-     * @param c              a connection
      * 
      * @return a hash table with the database information
      * 
@@ -798,7 +796,7 @@ public class InstallController extends Controller {
             // check for conflicts in table names
             if (type.equals("normal")) {
                 conflict = false;
-                for (int i=0; i<noTables && !conflict; i++) {
+                for (int i = 0; i < noTables && !conflict; i++) {
                     if (((String) tables.get(i)).startsWith("LS_")) {
                         type = "conflict";
                         conflict = true;
