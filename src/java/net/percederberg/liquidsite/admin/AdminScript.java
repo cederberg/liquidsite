@@ -27,6 +27,7 @@ import java.util.Date;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
@@ -591,10 +592,16 @@ class AdminScript {
      * @param content        the content object
      * 
      * @return the JavaScript representation of a content URL
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    private String getContentUrl(Content content) {
+    private String getContentUrl(Content content) throws ContentException {
         if (content instanceof Site) {
             return content.toString();
+        } else if (content instanceof FileContent) {
+            return content.getParent().toString() +  
+                   content.toString(); 
         } else {
             return "N/A";
         }
