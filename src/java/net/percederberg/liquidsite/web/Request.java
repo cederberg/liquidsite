@@ -498,12 +498,6 @@ public class Request {
     public void commit(ServletContext context)
         throws IOException, ServletException {
 
-        if (responseType == FILE_RESPONSE) {
-            response.setHeader("Cache-Control", "private");
-        } else {
-            response.setHeader("Cache-Control", "no-cache");
-            response.setHeader("Expires", "-1");
-        }
         switch (responseType) {
         case DATA_RESPONSE:
             commitData();
@@ -524,6 +518,33 @@ public class Request {
     }
 
     /**
+     * Sets the dynamic HTTP response headers. The current system time
+     * will be used as the last modification time.
+     */
+    private void commitDynamicHeaders() {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Expires", "-1");
+        response.setDateHeader("Last-Modified", System.currentTimeMillis());
+    }
+
+    /**
+     * Sets the static HTTP response headers. The specified system
+     * time will be used as the last modification time.
+     *
+     * @param lastModified   the last modification time, or
+     *                       zero (0) for the current system time
+     */
+    private void commitStaticHeaders(long lastModified) {
+        response.setHeader("Cache-Control", "private");
+        if (lastModified > 0) {
+            response.setDateHeader("Last-Modified", lastModified);
+        } else {
+            response.setDateHeader("Last-Modified",
+                                   System.currentTimeMillis());
+        }
+    }
+
+    /**
      * Sends the data response to the underlying HTTP response object.
      *
      * @throws IOException if an IO error occured while attempting to
@@ -533,6 +554,7 @@ public class Request {
         PrintWriter  out;
 
         LOG.debug("Handling request for " + this + " with string data");
+        commitDynamicHeaders();
         if (responseMimeType.indexOf("charset") > 0) {
             response.setContentType(responseMimeType);
         } else {
@@ -561,6 +583,7 @@ public class Request {
         LOG.debug("Handling request for " + this + " with file " +
                   responseData);
         file = new File(responseData);
+        commitStaticHeaders(file.lastModified());
         try {
             input = new FileInputStream(file);
         } catch (IOException e) {
@@ -590,6 +613,7 @@ public class Request {
 
         LOG.debug("Handling request for " + this + " with template " +
                   responseData);
+        commitDynamicHeaders();
         response.setContentType("text/html; charset=UTF-8");
         out = response.getWriter();
         try {
@@ -612,6 +636,7 @@ public class Request {
      */
     private void commitRedirect() throws IOException {
         LOG.debug("Redirecting request for " + this + " to " + responseData);
+        commitDynamicHeaders();
         response.sendRedirect(responseData);
     }
 
