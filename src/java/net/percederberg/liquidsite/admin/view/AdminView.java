@@ -34,6 +34,8 @@ import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Group;
+import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -104,6 +106,32 @@ public class AdminView {
         request.setAttribute("error", message);
         request.setAttribute("page", page);
         request.sendTemplate("admin/error.ftl");
+    }
+
+    /**
+     * Finds all domains readable by a user. The domains will not be
+     * added directly to the result list, but rather only the domain 
+     * names.
+     *
+     * @param user           the user
+     *
+     * @return a list of domains found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected ArrayList findDomains(User user)
+        throws ContentException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ArrayList       result = new ArrayList();
+        Domain[]        domains;
+
+        domains =  manager.getDomains(user);
+        for (int i = 0; i < domains.length; i++) {
+            result.add(domains[i].getName());
+        }
+        return result;
     }
 
     /**
@@ -264,7 +292,7 @@ public class AdminView {
      * Finds all content sections in a domain. The sections will not
      * be added directly to the result list, but rather a simplified
      * hash map containing only the id and name of each section will 
-     * be added.  
+     * be added.
      * 
      * @param user           the user
      * @param domain         the domain
@@ -336,5 +364,38 @@ public class AdminView {
                 findSections(user, baseName, children[i], exclude, result);
             }
         }
+    }
+
+    /**
+     * Finds the matching groups in a domain. The groups will not be
+     * added directly to the result list, but rather a simplified
+     * hash map containing only certain properties will be added.
+     *
+     * @param domain         the domain
+     * @param filter         the search filter (empty for all)
+     *
+     * @return the list of groups found (in maps)
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected ArrayList findGroups(Domain domain, String filter)
+        throws ContentException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        ArrayList       result = new ArrayList();
+        Group[]         groups;
+        HashMap         map;
+
+        groups = manager.getGroups(domain, filter);
+        for (int i = 0; i < groups.length; i++) {
+            map = new HashMap(4);
+            map.put("name", groups[i].getName());
+            map.put("description", groups[i].getDescription());
+            map.put("comment", groups[i].getComment());
+            map.put("members", String.valueOf(groups[i].getUserCount()));
+            result.add(map);
+        }
+        return result;
     }
 }

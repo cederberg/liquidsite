@@ -568,7 +568,6 @@ public class ContentManager {
      * with matching names will be returned. Also, only a limited 
      * interval of the matching users will be returned.
      *
-     * @param user           the user requesting the list
      * @param domain         the domain, or null for superusers
      * @param filter         the user search filter (empty for all)
      * @param startPos       the list interval start position
@@ -578,31 +577,13 @@ public class ContentManager {
      *
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user isn't allowed to
-     *             list users in the domain
      */
-    public User[] getUsers(User user,
-                           Domain domain,
+    public User[] getUsers(Domain domain,
                            String filter,
                            int startPos,
                            int maxLength)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
-        // Check permission to list users
-        if (user == null) {
-            throw new ContentSecurityException(
-                "<anonymous> cannot list users");
-        } else if (domain == null) {
-            if (!user.isSuperUser()) {
-                throw new ContentSecurityException(
-                    user + " cannot list superusers");
-            }
-        } else if (!domain.hasAdminAccess(user)) {
-            throw new ContentSecurityException(
-                user + " cannot list users in domain " + domain);
-        }
-
-        // Find user list
         return User.findByDomain(this, domain, filter, startPos, maxLength);
     }
 
@@ -628,37 +609,17 @@ public class ContentManager {
      * Returns an array of groups in a specified domain. Only groups
      * with matching names will be returned.
      *
-     * @param user           the user requesting the list
-     * @param domain         the domain, or null for superusers
+     * @param domain         the domain
      * @param filter         the search filter (empty for all)
      *
      * @return an array of matching groups in the domain
      *
      * @throws ContentException if the database couldn't be accessed 
      *             properly
-     * @throws ContentSecurityException if the user isn't allowed to
-     *             list groups in the domain
      */
-    public Group[] getGroups(User user,
-                             Domain domain,
-                             String filter)
-        throws ContentException, ContentSecurityException {
+    public Group[] getGroups(Domain domain, String filter)
+        throws ContentException {
 
-        // Check permission to list groups
-        if (user == null) {
-            throw new ContentSecurityException(
-                "<anonymous> cannot list groups");
-        } else if (domain == null) {
-            if (!user.isSuperUser()) {
-                throw new ContentSecurityException(
-                    user + " cannot list superuser groups");
-            }
-        } else if (!domain.hasAdminAccess(user)) {
-            throw new ContentSecurityException(
-                user + " cannot list groups in domain " + domain);
-        }
-
-        // Find group list
         if (domain == null) {
             return new Group[0];
         } else {

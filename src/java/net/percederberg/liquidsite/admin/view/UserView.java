@@ -98,11 +98,11 @@ public class UserView extends AdminView {
         str = request.getParameter("type", str);
         if (!str.equals("group")) {
             request.setSessionAttribute("users.list.type", "user");
-            users = findUsers(user, domain, filter, page);
+            users = findUsers(domain, filter, page);
             count = manager.getUserCount(domain, filter);
         } else {
             request.setSessionAttribute("users.list.type", "group");
-            groups = findGroups(user, domain, filter);
+            groups = findGroups(domain, filter);
             count = manager.getUserCount(domain, "");
         }
 
@@ -230,7 +230,7 @@ public class UserView extends AdminView {
         request.setAttribute("email", str);
         str = request.getParameter("comment", defaultComment); 
         request.setAttribute("comment", str);
-        list = findGroups(request.getUser(), domain, "");
+        list = findGroups(domain, "");
         request.setAttribute("groups", list);
         if (request.getParameter("comment") == null) {
             if (user != null) {
@@ -295,37 +295,10 @@ public class UserView extends AdminView {
     }
 
     /**
-     * Finds all domains readable by a user. The domains will not be
-     * added directly to the result list, but rather the domain 
-     * names.
-     *
-     * @param user           the user
-     *
-     * @return a list of domains found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private ArrayList findDomains(User user)
-        throws ContentException {
-
-        ContentManager  manager = AdminUtils.getContentManager();
-        ArrayList       result = new ArrayList();
-        Domain[]        domains;
-
-        domains =  manager.getDomains(user);
-        for (int i = 0; i < domains.length; i++) {
-            result.add(domains[i].getName());
-        }
-        return result;
-    }
-
-    /**
      * Finds the matching users in a domain. The users will not be
      * added directly to the result list, but rather a simplified
      * hash map containing only certain properties will be added.
      *
-     * @param user           the user performing the operation
      * @param domain         the domain
      * @param filter         the search filter (empty for all)
      * @param page           the page to return (>= 1)
@@ -334,14 +307,9 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user isn't allowed to
-     *             list users in the domain
      */
-    private ArrayList findUsers(User user, 
-                                Domain domain, 
-                                String filter, 
-                                int page)
-        throws ContentException, ContentSecurityException {
+    private ArrayList findUsers(Domain domain, String filter, int page)
+        throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         ArrayList       result = new ArrayList();
@@ -349,7 +317,7 @@ public class UserView extends AdminView {
         HashMap         map;
         int             start = (page - 1) * PAGE_SIZE;
 
-        users = manager.getUsers(user, domain, filter, start, PAGE_SIZE);
+        users = manager.getUsers(domain, filter, start, PAGE_SIZE);
         for (int i = 0; i < users.length; i++) {
             map = new HashMap(5);
             map.put("name", users[i].getName());
@@ -373,12 +341,10 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user isn't allowed to
-     *             list users in the domain
      */
     private ArrayList findUsers(Group group, 
                                 int page)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
         ArrayList  result = new ArrayList();
         User[]     users;
@@ -392,44 +358,6 @@ public class UserView extends AdminView {
             map.put("realName", users[i].getRealName());
             map.put("email", users[i].getEmail());
             map.put("comment", users[i].getComment());
-            result.add(map);
-        }
-        return result;
-    }
-
-    /**
-     * Finds the matching groups in a domain. The groups will not be
-     * added directly to the result list, but rather a simplified
-     * hash map containing only certain properties will be added.
-     *
-     * @param user           the user performing the operation
-     * @param domain         the domain
-     * @param filter         the search filter (empty for all)
-     *
-     * @return the list of groups found (in maps)
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user isn't allowed to
-     *             list users in the domain
-     */
-    private ArrayList findGroups(User user, 
-                                 Domain domain, 
-                                 String filter)
-        throws ContentException, ContentSecurityException {
-
-        ContentManager  manager = AdminUtils.getContentManager();
-        ArrayList       result = new ArrayList();
-        Group[]         groups;
-        HashMap         map;
-
-        groups = manager.getGroups(user, domain, filter);
-        for (int i = 0; i < groups.length; i++) {
-            map = new HashMap(4);
-            map.put("name", groups[i].getName());
-            map.put("description", groups[i].getDescription());
-            map.put("comment", groups[i].getComment());
-            map.put("members", String.valueOf(groups[i].getUserCount()));
             result.add(map);
         }
         return result;
