@@ -357,6 +357,10 @@ class AdminScript {
                     buffer.append("objectAddNewButton('add-site.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
+                } else if (content instanceof ContentTemplate) {
+                    buffer.append("objectAddNewButton('add-site.html");
+                    buffer.append(getLinkParameters(content));
+                    buffer.append("');\n");
                 }
                 buffer.append("objectAddEditButton('edit-site.html");
                 buffer.append(getLinkParameters(content));
@@ -744,12 +748,20 @@ class AdminScript {
         } else {
             buffer.append("'");
             for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) == '\n') {
+                if (str.charAt(i) == '\\') {
+                    buffer.append("\\\\");
+                } else if (str.charAt(i) == '\n') {
                     buffer.append("\\n");
                 } else if (str.charAt(i) == '\r') {
                     buffer.append("\\r");
                 } else if (str.charAt(i) == '\'') {
                     buffer.append("\\'");
+                } else if (str.charAt(i) == '"') {
+                    buffer.append("\\\"");
+                } else if (str.charAt(i) == '<') {
+                    buffer.append("\\<");
+                } else if (str.charAt(i) == '>') {
+                    buffer.append("\\>");
                 } else {
                     buffer.append(str.charAt(i));
                 }

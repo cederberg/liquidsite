@@ -359,7 +359,6 @@ class AdminView {
         if (parent instanceof ContentTemplate) {
             content = (Content) parent;
             if (content.hasWriteAccess(user)) {
-                request.setAttribute("enableSite", true);
                 request.setAttribute("enableTemplate", true);
             }
         }
