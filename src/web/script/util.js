@@ -39,7 +39,7 @@ var UTIL_REMOVE_LIST = new Array();
  * @param name               the element name
  */
 function utilFocusElement(name) {
-    var elems = document.getElementsByName("name");
+    var elems = document.getElementsByName(name);
     
     if (elems != null && elems.length > 0) {
         elems.item(0).focus();
