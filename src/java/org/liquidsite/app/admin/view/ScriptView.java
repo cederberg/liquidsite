@@ -44,6 +44,7 @@ import org.liquidsite.core.content.Lock;
 import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 
 /**
  * A helper class for creating JavaScript code to the administration
@@ -59,6 +60,20 @@ public class ScriptView {
      */
     ScriptView() {
         // Nothing to initialize
+    }
+
+    /**
+     * Sends a page reload script.
+     *
+     * @param request        the request object
+     */
+    public void viewReload(Request request) {
+        request.sendData("text/javascript",
+                         "var win = window;\n" +
+                         "if (win.parent) {\n" +
+                         "    win = win.parent;\n" +
+                         "}\n" +
+                         "win.location.reload(1);\n");
     }
 
     /**

@@ -184,8 +184,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         } else if (path.startsWith("images/")) {
             request.sendFile(getFile(path), false);
         } else if (path.endsWith(".js")) {
-            request.sendData("text/javascript",
-                             "window.location.reload(1);\n");
+            AdminView.SCRIPT.viewReload(request);
         } else if (path.equals("")
                 || path.equals("index.html")
                 || path.equals("home.html")
