@@ -118,6 +118,34 @@ public class Request {
     }
 
     /**
+     * Returns the protocol name in the request, i.e. "http" or 
+     * "https".
+     * 
+     * @return the protocol name
+     */
+    public String getProtocol() {
+        return request.getScheme();
+    }
+    
+    /**
+     * Returns the host name in the request.
+     * 
+     * @return the host name
+     */
+    public String getHost() {
+        return request.getServerName();
+    }
+    
+    /**
+     * Returns the port number in the request.
+     * 
+     * @return the port number
+     */
+    public int getPort() {
+        return request.getServerPort();
+    }
+    
+    /**
      * Returns the request path with file name.
      * 
      * @return the request path with file name
