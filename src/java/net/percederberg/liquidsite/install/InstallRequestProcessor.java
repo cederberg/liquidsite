@@ -386,7 +386,8 @@ public class InstallRequestProcessor extends RequestProcessor {
             writeConfiguration();
             application.restart();
             if (updateVersion == null) {
-                writeDefaultData(request.getServletPath());
+                writeDefaultData(request.getProtocol(),
+                                 request.getServletPath());
             }
         } catch (InstallException e) {
             LOG.error("couldn't finish installation", e);
@@ -794,9 +795,10 @@ public class InstallRequestProcessor extends RequestProcessor {
      * will be used to place the admin site in the correct base
      * directory.
      *
+     * @param protocol       the servlet protocol
      * @param path           the servlet path
      */
-    private void writeDefaultData(String path) {
+    private void writeDefaultData(String protocol, String path) {
         ContentManager  manager = application.getContentManager();
         Domain          domain = new Domain(manager, "ROOT");
         User            user = new User(manager, null, adminUser);
@@ -810,7 +812,7 @@ public class InstallRequestProcessor extends RequestProcessor {
             user.save(user);
             site.setName("Admin Site");
             site.setRevisionNumber(1);
-            site.setProtocol("http");
+            site.setProtocol(protocol);
             site.setHost("*");
             site.setPort(0);
             site.setDirectory(path);
