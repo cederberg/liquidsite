@@ -2,6 +2,7 @@
 <#include "header.ftl">
 
     <form method="post" accept-charset="UTF-8">
+      <input type="hidden" name="liquidsite.action" value="login" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="4">

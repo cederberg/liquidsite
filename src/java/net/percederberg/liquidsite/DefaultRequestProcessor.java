@@ -101,15 +101,12 @@ public class DefaultRequestProcessor extends RequestProcessor {
             throw RequestException.INTERNAL_ERROR;
         }
 
-        // Find and validate user
-        if (request.getParameter("liquidsite.login") != null) {
-            processLogin(request, site);
+        // Process request action
+        if (request.getParameter("liquidsite.action") != null) {
+            processAction(request, site);
             if (request.hasResponse()) {
                 return;
             }
-        } else if (request.getParameter("liquidsite.logout") != null) {
-            processLogout(request);
-            return;
         }
         user = request.getUser();
 
@@ -162,6 +159,31 @@ public class DefaultRequestProcessor extends RequestProcessor {
     }
 
     /**
+     * Processes a request action. The processing of the action may
+     * produce a response to the request object, which must be checked
+     * before contining processing after calling this method.
+     *
+     * @param request        the request object
+     * @param site           the content site
+     *
+     * @throws RequestException if the action couldn't be processed
+     */
+    private void processAction(Request request, ContentSite site)
+        throws RequestException {
+
+        String  action = request.getParameter("liquidsite.action");
+
+        if (action.equals("login")) {
+            processLogin(request, site);
+        } else if (action.equals("logout")) {
+            processLogout(request);
+        } else {
+            LOG.warning("request action '" + action + "' is undefined");
+            throw RequestException.INTERNAL_ERROR;
+        }
+    }
+
+    /**
      * Processes a login request. This will set the request user if
      * successful, and send a redirect to the requested page. If
      * unsuccessful, a request error attribute is set. Note that the
@@ -176,8 +198,8 @@ public class DefaultRequestProcessor extends RequestProcessor {
     private void processLogin(Request request, ContentSite site)
         throws RequestException {
 
-        String  name = request.getParameter("liquidsite.login");
-        String  password = request.getParameter("liquidsite.password");
+        String  name = request.getParameter("liquidsite.login", "");
+        String  password = request.getParameter("liquidsite.password", "");
         User    user;
 
         try {
