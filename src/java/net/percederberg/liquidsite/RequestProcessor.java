@@ -29,11 +29,13 @@ import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
@@ -426,7 +428,9 @@ public abstract class RequestProcessor {
         return content instanceof ContentSite
             || content instanceof ContentFolder
             || content instanceof ContentSection
-            || content instanceof ContentDocument;
+            || content instanceof ContentDocument
+            || content instanceof ContentForum
+            || content instanceof ContentTopic;
     }
 
     /**
@@ -456,6 +460,10 @@ public abstract class RequestProcessor {
             request.getEnvironment().setSection((ContentSection) content);
         } else if (content instanceof ContentDocument) {
             request.getEnvironment().setDocument((ContentDocument) content);
+        } else if (content instanceof ContentForum) {
+            request.getEnvironment().setForum((ContentForum) content);
+        } else if (content instanceof ContentTopic) {
+            request.getEnvironment().setTopic((ContentTopic) content);
         }
     }
 }

@@ -22,9 +22,11 @@
 package net.percederberg.liquidsite.web;
 
 import net.percederberg.liquidsite.content.ContentDocument;
+import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 
@@ -66,6 +68,16 @@ public class RequestEnvironment {
      * The content document.
      */
     private ContentDocument doc = null;
+
+    /**
+     * The content forum.
+     */
+    private ContentForum forum = null;
+
+    /**
+     * The content topic.
+     */
+    private ContentTopic topic = null;
 
     /**
      * Creates a new request environment.
@@ -179,5 +191,41 @@ public class RequestEnvironment {
      */
     public void setDocument(ContentDocument doc) {
         this.doc = doc;
+    }
+
+    /**
+     * Returns the content forum.
+     *
+     * @return the content forum
+     */
+    public ContentForum getForum() {
+        return forum;
+    }
+
+    /**
+     * Sets the content forum.
+     *
+     * @param forum          the content forum
+     */
+    public void setForum(ContentForum forum) {
+        this.forum = forum;
+    }
+
+    /**
+     * Returns the content topic.
+     *
+     * @return the content topic
+     */
+    public ContentTopic getTopic() {
+        return topic;
+    }
+
+    /**
+     * Sets the content topic.
+     *
+     * @param topic          the content topic
+     */
+    public void setTopic(ContentTopic topic) {
+        this.topic = topic;
     }
 }
