@@ -656,14 +656,21 @@ function tagEditInternalGetSelection(editor) {
     var  selection = new Object();
     var  range;
     var  text;
+    var  length;
 
     if (document.selection) {
         // IE selection handling
         area.focus();
         range = document.selection.createRange().duplicate();
         text = range.text;
+        length = text.length;
+        for (var i = 0; i < text.length; i++) {
+            if (text.charAt(i) == '\r') {
+                length--;
+            }
+        }
         range.text = "#~^"  + text;
-        range.moveStart("character", 0 - text.length - 3);
+        range.moveStart("character", 0 - length - 3);
         selection.start = area.value.indexOf("#~^");
         if (selection.start >= 0) {
             selection.end = selection.start + text.length;
@@ -672,7 +679,7 @@ function tagEditInternalGetSelection(editor) {
             selection.end = area.value.length;
         }
         range.text = text;
-        range.moveStart("character", 0 - text.length);
+        range.moveStart("character", 0 - length);
     } else {
         // Mozilla selection handling
         selection.start = area.selectionStart;
