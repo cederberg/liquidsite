@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -334,7 +335,15 @@ public class Request {
     public String getParameter(String name, String defVal) {
         String  value = request.getParameter(name);
         
-        return (value == null) ? defVal : value;
+        if (value == null) {
+            return defVal;
+        } else {
+            try {
+                return new String(value.getBytes("ISO-8859-1"), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return value;
+            }
+        }
     }
     
     /**
@@ -526,8 +535,12 @@ public class Request {
         PrintWriter  out;
 
         LOG.debug("Handling request for " + this + " with string data");
-        response.setContentType(responseMimeType);
-        out = new PrintWriter(response.getOutputStream());
+        if (responseMimeType.indexOf("charset") > 0) {
+            response.setContentType(responseMimeType);
+        } else {
+            response.setContentType(responseMimeType + "; charset=UTF-8");
+        }
+        out = response.getWriter();
         out.write(responseData);
         out.close();
     }
@@ -579,8 +592,8 @@ public class Request {
 
         LOG.debug("Handling request for " + this + " with template " +
                   responseData);
-        response.setContentType("text/html");
-        out = new PrintWriter(response.getOutputStream());
+        response.setContentType("text/html; charset=UTF-8");
+        out = response.getWriter();
         try {
             template = TemplateManager.getFileTemplate(responseData);
             template.process(this, out);

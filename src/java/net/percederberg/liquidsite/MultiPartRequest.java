@@ -23,6 +23,7 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -133,7 +134,15 @@ public class MultiPartRequest extends Request {
     public String getParameter(String name, String defVal) {
         String  value = (String) parameters.get(name);
         
-        return (value == null) ? defVal : value;
+        if (value == null) {
+            return defVal;
+        } else {
+            try {
+                return new String(value.getBytes("ISO-8859-1"), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return value;
+            }
+        }
     }
 
     /**
