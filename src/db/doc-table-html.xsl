@@ -137,11 +137,57 @@
       <blockquote><xsl:value-of select="description" /></blockquote>
     </xsl:if>
     &newline;
-    <xsl:if test="reference">
-      &indent;&indent;
-      <h3>References:</h3>
+    <xsl:if test="//reference[@table=current()/../@name and @column=current()/@name]">
+      &newline;&indent;&indent;
+      <h3>Referenced By:</h3>
+      &newline;&newline;&indent;&indent;
+      <blockquote>
+      <xsl:for-each select="//reference[@table=current()/../@name and @column=current()/@name]">
+        &newline;&indent;&indent;&indent;
+        <a>
+          <xsl:attribute name="href">
+            <xsl:text>table.</xsl:text>
+            <xsl:value-of select="../../@name" />
+            <xsl:text>.html#</xsl:text>
+            <xsl:value-of select="../@name" />
+          </xsl:attribute>
+          <xsl:value-of select="../../@name" />
+          <xsl:text>.</xsl:text>
+          <xsl:value-of select="../@name" />
+        </a>
+        <xsl:if test="not(position()=last())">
+          <br />
+        </xsl:if>
+      </xsl:for-each>
+      &newline;&indent;&indent;
+      </blockquote>
       &newline;
-      <xsl:apply-templates select="reference" />
+    </xsl:if>
+    <xsl:if test="reference">
+      &newline;&indent;&indent;
+      <h3>Reference To:</h3>
+      &newline;&newline;&indent;&indent;
+      <blockquote>
+      <xsl:for-each select="reference">
+        &newline;&indent;&indent;&indent;
+        <a>
+          <xsl:attribute name="href">
+            <xsl:text>table.</xsl:text>
+            <xsl:value-of select="@table" />
+            <xsl:text>.html#</xsl:text>
+            <xsl:value-of select="@column" />
+          </xsl:attribute>
+          <xsl:value-of select="@table" />
+          <xsl:text>.</xsl:text>
+          <xsl:value-of select="@column" />
+        </a>
+        <xsl:if test="not(position()=last())">
+          <br />
+        </xsl:if>
+      </xsl:for-each>
+      &newline;&indent;&indent;
+      </blockquote>
+      &newline;
     </xsl:if>
     &newline;&indent;&indent;
     <hr />
@@ -159,27 +205,6 @@
     <xsl:if test="@required != 'false'">
       <xsl:text> NOT NULL</xsl:text>
     </xsl:if>
-  </xsl:template>
-
-  <xsl:template match="reference">
-    &indent;&indent;
-    <blockquote>
-      <a>
-        <xsl:attribute name="href">
-          <xsl:text>table.</xsl:text>
-          <xsl:value-of select="@table" />
-          <xsl:text>.html#</xsl:text>
-          <xsl:value-of select="@column" />
-        </xsl:attribute>
-        <xsl:value-of select="@table" />
-        <xsl:text>.</xsl:text>
-        <xsl:value-of select="@column" />
-      </a>
-    </blockquote>
-    <xsl:if test="not(position()=last())">
-      <xsl:text>,</xsl:text>
-    </xsl:if>
-    &newline;
   </xsl:template>
 
   <xsl:template match="primarykey" mode="summary">
