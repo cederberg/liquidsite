@@ -146,7 +146,24 @@ class PublishDialogHandler extends AdminDialogHandler {
         publish(request.getUser(), content, date, comment, recursive);
         return 0;
     }
-    
+
+    /**
+     * Publishes a content object. This method may publish objects
+     * recursively, in which case their original comments are kept to
+     * the highest extent possible. Also, if a child object does not
+     * need to be published, it will not be done.
+     *
+     * @param user           the user performing the operation
+     * @param content        the content object to publish
+     * @param date           the publishing date
+     * @param comment        the publishing comment
+     * @param recursive      the recursive publishing flag
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
     private void publish(User user,
                          Content content,
                          Date date,
