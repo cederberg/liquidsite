@@ -226,6 +226,7 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(data.getDate(ContentData.OFFLINE));
         query.addParameter(data.getDate(ContentData.MODIFIED));
         query.addParameter(data.getString(ContentData.AUTHOR));
+        query.addParameter(data.getString(ContentData.COMMENT));
         PEER.insert(query, con);
     }
     
@@ -249,6 +250,7 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(data.getDate(ContentData.OFFLINE));
         query.addParameter(data.getDate(ContentData.MODIFIED));
         query.addParameter(data.getString(ContentData.AUTHOR));
+        query.addParameter(data.getString(ContentData.COMMENT));
         query.addParameter(data.getInt(ContentData.ID));
         query.addParameter(data.getInt(ContentData.REVISION));
         PEER.update(query, con);

@@ -417,6 +417,13 @@
         <type name="VARCHAR" size="30" required="true" />
         <ref table="LS_USER" column="NAME" />
       </column>
+      <column name="COMMENT">
+        <description>
+          The content revision comment. The comment is used to add 
+          additional information about a content revision.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
       <primarykey>
         <description>
           The content is uniquely indexed by the object identifier and

@@ -93,6 +93,12 @@ public class ContentData extends AbstractData {
         new StringParameter(ContentData.class, "AUTHOR", "");
     
     /**
+     * The comment parameter.
+     */
+    public static final Parameter COMMENT = 
+        new StringParameter(ContentData.class, "COMMENT", "");
+    
+    /**
      * Creates a new content data object with default values.
      */
     public ContentData() {

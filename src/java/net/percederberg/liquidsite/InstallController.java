@@ -750,6 +750,7 @@ public class InstallController extends Controller {
             site.setOnlineDate(new Date());
             site.setOfflineDate(null);
             site.setAuthor(user);
+            site.setComment("Created");
             site.save();
         } catch (ContentException e) {
             LOG.error(e.getMessage());

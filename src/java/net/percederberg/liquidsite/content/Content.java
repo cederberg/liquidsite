@@ -449,6 +449,24 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Returns the content revision comment.
+     * 
+     * @return the content revision comment
+     */
+    public String getComment() {
+        return data.getString(ContentData.COMMENT);
+    }
+    
+    /**
+     * Sets the content revision comment.
+     * 
+     * @param comment        the content revision comment
+     */
+    public void setComment(String comment) {
+        data.setString(ContentData.COMMENT, comment);
+    }
+    
+    /**
      * Returns a content attribute value.
      * 
      * @param name           the content attribute name
