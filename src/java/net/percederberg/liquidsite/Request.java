@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.percederberg.liquidsite.content.Site;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
@@ -118,7 +118,7 @@ public class Request {
     /**
      * The request site.
      */
-    private Site site = null;
+    private ContentSite site = null;
 
     /**
      * Creates a new request. 
@@ -203,7 +203,7 @@ public class Request {
      * 
      * @return the request site object
      */
-    public Site getSite() {
+    public ContentSite getSite() {
         return site;
     }
     
@@ -213,7 +213,7 @@ public class Request {
      * 
      * @param site           the request site
      */
-    public void setSite(Site site) {
+    public void setSite(ContentSite site) {
         this.site = site;
     }
 

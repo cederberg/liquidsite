@@ -22,7 +22,7 @@
 package net.percederberg.liquidsite.template;
 
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.content.Site;
+import net.percederberg.liquidsite.content.ContentSite;
 
 /**
  * A site template bean. This class is used to insert the site object
@@ -53,7 +53,7 @@ public class SiteBean {
      * @return the absolute URL to the site
      */
     public String getUrl() {
-        Site          site = request.getSite();
+        ContentSite   site = request.getSite();
         StringBuffer  buffer = new StringBuffer();
         
         if (site == null) {

@@ -30,8 +30,8 @@ import java.util.HashMap;
 
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
@@ -727,9 +727,9 @@ public class InstallController extends Controller {
      * @param path           the servlet path 
      */
     private void writeDefaultData(String path) {
-        Domain      domain = new Domain("ROOT");
-        User        user = new User(null, adminUser);
-        Site        site = new Site(domain);
+        Domain       domain = new Domain("ROOT");
+        User         user = new User(null, adminUser);
+        ContentSite  site = new ContentSite(domain);
 
         try {
             domain.setDescription("Root Domain");

@@ -236,13 +236,13 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    Site[] getSites(Domain domain) throws ContentException {
-        Site[]  res;
+    ContentSite[] getSites(Domain domain) throws ContentException {
+        ContentSite[]  res;
         
         if (sites.containsKey(domain.getName())) {
-            return (Site[]) sites.get(domain.getName());
+            return (ContentSite[]) sites.get(domain.getName());
         } else {
-            res = Site.findByDomain(domain);
+            res = ContentSite.findByDomain(domain);
             sites.put(domain.getName(), res);
             return res;
         }
@@ -259,12 +259,12 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public Site[] getSites(User user, Domain domain) 
+    public ContentSite[] getSites(User user, Domain domain) 
         throws ContentException {
 
-        Site[]     sites = getSites(domain);
-        ArrayList  list = new ArrayList(sites.length);
-        Site[]     res;
+        ContentSite[]  sites = getSites(domain);
+        ArrayList      list = new ArrayList(sites.length);
+        ContentSite[]  res;
         
         for (int i = 0; i < sites.length; i++) {
             if (sites[i].hasReadAccess(user)) {
@@ -272,7 +272,7 @@ public class ContentManager {
             }
         }
         Collections.sort(list);
-        res = new Site[list.size()];
+        res = new ContentSite[list.size()];
         list.toArray(res);
         return res;
     }
@@ -428,18 +428,18 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly 
      */
-    public Site findSite(String protocol, 
-                         String hostname, 
-                         int port, 
-                         String path) 
+    public ContentSite findSite(String protocol, 
+                                String hostname, 
+                                int port, 
+                                String path) 
         throws ContentException {
 
-        Host    host;
-        Domain  domain;
-        Site[]  sites;
-        Site    res = null;
-        int     max = 0;
-        int     match;
+        Host           host;
+        Domain         domain;
+        ContentSite[]  sites;
+        ContentSite    res = null;
+        int            max = 0;
+        int            match;
         
         host = (Host) hosts.get(hostname);
         if (host == null) {
@@ -575,8 +575,8 @@ public class ContentManager {
             domains.put(((Domain) obj).getName(), obj);
         } else if (obj instanceof Host) {
             hosts.put(((Host) obj).getName(), obj);
-        } else if (obj instanceof Site) {
-            sites.remove(((Site) obj).getDomainName());
+        } else if (obj instanceof ContentSite) {
+            sites.remove(((ContentSite) obj).getDomainName());
         }
     }
     
@@ -590,8 +590,8 @@ public class ContentManager {
             domains.remove(((Domain) obj).getName());
         } else if (obj instanceof Host) {
             hosts.remove(((Host) obj).getName());
-        } else if (obj instanceof Site) {
-            sites.remove(((Site) obj).getDomainName());
+        } else if (obj instanceof ContentSite) {
+            sites.remove(((ContentSite) obj).getDomainName());
         }
     }
 

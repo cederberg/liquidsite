@@ -36,10 +36,10 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
-import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -404,14 +404,14 @@ public class AdminController extends Controller {
     private void processAddSite(Request request, Object parent) 
         throws ContentException, ContentSecurityException {
 
-        User    user = request.getUser();
-        Domain  domain;
-        Site    site;
+        User         user = request.getUser();
+        Domain       domain;
+        ContentSite  site;
         
         try {
             validator.validateSite(request);
             domain = (Domain) parent;
-            site = new Site(domain);
+            site = new ContentSite(domain);
             site.setName(request.getParameter("name"));
             site.setProtocol(request.getParameter("protocol"));
             site.setHost(request.getParameter("host"));
@@ -527,12 +527,12 @@ public class AdminController extends Controller {
                     removeLock((Content) obj, request.getUser(), false);
                 }
                 request.sendRedirect("site.html");
-            } else if (obj instanceof Site) {
+            } else if (obj instanceof ContentSite) {
                 if (step == null) {
                     checkLock((Content) obj, request.getUser(), true);
-                    view.pageEditSite(request, (Site) obj);
+                    view.pageEditSite(request, (ContentSite) obj);
                 } else {
-                    processEditSite(request, (Site) obj);
+                    processEditSite(request, (ContentSite) obj);
                 }
             } else if (obj instanceof ContentFolder) {
                 if (step == null) {
@@ -571,7 +571,7 @@ public class AdminController extends Controller {
      * @throws ContentSecurityException if the user didn't have the 
      *             required permissions 
      */
-    private void processEditSite(Request request, Site site) 
+    private void processEditSite(Request request, ContentSite site) 
         throws ContentException, ContentSecurityException {
 
         try {

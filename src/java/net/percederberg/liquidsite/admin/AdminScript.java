@@ -28,11 +28,11 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
-import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -263,8 +263,8 @@ class AdminScript {
         buffer.append(", ");
         buffer.append(getLock(lock));
         buffer.append(");\n");
-        if (content instanceof Site) {
-            buffer.append(getSiteProperties((Site) content));
+        if (content instanceof ContentSite) {
+            buffer.append(getSiteProperties((ContentSite) content));
         }
         buffer.append(getButtons(user, content, status, lock));
         buffer.append(getRevisions(content));
@@ -279,7 +279,7 @@ class AdminScript {
      * 
      * @return the JavaScript for additional site properties
      */
-    private String getSiteProperties(Site site) {
+    private String getSiteProperties(ContentSite site) {
         if (site.isAdmin()) {
             return "objectAddProperty('Note', 'Administration Site');\n";
         } else {
@@ -345,7 +345,9 @@ class AdminScript {
             }
         } else {
             if (content.hasWriteAccess(user)) {
-                if (content instanceof Site && !((Site) content).isAdmin()) { 
+                if (content instanceof ContentSite 
+                 && !((ContentSite) content).isAdmin()) { 
+
                     buffer.append("objectAddNewButton('add-site.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
@@ -615,7 +617,7 @@ class AdminScript {
      *             properly
      */
     private String getContentUrl(Content content) throws ContentException {
-        if (content instanceof Site) {
+        if (content instanceof ContentSite) {
             return content.toString();
         } else if (content instanceof ContentFolder) {
             return getContentUrl(content.getParent()) +  

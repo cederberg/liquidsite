@@ -26,7 +26,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
-import net.percederberg.liquidsite.content.Site;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -78,11 +78,11 @@ public class DefaultController extends Controller {
      * @throws RequestException if the request couldn't be processed
      */
     public void process(Request request) throws RequestException {
-        String   path = request.getPath();
-        User     user;
-        Site     site;
-        Content  page;
-        boolean  access;
+        String       path = request.getPath();
+        User         user;
+        ContentSite  site;
+        Content      page;
+        boolean      access;
 
         // Find domain & site
         try {
@@ -120,7 +120,9 @@ public class DefaultController extends Controller {
                 }
             } else {
                 page = getContentManager().findPage(site, path);
-                if (page instanceof Site || page instanceof ContentFolder) {
+                if (page instanceof ContentSite
+                 || page instanceof ContentFolder) {
+
                     page = getContentManager().findIndexPage(page);
                 }
                 if (page == null) {
@@ -192,7 +194,7 @@ public class DefaultController extends Controller {
      * 
      * @throws RequestException if the request couldn't be processed
      */
-    private void processLogin(Request request, Site site, String path) 
+    private void processLogin(Request request, ContentSite site, String path)
         throws RequestException {
 
         String  name = request.getParameter("liquidsite.login");

@@ -246,7 +246,7 @@ public abstract class Content extends PersistentObject implements Comparable {
 
         switch (data.getInt(ContentData.CATEGORY)) {
         case SITE_CATEGORY:
-            return new Site(data, latest, con);
+            return new ContentSite(data, latest, con);
         case FOLDER_CATEGORY:
             return new ContentFolder(data, latest, con);
         case FILE_CATEGORY:

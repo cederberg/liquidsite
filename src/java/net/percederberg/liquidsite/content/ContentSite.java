@@ -1,5 +1,5 @@
 /*
- * Site.java
+ * ContentSite.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -34,7 +34,7 @@ import net.percederberg.liquidsite.dbo.DatabaseObjectException;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Site extends Content {
+public class ContentSite extends Content {
 
     /**
      * The protocol content attribute.
@@ -76,20 +76,20 @@ public class Site extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Site[] findByDomain(Domain domain) 
+    protected static ContentSite[] findByDomain(Domain domain) 
         throws ContentException {
 
         DatabaseConnection  con = getDatabaseConnection();
         ArrayList           list;
-        Site[]              res;
+        ContentSite[]       res;
 
         try {
             list = ContentPeer.doSelectByCategory(domain.getName(),
                                                   Content.SITE_CATEGORY,
                                                   con);
-            res = new Site[list.size()];
+            res = new ContentSite[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Site((ContentData) list.get(i), true, con);
+                res[i] = new ContentSite((ContentData) list.get(i), true, con);
             }
         } catch (DatabaseObjectException e) {
             throw new ContentException(e);
@@ -104,7 +104,7 @@ public class Site extends Content {
      * 
      * @param domain         the site domain
      */
-    public Site(Domain domain) {
+    public ContentSite(Domain domain) {
         super(domain, Content.SITE_CATEGORY);
         setAttribute(PROTOCOL_ATTRIBUTE, "http");
         setAttribute(HOST_ATTRIBUTE, "*");
@@ -123,7 +123,9 @@ public class Site extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected Site(ContentData data, boolean latest, DatabaseConnection con) 
+    protected ContentSite(ContentData data, 
+                          boolean latest, 
+                          DatabaseConnection con) 
         throws ContentException {
 
         super(data, latest, con);
@@ -329,7 +331,7 @@ public class Site extends Content {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        Site[]  sites = findByDomain(getDomain());
+        ContentSite[]  sites = findByDomain(getDomain());
 
         super.validate();
         if (!getProtocol().equals("http") && !getProtocol().equals("https")) {

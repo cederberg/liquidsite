@@ -32,9 +32,9 @@ import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
-import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -367,7 +367,9 @@ class AdminView {
                 request.setAttribute("enableSite", true);
             }
         }
-        if (parent instanceof Site || parent instanceof ContentFolder) {
+        if (parent instanceof ContentSite
+         || parent instanceof ContentFolder) {
+
             content = (Content) parent;
             if (content.hasWriteAccess(user)) {
                 request.setAttribute("enableFolder", true);
@@ -404,16 +406,17 @@ class AdminView {
     public void pageEditSite(Request request, Object reference) 
         throws ContentException {
 
-        Domain     domain;
-        Host[]     hosts;
-        ArrayList  list = new ArrayList();
-        String     defaultName;
-        String     defaultProtocol;
-        String     defaultHost;
-        String     defaultPort;
-        String     defaultDir;
-        String     defaultComment;
-        String     str;
+        Domain       domain;
+        ContentSite  site;
+        Host[]       hosts;
+        ArrayList    list = new ArrayList();
+        String       defaultName;
+        String       defaultProtocol;
+        String       defaultHost;
+        String       defaultPort;
+        String       defaultDir;
+        String       defaultComment;
+        String       str;
         
         if (reference instanceof Domain) {
             domain = (Domain) reference;
@@ -424,12 +427,13 @@ class AdminView {
             defaultDir = "/";
             defaultComment = "Created";
         } else {
-            domain = ((Site) reference).getDomain();
-            defaultName = ((Site) reference).getName();
-            defaultProtocol = ((Site) reference).getProtocol();
-            defaultHost = ((Site) reference).getHost();
-            defaultPort = String.valueOf(((Site) reference).getPort());
-            defaultDir = ((Site) reference).getDirectory();
+            site = (ContentSite) reference;
+            domain = site.getDomain();
+            defaultName = site.getName();
+            defaultProtocol = site.getProtocol();
+            defaultHost = site.getHost();
+            defaultPort = String.valueOf(site.getPort());
+            defaultDir = site.getDirectory();
             defaultComment = "";
         }
         hosts = domain.getHosts();
