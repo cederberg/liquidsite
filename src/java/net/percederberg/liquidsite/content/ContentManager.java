@@ -344,6 +344,36 @@ public class ContentManager {
     }
 
     /**
+     * Returns the domain root content object with the specified name
+     * and highest revision readable by the user.
+     *
+     * @param user           the user requesting the content
+     * @param domain         the domain
+     * @param name           the child name
+     *
+     * @return the content object found, or
+     *         null if no matching content existed
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    public Content getContentChild(User user, Domain domain, String name) 
+        throws ContentException, ContentSecurityException {
+
+        Content  content = InternalContent.findByName(this, domain, name);
+
+        if (content != null && !isReadable(user, content)) {
+            throw new ContentSecurityException(user, "read", content);
+        } else if (content != null && !isOnline(content)) {
+            return null;
+        } else {
+            return content;
+        }
+    }
+    
+    /**
      * Returns the child content object with the specified name and 
      * highest revision readable by the user.
      *
@@ -362,21 +392,15 @@ public class ContentManager {
     public Content getContentChild(User user, Content parent, String name) 
         throws ContentException, ContentSecurityException {
 
-        Content[]  children = InternalContent.findByParent(this, parent);
+        Content  content = InternalContent.findByName(this, parent, name);
 
-        // TODO: implement this more efficiently with specific query
-        for (int i = 0; i < children.length; i++) {
-            if (children[i].getName().equals(name)) {
-                if (!isReadable(user, children[i])) {
-                    throw new ContentSecurityException(user,
-                                                       "read",
-                                                       children[i]);
-                } else if (isOnline(children[i])) {
-                    return children[i];
-                }
-            }
-        } 
-        return null;                    
+        if (content != null && !isReadable(user, content)) {
+            throw new ContentSecurityException(user, "read", content);
+        } else if (content != null && !isOnline(content)) {
+            return null;
+        } else {
+            return content;
+        }
     }
     
     /**

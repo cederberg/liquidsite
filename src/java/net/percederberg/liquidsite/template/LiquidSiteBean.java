@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentPage;
 import net.percederberg.liquidsite.content.ContentSection;
+import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 
@@ -296,6 +297,8 @@ public class LiquidSiteBean {
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
         }
         return result;
     }
@@ -311,12 +314,16 @@ public class LiquidSiteBean {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the section couldn't be
+     *             read by the current user
      */
     private ContentSection findSection(String path, Object parent)
-        throws ContentException {
+        throws ContentException, ContentSecurityException {
 
-        Content[]  children;
+        String  name;
+        int     pos;
 
+        // Check for null parent
         if (path == null || path.equals("")) {
             if (parent instanceof ContentSection) {
                 return (ContentSection) parent;
@@ -324,35 +331,6 @@ public class LiquidSiteBean {
                 return null;
             }
         }
-        if (manager == null) {
-            return null;
-        } else if (parent instanceof Domain) {
-            children = manager.getContentChildren(request.getUser(),
-                                                  (Domain) parent);
-        } else {
-            children = manager.getContentChildren(request.getUser(),
-                                                  (Content) parent);
-        }
-        return findSection(path, children);
-    }
-
-    /**
-     * Finds a specified section.
-     * 
-     * @param path           the section path
-     * @param content        the content objects to search
-     * 
-     * @return the section found, or
-     *         null if not found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private ContentSection findSection(String path, Content[] content) 
-        throws ContentException {
-        
-        String  name;
-        int     pos;
 
         // Find first section name
         if (path.startsWith("/")) {
@@ -367,15 +345,46 @@ public class LiquidSiteBean {
             path = "";
         }
 
-        // Search for section name
-        for (int i = 0; i < content.length; i++) {
-            if (content[i] instanceof ContentSection
-             && content[i].getName().equals(name)) {
+        // Find sub-section
+        return findSection(path, findSubSection(parent, name));
+    }
 
-                return findSection(path, (ContentSection) content[i]);
+    /**
+     * Finds a specified sub section.
+     *
+     * @param parent         the parent domain or section
+     * @param name           the section name
+     *
+     * @return the section found, or
+     *         null if not found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the section couldn't be
+     *             read by the current user
+     */
+    private Content findSubSection(Object parent, String name) 
+        throws ContentException, ContentSecurityException {
+
+        Content[]  children;
+
+        if (manager == null) {
+            return null;
+        } else if (parent instanceof Domain) {
+            children = manager.getContentChildren(request.getUser(),
+                                                  (Domain) parent);
+            for (int i = 0; i < children.length; i++) {
+                if (children[i] instanceof ContentSection
+                 && children[i].getName().equals(name)) {
+
+                    return children[i];
+                }
             }
+        } else {
+            return manager.getContentChild(request.getUser(),
+                                           (Content) parent,
+                                           name);
         }
-        
         return null;
     }
 

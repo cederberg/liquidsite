@@ -511,26 +511,22 @@ public class AdminRequestProcessor extends RequestProcessor {
      *             correctly
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the request referred to an 
+     *             object that wasn't readable by the user
      */
     private void processPreview(Request request,
                                 ContentDocument doc,
                                 String path)
-        throws RequestException, ContentException {
+        throws RequestException, ContentException, ContentSecurityException {
 
         ContentManager  manager = getContentManager();
-        Content[]       children;
         Content         content = null;
         String          revision;
 
         if (path.equals("")) {
             content = doc;
         } else {
-            children = manager.getContentChildren(request.getUser(), doc);
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].getName().equals(path)) {
-                    content = children[i];
-                }
-            }
+            content = manager.getContentChild(request.getUser(), doc, path);
         }
         revision = request.getParameter("revision");
         if (content != null && revision != null) {

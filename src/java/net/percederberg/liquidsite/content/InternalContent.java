@@ -253,6 +253,90 @@ class InternalContent {
     }
 
     /**
+     * Returns the content object with the specified name in the
+     * domain root. Only the latest revision of the content object
+     * will be returned.
+     * 
+     * @param manager        the content manager to use
+     * @param domain         the domain
+     * @param name           the content name
+     *
+     * @return the content object found, or
+     *         null if no matching content existed
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static Content findByName(ContentManager manager,
+                              Domain domain,
+                              String name) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentData         data;
+
+        try {
+            data = ContentPeer.doSelectByName(domain.getName(),
+                                              0,
+                                              name,
+                                              manager.isAdmin(),
+                                              con);
+            if (data != null) {
+                return createContent(manager, data, con);
+            } else {
+                return null;
+            }
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
+     * Returns the content object with the specified parent and name.
+     * Only the latest revision of the content object will be
+     * returned.
+     *
+     * @param manager        the content manager to use
+     * @param parent         the parent content
+     * @param name           the content name
+     *
+     * @return the content object found, or
+     *         null if no matching content existed
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    static Content findByName(ContentManager manager,
+                              Content parent,
+                              String name) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentData         data;
+
+        try {
+            data = ContentPeer.doSelectByName(parent.getDomainName(),
+                                              parent.getId(),
+                                              name,
+                                              manager.isAdmin(),
+                                              con);
+            if (data != null) {
+                return createContent(manager, data, con);
+            } else {
+                return null;
+            }
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
+
+    /**
      * Creates an array of content objects. The content subclass
      * matching the category value will be used.
      * 

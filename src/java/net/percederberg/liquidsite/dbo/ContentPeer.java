@@ -235,6 +235,57 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
+     * Returns the content object with the specified parent and name.
+     * If multiple objects should match, any one of them can be
+     * returned. Matches of old revisions of content objects will be
+     * discarded, and only the highest revision of a matching object
+     * is returned. A flag can be set to regard the revision number 
+     * zero (0) as the highest one.
+     *
+     * @param domain         the domain name
+     * @param parent         the parent content id
+     * @param name           the content name
+     * @param maxIsZero      the revision zero is max flag
+     * @param con            the database connection to use
+     *
+     * @return the content found, or
+     *         null if no matching content existed
+     *
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static ContentData doSelectByName(String domain,
+                                             int parent,
+                                             String name,
+                                             boolean maxIsZero,
+                                             DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query = new DatabaseQuery("content.select.name");
+        DatabaseResults  res;
+        ContentData      data;
+        
+        query.addParameter(domain);
+        query.addParameter(parent);
+        query.addParameter(name);
+        res = PEER.execute("reading content list", query, con);
+        try {
+            for (int i = 0; i < res.getRowCount(); i++) {
+                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
+                                             maxIsZero,
+                                             con);
+                if (data.getString(ContentData.NAME).equals(name)) {
+                    return data;
+                }
+            }
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+        return null;
+    }
+
+    /**
      * Returns a list of content objects having the specified 
      * category. Only the highest revision of each content object
      * will be returned. A flag can be set to regard the revision
