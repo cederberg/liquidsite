@@ -200,14 +200,19 @@ public class Request {
     /**
      * Sets the session user. The session user is null until it is
      * set by this method. Normally the session user is not set until
-     * the user has been authenticated. 
+     * the user has been authenticated. If the user is set to null, 
+     * the whole session will be invalidated.
      * 
-     * @param user           the new session user
+     * @param user           the new session user, or null to logout
      * 
      * @see #getUser
      */
     public void setUser(User user) {
-        setSessionAttribute("user", user);
+        if (user == null) {
+            request.getSession().invalidate();
+        } else {
+            setSessionAttribute("user", user);
+        }
     }
 
     /**
