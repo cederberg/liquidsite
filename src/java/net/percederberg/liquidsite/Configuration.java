@@ -99,6 +99,18 @@ public class Configuration {
         "liquidsite.file.dir";
 
     /**
+     * The temporary file upload directory key.
+     */
+    public static final String UPLOAD_DIRECTORY = 
+        "liquidsite.upload.tmpdir";
+
+    /**
+     * The file upload maximum size key.
+     */
+    public static final String UPLOAD_MAX_SIZE = 
+        "liquidsite.upload.maxsize";
+
+    /**
      * The configuration file. If this file is set to null, the 
      * configuration is read-only.
      */

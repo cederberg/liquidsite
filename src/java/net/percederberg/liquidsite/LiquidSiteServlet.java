@@ -255,7 +255,17 @@ public class LiquidSiteServlet extends HttpServlet
                          HttpServletResponse response) 
         throws ServletException, IOException {
 
-        Request  r = new Request(request, response);
+        String   contentType = request.getContentType();
+        Request  r;
+        
+        // Create request object
+        if (contentType != null && contentType.startsWith("multipart")) {
+            r = new MultiPartRequest(request, 
+                                     response,
+                                     getConfig());
+        } else {
+            r = new Request(request, response);
+        }
         
         // TODO: handle offline state gracefully
         // TODO: handle exceptions and error responses
@@ -275,6 +285,7 @@ public class LiquidSiteServlet extends HttpServlet
                       e.getMessage());
             response.sendError(e.getCode(), e.getMessage()); 
         }
+        r.dispose();
     }
     
     /**

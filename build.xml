@@ -68,6 +68,7 @@ build.date=${build.printdate}
       <lib dir="${build.dir}/lib">
         <include name="liquidsite*.jar" />
         <include name="commons-codec*.jar" />
+        <include name="commons-fileupload*.jar" />
         <include name="freemarker*.jar" />
         <include name="mysql*.jar" />
       </lib>

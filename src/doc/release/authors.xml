@@ -27,12 +27,19 @@
 
     <p>This software was initially created as a web solution for the
     <ref url="http://www.sak.se">Swedish Committee For
-    Afghanistan</ref>. Much inspiration and many ideas behind this
+    Afghanistan</ref>. Much inspiration and many ideas for this
     solution comes from, <ref
     url="http://www.erikgustafsson.com/">Erik Gustafsson</ref>
     (Information Coordinator at Swedish Committee), without whom this
     software would never have come into existence.</p>
 
+    <p>This product includes software developed by the Apache Software 
+    Foundation 
+    (<ref url="http://www.apache.org/">http://www.apache.org/</ref>),
+    MySQL AB
+    (<ref url="http://www.mysql.com/">http://www.mysql.com/</ref>), 
+    and the FreeMarker Project
+    (<ref url="http://freemarker.sourceforge.net/">http://freemarker.sourceforge.net/</ref>).</p>
 
   </body>
 </doc>

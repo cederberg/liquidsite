@@ -42,7 +42,7 @@ import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
- * A document request.
+ * An HTTP request and response.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -446,6 +446,19 @@ public class Request {
     public void sendRedirect(String location) {
         responseType = REDIRECT_RESPONSE;
         responseData = location;
+    }
+
+    /**
+     * Disposes of all resources used by this request object. This 
+     * method shouldn't be called until a response has been written.
+     */
+    public void dispose() {
+        request = null;
+        response = null;
+        responseType = NO_RESPONSE;
+        responseMimeType = null;
+        responseData = null;
+        site = null;
     }
 
     /**
