@@ -99,11 +99,11 @@ public class ContentManager {
             LOG.trace("initializing content manager cache...");
             domains = Domain.findAll();
             for (int i = 0; i < domains.length; i++) {
-                addDomain(domains[i]);
+                cacheAdd(domains[i]);
             }
             hosts = Host.findAll();
             for (int i = 0; i < hosts.length; i++) {
-                addHost(hosts[i]);
+                cacheAdd(hosts[i]);
             }
             LOG.trace("done initializing content manager cache");
         }
@@ -132,26 +132,6 @@ public class ContentManager {
     }
 
     /**
-     * Adds a domain to the domain cache. This method also updates 
-     * existing entries for the same domain.
-     * 
-     * @param domain         the domain to add or update
-     */
-    void addDomain(Domain domain) {
-        removeDomain(domain);
-        domains.put(domain.getName(), domain);
-    }
-    
-    /**
-     * Removes a domain from the domain cache.
-     * 
-     * @param domain         the domain to remove
-     */
-    void removeDomain(Domain domain) {
-        domains.remove(domain.getName());
-    }
-
-    /**
      * Returns a host with the specified name. This method will only 
      * consult the internal cache, and not the database. 
      * 
@@ -165,23 +145,30 @@ public class ContentManager {
     }
 
     /**
-     * Adds a host to the host cache. This method also updates 
-     * existing entries for the same host.
+     * Adds a persistent object to the cache.
      * 
-     * @param host           the host to add or update
+     * @param obj            the object to add
      */
-    void addHost(Host host) {
-        removeHost(host);
-        hosts.put(host.getName(), host);
+    void cacheAdd(PersistentObject obj) { 
+        cacheRemove(obj);
+        if (obj instanceof Domain) {
+            domains.put(((Domain) obj).getName(), obj);
+        } else if (obj instanceof Host) {
+            hosts.put(((Host) obj).getName(), obj);
+        }
     }
     
     /**
-     * Removes a host from the host cache.
+     * Removes a persistent object from the cache.
      * 
-     * @param host           the host to remove
+     * @param obj            the object to remove
      */
-    void removeHost(Host host) {
-        hosts.remove(host.getName());
+    void cacheRemove(PersistentObject obj) {
+        if (obj instanceof Domain) {
+            domains.remove(((Domain) obj).getName());
+        } else if (obj instanceof Host) {
+            hosts.remove(((Host) obj).getName());
+        }
     }
 
     /**

@@ -224,7 +224,10 @@ public abstract class PersistentObject {
     public void save() throws ContentException {
         DatabaseConnection  con;
         
+        // Validate data
         validate();
+
+        // Save to database
         con = getDatabaseConnection();
         try {
             if (!isPersistent()) {
@@ -239,7 +242,13 @@ public abstract class PersistentObject {
         } finally {
             returnDatabaseConnection(con);
         }
-        // TODO: update content manager cache
+
+        // Save to cache
+        try {
+            getContentManager().cacheAdd(this);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
     }
     
     /**
@@ -251,6 +260,7 @@ public abstract class PersistentObject {
     public void delete() throws ContentException {
         DatabaseConnection  con = getDatabaseConnection();
 
+        // Delete from database
         try {
             doDelete(con);
         } catch (DatabaseObjectException e) {
@@ -259,7 +269,13 @@ public abstract class PersistentObject {
         } finally {
             returnDatabaseConnection(con);
         }
-        // TODO: update content manager cache
+
+        // Delete from cache
+        try {
+            getContentManager().cacheRemove(this);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     /**
