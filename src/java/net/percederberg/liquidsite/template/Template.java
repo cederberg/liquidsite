@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
+import freemarker.template.Environment;
 import freemarker.template.TemplateExceptionHandler;
 
 import net.percederberg.liquidsite.Log;
@@ -77,11 +78,16 @@ public class Template {
     public void process(Request request, ContentManager manager, Writer out) 
         throws TemplateException {
 
-        Map  data = request.getAllAttributes();
+        Map          data = request.getAllAttributes();
+        Environment  env;
 
         data.put("liquidsite", new LiquidSiteBean(request, manager));
         try {
-            template.process(data, out);
+            env = template.createProcessingEnvironment(data, out);
+            if (request.getUser() != null) {
+                env.setTimeZone(request.getUser().getTimeZone());
+            }
+            env.process();
         } catch (IOException e) {
             LOG.error(e.getMessage());
             throw new TemplateException(e);
