@@ -147,14 +147,34 @@ public class DatabaseResults {
         }
 
         /**
-         * Returns the size of the row, i.e. the number of columns.
+         * Returns the number of columns in the row.
          * 
          * @return the number of columns in the row
          */
-        public int size() {
+        public int getColumnCount() {
             return elements.size();
         }
 
+        /**
+         * Returns the row value in the specified column. 
+         * 
+         * @param column     the column number, 0 <= column < count
+         * 
+         * @return the row value in the specified column, or
+         *         null if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column number was out
+         *             of bounds
+         */
+        public Object get(int column) throws DatabaseDataException {
+            if (column < 0 || column >= elements.size()) {
+                throw new DatabaseDataException(
+                    "no column " + column + " in database results (" +
+                    elements.size() + " columns present)");
+            }
+            return elements.get(column);
+        }
+        
         /**
          * Returns the row value in the specified column. 
          * 
@@ -179,6 +199,29 @@ public class DatabaseResults {
         /**
          * Returns the row date value in the specified column. 
          * 
+         * @param column     the column number, 0 <= column < count
+         * 
+         * @return the row date value in the specified column, or
+         *         null if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column number was out
+         *             of bounds, or if the value wasn't a date value
+         */
+        public Date getDate(int column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null || obj instanceof Date) {
+                return (Date) obj;
+            } else {
+                throw new DatabaseDataException(
+                    "column " + column + " didn't contain a " +
+                    "date value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row date value in the specified column. 
+         * 
          * @param column     the column name
          * 
          * @return the row date value in the specified column, or
@@ -197,6 +240,32 @@ public class DatabaseResults {
                 throw new DatabaseDataException(
                     "column '" + column + "' didn't contain a " +
                     "date value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row integer value in the specified column. 
+         * 
+         * @param column     the column number, 0 <= column < count
+         * 
+         * @return the row integer value in the specified column, or
+         *         zero (0) if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column number was out
+         *             of bounds, or if the value wasn't an integer 
+         *             value
+         */
+        public int getInt(int column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return 0;
+            } else if (obj instanceof Number) {
+                return ((Number) obj).intValue();
+            } else {
+                throw new DatabaseDataException(
+                    "column " + column + " didn't contain an " +
+                    "integer value: " + obj);
             }
         }
 
@@ -229,6 +298,31 @@ public class DatabaseResults {
         /**
          * Returns the row long value in the specified column. 
          * 
+         * @param column     the column number, 0 <= column < count
+         * 
+         * @return the row long value in the specified column, or
+         *         zero (0) if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column number was out
+         *             of bounds, or if the value wasn't a long value
+         */
+        public long getLong(int column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return 0;
+            } else if (obj instanceof Number) {
+                return ((Number) obj).longValue();
+            } else {
+                throw new DatabaseDataException(
+                    "column " + column + " didn't contain a " +
+                    "long value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row long value in the specified column. 
+         * 
          * @param column     the column name
          * 
          * @return the row long value in the specified column, or
@@ -249,6 +343,27 @@ public class DatabaseResults {
                 throw new DatabaseDataException(
                     "column '" + column + "' didn't contain a " +
                     "long value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row string value in the specified column. 
+         * 
+         * @param column     the column number, 0 <= column < count
+         * 
+         * @return the row string value in the specified column, or
+         *         null if the column contained a NULL value
+         *
+         * @throws DatabaseDataException if the column number was out
+         *             of bounds
+         */
+        public String getString(int column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return null;
+            } else {
+                return obj.toString();
             }
         }
 
