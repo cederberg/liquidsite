@@ -329,6 +329,8 @@ public class AdminUtils {
                     buffer.append("&gt;");
                 } else if (str.charAt(i) == '&') {
                     buffer.append("&amp;");
+                } else if (str.charAt(i) == '"') {
+                    buffer.append("&quot;");
                 } else {
                     buffer.append(str.charAt(i));
                 }
