@@ -41,7 +41,7 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.form.FormException;
+import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
  * A controller for requests to the administration site(s).
@@ -241,7 +241,7 @@ public class AdminController extends Controller {
             user.setEmail(request.getParameter("email"));
             user.save(user);
             request.sendRedirect("home.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditUser(request);
         }
@@ -265,13 +265,14 @@ public class AdminController extends Controller {
         try {
             validator.validateEditPassword(request);
             if (!user.verifyPassword(request.getParameter("password0"))) {
-                throw new FormException("password0",
-                                        "Current password was incorrect");
+                throw new FormValidationException(
+                    "password0",
+                    "Current password was incorrect");
             }
             user.setPassword(request.getParameter("password1"));
             user.save(user);
             request.sendRedirect("home.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditPassword(request);
         }
@@ -385,7 +386,7 @@ public class AdminController extends Controller {
             host.save(request.getUser());
             view.setSiteTreeFocus(request, domain);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageAddDomain(request, parent);
         }
@@ -423,7 +424,7 @@ public class AdminController extends Controller {
             site.save(user);
             view.setSiteTreeFocus(request, site);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditSite(request, parent);
         }
@@ -454,7 +455,7 @@ public class AdminController extends Controller {
             folder.save(user);
             view.setSiteTreeFocus(request, folder);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditFolder(request, parent, null);
         }
@@ -483,8 +484,9 @@ public class AdminController extends Controller {
             validator.validateFile(request);
             param = request.getFileParameter("content");
             if (param == null || param.getSize() <= 0) {
-                throw new FormException("content", 
-                                        "No file content specified");
+                throw new FormValidationException(
+                    "content", 
+                    "No file content specified");
             }
             content = (Content) parent;
             file = new ContentFile(content, param.getName());
@@ -494,7 +496,7 @@ public class AdminController extends Controller {
             param.write(file.getFile());
             view.setSiteTreeFocus(request, file);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditFile(request, parent);
         } catch (IOException e) {
@@ -588,7 +590,7 @@ public class AdminController extends Controller {
             site.save(request.getUser());
             removeLock(site, request.getUser(), false);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditSite(request, site);
         }
@@ -619,7 +621,7 @@ public class AdminController extends Controller {
             folder.save(user);
             removeLock(folder, request.getUser(), false);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditFolder(request, null, folder);
         }
@@ -656,7 +658,7 @@ public class AdminController extends Controller {
             file.save(user);
             removeLock(file, request.getUser(), false);
             request.sendRedirect("site.html");
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.pageEditFile(request, file);
         } catch (IOException e) {
@@ -823,7 +825,7 @@ public class AdminController extends Controller {
             content.save(request.getUser());
             removeLock(content, request.getUser(), false);
             view.dialogClose(request);
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.dialogPublish(request, content);
         } catch (ParseException e) {
@@ -892,7 +894,7 @@ public class AdminController extends Controller {
             content.save(request.getUser());
             removeLock(content, request.getUser(), false);
             view.dialogClose(request);
-        } catch (FormException e) {
+        } catch (FormValidationException e) {
             request.setAttribute("error", e.getMessage());
             view.dialogPublish(request, content);
         } catch (ParseException e) {

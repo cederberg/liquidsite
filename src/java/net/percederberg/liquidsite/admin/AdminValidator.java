@@ -24,7 +24,7 @@ package net.percederberg.liquidsite.admin;
 import java.text.SimpleDateFormat;
 
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.form.FormException;
+import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
 
 /**
@@ -181,9 +181,11 @@ public class AdminValidator {
      * 
      * @param request        the edit user request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validateEditUser(Request request) throws FormException {
+    public void validateEditUser(Request request)
+        throws FormValidationException {
+
         editUser.validate(request);
     }
 
@@ -192,16 +194,18 @@ public class AdminValidator {
      * 
      * @param request        the edit password request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validateEditPassword(Request request) throws FormException {
+    public void validateEditPassword(Request request)
+        throws FormValidationException {
+
         String  pass1 = request.getParameter("password1");
         String  pass2 = request.getParameter("password2");
 
         editPassword.validate(request);
         if (!pass1.equals(pass2)) {
             pass1 = "The password verification doesn't match new password";
-            throw new FormException("password2", pass1);
+            throw new FormValidationException("password2", pass1);
         }
     }
 
@@ -210,9 +214,11 @@ public class AdminValidator {
      * 
      * @param request        the add domain request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validateAddDomain(Request request) throws FormException {
+    public void validateAddDomain(Request request)
+        throws FormValidationException {
+
         addDomain.validate(request);
     }
 
@@ -221,9 +227,11 @@ public class AdminValidator {
      * 
      * @param request        the add or edit site request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validateSite(Request request) throws FormException {
+    public void validateSite(Request request)
+        throws FormValidationException {
+
         site.validate(request);
     }
 
@@ -232,9 +240,11 @@ public class AdminValidator {
      * 
      * @param request        the add or edit folder request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validateFolder(Request request) throws FormException {
+    public void validateFolder(Request request)
+        throws FormValidationException {
+
         folder.validate(request);
     }
 
@@ -243,9 +253,11 @@ public class AdminValidator {
      * 
      * @param request        the add or edit file request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validateFile(Request request) throws FormException {
+    public void validateFile(Request request) 
+        throws FormValidationException {
+
         file.validate(request);
     }
 
@@ -254,9 +266,11 @@ public class AdminValidator {
      * 
      * @param request        the publish request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validatePublish(Request request) throws FormException {
+    public void validatePublish(Request request) 
+        throws FormValidationException {
+
         publish.validate(request);
     }
 }

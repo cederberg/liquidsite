@@ -1,5 +1,5 @@
 /*
- * FormException.java
+ * FormValidationException.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@ package net.percederberg.liquidsite.form;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class FormException extends Exception {
+public class FormValidationException extends Exception {
 
     /**
      * The field name.
@@ -36,12 +36,12 @@ public class FormException extends Exception {
     private String field;
     
     /**
-     * Creates a new form input exception.
+     * Creates a new form validation exception.
      * 
      * @param field          the field name
      * @param message        the error message
      */
-    public FormException(String field, String message) {
+    public FormValidationException(String field, String message) {
         super(message);
         this.field = field;
     }

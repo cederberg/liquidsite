@@ -96,9 +96,11 @@ public class FormValidator {
      * 
      * @param request        the form request
      * 
-     * @throws FormException if the form validation failed
+     * @throws FormValidationException if the form validation failed
      */
-    public void validate(Request request) throws FormException {
+    public void validate(Request request) 
+        throws FormValidationException {
+
         for (int i = 0; i < constraints.size(); i++) {
             ((Constraint) constraints.get(i)).validate(request);
         }
@@ -139,9 +141,12 @@ public class FormValidator {
          * 
          * @param request        the form request
          * 
-         * @throws FormException if the form validation failed
+         * @throws FormValidationException if the form validation 
+         *             failed
          */
-        public void validate(Request request) throws FormException {
+        public void validate(Request request) 
+            throws FormValidationException {
+
             validate(request.getParameter(field));
         }
 
@@ -150,20 +155,21 @@ public class FormValidator {
          * 
          * @param value          the form field value
          * 
-         * @throws FormException if the form validation failed
+         * @throws FormValidationException if the form validation 
+         *             failed
          */
         protected abstract void validate(String value) 
-            throws FormException;
+            throws FormValidationException;
             
         /**
          * Reports a form validation error. This method just throws
          * the adequate form exception.
          * 
-         * @throws FormException the form exception representing the
-         *             constraint error
+         * @throws FormValidationException the validation exception 
+         *             representing the constraint error
          */
-        protected void error() throws FormException {
-            throw new FormException(field, message);
+        protected void error() throws FormValidationException {
+            throw new FormValidationException(field, message);
         }
 
         /**
@@ -174,11 +180,14 @@ public class FormValidator {
          * 
          * @param details        the additional error details
          * 
-         * @throws FormException the form exception representing the
-         *             constraint error
+         * @throws FormValidationException the validation exception 
+         *             representing the constraint error
          */
-        protected void error(String details) throws FormException {
-            throw new FormException(field, message + ": " + details);
+        protected void error(String details) 
+            throws FormValidationException {
+
+            details = message + ": " + details;
+            throw new FormValidationException(field, details);
         }
     }
     
@@ -206,9 +215,12 @@ public class FormValidator {
          * 
          * @param value          the form field value
          * 
-         * @throws FormException if the form validation failed
+         * @throws FormValidationException if the form validation 
+         *             failed
          */
-        protected void validate(String value) throws FormException {
+        protected void validate(String value) 
+            throws FormValidationException {
+
             if (value == null || value.equals("")) {
                 error();
             }
@@ -248,9 +260,12 @@ public class FormValidator {
          * 
          * @param value          the form field value
          * 
-         * @throws FormException if the form validation failed
+         * @throws FormValidationException if the form validation 
+         *             failed
          */
-        protected void validate(String value) throws FormException {
+        protected void validate(String value) 
+            throws FormValidationException {
+
             if (value == null) {
                 return;
             }
@@ -295,9 +310,12 @@ public class FormValidator {
          * 
          * @param value          the form field value
          * 
-         * @throws FormException if the form validation failed
+         * @throws FormValidationException if the form validation 
+         *             failed
          */
-        protected void validate(String value) throws FormException {
+        protected void validate(String value) 
+            throws FormValidationException {
+
             if (value == null) {
                 return;
             }
