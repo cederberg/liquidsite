@@ -35,7 +35,7 @@ import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
 
 /**
- * A helper class for the user view. This class contains methods 
+ * A helper class for the user view. This class contains methods
  * for creating the HTML responses to the pages in the user view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -44,7 +44,7 @@ import net.percederberg.liquidsite.content.User;
 public class UserView extends AdminView {
 
     /**
-     * The maximum number of users or groups on a page. 
+     * The maximum number of users or groups on a page.
      */
     private static final int PAGE_SIZE = 25;
 
@@ -61,8 +61,8 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     public void viewUsers(Request request)
         throws ContentException, ContentSecurityException {
@@ -114,7 +114,7 @@ public class UserView extends AdminView {
         }
         request.setAttribute("domains", findDomains(user));
         request.setAttribute("filter", filter);
-        request.setAttribute("users", users);        
+        request.setAttribute("users", users);
         request.setAttribute("groups", groups);
         request.setAttribute("page", page);
         if (count == 0 || groups != null) {
@@ -135,8 +135,8 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     public void viewGroup(Request request)
         throws ContentException, ContentSecurityException {
@@ -166,8 +166,8 @@ public class UserView extends AdminView {
 
         // Set request parameters
         request.setAttribute("domain", group.getDomainName());
-        request.setAttribute("name", group.getName());        
-        request.setAttribute("users", users);        
+        request.setAttribute("name", group.getName());
+        request.setAttribute("users", users);
         request.setAttribute("page", page);
         if (count == 0) {
             request.setAttribute("pages", 1);
@@ -189,13 +189,14 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    public void viewEditUser(Request request, Domain domain, User user) 
+    public void viewEditUser(Request request, Domain domain, User user)
         throws ContentException, ContentSecurityException {
 
         String     defaultName;
+        boolean    defaultEnabled;
         String     defaultRealName;
         String     defaultEmail;
         String     defaultComment;
@@ -208,31 +209,38 @@ public class UserView extends AdminView {
         // Find default values
         if (user != null) {
             defaultName = user.getName();
+            defaultEnabled = user.getEnabled();
             defaultRealName = user.getRealName();
             defaultEmail = user.getEmail();
             defaultComment = user.getComment();
         } else {
             defaultName = "";
+            defaultEnabled = true;
             defaultRealName = "";
             defaultEmail = "";
             defaultComment = "";
         }
 
         // Set request parameters
-        request.setAttribute("domain", domain.getName());
-        str = request.getParameter("name", defaultName); 
+        if (domain == null) {
+            request.setAttribute("domain", "");
+        } else {
+            request.setAttribute("domain", domain.getName());
+        }
+        str = request.getParameter("name", defaultName);
         request.setAttribute("name", str);
-        str = request.getParameter("password", ""); 
+        str = request.getParameter("password", "");
         request.setAttribute("password", str);
-        str = request.getParameter("realname", defaultRealName); 
+        str = request.getParameter("realname", defaultRealName);
         request.setAttribute("realname", str);
-        str = request.getParameter("email", defaultEmail); 
+        str = request.getParameter("email", defaultEmail);
         request.setAttribute("email", str);
-        str = request.getParameter("comment", defaultComment); 
+        str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
         list = findGroups(domain, "");
         request.setAttribute("groups", list);
         if (request.getParameter("comment") == null) {
+            request.setAttribute("enabled", String.valueOf(defaultEnabled));
             if (user != null) {
                 groups = user.getGroups();
                 for (int i = 0; i < groups.length; i++) {
@@ -240,6 +248,11 @@ public class UserView extends AdminView {
                 }
             }
         } else {
+            if (request.getParameter("enabled") != null) {
+                request.setAttribute("enabled", "true");
+            } else {
+                request.setAttribute("enabled", "false");
+            }
             iter = request.getAllParameters().keySet().iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
@@ -260,10 +273,10 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    public void viewEditGroup(Request request, Group group) 
+    public void viewEditGroup(Request request, Group group)
         throws ContentException, ContentSecurityException {
 
         String  defaultName;
@@ -283,13 +296,13 @@ public class UserView extends AdminView {
         }
 
         // Set request parameters
-        str = request.getParameter("domain", ""); 
+        str = request.getParameter("domain", "");
         request.setAttribute("domain", str);
-        str = request.getParameter("name", defaultName); 
+        str = request.getParameter("name", defaultName);
         request.setAttribute("name", str);
-        str = request.getParameter("description", defaultDescription); 
+        str = request.getParameter("description", defaultDescription);
         request.setAttribute("description", str);
-        str = request.getParameter("comment", defaultComment); 
+        str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
         request.sendTemplate("admin/edit-group.ftl");
     }
@@ -330,8 +343,8 @@ public class UserView extends AdminView {
     }
 
     /**
-     * Finds the users in a group. The users will not be added 
-     * directly to the result list, but rather a simplified hash map 
+     * Finds the users in a group. The users will not be added
+     * directly to the result list, but rather a simplified hash map
      * containing only certain properties will be added.
      *
      * @param group          the group
@@ -342,7 +355,7 @@ public class UserView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private ArrayList findUsers(Group group, 
+    private ArrayList findUsers(Group group,
                                 int page)
         throws ContentException {
 

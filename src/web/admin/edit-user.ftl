@@ -65,6 +65,21 @@
         </tr>
         <tr>
           <th>
+            Enabled:
+          </th>
+          <td class="field">
+<#if enabled = "true">
+            <input type="checkbox" tabindex="3" checked="checked"
+<#else>
+            <input type="checkbox" tabindex="3"
+</#if>
+                   name="enabled" value="true" />
+            <p>The enabled flag. If the user is not enabled, no logins
+            will be permitted by this user.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
             Password:
           </th>
           <td class="field">
@@ -84,7 +99,7 @@
             Name:
           </th>
           <td class="field">
-            <input type="text" tabindex="3" size="30"
+            <input type="text" tabindex="4" size="30"
                    name="realname" value="${realname}" />
             <p>The user name to be presented on the site. This field
             can be modified by the user.</p>
@@ -95,7 +110,7 @@
             Email:
           </th>
           <td class="field">
-            <input type="text" tabindex="4" size="30"
+            <input type="text" tabindex="5" size="30"
                    name="email" value="${email}" />
             <p>The user email address. This field can be modified by 
             the user.</p>
@@ -106,7 +121,7 @@
             Comment:
           </th>
           <td class="field">
-            <input type="text" tabindex="5" size="30"
+            <input type="text" tabindex="6" size="30"
                    name="comment" value="${comment}" />
             <p>The user comment. This annotation area is only visible
             for the domain administrators and isn't shown for the 
@@ -120,10 +135,10 @@
           <td class="field">
 <#list groups as group>
   <#if memberships.containsKey(group.name)>
-            <input type="checkbox" tabindex="6" checked="checked"
+            <input type="checkbox" tabindex="7" checked="checked"
                    name="member${group_index}" value="${group.name}" />
   <#else>
-            <input type="checkbox" tabindex="6"
+            <input type="checkbox" tabindex="7"
                    name="member${group_index}" value="${group.name}" />
   </#if>
             <strong>${group.name}</strong>
@@ -137,11 +152,11 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="9" onclick="previous()">
+            <button type="button" tabindex="11" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" tabindex="8">
+            <button type="submit" tabindex="10">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>

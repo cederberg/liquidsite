@@ -32,7 +32,7 @@ import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
- * The users add request handler. This class handles the various 
+ * The users add request handler. This class handles the various
  * add workflows for the users view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -50,14 +50,14 @@ public class UsersAddFormHandler extends AdminFormHandler {
     /**
      * Displays a form for the specified workflow step. This method
      * will NOT be called when returning to the start page.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
@@ -75,20 +75,20 @@ public class UsersAddFormHandler extends AdminFormHandler {
 
     /**
      * Validates a form for the specified workflow step. If the form
-     * validation fails in this step, the form page for the workflow 
-     * step will be displayed again with an 'error' attribute 
+     * validation fails in this step, the form page for the workflow
+     * step will be displayed again with an 'error' attribute
      * containing the message in the validation exception.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @throws FormValidationException if the form request data 
+     *
+     * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
         throws FormValidationException {
 
-        UsersEditFormHandler  edit = UsersEditFormHandler.getInstance(); 
+        UsersEditFormHandler  edit = UsersEditFormHandler.getInstance();
         String                type = request.getParameter("type", "");
         String                message;
 
@@ -104,26 +104,26 @@ public class UsersAddFormHandler extends AdminFormHandler {
     /**
      * Handles a validated form for the specified workflow step. This
      * method returns the next workflow step, i.e. the step used when
-     * calling the display method. If the special zero (0) workflow 
+     * calling the display method. If the special zero (0) workflow
      * step is returned, the workflow is assumed to have terminated.
-     * Note that this method also allows additional validation to 
-     * occur. By returning the incoming workflow step number and 
+     * Note that this method also allows additional validation to
+     * occur. By returning the incoming workflow step number and
      * setting the appropriate request attributes the same results as
      * in the normal validate method can be achieved. For recoverable
      * errors, this is the recommended course of action.
-     *  
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @return the next workflow step, or 
+     *
+     * @return the next workflow step, or
      *         zero (0) if the workflow has finished
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    protected int handleStep(Request request, int step) 
+    protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
         String  type = request.getParameter("type", "");
@@ -146,17 +146,18 @@ public class UsersAddFormHandler extends AdminFormHandler {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddUser(Request request, Domain domain) 
+    private void handleAddUser(Request request, Domain domain)
         throws ContentException, ContentSecurityException {
 
         ContentManager        manager = AdminUtils.getContentManager();
-        UsersEditFormHandler  edit = UsersEditFormHandler.getInstance(); 
+        UsersEditFormHandler  edit = UsersEditFormHandler.getInstance();
         User                  user;
 
         user = new User(manager, domain, request.getParameter("name"));
+        user.setEnabled(request.getParameter("enabled") != null);
         user.setPassword(request.getParameter("password"));
         user.setRealName(request.getParameter("realname", ""));
         user.setEmail(request.getParameter("email", ""));
@@ -173,10 +174,10 @@ public class UsersAddFormHandler extends AdminFormHandler {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleAddGroup(Request request, Domain domain) 
+    private void handleAddGroup(Request request, Domain domain)
         throws ContentException, ContentSecurityException {
 
         ContentManager   manager = AdminUtils.getContentManager();
@@ -198,10 +199,10 @@ public class UsersAddFormHandler extends AdminFormHandler {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private Domain getDomain(Request request) 
+    private Domain getDomain(Request request)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();

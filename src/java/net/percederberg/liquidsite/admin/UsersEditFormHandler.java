@@ -36,7 +36,7 @@ import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
 
 /**
- * The users edit request handler. This class handles the various 
+ * The users edit request handler. This class handles the various
  * edit workflows for the users view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -60,10 +60,10 @@ public class UsersEditFormHandler extends AdminFormHandler {
     private FormValidator group = new FormValidator();
 
     /**
-     * Returns an instance of this class. If a prior instance has 
+     * Returns an instance of this class. If a prior instance has
      * been created, it will be returned instead of creating a new
-     * one. 
-     * 
+     * one.
+     *
      * @return an instance of a users edit form handler
      */
     public static UsersEditFormHandler getInstance() {
@@ -92,7 +92,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
         String  numbers = "0123456789";
         String  nameChars = upperCase + lowerCase + numbers + "-_";
         String  error;
-        
+
         // Add and edit user validator
         user.addRequiredConstraint("name", "No login name specified");
         error = "Login name contains invalid character";
@@ -107,14 +107,14 @@ public class UsersEditFormHandler extends AdminFormHandler {
     /**
      * Displays a form for the specified workflow step. This method
      * will NOT be called when returning to the start page.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
@@ -134,14 +134,14 @@ public class UsersEditFormHandler extends AdminFormHandler {
 
     /**
      * Validates a form for the specified workflow step. If the form
-     * validation fails in this step, the form page for the workflow 
-     * step will be displayed again with an 'error' attribute 
+     * validation fails in this step, the form page for the workflow
+     * step will be displayed again with an 'error' attribute
      * containing the message in the validation exception.
-     * 
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @throws FormValidationException if the form request data 
+     *
+     * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
@@ -163,26 +163,26 @@ public class UsersEditFormHandler extends AdminFormHandler {
     /**
      * Handles a validated form for the specified workflow step. This
      * method returns the next workflow step, i.e. the step used when
-     * calling the display method. If the special zero (0) workflow 
+     * calling the display method. If the special zero (0) workflow
      * step is returned, the workflow is assumed to have terminated.
-     * Note that this method also allows additional validation to 
-     * occur. By returning the incoming workflow step number and 
+     * Note that this method also allows additional validation to
+     * occur. By returning the incoming workflow step number and
      * setting the appropriate request attributes the same results as
      * in the normal validate method can be achieved. For recoverable
      * errors, this is the recommended course of action.
-     *  
+     *
      * @param request        the request object
      * @param step           the workflow step
-     * 
-     * @return the next workflow step, or 
+     *
+     * @return the next workflow step, or
      *         zero (0) if the workflow has finished
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    protected int handleStep(Request request, int step) 
+    protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
         Object  ref = getReference(request);
@@ -199,18 +199,19 @@ public class UsersEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit user form.
-     * 
+     *
      * @param request        the request object
      * @param user           the user object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditUser(Request request, User user) 
+    private void handleEditUser(Request request, User user)
         throws ContentException, ContentSecurityException {
 
+        user.setEnabled(request.getParameter("enabled") != null);
         if (request.getParameter("password") != null) {
             user.setPassword(request.getParameter("password"));
         }
@@ -223,16 +224,16 @@ public class UsersEditFormHandler extends AdminFormHandler {
 
     /**
      * Handles the edit group form.
-     * 
+     *
      * @param request        the request object
      * @param group          the group object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private void handleEditGroup(Request request, Group group) 
+    private void handleEditGroup(Request request, Group group)
         throws ContentException, ContentSecurityException {
 
         group.setDescription(request.getParameter("description", ""));
@@ -246,15 +247,15 @@ public class UsersEditFormHandler extends AdminFormHandler {
      *
      * @param request        the request object
      *
-     * @return the request reference, or 
+     * @return the request reference, or
      *         null for none
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    private Object getReference(Request request) 
+    private Object getReference(Request request)
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
@@ -268,9 +269,9 @@ public class UsersEditFormHandler extends AdminFormHandler {
         } else {
             domain = manager.getDomain(request.getUser(), domainName);
         }
-        if (type.equals("user")) { 
+        if (type.equals("user")) {
             return manager.getUser(domain, name);
-        } else if (type.equals("group")) { 
+        } else if (type.equals("group")) {
             return manager.getGroup(domain, name);
         } else {
             return null;
@@ -307,7 +308,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
         while (iter.hasNext()) {
             param = iter.next().toString();
             if (param.startsWith("member")) {
-                group = manager.getGroup(user.getDomain(), 
+                group = manager.getGroup(user.getDomain(),
                                          request.getParameter(param));
                 if (remove.contains(group)) {
                     remove.remove(group);
