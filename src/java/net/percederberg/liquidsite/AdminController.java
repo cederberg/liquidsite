@@ -22,7 +22,7 @@
 package net.percederberg.liquidsite;
 
 /**
- * A controller for the administration site.
+ * A controller for requests to the administration site(s).
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
