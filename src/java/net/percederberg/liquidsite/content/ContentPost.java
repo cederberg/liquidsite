@@ -185,34 +185,57 @@ public class ContentPost extends Content {
         super.doValidate();
         parent = getParent();
         if (parent == null) {
-            throw new ContentException("no parent topic set for post");
+            throw new ContentException("no parent set for post");
         } else if (parent.getCategory() != Content.TOPIC_CATEGORY) {
             throw new ContentException("post parent must be topic");
         }
-        parent = parent.getParent();
-        if (parent == null) {
-            throw new ContentException("no parent forum set for topic");
-        } else if (parent.getCategory() != Content.FORUM_CATEGORY) {
-            throw new ContentException("topic parent must be forum");
-        }
+    }
+
+    /**
+     * Inserts the object data into the database.
+     *
+     * @param user           the user performing the operation
+     * @param con            the database connection to use
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException {
+
+        ContentTopic  parent;
+
+        parent = (ContentTopic) getParent();
         if (getName().equals("")) {
-            setName(createName());
+            setName(createName(parent));
         }
+        if (getName().equals("1")) {
+            parent.setTitle(getSubject());
+        }
+        super.doInsert(user, con);
+        parent.doUpdate(user, con);
     }
 
     /**
      * Creates a new name for the post. The name will be the next
      * available number among the parent thread posts.
      *
+     * @param parent         the content parent
+     *
      * @return the new name
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    private String createName() throws ContentException {
+    private String createName(ContentTopic parent)
+        throws ContentException {
+
         ContentSelector  selector;
         Content[]        children;
         int              value;
 
         selector = new ContentSelector(getDomainName());
-        selector.requireParent(getParent());
+        selector.requireParent(parent);
         selector.requireCategory(getCategory());
         selector.sortById(false);
         selector.limitResults(0, 1);

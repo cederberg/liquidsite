@@ -33,6 +33,11 @@ import net.percederberg.liquidsite.dbo.ContentData;
 public class ContentTopic extends Content {
 
     /**
+     * The title content attribute.
+     */
+    private static final String TITLE_ATTRIBUTE = "TITLE";
+
+    /**
      * The locked content attribute.
      */
     private static final String LOCKED_ATTRIBUTE = "LOCKED";
@@ -51,6 +56,7 @@ public class ContentTopic extends Content {
 
         super(manager, parent.getDomain(), Content.TOPIC_CATEGORY);
         setParent(parent);
+        setAttribute(TITLE_ATTRIBUTE, "");
         setAttribute(LOCKED_ATTRIBUTE, "0");
     }
 
@@ -73,10 +79,11 @@ public class ContentTopic extends Content {
     }
 
     /**
-     * Sets the topic name. The topic name must be numeric and
-     * strictly increasing. If no name is set one will be assigned
-     * automatically upon insertion in the database. Topic names
-     * should NEVER be changed.
+     * Sets the topic name. The topic name must be numeric and if
+     * assigned manually, care must be taken to make sure all topics
+     * in a forum have assigned names (or errors may occur). If no
+     * name is set one will be assigned automatically upon insertion
+     * in the database. Topic names should NEVER be changed.
      *
      * @param name           the new name
      */
@@ -86,6 +93,24 @@ public class ContentTopic extends Content {
         } catch (NumberFormatException e) {
             // Do nothing
         }
+    }
+
+    /**
+     * Returns the topic title.
+     *
+     * @return the topic title
+     */
+    public String getTitle() {
+        return getAttribute(TITLE_ATTRIBUTE);
+    }
+
+    /**
+     * Sets the topic title.
+     *
+     * @param title          the new topic title
+     */
+    public void setTitle(String title) {
+        setAttribute(TITLE_ATTRIBUTE, title);
     }
 
     /**
@@ -117,13 +142,35 @@ public class ContentTopic extends Content {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
+        Content  parent;
+
         super.doValidate();
-        if (getParent() == null) {
+        parent = getParent();
+        if (parent == null) {
             throw new ContentException("no parent set for topic");
+        } else if (parent.getCategory() != Content.FORUM_CATEGORY) {
+            throw new ContentException("topic parent must be forum");
+        } else if (getTitle().equals("")) {
+            throw new ContentException("no topic title set");
         }
+    }
+
+    /**
+     * Inserts the object data into the database.
+     *
+     * @param user           the user performing the operation
+     * @param con            the database connection to use
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException {
+
         if (getName().equals("")) {
             setName(createName());
         }
+        super.doInsert(user, con);
     }
 
     /**
@@ -131,6 +178,9 @@ public class ContentTopic extends Content {
      * available number among the parent forum topics.
      *
      * @return the new name
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     private String createName() throws ContentException {
         ContentSelector  selector;
