@@ -225,16 +225,26 @@ public class ContentAddFormHandler extends AdminFormHandler {
         ContentDocument  doc;
         Map              params = request.getAllParameters();
         Iterator         iter = params.keySet().iterator();
-        String           name;
+        String           id;
+        int              type;
+        String           str;
 
         doc = new ContentDocument(manager, parent);
         doc.setName(request.getParameter("name"));
         doc.setComment(request.getParameter("comment"));
         while (iter.hasNext()) {
-            name = iter.next().toString();
-            if (name.startsWith("property.")) {
-                doc.setProperty(name.substring(9), 
-                                request.getParameter(name));
+            str = iter.next().toString();
+            if (str.startsWith("property.")) {
+                id = str.substring(9);
+                str = request.getParameter("property." + id);
+                doc.setProperty(id, str);
+                try {
+                    str = request.getParameter("propertytype." + id);
+                    type = Integer.parseInt(str);
+                } catch (NumberFormatException e) {
+                    type = DocumentProperty.STRING_TYPE;
+                }
+                doc.setPropertyType(id, type);
             }
         }
         doc.save(request.getUser());

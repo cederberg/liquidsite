@@ -42,6 +42,11 @@ public class ContentDocument extends Content {
     private static final String PROPERTY_PREFIX = "PROPERTY.";
 
     /**
+     * The document property type content attribute prefix.
+     */
+    private static final String PROPERTY_TYPE_PREFIX = "PROPERTYTYPE.";
+
+    /**
      * Creates a new document with default values.
      * 
      * @param manager        the content manager to use
@@ -76,23 +81,23 @@ public class ContentDocument extends Content {
     }
 
     /**
-     * Returns all property names in this document. Note that this
-     * set may differ from what the section specifies, normally due
-     * to some properties not being defined in the document. If a
+     * Returns all property identfiers in this document. Note that
+     * this set may differ from what the section specifies, normally
+     * due to some properties not being defined in the document. If a
      * document has been moved, however, additional properties may be
      * present.
-     * 
-     * @return a collection of property names
+     *
+     * @return a collection of property identifiers
      */
-    public Collection getPropertyNames() {
+    public Collection getPropertyIdentifiers() {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
-        String     name;
+        String     id;
         
         while (iter.hasNext()) {
-            name = iter.next().toString();
-            if (name.startsWith(PROPERTY_PREFIX)) {
-                list.add(name.substring(PROPERTY_PREFIX.length()));
+            id = iter.next().toString();
+            if (id.startsWith(PROPERTY_PREFIX)) {
+                list.add(id.substring(PROPERTY_PREFIX.length()));
             }
         }
         return list;
@@ -121,6 +126,41 @@ public class ContentDocument extends Content {
      */
     public void setProperty(String id, String value) {
         setAttribute(PROPERTY_PREFIX + id, value);
+        if (value == null) {
+            setAttribute(PROPERTY_TYPE_PREFIX + id, null);
+        }
+    }
+
+    /**
+     * Returns an identified document property type.
+     * 
+     * @param id             the document property identifier 
+     * 
+     * @return the document property type, or
+     *         STRING_TYPE if not set
+     * 
+     * @see DocumentProperty#STRING_TYPE
+     * @see DocumentProperty#TEXT_TYPE
+     * @see DocumentProperty#HTML_TYPE
+     */
+    public int getPropertyType(String id) {
+        String  value = getAttribute(PROPERTY_TYPE_PREFIX + id);
+        
+        if (value == null) {
+            return DocumentProperty.STRING_TYPE;
+        } else {
+            return Integer.parseInt(value);
+        }
+    }
+
+    /**
+     * Sets a document property type.
+     * 
+     * @param id             the document property identifier
+     * @param type           the document property type
+     */
+    public void setPropertyType(String id, int type) {
+        setAttribute(PROPERTY_TYPE_PREFIX + id, String.valueOf(type));
     }
 
     /**

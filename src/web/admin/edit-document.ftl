@@ -88,6 +88,8 @@
             ${prop.name}:
           </th>
           <td class="field">
+          <input type="hidden" 
+                 name="propertytype.${prop.id}" value="${prop.type}" />
   <#if prop.type == 1>
             <input type="text" tabindex="3" size="50"
                    name="property.${prop.id}" value="${data[prop.id]}" />

@@ -276,8 +276,10 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         Map       params = request.getAllParameters();
         Iterator  iter = params.keySet().iterator();
-        String    name;
         int       section;
+        String    id;
+        int       type;
+        String    str;
 
         doc.setRevisionNumber(0);
         doc.setName(request.getParameter("name"));
@@ -289,17 +291,25 @@ public class ContentEditFormHandler extends AdminFormHandler {
             // This is ignored
         }
         while (iter.hasNext()) {
-            name = iter.next().toString();
-            if (name.startsWith("property.")) {
-                doc.setProperty(name.substring(9), 
-                                request.getParameter(name));
+            str = iter.next().toString();
+            if (str.startsWith("property.")) {
+                id = str.substring(9);
+                str = request.getParameter("property." + id);
+                doc.setProperty(id, str);
+                try {
+                    str = request.getParameter("propertytype." + id);
+                    type = Integer.parseInt(str);
+                } catch (NumberFormatException e) {
+                    type = DocumentProperty.STRING_TYPE;
+                }
+                doc.setPropertyType(id, type);
             }
         }
-        iter = doc.getPropertyNames().iterator();
+        iter = doc.getPropertyIdentifiers().iterator();
         while (iter.hasNext()) {
-            name = iter.next().toString();
-            if (!params.containsKey("property." + name)) {
-                doc.setProperty(name, null);
+            id = iter.next().toString();
+            if (!params.containsKey("property." + id)) {
+                doc.setProperty(id, null);
             }
         }
         doc.save(request.getUser());
