@@ -329,27 +329,10 @@ public class ScriptView {
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
-        float         size = file.getFile().length();
         String        str;
 
         buffer.append("objectAddProperty('Size', '");
-        if (size > 1000000) {
-            size /= 1000000;
-            str = "MB";
-        } else if (size > 2000) {
-            size /= 1000;
-            str = "kB";
-        } else {
-            str = "bytes";
-        }
-        size = Math.round(size * 10) / 10.0f;
-        if (size == (int) size) {
-            buffer.append((int) size);
-        } else {
-            buffer.append(size);
-        }
-        buffer.append(" ");
-        buffer.append(str);
+        buffer.append(AdminUtils.formatFileSize(file.getFile().length()));
         buffer.append("');\n");
         buffer.append("objectAddProperty('Type', ");
         str = file.getMimeType();

@@ -181,6 +181,34 @@ public class AdminUtils {
     }
 
     /**
+     * Formats a file size to a printable string.
+     *
+     * @param size           the file size to format
+     *
+     * @return a printable string with the file size
+     */
+    public static String formatFileSize(long size) {
+        float   value = size;
+        String  unit;
+
+        if (size > 1000000) {
+            value /= 1000000;
+            unit = " MB";
+        } else if (size > 2000) {
+            value /= 1000;
+            unit = " kB";
+        } else {
+            unit = " bytes";
+        }
+        value = Math.round(value * 10) / 10.0f;
+        if (value == (int) value) {
+            return (int) value + unit;
+        } else {
+            return value + unit;
+        }
+    }
+
+    /**
      * Returns the JavaScript representation of a date. The user
      * timezone will be used.
      *
