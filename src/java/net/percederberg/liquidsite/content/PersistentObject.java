@@ -61,7 +61,8 @@ public abstract class PersistentObject {
      * 
      * @throws ContentException if no content manager is available
      */
-    protected static ContentManager getContentManager() 
+    // TODO: remove this method
+    static ContentManager getContentManager() 
         throws ContentException {
 
         return ContentManager.getInstance();
@@ -75,7 +76,8 @@ public abstract class PersistentObject {
      * @throws ContentException if no content manager or database
      *             connector is available
      */
-    protected static DatabaseConnector getDatabase() 
+    // TODO: remove this method
+    private static DatabaseConnector getDatabase() 
         throws ContentException {
         
         DatabaseConnector  db;
@@ -96,7 +98,8 @@ public abstract class PersistentObject {
      * @throws ContentException if no database connector is available
      *             or connection could be made
      */
-    protected static DatabaseConnection getDatabaseConnection() 
+    // TODO: remove this method
+    static DatabaseConnection getDatabaseConnection() 
         throws ContentException {
         
         try {
@@ -112,9 +115,70 @@ public abstract class PersistentObject {
      * 
      * @param con            the database connection
      */
-    protected static void returnDatabaseConnection(DatabaseConnection con) {
+    // TODO: remove this method
+    static void returnDatabaseConnection(DatabaseConnection con) {
         try {
             getDatabase().returnConnection(con);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            con.close();
+        }
+    }
+
+    /**
+     * Returns the content manager database connector.
+     * 
+     * @param manager        the content manager to use
+     * 
+     * @return the content manager database connector
+     * 
+     * @throws ContentException if no database connector was
+     *             available
+     */
+    static DatabaseConnector getDatabase(ContentManager manager) 
+        throws ContentException {
+        
+        DatabaseConnector  db;
+
+        db = manager.getApplication().getDatabase();
+        if (db == null) {
+            LOG.error("no database connector available");
+            throw new ContentException("no database connector available");
+        }
+        return db;
+    }
+
+    /**
+     * Returns a database connection.
+     * 
+     * @param manager        the content manager to use
+     *
+     * @return a database connection
+     * 
+     * @throws ContentException if no database connector is available
+     *             or no database connection could be made
+     */
+    static DatabaseConnection getDatabaseConnection(ContentManager manager) 
+        throws ContentException {
+        
+        try {
+            return getDatabase(manager).getConnection();
+        } catch (DatabaseConnectionException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
+    }
+
+    /**
+     * Disposes of a database connection.
+     * 
+     * @param manager        the content manager to use
+     * @param con            the database connection
+     */
+    static void returnDatabaseConnection(ContentManager manager,
+                                         DatabaseConnection con) {
+        try {
+            getDatabase(manager).returnConnection(con);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             con.close();
