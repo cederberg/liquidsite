@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
@@ -64,6 +65,11 @@ public class FrontControllerServlet extends HttpServlet
      * The application database connector.
      */
     private DatabaseConnector database = null;
+
+    /**
+     * The application content manager.
+     */
+    private ContentManager contentManager = null;
 
     /**
      * The installation controller.
@@ -136,6 +142,9 @@ public class FrontControllerServlet extends HttpServlet
             LOG.error(e.getMessage());
         }
 
+        // Initialize content manager
+        contentManager = new ContentManager(this);
+
         // Initialize controllers
         controllers = new ArrayList();
         if (!config.isInitialized()) {
@@ -153,6 +162,7 @@ public class FrontControllerServlet extends HttpServlet
         for (int i = 0; i < controllers.size(); i++) {
             ((Controller) controllers.get(i)).destroy();
         }
+        contentManager.close();
         database.setPoolSize(0);
         try {
             database.update();
