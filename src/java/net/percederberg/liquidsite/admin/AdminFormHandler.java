@@ -137,7 +137,7 @@ abstract class AdminFormHandler extends FormHandler {
         throws FormHandlingException {
 
         if (step == 0) {
-            request.sendRedirect(startPage);
+            displayDone(request);
         } else {
             try {
                 displayStep(request, step);
@@ -166,6 +166,28 @@ abstract class AdminFormHandler extends FormHandler {
     protected abstract void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException;
 
+    /**
+     * Displays the workflow finished page. By default this method
+     * sends a redirect to the start page.
+     *  
+     * @param request        the request object
+     */
+    protected void displayDone(Request request) {
+        request.sendRedirect(startPage);
+    }
+
+    /**
+     * Displays the workflow error page. By default this method 
+     * displays the site view error page and then redirects to the
+     * start page.
+     * 
+     * @param request        the request object
+     * @param message        the error message
+     */
+    protected void displayError(Request request, String message) {
+        SITE_VIEW.pageError(request, message, startPage);
+    }
+    
     /**
      * Validates a form for the specified workflow step. If the form
      * validation fails in this step, the form page for the workflow 
@@ -343,6 +365,20 @@ abstract class AdminFormHandler extends FormHandler {
         }
     }
 
+
+    /**
+     * This method is called when an error was encountered during the
+     * processing. This event can be used for logging errors and 
+     * displaying a simple error page. By default this method does 
+     * nothing.
+     * 
+     * @param request        the request object
+     * @param e              the form handling exception
+     */
+    protected void workflowError(Request request, FormHandlingException e) {
+        displayError(request, e.getMessage());
+    }
+
     /**
      * Returns the domain or content referenced by a request. When
      * returning a content object, the latest revision (including 
@@ -364,8 +400,8 @@ abstract class AdminFormHandler extends FormHandler {
         User     user = request.getUser();
         String   type = request.getParameter("type");
         String   id = request.getParameter("id");
-        Content  content;
-        Content  revision;
+        Content  content = null;
+        Content  revision = null;
         String   message;
         int      value;
         
@@ -382,7 +418,9 @@ abstract class AdminFormHandler extends FormHandler {
                 throw new ContentSecurityException(message);
             }
             content = getContentManager().getContent(user, value);
-            revision = content.getRevision(0);
+            if (content != null) {
+                revision = content.getRevision(0);
+            }
             return (revision == null) ? content : revision;
         }
     }

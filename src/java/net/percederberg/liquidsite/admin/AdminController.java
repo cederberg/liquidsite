@@ -34,10 +34,8 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSecurityException;
-import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.form.FormHandlingException;
 import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
@@ -83,6 +81,7 @@ public class AdminController extends Controller {
         super(app);
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());
+        workflows.add(new SiteDeleteFormHandler());
     }
 
     /**
@@ -135,8 +134,6 @@ public class AdminController extends Controller {
             processLogout(request);
         } else if (path.equals("edit-home.html")) {
             processEditUser(request);
-        } else if (path.equals("delete-site.html")) {
-            processDeleteObject(request);
         } else if (path.equals("publish-site.html")) {
             processPublishObject(request);
         } else if (path.equals("unpublish-site.html")) {
@@ -204,12 +201,7 @@ public class AdminController extends Controller {
         for (int i = 0; i < workflows.size(); i++) {
             formHandler = (AdminFormHandler) workflows.get(i);
             if (formHandler.getFormPage().equals(page)) {
-                try {
-                    formHandler.process(request);
-                } catch (FormHandlingException e) {
-                    page = formHandler.getStartPage();
-                    view.pageError(request, e.getMessage(), page);
-                }
+                formHandler.process(request);
                 return;
             }
         }
@@ -324,93 +316,6 @@ public class AdminController extends Controller {
             LOG.warning(e.getMessage());
             view.pageError(request, e);
         }
-    }
-
-    /**
-     * Processes the delete object requests for the site view.
-     * 
-     * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
-     */
-    private void processDeleteObject(Request request) 
-        throws RequestException {
-
-        Object  obj;
-        
-        try {
-            obj = view.getRequestReference(request);
-            if (request.getParameter("confirmed") == null) {
-                view.dialogDelete(request, obj);
-            } else if (obj instanceof Domain) {
-                processDeleteDomain(request, (Domain) obj);
-            } else {
-                processDeleteContent(request, (Content) obj);
-            }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            view.dialogError(request, e);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            view.dialogError(request, e);
-        }
-    }
-
-    /**
-     * Processes the confirmed delete domain requests for the site 
-     * view.
-     * 
-     * @param request        the request object
-     * @param domain         the domain to delete
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processDeleteDomain(Request request, Domain domain) 
-        throws ContentException, ContentSecurityException {
-
-        if (domain.equals(request.getSite().getDomain())) {
-            throw new ContentSecurityException(
-                "cannot remove the domain containing the site " +
-                "currently being used");
-        }
-        domain.delete(request.getUser());
-        view.setSiteTreeFocus(request, null);
-        view.dialogClose(request);
-    }
-
-    /**
-     * Processes the confirmed delete content requests for the site 
-     * view.
-     * 
-     * @param request        the request object
-     * @param content        the content object to delete
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    private void processDeleteContent(Request request, Content content)
-        throws ContentException, ContentSecurityException {
-
-        Content  parent;
-
-        if (content.equals(request.getSite())) {
-            throw new ContentSecurityException(
-                "cannot remove the site currently being used");
-        }
-        content.delete(request.getUser());
-        parent = content.getParent();
-        if (parent == null) {
-            view.setSiteTreeFocus(request, content.getDomain());
-        } else {
-            view.setSiteTreeFocus(request, parent);
-        }
-        view.dialogClose(request);
     }
 
     /**

@@ -37,14 +37,38 @@ public abstract class FormHandler {
     /**
      * Processes the form request. This method is called for each 
      * incoming request to the form workflow, including the first one
-     * requesting presentation of the (first) form. 
+     * requesting presentation of the (first) form. This method 
+     * handles errors by calling the error event method. To handle
+     * errors externally, use the processWithoutErrorHandling method
+     * instead.
+     * 
+     * @param request        the request object
+     * 
+     * @see #processWithoutErrorHandling
+     */
+    public final void process(Request request) {
+        try {
+            processWithoutErrorHandling(request); 
+        } catch (FormHandlingException e) {
+            workflowError(request, e);
+        }
+    }
+    
+    /**
+     * Processes the form request. This method is called for each 
+     * incoming request to the form workflow, including the first one
+     * requesting presentation of the (first) form. Note that this 
+     * method will not trigger the error event on error, but will 
+     * return an exception instead.
      * 
      * @param request        the request object
      *
      * @throws FormHandlingException if an error was encountered 
      *             while processing the form
+     * 
+     * @see #process
      */
-    public final void process(Request request) 
+    public final void processWithoutErrorHandling(Request request) 
         throws FormHandlingException {
 
         String  stepParam;
@@ -175,5 +199,17 @@ public abstract class FormHandler {
      */
     protected void workflowExited(Request request)
         throws FormHandlingException {
+    }
+
+    /**
+     * This method is called when an error was encountered during the
+     * processing. This event can be used for logging errors and 
+     * displaying a simple error page. By default this method does 
+     * nothing.
+     * 
+     * @param request        the request object
+     * @param e              the form handling exception
+     */
+    protected void workflowError(Request request, FormHandlingException e) {
     }
 }

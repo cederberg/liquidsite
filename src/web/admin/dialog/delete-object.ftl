@@ -1,10 +1,18 @@
 <#assign title>Delete ${type?cap_first}</#assign>
 <#include "header.ftl">
 
+    <script type="text/javascript">
+    function previous() {
+        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        document.forms.item(0).submit();
+    }
+    </script>
+
     <form method="post" accept-charset="UTF-8">
+      <input type="hidden" name="liquidsite.step" value="1" />
+      <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
-      <input type="hidden" name="confirmed" value="true" />
       <table class="dialog">
         <tr>
           <td class="decoration" rowspan="4">
@@ -39,7 +47,7 @@
         </tr>
         <tr>
           <td class="buttons">
-            <button tabindex="2" onclick="window.close();">
+            <button type="button" tabindex="2" onclick="previous();">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>
