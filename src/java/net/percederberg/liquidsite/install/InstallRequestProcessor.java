@@ -99,7 +99,7 @@ public class InstallRequestProcessor extends RequestProcessor {
     /**
      * The data directory.
      */
-    private String dataDir = "/home/liquidsite";
+    private String dataDir = "/var/lib/liquidsite";
 
     /**
      * The database user used in the installation.
