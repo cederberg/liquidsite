@@ -236,14 +236,13 @@ public class SiteView extends AdminView {
         throws ContentException {
 
         ContentPage  page;
-
-        String     name;
-        String     template;
-        String     comment;
-        HashMap    locals = new HashMap();
-        Iterator   iter;
-        String     value;
-        String     str;
+        String       name;
+        String       template;
+        String       comment;
+        HashMap      locals = new HashMap();
+        Iterator     iter;
+        String       value;
+        String       str;
 
         // Find default values
         AdminUtils.setReference(request, reference);
