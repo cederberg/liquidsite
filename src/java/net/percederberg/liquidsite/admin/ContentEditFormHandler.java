@@ -175,7 +175,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * Handles the edit section form.
      * 
      * @param request        the request object
-     * @param folder         the folder content object
+     * @param section        the section content object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
@@ -185,10 +185,18 @@ public class ContentEditFormHandler extends AdminFormHandler {
     private void handleEditSection(Request request, ContentSection section) 
         throws ContentException, ContentSecurityException {
 
+        int  parent;
+
         section.setRevisionNumber(0);
         section.setName(request.getParameter("name"));
+        try {
+            parent = Integer.parseInt(request.getParameter("parent"));
+            section.setParentId(parent);
+        } catch (NumberFormatException ignore) {
+            // This is ignored
+        }
         section.setComment(request.getParameter("comment"));
-        // TODO: add parent and properties
+        // TODO: add properties
         section.save(request.getUser());
     }
 }

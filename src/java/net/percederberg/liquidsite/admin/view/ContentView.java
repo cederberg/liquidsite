@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
@@ -141,6 +142,9 @@ public class ContentView extends AdminView {
 
         String     name;
         String     comment;
+        ArrayList  parents = null;
+        int        parentId = 0;
+        String     str;
 
         // Find default values
         if (parent != null) {
@@ -149,19 +153,29 @@ public class ContentView extends AdminView {
             comment = "Created";
         } else {
             AdminUtils.setReference(request, section);
-            // TODO: section.getAllDocumentProperties();
             name = section.getName();
+            parents = findSectionParents(request.getUser(), section);
+            parentId = section.getParentId();
             comment = "";
+            // TODO: section.getAllDocumentProperties();
         }
 
         // Adjust for incoming request
         if (request.getParameter("name") != null) {
             name = request.getParameter("name", "");
+            str = request.getParameter("parent", "0");
+            try {
+                parentId = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
+                parentId = 0;
+            }
             comment = request.getParameter("comment", "");
         }
 
         // Set request parameters
         request.setAttribute("name", name);
+        request.setAttribute("parents", parents);
+        request.setAttribute("parent", String.valueOf(parentId));
         request.setAttribute("comment", comment);
 // TODO:        request.setAttribute("parent", String.valueOf(inherited));
         request.sendTemplate("admin/edit-section.ftl");
@@ -304,5 +318,79 @@ public class ContentView extends AdminView {
     private boolean isViewable(Object obj) {
         return obj instanceof Domain
             || obj instanceof ContentSection;
+    }
+    
+    /**
+     * Finds all potential content section parents and adds them to a
+     * list. The parents will not be added directly to the list, but
+     * rather a map containing the id and name of each parent will be
+     * added.  
+     * 
+     * @param user           the user
+     * @param section        the content section
+     * 
+     * @return the list of sections found (in maps)
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ArrayList findSectionParents(User user, 
+                                         ContentSection section)
+        throws ContentException {
+
+        ArrayList  result = new ArrayList();
+        
+        findSectionChildren(user, "", section.getDomain(), section, result);
+        return result;
+    }
+
+    /**
+     * Finds all content section children and adds them to a list. 
+     * The content sections will not be added directly to the list,
+     * rather a map containing the id and name of the section will be
+     * added. A specific section can also be excluded from the list.  
+     * 
+     * @param user           the user
+     * @param baseName       the base name
+     * @param parent         the parent domain or content object
+     * @param exclude        the section to exclude
+     * @param result         the list of sections found (in maps)
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void findSectionChildren(User user, 
+                                     String baseName,
+                                     Object parent,
+                                     ContentSection exclude,
+                                     ArrayList result)
+        throws ContentException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        Content[]       children;
+        HashMap         values;
+        String          name;
+
+        if (parent instanceof Domain) {
+            children = manager.getContentChildren(user, (Domain) parent);
+        } else {
+            children = manager.getContentChildren(user, (Content) parent);
+        }
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] instanceof ContentSection
+             && !children[i].equals(exclude)) {
+
+                values = new HashMap(2);
+                values.put("id", String.valueOf(children[i].getId()));
+                name = baseName + children[i].getName();
+                values.put("name", name);
+                result.add(values);
+                findSectionChildren(user, 
+                                    name + "/", 
+                                    children[i], 
+                                    exclude, 
+                                    result);
+            }
+        }
     }
 }

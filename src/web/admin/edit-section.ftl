@@ -76,6 +76,27 @@
             recommended.</p>
           </td>
         </tr>
+<#if !isadd>
+        <tr>
+          <th>
+            Parent:
+          </th>
+          <td class="field">
+            <select tabindex="2" name="parent">
+              <option value="0">&lt; None &gt;</option>
+  <#list parents as item>
+    <#if parent == item.id>
+              <option value="${item.id}" selected="selected">${item.name?xml}</option>
+    <#else>
+              <option value="${item.id}">${item.name?xml}</option>
+    </#if>
+  </#list>
+            </select>
+            <p>The parent section controls the location of this 
+            section in the content tree.</p>
+          </td>
+        </tr>
+</#if>
         <tr>
           <th>
             Properties:
