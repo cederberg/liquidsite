@@ -12,12 +12,12 @@
         templateAddLocal('${elem}', ${locals[elem]});
 </#list>
         templateDisplay();
-        openTemplate(${template});
-        utilFocusElement("name");
+        doOpenTemplate(${template});
+        utilGetElement("name").focus();
         utilSessionKeepAlive();
     }
 
-    function openTemplate(id) {
+    function doOpenTemplate(id) {
         var script = document.createElement('script');
 
         script.type = "text/javascript";
@@ -26,7 +26,7 @@
     }
 
     function doPrevious() {
-        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
     </script>
@@ -105,7 +105,7 @@
             Template:
           </th>
           <td class="field">
-            <select tabindex="3" onchange="openTemplate(this.value)"
+            <select tabindex="3" onchange="doOpenTemplate(this.value)"
                     name="template">
               <option value="0">&lt; None &gt;</option>
 <#list templates as item>

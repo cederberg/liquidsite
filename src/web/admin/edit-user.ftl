@@ -6,15 +6,15 @@
     <script type="text/javascript">
     function initialize() {
 <#if isadd>
-        utilFocusElement("name");
+        utilGetElement("name").focus();
 <#else>
-        utilFocusElement("password");
+        utilGetElement("enabled").focus();
 </#if>
         utilSessionKeepAlive();
     }
 
     function doPrevious() {
-        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
     </script>

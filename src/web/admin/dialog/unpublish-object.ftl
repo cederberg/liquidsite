@@ -2,13 +2,14 @@
 <#assign onload = "initialize()">
 <#include "header.ftl">
 
+    <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
     function initialize() {
-        document.getElementsByName("date").item(0).focus();
+        utilGetElement("date").focus();
     }
 
     function doPrevious() {
-        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
     </script>

@@ -4,7 +4,6 @@
 
     <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript" src="script/template.js"></script>
-
     <script type="text/javascript">
     function initialize() {
         templateInitialize("elementedit");
@@ -12,12 +11,12 @@
         templateAddLocal('${elem}', ${locals[elem]});
 </#list>
         templateDisplay();
-        openTemplate(${parent});
-        utilFocusElement("name");
+        doOpenTemplate(${parent});
+        utilGetElement("name").focus();
         utilSessionKeepAlive();
     }
 
-    function openTemplate(id) {
+    function doOpenTemplate(id) {
         var script = document.createElement('script');
 
         script.type = "text/javascript";
@@ -26,7 +25,7 @@
     }
 
     function doPrevious() {
-        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
     </script>
@@ -85,7 +84,7 @@
             Base&nbsp;Template:
           </th>
           <td class="field">
-            <select tabindex="2" onchange="openTemplate(this.value)"
+            <select tabindex="2" onchange="doOpenTemplate(this.value)"
                     name="parent">
               <option value="0">&lt; None &gt;</option>
   <#list templates as item>

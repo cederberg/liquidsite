@@ -7,22 +7,22 @@
     <script type="text/javascript" src="script/tagedit.js"></script>
     <script type="text/javascript">
     function initialize() {
-        utilFocusElement("name");
+        utilGetElement("name").focus();
         utilSessionKeepAlive();
     }
 
     function doPrevious() {
-        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
 
     function doSave() {
-        document.getElementsByName("publish").item(0).value = "false";
+        utilGetElement("publish").value = "false";
         return false;
     }
 
     function doPublish() {
-        document.getElementsByName("publish").item(0).value = "true";
+        utilGetElement("publish").value = "true";
         return false;
     }
     </script>

@@ -3,13 +3,13 @@
     <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
     function doRefresh() {
-        document.getElementsByName("page").item(0).value = "1";
+        utilGetElement("page").value = "1";
         document.forms.item(0).submit();
     }
 
     function doChangePage(page) {
-        document.getElementsByName("page").item(0).value = page;
-        document.getElementsByName("filter").item(0).value = "${filter}";
+        utilGetElement("page").value = page;
+        utilGetElement("filter").value = "${filter}";
         document.forms.item(0).submit();
     }
 

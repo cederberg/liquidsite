@@ -2,12 +2,12 @@
 
     <script type="text/javascript">
     function doEditUser() {
-        document.getElementsByName("edituser").item(0).value = "true";
+        utilGetElement("edituser").value = "true";
         document.forms.item(0).submit();
     }
 
     function doEditPassword() {
-        document.getElementsByName("editpassword").item(0).value = "true";
+        utilGetElement("editpassword").value = "true";
         document.forms.item(0).submit();
     }
     </script>

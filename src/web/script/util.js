@@ -54,17 +54,22 @@ function utilOpenDialog(url, width, height) {
 }
 
 /**
- * Focuses a named HTML element. Note that the element must have a
+ * Returns a named HTML element. Note that the element must have a
  * name attribute with the specified name value. If several such
- * elements exist, the first will be focused.
+ * elements exist, the first will be returned.
  *
  * @param name               the element name
+ *
+ * @return the named HTML element, or
+ *         null if not found
  */
-function utilFocusElement(name) {
+function utilGetElement(name) {
     var elems = document.getElementsByName(name);
 
     if (elems != null && elems.length > 0) {
-        elems.item(0).focus();
+        return elems.item(0);
+    } else {
+        return null;
     }
 }
 

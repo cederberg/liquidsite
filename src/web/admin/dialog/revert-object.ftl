@@ -1,9 +1,10 @@
 <#assign title>Delete ${type?cap_first} Revision</#assign>
 <#include "header.ftl">
 
+    <script type="text/javascript" src="script/util.js"></script>
     <script type="text/javascript">
     function doPrevious() {
-        document.getElementsByName("liquidsite.prev").item(0).value = "true";
+        utilGetElement("liquidsite.prev").value = "true";
         document.forms.item(0).submit();
     }
     </script>
