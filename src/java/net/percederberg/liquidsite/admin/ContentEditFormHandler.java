@@ -21,11 +21,15 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
 
@@ -185,18 +189,56 @@ public class ContentEditFormHandler extends AdminFormHandler {
     private void handleEditSection(Request request, ContentSection section) 
         throws ContentException, ContentSecurityException {
 
-        int  parent;
+        Map                 params = request.getAllParameters();
+        Iterator            iter = params.keySet().iterator();
+        DocumentProperty[]  properties;
+        DocumentProperty    property;
+        String              name;
+        String              id;
+        String              str;
+        int                 parent;
 
         section.setRevisionNumber(0);
         section.setName(request.getParameter("name"));
+        section.setComment(request.getParameter("comment"));
         try {
             parent = Integer.parseInt(request.getParameter("parent"));
             section.setParentId(parent);
         } catch (NumberFormatException ignore) {
             // This is ignored
         }
-        section.setComment(request.getParameter("comment"));
-        // TODO: add properties
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("property.") && name.endsWith(".position")) {
+                name = name.substring(0, name.length() - 9);
+                id = name.substring(9);
+                property = new DocumentProperty(id);
+                str = request.getParameter(name + ".name", id);
+                property.setName(str);
+                try {
+                    str = request.getParameter(name + ".position", "1");
+                    property.setPosition(Integer.parseInt(str));
+                } catch (NumberFormatException ignore) {
+                    // This is ignored
+                }
+                try {
+                    str = request.getParameter(name + ".type", "1");
+                    property.setType(Integer.parseInt(str));
+                } catch (NumberFormatException ignore) {
+                    // This is ignored
+                }
+                str = request.getParameter(name + ".description", "");
+                property.setDescription(str);
+                section.setDocumentProperty(id, property);
+            }
+        }
+        properties = section.getAllDocumentProperties();
+        for (int i = 0; i < properties.length; i++) {
+            id = properties[i].getId();
+            if (!params.containsKey("property." + id + ".position")) {
+                section.setDocumentProperty(id, null);
+            }
+        }
         section.save(request.getUser());
     }
 }

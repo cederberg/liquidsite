@@ -2,34 +2,29 @@
 <#assign onload = "initialize()">
 <#include "header.ftl">
 
+    <script type="text/javascript" src="script/util.js"></script>
+    <script type="text/javascript" src="script/property.js"></script>
     <script type="text/javascript">
     function initialize() {
-        document.getElementsByName("name").item(0).focus();
+        propertyInitialize("propertyedit");
+<#list properties as prop>
+        propertyAdd('${prop.id}', 
+                    '${prop.name?replace("'","\\'")}', 
+                    ${prop.type}, 
+                    '${prop.description?replace("'","\\'")}');
+</#list>
+        propertyDisplay();
+        utilFocusElement("name");
     }
 
     function previous() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
     }
-
-    function ieDisableEnterSubmit() {
-        var  src;
-        var  name = "";
-
-        if (window.event) {
-            src = window.event.srcElement
-            if (src != undefined) {
-                name = src.tagName.toLowerCase();
-            }
-            if (window.event.keyCode == 13 && name == "input") {
-                window.event.keyCode = 0;
-            }
-        }
-    }
     </script>
 
     <form method="post" accept-charset="UTF-8"
-          onkeypress="ieDisableEnterSubmit()">
+          onkeypress="utilDisableEnterSubmitForIE()">
 <#if isadd>
       <input type="hidden" name="liquidsite.step" value="2" />
 <#else>

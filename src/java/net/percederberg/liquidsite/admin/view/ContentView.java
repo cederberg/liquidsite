@@ -22,7 +22,9 @@
 package net.percederberg.liquidsite.admin.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
@@ -31,6 +33,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
 
@@ -140,11 +143,15 @@ public class ContentView extends AdminView {
                                 ContentSection section) 
         throws ContentException {
 
-        String     name;
-        String     comment;
-        ArrayList  parents = null;
-        int        parentId = 0;
-        String     str;
+        String            name;
+        String            comment;
+        ArrayList         parents = null;
+        int               parentId = 0;
+        ArrayList         properties = new ArrayList();
+        DocumentProperty  property;
+        Iterator          iter;
+        String            param;
+        String            str;
 
         // Find default values
         if (parent != null) {
@@ -157,7 +164,7 @@ public class ContentView extends AdminView {
             parents = findSectionParents(request.getUser(), section);
             parentId = section.getParentId();
             comment = "";
-            // TODO: section.getAllDocumentProperties();
+            properties = findSectionProperties(section, false);
         }
 
         // Adjust for incoming request
@@ -170,14 +177,35 @@ public class ContentView extends AdminView {
                 parentId = 0;
             }
             comment = request.getParameter("comment", "");
+            properties.clear();
+            iter = request.getAllParameters().keySet().iterator();
+            while (iter.hasNext()) {
+                param = iter.next().toString();
+                if (param.startsWith("property.")
+                 && param.endsWith(".position")) {
+
+                    param = param.substring(0, param.length() - 9);
+                    property = new DocumentProperty(param.substring(9));
+                    str = request.getParameter(param + ".name");
+                    property.setName(str);
+                    str = request.getParameter(param + ".position");
+                    property.setPosition(Integer.parseInt(str));
+                    str = request.getParameter(param + ".type");
+                    property.setType(Integer.parseInt(str));
+                    str = request.getParameter(param + ".description");
+                    property.setDescription(str);
+                    properties.add(property);
+                }
+            }
+            Collections.sort(properties);
         }
 
         // Set request parameters
         request.setAttribute("name", name);
         request.setAttribute("parents", parents);
         request.setAttribute("parent", String.valueOf(parentId));
+        request.setAttribute("properties", properties);
         request.setAttribute("comment", comment);
-// TODO:        request.setAttribute("parent", String.valueOf(inherited));
         request.sendTemplate("admin/edit-section.ftl");
     }
     
@@ -392,5 +420,61 @@ public class ContentView extends AdminView {
                                     result);
             }
         }
+    }
+    
+    /**
+     * Finds all content document properties and adds them to a list.
+     * This method will retrieve the document properties from the 
+     * first content section having any. 
+     * 
+     * @param content        the content object
+     * 
+     * @return the list of properties found
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ArrayList findSectionProperties(Content content)
+        throws ContentException {
+
+        if (content == null) {
+            return new ArrayList(0);
+        } else if (content instanceof ContentSection) {
+            return findSectionProperties((ContentSection) content, true);
+        } else {
+            return findSectionProperties(content.getParent());
+        }
+    }
+
+    /**
+     * Finds all content document properties and adds them to a list.
+     * This method may retrieve the document properties from the 
+     * parent section if the recurse flag is set and the section does
+     * not have any properties. 
+     * 
+     * @param section        the content section
+     * @param recurse        the recursive lookup flag
+     * 
+     * @return the list of properties found
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private ArrayList findSectionProperties(ContentSection section, 
+                                            boolean recurse)
+        throws ContentException {
+
+        DocumentProperty[]  properties;
+        ArrayList           result;
+
+        properties = section.getAllDocumentProperties();
+        if (recurse && properties.length <= 0) {
+            return findSectionProperties(section.getParent());
+        }
+        result = new ArrayList();
+        for (int i = 0; i < properties.length; i++) {
+            result.add(properties[i]);
+        }
+        return result;
     }
 }
