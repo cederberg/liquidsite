@@ -564,7 +564,7 @@ public class ContentView extends AdminView {
      *         null for none
      */
     public Object getContentTreeFocus(Request request) {
-        return request.getSessionAttribute("content.tree.focus");
+        return request.getSession().getAttribute("content.tree.focus");
     }
 
     /**
@@ -575,7 +575,7 @@ public class ContentView extends AdminView {
      * @param obj            the new focus object
      */
     public void setContentTreeFocus(Request request, Object obj) {
-        request.setSessionAttribute("content.tree.focus", obj);
+        request.getSession().setAttribute("content.tree.focus", obj);
     }
 
     /**

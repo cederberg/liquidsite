@@ -35,7 +35,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.User;
@@ -120,6 +119,11 @@ public class Request {
      * The request environment.
      */
     private RequestEnvironment environment = new RequestEnvironment();
+
+    /**
+     * The request session.
+     */
+    private RequestSession session = null;
 
     /**
      * Creates a new request.
@@ -342,59 +346,10 @@ public class Request {
     }
 
     /**
-     * Returns the value of a session attribute. This method will not
-     * create a new session if one didn't already exist.
-     *
-     * @param name           the attribute name
-     *
-     * @return the attribute value, or
-     *         null if no such attribute was found
-     */
-    public Object getSessionAttribute(String name) {
-        return getSessionAttribute(name, null);
-    }
-
-    /**
-     * Returns the value of a session attribute. If the specified
-     * attribute does not exist, a default value will be returned.
-     * This method will not create a new session if one didn't
-     * already exist.
-     *
-     * @param name           the attribute name
-     * @param defVal         the default attribute value
-     *
-     * @return the attribute value, or
-     *         the default value if no such attribute was found
-     */
-    public Object getSessionAttribute(String name, Object defVal) {
-        HttpSession  session = request.getSession(false);
-
-        if (session != null && session.getAttribute(name) != null) {
-            return session.getAttribute(name);
-        } else {
-            return defVal;
-        }
-    }
-
-    /**
-     * Sets a session attribute value. This method creates a new
-     * session if one didn't already exist.
-     *
-     * @param name           the attribute name
-     * @param value          the attribute value, or null to remove
-     */
-    public void setSessionAttribute(String name, Object value) {
-        if (value == null) {
-            request.getSession().removeAttribute(name);
-        } else {
-            request.getSession().setAttribute(name, value);
-        }
-    }
-
-    /**
      * Returns the session user. The session user is null until it is
      * set by the setUser() method. Normally the session user is not
-     * set until the user has been authenticated.
+     * set until the user has been authenticated. If no sesssion
+     * existed, this method will return null.
      *
      * @return the session user, or
      *         null if no user has been set
@@ -402,7 +357,11 @@ public class Request {
      * @see #setUser
      */
     public User getUser() {
-        return (User) getSessionAttribute("user");
+        if (request.getSession(false) == null) {
+            return null;
+        } else {
+            return getSession().getUser();
+        }
     }
 
     /**
@@ -417,11 +376,12 @@ public class Request {
      */
     public void setUser(User user) {
         if (user == null) {
-            if (request.getSession(false) != null) {
-                request.getSession().invalidate();
+            if (session != null) {
+                session.invalidate();
+                session = null;
             }
         } else {
-            setSessionAttribute("user", user);
+            getSession().setUser(user);
         }
     }
 
@@ -434,6 +394,17 @@ public class Request {
      */
     public RequestEnvironment getEnvironment() {
         return environment;
+    }
+
+    /**
+     * Returns the request session. If no session existed a new one
+     * will be created.
+     */
+    public RequestSession getSession() {
+        if (session == null) {
+            session = new RequestSession(request.getSession());
+        }
+        return session;
     }
 
     /**
@@ -508,6 +479,7 @@ public class Request {
         responseMimeType = null;
         responseData = null;
         environment = null;
+        session = null;
     }
 
     /**

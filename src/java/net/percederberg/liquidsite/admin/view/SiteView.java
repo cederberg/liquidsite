@@ -766,7 +766,7 @@ public class SiteView extends AdminView {
      *         null for none
      */
     public Object getSiteTreeFocus(Request request) {
-        return request.getSessionAttribute("site.tree.focus");
+        return request.getSession().getAttribute("site.tree.focus");
     }
 
     /**
@@ -777,7 +777,7 @@ public class SiteView extends AdminView {
      * @param obj            the new focus object
      */
     public void setSiteTreeFocus(Request request, Object obj) {
-        request.setSessionAttribute("site.tree.focus", obj);
+        request.getSession().setAttribute("site.tree.focus", obj);
     }
 
     /**

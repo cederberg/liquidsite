@@ -33,6 +33,7 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
+import net.percederberg.liquidsite.web.RequestSession;
 
 /**
  * A helper class for the user view. This class contains methods
@@ -68,6 +69,7 @@ public class UserView extends AdminView {
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
+        RequestSession  session = request.getSession();
         User            user = request.getUser();
         Domain          domain = null;
         String          filter;
@@ -78,30 +80,30 @@ public class UserView extends AdminView {
         String          str;
 
         // Find users or groups
-        str = (String) request.getSessionAttribute("users.list.domain",
-                                                   user.getDomainName());
+        str = (String) session.getAttribute("users.list.domain",
+                                            user.getDomainName());
         str = request.getParameter("domain", str);
-        request.setSessionAttribute("users.list.domain", str);
+        session.setAttribute("users.list.domain", str);
         if (!str.equals("")) {
             domain = manager.getDomain(user, str);
         }
-        str = (String) request.getSessionAttribute("users.list.filter", "");
+        str = (String) session.getAttribute("users.list.filter", "");
         filter = request.getParameter("filter", str);
-        request.setSessionAttribute("users.list.filter", filter);
+        session.setAttribute("users.list.filter", filter);
         str = request.getParameter("page", "1");
         try {
             page = Integer.parseInt(str);
         } catch (NumberFormatException e) {
             page = 1;
         }
-        str = (String) request.getSessionAttribute("users.list.type", "user");
+        str = (String) session.getAttribute("users.list.type", "user");
         str = request.getParameter("type", str);
         if (!str.equals("group")) {
-            request.setSessionAttribute("users.list.type", "user");
+            session.setAttribute("users.list.type", "user");
             users = findUsers(domain, filter, page);
             count = manager.getUserCount(domain, filter);
         } else {
-            request.setSessionAttribute("users.list.type", "group");
+            session.setAttribute("users.list.type", "group");
             groups = findGroups(domain, filter);
             count = manager.getUserCount(domain, "");
         }
