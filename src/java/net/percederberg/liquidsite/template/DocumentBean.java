@@ -21,15 +21,16 @@
 
 package net.percederberg.liquidsite.template;
 
+import java.util.ArrayList;
 import java.util.Date;
-
-import freemarker.template.SimpleScalar;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSection;
+import net.percederberg.liquidsite.content.ContentSelector;
 
 /**
  * A document template bean. This class is used to access document
@@ -67,6 +68,11 @@ public class DocumentBean {
      * The document data bean.
      */
     private DocumentDataBean data = null;
+
+    /**
+     * The document file beans.
+     */
+    private ArrayList files = null;
 
     /**
      * Creates a new empty document template bean.
@@ -133,22 +139,6 @@ public class DocumentBean {
     }
 
     /**
-     * Returns the full document path.
-     *
-     * @return the document path, or
-     *         an empty string for a non-existing document
-     */
-    public String getPath() {
-        String  path = context.getContentPath(document);
-
-        if (path.endsWith("/")) {
-            return path.substring(0, path.length() - 1);
-        } else {
-            return path;
-        }
-    }
-
-    /**
      * Returns the name of a content object. The name will include
      * any document section up to the base section.
      *
@@ -178,6 +168,22 @@ public class DocumentBean {
             }
         } else {
             return "";
+        }
+    }
+
+    /**
+     * Returns the full document path.
+     *
+     * @return the document path, or
+     *         an empty string for a non-existing document
+     */
+    public String getPath() {
+        String  path = context.getContentPath(document);
+
+        if (path.endsWith("/")) {
+            return path.substring(0, path.length() - 1);
+        } else {
+            return path;
         }
     }
 
@@ -282,5 +288,40 @@ public class DocumentBean {
             }
         }
         return new LockBean(null);
+    }
+
+    /**
+     * Returns a list of all the document files.
+     *
+     * @return the document file list, or
+     *         an empty list of a non-existing document
+     */
+    public ArrayList getFiles() {
+        ContentSelector   selector;
+        Content[]         content;
+        DocumentFileBean  file;
+
+        if (files == null) {
+            files = new ArrayList();
+            if (document != null) {
+                try {
+                    selector = new ContentSelector(document.getDomain());
+                    selector.requireParent(document);
+                    selector.requireCategory(Content.FILE_CATEGORY);
+                    selector.sortByName(true);
+                    selector.limitResults(0, 100);
+                    content = context.findContent(selector);
+                    for (int i = 0; i < content.length; i++) {
+                        file = new DocumentFileBean(context,
+                                                    this,
+                                                    (ContentFile) content[i]);
+                        files.add(file);
+                    }
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+        }
+        return files;
     }
 }
