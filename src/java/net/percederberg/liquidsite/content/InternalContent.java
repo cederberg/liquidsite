@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.AttributePeer;
 import net.percederberg.liquidsite.dbo.ContentData;
 import net.percederberg.liquidsite.dbo.ContentPeer;
 import net.percederberg.liquidsite.dbo.ContentQuery;
@@ -45,6 +46,33 @@ class InternalContent {
      * The class logger.
      */
     private static final Log LOG = new Log(InternalContent.class);
+
+    /**
+     * Calculates the approximate size in the database of all the
+     * content in a domain.
+     *
+     * @param manager        the content manager to use
+     * @param domain         the domain name
+     *
+     * @return the approx. size in bytes of the content in the domain
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    static long calculateDomainSize(ContentManager manager, Domain domain)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+
+        try {
+            return AttributePeer.doCalculateDomainSize(domain.getName(), con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
 
     /**
      * Returns the number of content objects matching the specified

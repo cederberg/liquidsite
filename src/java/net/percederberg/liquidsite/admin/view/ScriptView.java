@@ -234,6 +234,9 @@ public class ScriptView {
         buffer.append(AdminUtils.getScriptString(str));
         buffer.append(");\n");
         if (domain.hasAdminAccess(user)) {
+            buffer.append("objectAddProperty('Size', '");
+            buffer.append(AdminUtils.formatFileSize(domain.getSize()));
+            buffer.append("');\n");
             buffer.append("objectAddProperty('Statistics', ");
             if (AdminUtils.getStatisticsDir(domain) == null) {
                 buffer.append("'Unavailable'");

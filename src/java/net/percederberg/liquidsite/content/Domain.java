@@ -302,6 +302,53 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
+     * Calculates the approximate size of a domain. This calculation
+     * will sum the the size of all files in the domain with an
+     * approximate lower estimate for the size of all content in the
+     * domain.
+     *
+     * @return the approx. size in bytes of the domain
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public long getSize() throws ContentException {
+        return getSize(getDirectory()) +
+               InternalContent.calculateDomainSize(getContentManager(), this);
+    }
+
+    /**
+     * Calculates the size of a file or a directory. For directories
+     * the sizes of all contained files will be summed and returned.
+     *
+     * @param file           the file or directory
+     *
+     * @return the size in bytes of the file or directory
+     *
+     * @throws ContentException if the file or directory couldn't be read
+     *             properly
+     */
+    private long getSize(File file) throws ContentException {
+        long    size = 0;
+        File[]  files;
+
+        try {
+            if (file.isDirectory()) {
+                files = file.listFiles();
+                for (int i = 0; files != null && files.length > i; i++) {
+                    size += getSize(files[i]);
+                }
+            } else {
+                size = file.length();
+            }
+        } catch (SecurityException e) {
+            throw new ContentException(
+                "access denied while reading domain file directory");
+        }
+        return size;
+    }
+
+    /**
      * Validates the object data before writing to the database.
      *
      * @throws ContentException if the object data wasn't valid

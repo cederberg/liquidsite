@@ -23,8 +23,11 @@ package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseQuery;
+import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
  * A content attribute database peer. This class contains static
@@ -36,9 +39,44 @@ import net.percederberg.liquidsite.db.DatabaseQuery;
 public class AttributePeer extends AbstractPeer {
 
     /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(AttributePeer.class);
+
+    /**
      * The attribute peer instance.
      */
     private static final AttributePeer PEER = new AttributePeer();
+
+    /**
+     * Calculates the aggregate size in the database of all attributes
+     * in a domain.
+     *
+     * @param domain         the domain name
+     * @param con            the database connection to use
+     *
+     * @return the size in bytes of all the attributes in the domain
+     *
+     * @throws DatabaseObjectException if the database couldn't be
+     *             accessed properly
+     */
+    public static long doCalculateDomainSize(String domain,
+                                            DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query;
+        DatabaseResults  res;
+
+        query = new DatabaseQuery("attribute.select.domainsize");
+        query.addParameter(domain);
+        res = PEER.execute("calculating domain size", query, con);
+        try {
+            return res.getRow(0).getLong(0);
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+    }
 
     /**
      * Returns a list of all attribute objects with the specified
