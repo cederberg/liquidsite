@@ -26,16 +26,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
-import net.percederberg.liquidsite.db.DatabaseDataException;
-import net.percederberg.liquidsite.db.DatabaseException;
-import net.percederberg.liquidsite.db.DatabaseQuery;
-import net.percederberg.liquidsite.db.DatabaseResults;
+import net.percederberg.liquidsite.dbo.ConfigurationData;
+import net.percederberg.liquidsite.dbo.ConfigurationPeer;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
  * The application configuration. This class contains support for 
@@ -332,23 +332,21 @@ public class Configuration {
     private void readDatabase(DatabaseConnection con) 
         throws ConfigurationException {
 
-        DatabaseQuery    query = new DatabaseQuery("config.select.all");
-        DatabaseResults  res;
-        String           name;
-        String           value;
-        String           message;
+        ArrayList          list;
+        ConfigurationData  data;  
+        String             name;
+        String             value;
+        String             message;
 
         try {
-            res = con.execute(query);
-            for (int i = 0; i < res.getRowCount(); i++) {
-                name = res.getRow(i).getString("NAME");
-                value = res.getRow(i).getString("VALUE");
+            list = ConfigurationPeer.doSelectAll(con);
+            for (int i = 0; i < list.size(); i++) {
+                data = (ConfigurationData) list.get(i);
+                name = data.getString(ConfigurationData.NAME);
+                value = data.getString(ConfigurationData.VALUE);
                 set(name, value);         
             }
-        } catch (DatabaseException e) {
-            message = "couldn't read configuration database table"; 
-            throw new ConfigurationException(message, e);
-        } catch (DatabaseDataException e) {
+        } catch (DatabaseObjectException e) {
             message = "couldn't read configuration database table"; 
             throw new ConfigurationException(message, e);
         }
@@ -453,23 +451,24 @@ public class Configuration {
     private void writeDatabase(DatabaseConnection con) 
         throws ConfigurationException {
 
-        DatabaseQuery  query;
-        Enumeration    iter;
-        String         name;
-        String         message;
+        ConfigurationData  data;
+        Enumeration        iter;
+        String             name;
+        String             value;
+        String             message;
 
         try {
-            query = new DatabaseQuery("config.delete.all");
-            con.execute(query);
+            ConfigurationPeer.doDeleteAll(con);
             iter = databaseProperties.propertyNames();
             while (iter.hasMoreElements()) {
                 name = (String) iter.nextElement();
-                query = new DatabaseQuery("config.insert");
-                query.addParameter(name);
-                query.addParameter(get(name, ""));
-                con.execute(query);
+                value = get(name, "");
+                data = new ConfigurationData();
+                data.setString(ConfigurationData.NAME, name);
+                data.setString(ConfigurationData.VALUE, value);
+                ConfigurationPeer.doInsert(data, con);
             }
-        } catch (DatabaseException e) {
+        } catch (DatabaseObjectException e) {
             message = "couldn't write configuration database table"; 
             throw new ConfigurationException(message, e);
         }
