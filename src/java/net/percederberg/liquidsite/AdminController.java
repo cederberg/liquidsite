@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.Site;
@@ -114,6 +115,8 @@ public class AdminController extends Controller {
             displayLoadSite(request);
         } else if (path.equals("opensite.js")) {
             displayOpenSite(request);
+        } else if (path.equals("add-site.html")) {
+            processAddObject(request);
         }
     }
 
@@ -149,6 +152,78 @@ public class AdminController extends Controller {
     }
 
     /**
+     * Processes the add object requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processAddObject(Request request) throws RequestException {
+        String  category = request.getParameter("category", "");
+        
+        // TODO: add support for sites
+        if (request.getParameter("prev") != null) {
+            request.sendRedirect("site.html");
+        } else if (category.equals("domain")) {
+            processAddDomain(request);
+        } else {
+            displayAddObject(request);
+        }
+    }
+
+    /**
+     * Processes the add domain requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processAddDomain(Request request) throws RequestException {
+        String  step = request.getParameter("step", "");
+        String  name = request.getParameter("name", "");
+        String  description = request.getParameter("description", "");
+        String  hostname = request.getParameter("host", "");
+        Domain  domain;
+        Host    host;
+        
+        // TODO: check for existing domains and hosts, and invalid input
+        if (request.getParameter("prev") != null) {
+            displayAddObject(request);
+        } else if (!step.equals("2")) {
+            displayAddDomain(request);
+        } else if (name.equals("")) {
+            request.setAttribute("error", "No domain name specified");
+            displayAddDomain(request);
+        } else if (hostname.equals("")) {
+            request.setAttribute("error", "No host name specified");
+            displayAddDomain(request);
+        } else {
+            try {
+                domain = new Domain(name);
+                domain.setDescription(description);
+                domain.save(request.getUser());
+                host = new Host(domain, hostname);
+                host.setDescription("Default domain host");
+                host.save(request.getUser());
+                request.setSessionAttribute("site.view.type", "domain");
+                request.setSessionAttribute("site.view.id", name);
+                request.sendRedirect("site.html");
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+                step = "Failed to save to database. Detailed message: " +
+                       e.getMessage();
+                request.setAttribute("error", step);
+                displayAddDomain(request);
+            } catch (ContentSecurityException e) {
+                LOG.warning(e.getMessage());
+                throw RequestException.FORBIDDEN;
+            }
+        }
+    }
+
+    /**
      * Displays the home page.
      *
      * @param request        the request object
@@ -166,15 +241,29 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displaySite(Request request) throws RequestException {
-        Domain[]  domains;
+        Object        type = request.getSessionAttribute("site.view.type");
+        Object        id = request.getSessionAttribute("site.view.id");
+        Domain[]      domains;
+        StringBuffer  script = new StringBuffer();
         
         try {
             domains = getContentManager().getDomains(request.getUser());
+            script.append(getTreeViewScript(domains));
+            if (type != null && !type.equals("domain")) {
+                // TODO: add all parent content objects
+            } 
+            if (type != null) {
+                script.append("treeSelect('");
+                script.append(type);
+                script.append("', '");
+                script.append(id);
+                script.append("');\n");
+            }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         }
-        request.setAttribute("initialize", getTreeViewScript(domains));
+        request.setAttribute("initialize", script.toString());
         request.sendTemplate("admin/site.ftl");
     }
 
@@ -255,15 +344,19 @@ public class AdminController extends Controller {
         String          id = request.getParameter("id", "0");
         ContentManager  cm = getContentManager();
         User            user = request.getUser();
+        Domain          domain;
         Content         content;
         String          script;
 
         try {
+            request.setSessionAttribute("site.view.type", type);
+            request.setSessionAttribute("site.view.id", id);
             if (type.equals("domain")) {
-                script = getObjectViewScript(cm.getDomain(user, id));
+                domain = cm.getDomain(user, id);
+                script = getObjectViewScript(user, domain);
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
-                script = getObjectViewScript(content);
+                script = getObjectViewScript(user, content);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -272,6 +365,56 @@ public class AdminController extends Controller {
             throw RequestException.FORBIDDEN;
         }
         request.sendData("text/javascript", script);
+    }
+
+    /**
+     * Displays the add object page.
+     * 
+     * @param request        the request object
+     * 
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void displayAddObject(Request request) 
+        throws RequestException {
+
+        Object          type = request.getSessionAttribute("site.view.type");
+        Object          id = request.getSessionAttribute("site.view.id");
+        ContentManager  cm = getContentManager();
+        User            user = request.getUser();
+        Domain          domain;
+
+        try {
+            if (type.equals("domain")) {
+                domain = cm.getDomain(user, id.toString());
+                if (user.getDomainName().equals("")) {
+                    request.setAttribute("enableDomain", true);
+                }
+                if (domain.hasWriteAccess(user)) {
+                    request.setAttribute("enableSite", true);
+                }
+            } else {
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            throw RequestException.FORBIDDEN;
+        }
+        request.sendTemplate("admin/add-object.ftl");
+    }
+
+    /**
+     * Displays the add domain page.
+     * 
+     * @param request        the request object
+     */
+    private void displayAddDomain(Request request) {
+        request.setAttribute("name", request.getParameter("name", ""));
+        request.setAttribute("description", 
+                             request.getParameter("description", ""));
+        request.setAttribute("host", request.getParameter("host", ""));
+        request.sendTemplate("admin/add-domain.ftl");
     }
 
     /**
@@ -386,6 +529,7 @@ public class AdminController extends Controller {
     /**
      * Returns the JavaScript for presenting an object view.
      * 
+     * @param user           the current user
      * @param domain         the domain object
      * 
      * @return the JavaScript for presenting an object view
@@ -393,7 +537,7 @@ public class AdminController extends Controller {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getObjectViewScript(Domain domain) 
+    private String getObjectViewScript(User user, Domain domain) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -403,9 +547,10 @@ public class AdminController extends Controller {
         buffer.append("', '");
         buffer.append(domain.getName());
         buffer.append("');\n");
-        buffer.append("objectAddProperty('Name', '");
+        buffer.append("objectAddProperty('Description', '");
         buffer.append(domain.getDescription());
         buffer.append("');\n");
+        buffer.append(getButtonsScript(user, domain));
         buffer.append(getPermissionsScript(domain));
         return buffer.toString();
     }
@@ -413,6 +558,7 @@ public class AdminController extends Controller {
     /**
      * Returns the JavaScript for presenting an object view.
      * 
+     * @param user           the current user
      * @param content        the content object
      * 
      * @return the JavaScript for presenting an object view
@@ -420,7 +566,7 @@ public class AdminController extends Controller {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getObjectViewScript(Content content) 
+    private String getObjectViewScript(User user, Content content) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -445,7 +591,52 @@ public class AdminController extends Controller {
         buffer.append(", ");
         buffer.append(getScriptLock(content.getLock()));
         buffer.append(");\n");
+        buffer.append(getButtonsScript(user, content));
         buffer.append(getPermissionsScript(content));
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting domain buttons.
+     * 
+     * @param user           the current user
+     * @param domain         the domain object
+     * 
+     * @return the JavaScript for presenting domain buttons
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getButtonsScript(User user, Domain domain) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        
+        if (domain.hasWriteAccess(user)) {
+            buffer.append("objectAddNewButton('add-site.html');\n");
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting domain buttons.
+     * 
+     * @param user           the current user
+     * @param content        the content object
+     * 
+     * @return the JavaScript for presenting domain buttons
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getButtonsScript(User user, Content content) 
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        
+        if (content.hasWriteAccess(user)) {
+            buffer.append("objectAddNewButton('add-site.html');\n");
+        }
         return buffer.toString();
     }
 
