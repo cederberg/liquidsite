@@ -231,9 +231,11 @@ public class SiteView extends AdminView {
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
      */
     public void viewEditPage(Request request, Object reference) 
-        throws ContentException {
+        throws ContentException, ContentSecurityException {
 
         ContentPage  page;
         String       name;
@@ -255,7 +257,7 @@ public class SiteView extends AdminView {
             iter = page.getLocalElementNames().iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
-                value = page.getElement(str);
+                value = page.getElement(request.getUser(), str);
                 locals.put(str, AdminUtils.getScriptString(value));
             }
         } else {
@@ -496,7 +498,6 @@ public class SiteView extends AdminView {
 
         String   buffer;
 
-        // TODO: show work revision elements
         buffer = SCRIPT.getTemplateElements(template);
         request.sendData("text/javascript", buffer);
     }

@@ -254,11 +254,12 @@ public class DefaultController extends Controller {
     private void processContentPage(Request request, ContentPage page) 
         throws RequestException {
 
+        User          user = request.getUser();
         Template      template;
         StringWriter  buffer = new StringWriter();
 
         try {
-            template = TemplateManager.getPageTemplate(page);
+            template = TemplateManager.getPageTemplate(user, page);
             template.process(request, getContentManager(), buffer);
             request.sendData("text/html", buffer.toString());
         } catch (TemplateException e) {

@@ -82,20 +82,25 @@ public class ContentPage extends Content {
 
     /**
      * Returns the page template.
-     * 
+     *
+     * @param user           the user performing the operation
+     *
      * @return the page template, or null for none
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed 
      *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
      */
-    public ContentTemplate getTemplate() throws ContentException {
+    public ContentTemplate getTemplate(User user)
+        throws ContentException, ContentSecurityException {
+
         int  id = getTemplateId();
         
-        // TODO: this is not security-wise correct
         if (id <= 0) {
             return null;
         } else {
-            return (ContentTemplate) getContentManager().getContent(id);
+            return (ContentTemplate) getContentManager().getContent(user, id);
         }
     }
 
@@ -134,21 +139,26 @@ public class ContentPage extends Content {
      * Returns all page element names in this page and it's template. 
      * The returned collection is guaranteed to not contain any 
      * duplicates.
-     * 
+     *
+     * @param user           the user performing the operation
+     *
      * @return a collection of page element names
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed 
      *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
      */
-    public Collection getAllElementNames() throws ContentException {
+    public Collection getAllElementNames(User user)
+        throws ContentException, ContentSecurityException {
+
         ContentTemplate  template;
         Collection       res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
 
-        // TODO: this is not security-wise correct
-        if (getTemplateId() > 0) {
-            template = getTemplate();
+        template = getTemplate(user);
+        if (template != null) {
             iter = template.getAllElementNames().iterator();
             while (iter.hasNext()) {
                 obj = iter.next();
@@ -187,6 +197,7 @@ public class ContentPage extends Content {
      * The template parents will also be searched in the inheritance 
      * order, starting from the page template.
      * 
+     * @param user           the user performing the operation
      * @param name           the page element name
      * 
      * @return the page element data, or
@@ -194,15 +205,23 @@ public class ContentPage extends Content {
      * 
      * @throws ContentException if the database couldn't be accessed 
      *             properly
+     * @throws ContentSecurityException if the user didn't have read
+     *             access to the template
      */
-    public String getElement(String name) throws ContentException {
+    public String getElement(User user, String name)
+        throws ContentException, ContentSecurityException {
+
         ContentTemplate  template;
         String           data;
         
         data = getAttribute(ELEMENT_PREFIX + name.toLowerCase());
         if (data == null && getTemplateId() > 0) {
-            template = getTemplate();
-            data = template.getElement(name);
+            template = getTemplate(user);
+            if (template == null) {
+                data = null;
+            } else {
+                data = template.getElement(name);
+            }
         }
         return data; 
     }

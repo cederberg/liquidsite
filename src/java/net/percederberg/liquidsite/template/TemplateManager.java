@@ -33,6 +33,8 @@ import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentPage;
+import net.percederberg.liquidsite.content.ContentSecurityException;
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A simple FreeMarker template manager. This class provides static
@@ -134,7 +136,8 @@ public class TemplateManager {
     
     /**
      * Returns a template from a content page.
-     * 
+     *
+     * @param user           the user performing the operation
      * @param page           the content page
      * 
      * @return the template found
@@ -142,7 +145,7 @@ public class TemplateManager {
      * @throws TemplateException if the template couldn't be read 
      *             correctly
      */
-    public static Template getPageTemplate(ContentPage page)
+    public static Template getPageTemplate(User user, ContentPage page)
         throws TemplateException {
 
         Template  template;
@@ -150,6 +153,7 @@ public class TemplateManager {
         String    message;
 
         try {
+            pageLoader.setUser(user);
             pageLoader.setPage(page);
             name = page.getId() + "/root";
             template = new Template(pageConfig.getTemplate(name));
@@ -181,6 +185,12 @@ public class TemplateManager {
         private ThreadLocal page = new ThreadLocal();
 
         /**
+         * The user performing the operation. This is a thread local
+         * variable as the loader needs to be thread-safe.
+         */
+        private ThreadLocal user = new ThreadLocal();
+
+        /**
          * Creates a new page template loader.
          */
         public PageLoader() {
@@ -198,13 +208,33 @@ public class TemplateManager {
         /**
          * Sets the content page to load (for the calling thread). 
          * This method should be called once before loading the 
-         * template (with the content page), and once after loading
-         * the template (with null).
+         * template.
          * 
          * @param page           the content page to load, or null
          */
         public void setPage(ContentPage page) {
             this.page.set(page);
+        }
+
+        /**
+         * Returns the user performing the operation (for the calling
+         * thread).
+         *
+         * @return the user performing the operation
+         */
+        public User getUser() {
+            return (User) user.get();
+        }
+
+        /**
+         * Sets the the user performing the operation (for the 
+         * calling thread). This method should be called once before
+         * loading the template.
+         * 
+         * @param user           the user performing the operation 
+         */
+        public void setUser(User user) {
+            this.user.set(user);
         }
 
         /**
@@ -234,8 +264,13 @@ public class TemplateManager {
             // Extract page element data
             try {
                 elemName = name.substring(name.indexOf("/") + 1);
-                return page.getElement(elemName);
+                return page.getElement(getUser(), elemName);
             } catch (ContentException e) {
+                message = "while reading page element " + name + 
+                          ": " + e.getMessage();
+                LOG.error(message);
+                throw new IOException(message);
+            } catch (ContentSecurityException e) {
                 message = "while reading page element " + name + 
                           ": " + e.getMessage();
                 LOG.error(message);
