@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;

@@ -19,16 +19,9 @@
  * Copyright (c) 2003 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package net.percederberg.liquidsite.admin.view;
 
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.admin.view.ContentView;
-import net.percederberg.liquidsite.admin.view.DialogView;
-import net.percederberg.liquidsite.admin.view.HomeView;
-import net.percederberg.liquidsite.admin.view.ScriptView;
-import net.percederberg.liquidsite.admin.view.SiteView;
-import net.percederberg.liquidsite.admin.view.SystemView;
-import net.percederberg.liquidsite.admin.view.UserView;
 
 /**
  * A helper class for creating the HTML and JavaScript output for the
@@ -82,7 +75,7 @@ public class AdminView {
     /**
      * Creates a new admin view helper.
      */
-    public AdminView() {
+    AdminView() {
     }
 
     /**

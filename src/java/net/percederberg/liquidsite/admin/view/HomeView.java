@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite.admin.view;
 
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.admin.AdminView;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -32,12 +31,12 @@ import net.percederberg.liquidsite.content.User;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class HomeView extends AdminView {
+public class HomeView {
 
     /**
      * Creates a new home view helper.
      */
-    public HomeView() {
+    HomeView() {
     }
 
     /**

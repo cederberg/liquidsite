@@ -49,7 +49,7 @@ public class ScriptView {
     /**
      * Creates a new admin script helper.
      */
-    public ScriptView() {
+    ScriptView() {
     }
 
     /**

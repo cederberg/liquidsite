@@ -25,7 +25,6 @@ import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.admin.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -38,12 +37,12 @@ import net.percederberg.liquidsite.content.Domain;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DialogView extends AdminView {
+public class DialogView {
 
     /**
      * Creates a new dialog view helper.
      */
-    public DialogView() {
+    DialogView() {
     }
 
     /**

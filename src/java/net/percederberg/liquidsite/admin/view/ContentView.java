@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite.admin.view;
 
 import net.percederberg.liquidsite.Request;
-import net.percederberg.liquidsite.admin.AdminView;
 
 /**
  * A helper class for the content view. This class contains methods 
@@ -32,12 +31,12 @@ import net.percederberg.liquidsite.admin.AdminView;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ContentView extends AdminView {
+public class ContentView {
 
     /**
      * Creates a new content view helper.
      */
-    public ContentView() {
+    ContentView() {
     }
 
     /**

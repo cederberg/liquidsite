@@ -35,7 +35,7 @@ public class UserView {
     /**
      * Creates a new user view helper.
      */
-    public UserView() {
+    UserView() {
     }
 
     /**

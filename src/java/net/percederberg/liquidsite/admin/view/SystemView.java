@@ -35,7 +35,7 @@ public class SystemView {
     /**
      * Creates a new system view helper.
      */
-    public SystemView() {
+    SystemView() {
     }
 
     /**

@@ -27,7 +27,6 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.admin.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -54,7 +53,7 @@ public class SiteView extends AdminView {
     /**
      * Creates a new site view helper.
      */
-    public SiteView() {
+    SiteView() {
     }
 
     /**
