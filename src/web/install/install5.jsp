@@ -1,6 +1,6 @@
 <%@ include file="header.jsp" %>
 
-  <h2>Liquid Site Installation (5 of 5)</h2>
+  <h2>Liquid Site Installation (Step 5 of 5)</h2>
 
   <form method="post" action="finish.html">
     <table>
