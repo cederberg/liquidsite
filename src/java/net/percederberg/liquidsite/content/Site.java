@@ -245,18 +245,4 @@ public class Site {
 
         return result;
     }
-
-    /**
-     * Saves this site to the database.
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    public void save() throws ContentException {
-        if (id <= 0) {
-            SitePeer.doInsert(this);
-        } else {
-            SitePeer.doUpdate(this);
-        }
-    }
 }

@@ -36,7 +36,7 @@ import net.percederberg.liquidsite.db.DatabaseResults;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public abstract class Peer {
+abstract class Peer {
 
     /**
      * The class logger.

@@ -52,10 +52,10 @@ public class ContentManager {
     private Application app;
 
     /**
-     * The web site cache. This is a list of all web sites known to 
-     * the content manager.
+     * The domain cache. This is a list of all domains known to the 
+     * content manager.
      */
-    private ArrayList sites = new ArrayList();
+    private ArrayList domains = new ArrayList();
 
     /**
      * Returns the content manager currently in use.
@@ -75,7 +75,7 @@ public class ContentManager {
     /**
      * Creates a new content manager. All new content handling 
      * requests will pass through the newly created content manager.
-     * If the application is installed, the site and content caches
+     * If the application is installed, the domain and content caches
      * will also be initialized.
      * 
      * @param app            the application context
@@ -87,9 +87,9 @@ public class ContentManager {
         instance = this;
         this.app = app;
         if (app.isInstalled()) {
-            LOG.trace("reading content manager site cache...");
-            sites = SitePeer.doSelectAll();
-            LOG.trace("done reading content manager site cache");
+            LOG.trace("reading content manager domain cache...");
+            domains = DomainPeer.doSelectAll();
+            LOG.trace("done reading content manager domain cache");
         }
     }
 
@@ -103,58 +103,28 @@ public class ContentManager {
     }
 
     /**
-     * Searches for the best matching site in the site cache. Under
-     * normal operations, the site cache should contain all sites in
-     * the database. Exact matches for host and port are always 
-     * preferred over defaults (matching all values). Longer URI 
-     * matches are preferred over shorter.
+     * Adds a domain to the domain cache. This method also updates 
+     * existing entries for the same domain.
      * 
-     * @param host           the request host name (server name)
-     * @param port           the request (server) port
-     * @param uri            the request uri
-     * 
-     * @return the best matching site
+     * @param domain         the domain to add or update
      */
-    public Site findSite(String host, int port, String uri) {
-        Site  found = null;
-        int   max = 0;
-        Site  site;
-        int   value;
-        
-        for (int i = 0; i < sites.size(); i++) {
-            site = (Site) sites.get(i);
-            value = site.match(host, port, uri);
-            if (value > max) {
-                found = site;
-                max = value;
-            }
+    public void addDomain(Domain domain) {
+        if (domains.contains(domain)) {
+            removeDomain(domain);
         }
-        return found;
-    }
-
-    /**
-     * Adds a site to the site cache. This method also updates an 
-     * existing entry for the same site.
-     * 
-     * @param site           the site to add
-     */
-    public void addSite(Site site) {
-        if (sites.contains(site)) {
-            removeSite(site);
-        }
-        sites.add(site);
+        domains.add(domain);
     }
     
     /**
-     * Removes a site from the site cache.
+     * Removes a domain from the domain cache.
      * 
-     * @param site           the site to remove
+     * @param domain         the domain to remove
      */
-    public void removeSite(Site site) {
-        int  index = sites.indexOf(site);
+    public void removeDomain(Domain domain) {
+        int  index = domains.indexOf(domain);
         
         if (index >= 0) {
-            sites.remove(index);
+            domains.remove(index);
         }
     }
 
@@ -164,8 +134,8 @@ public class ContentManager {
      * resources used by this manager.
      */
     public void close() {
-        sites.clear();
-        sites = null;
+        domains.clear();
+        domains = null;
         if (instance == this) {
             instance = null;
         }
