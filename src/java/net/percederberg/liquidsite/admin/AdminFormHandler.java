@@ -48,6 +48,37 @@ abstract class AdminFormHandler extends FormHandler {
     private static final Log LOG = new Log(AdminFormHandler.class);
 
     /**
+     * The ASCII upper-case characters.
+     */
+    public static final String UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    /**
+     * The ASCII lower-case characters.
+     */
+    public static final String LOWER_CASE = "abcdefghijklmonpqrstuvwxyz";
+
+    /**
+     * The ASCII numerical characters.
+     */
+    public static final String NUMBERS = "0123456789";
+
+    /**
+     * The permitted domain name characters.
+     */
+    public static final String DOMAIN_CHARS = UPPER_CASE + NUMBERS + ".-_";
+
+    /**
+     * The permitted host name characters.
+     */
+    public static final String HOST_CHARS = LOWER_CASE + NUMBERS + ".-_";
+
+    /**
+     * The permitted content name characters.
+     */
+    public static final String CONTENT_CHARS =
+        UPPER_CASE + LOWER_CASE + NUMBERS + ".-_";
+
+    /**
      * The default start page for the workflow. This is where
      * redirects go when the workflow is finished unless another url
      * is specified in the form.

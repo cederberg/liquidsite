@@ -121,12 +121,6 @@ class SiteEditFormHandler extends AdminFormHandler {
      * Initializes all the form validators.
      */
     private void initialize() {
-        String  upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String  lowerCase = "abcdefghijklmonpqrstuvwxyz";
-        String  numbers = "0123456789";
-        String  domainChars = upperCase + numbers + ".-_";
-        String  hostChars = lowerCase + numbers + ".-_";
-        String  nameChars = upperCase + lowerCase + numbers + ".-_";
         String  error;
 
         // Add and edit domain validator
@@ -134,15 +128,15 @@ class SiteEditFormHandler extends AdminFormHandler {
         error = "Domain name cannot be longer than 30 characters";
         domain.addLengthConstraint("name", 0, 30, error);
         error = "Domain name must be upper-case, invalid character";
-        domain.addCharacterConstraint("name", domainChars, error);
+        domain.addCharacterConstraint("name", DOMAIN_CHARS, error);
         error = "No description specified";
         domain.addRequiredConstraint("description", error);
         error = "Host name must be lower-case, invalid character";
-        domain.addCharacterConstraint("host.0.name", hostChars, error);
-        domain.addCharacterConstraint("host.1.name", hostChars, error);
-        domain.addCharacterConstraint("host.2.name", hostChars, error);
-        domain.addCharacterConstraint("host.3.name", hostChars, error);
-        domain.addCharacterConstraint("host.4.name", hostChars, error);
+        domain.addCharacterConstraint("host.0.name", HOST_CHARS, error);
+        domain.addCharacterConstraint("host.1.name", HOST_CHARS, error);
+        domain.addCharacterConstraint("host.2.name", HOST_CHARS, error);
+        domain.addCharacterConstraint("host.3.name", HOST_CHARS, error);
+        domain.addCharacterConstraint("host.4.name", HOST_CHARS, error);
 
         // Add and edit site validator
         site.addRequiredConstraint("name", "No site name specified");
@@ -152,45 +146,45 @@ class SiteEditFormHandler extends AdminFormHandler {
         site.addCharacterConstraint("protocol", "https", error);
         site.addRequiredConstraint("host", "No host name specified");
         error = "Host name must be lower-case, invalid character";
-        site.addCharacterConstraint("host", hostChars + "*", error);
+        site.addCharacterConstraint("host", HOST_CHARS + "*", error);
         site.addRequiredConstraint("port", "No port number specified");
         error = "Port number must be numeric, invalid character";
-        site.addCharacterConstraint("port", numbers, error);
+        site.addCharacterConstraint("port", NUMBERS, error);
         site.addRequiredConstraint("dir", "No base directory specified");
         error = "Base directory contains invalid character";
-        site.addCharacterConstraint("dir", nameChars + "/", error);
+        site.addCharacterConstraint("dir", CONTENT_CHARS + "/", error);
         error = "No revision comment specified";
         site.addRequiredConstraint("comment", error);
 
         // Add and edit folder validator
         folder.addRequiredConstraint("name", "No folder name specified");
         error = "Folder name contains invalid character";
-        folder.addCharacterConstraint("name", nameChars, error);
+        folder.addCharacterConstraint("name", CONTENT_CHARS, error);
         folder.addRequiredConstraint("comment", "No comment specified");
 
         // Add and edit page validator
         page.addRequiredConstraint("name", "No page name specified");
         error = "Page name contains invalid character";
-        page.addCharacterConstraint("name", nameChars, error);
+        page.addCharacterConstraint("name", CONTENT_CHARS, error);
         page.addRequiredConstraint("comment", "No comment specified");
 
         // Add and edit file validator
         file.addRequiredConstraint("name", "No file name specified");
         error = "File name contains invalid character";
-        file.addCharacterConstraint("name", nameChars, error);
+        file.addCharacterConstraint("name", CONTENT_CHARS, error);
         file.addRequiredConstraint("comment", "No comment specified");
 
         // Add and edit translator validator
         error = "No translator name specified";
         translator.addRequiredConstraint("name", error);
         error = "File name contains invalid character";
-        translator.addCharacterConstraint("name", nameChars, error);
+        translator.addCharacterConstraint("name", CONTENT_CHARS, error);
         translator.addRequiredConstraint("comment", "No comment specified");
 
         // Add and edit template validator
         template.addRequiredConstraint("name", "No template name specified");
         error = "Template name contains invalid character";
-        template.addCharacterConstraint("name", nameChars, error);
+        template.addCharacterConstraint("name", CONTENT_CHARS, error);
         template.addRequiredConstraint("comment", "No comment specified");
     }
 
