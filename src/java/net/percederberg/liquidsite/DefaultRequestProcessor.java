@@ -90,10 +90,11 @@ public class DefaultRequestProcessor extends RequestProcessor {
                                                 request.getHost(), 
                                                 request.getPort(), 
                                                 request.getPath());
-            request.setSite(site);
             if (site == null) {
                 return;
             }
+            request.getEnvironment().setDomain(site.getDomain());
+            request.getEnvironment().setSite(site);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;

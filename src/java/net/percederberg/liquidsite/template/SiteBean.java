@@ -53,7 +53,7 @@ public class SiteBean {
      * @return the absolute URL to the site
      */
     public String getUrl() {
-        ContentSite   site = request.getSite();
+        ContentSite   site = request.getEnvironment().getSite();
         StringBuffer  buffer = new StringBuffer();
         
         if (site == null) {

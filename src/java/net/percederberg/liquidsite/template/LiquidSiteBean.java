@@ -53,17 +53,22 @@ public class LiquidSiteBean {
     /**
      * The site bean.
      */
-    private SiteBean site;
+    private SiteBean site = null;
 
     /**
      * The page bean.
      */
-    private PageBean page;
+    private PageBean page = null;
+
+    /**
+     * The document bean.
+     */
+    private DocumentBean doc = null;
 
     /**
      * The user bean.
      */
-    private UserBean user;
+    private UserBean user = null;
 
     /**
      * Creates a new LiquidSite template bean.
@@ -74,14 +79,11 @@ public class LiquidSiteBean {
     LiquidSiteBean(Request request, ContentManager manager) {
         this.request = request;
         this.manager = manager;
-        this.site = new SiteBean(request);
-        this.page = new PageBean(request);
-        this.user = new UserBean(request.getUser());
     }
 
     /**
      * Returns the build version name.
-     * 
+     *
      * @return the build version name
      */
     public String getVersion() {
@@ -90,40 +92,61 @@ public class LiquidSiteBean {
 
     /**
      * Returns the build date.
-     * 
+     *
      * @return the build date
      */
     public String getDate() {
         return TemplateManager.getApplication().getBuildDate();
     }
-    
+
     /**
      * Returns the site bean for the current site. 
-     * 
+     *
      * @return the site bean for the current site
      */
     public SiteBean getSite() {
+        if (site == null) {
+            site = new SiteBean(request);
+        }
         return site;
     }
-    
+
     /**
      * Returns the page bean for the current page. 
-     * 
+     *
      * @return the page bean for the current page
      */
     public PageBean getPage() {
+        if (page == null) {
+            page = new PageBean(request);
+        }
         return page;
     }
 
     /**
+     * Returns the page bean for the current page. 
+     *
+     * @return the page bean for the current page
+     */
+    public DocumentBean getDoc() {
+        if (doc == null) {
+            doc = new DocumentBean(request.getEnvironment().getDocument());
+        }
+        return doc;
+    }
+
+    /**
      * Returns the user bean for the currently logged in user. 
-     * 
+     *
      * @return the user bean for the currently logged in user
      */
     public UserBean getUser() {
+        if (user == null) {
+            user = new UserBean(request.getUser());
+        }
         return user;
     }
-    
+
     /**
      * Returns all document in the specified section path.
      * 
@@ -140,7 +163,7 @@ public class LiquidSiteBean {
         // TODO: add filtering
         // TODO: add content publish checks (online)
         try {
-            domain = request.getSite().getDomain();
+            domain = request.getEnvironment().getDomain();
             section = findSection(path, domain);
             if (section == null) {
                 // TODO: log this

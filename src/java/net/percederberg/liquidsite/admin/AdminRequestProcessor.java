@@ -151,7 +151,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      * @param path           the request path
      */
     public void processUnauthorized(Request request, String path) {
-
+        String  str;
 
         if (path.equals("style.css")) {
             request.sendFile(getFile(path));
@@ -174,7 +174,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             }
             request.sendTemplate("admin/login.ftl");
         } else {
-            request.sendRedirect(request.getSite().getDirectory());
+            str = request.getEnvironment().getSite().getDirectory();
+            request.sendRedirect(str);
         }
     }
     
@@ -446,7 +447,7 @@ public class AdminRequestProcessor extends RequestProcessor {
         if (content != null && revision != null) {
             content = content.getRevision(Integer.parseInt(revision));
         }
-        request.setSite((ContentSite) site);
+        request.getEnvironment().setSite((ContentSite) site);
         sendContent(request, content);
     }
 

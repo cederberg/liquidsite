@@ -231,7 +231,7 @@ public abstract class RequestProcessor {
         }
         document = manager.getContentChild(user, section, name);
         if (document != null) {
-// TODO:            request.setPage(page);
+            request.getEnvironment().setPage(page);
         }
         return document;
     }
@@ -296,9 +296,17 @@ public abstract class RequestProcessor {
                 request.sendRedirect(request.getPath() + "/");
             }
         } else if (content instanceof ContentPage) {
+            request.getEnvironment().setPage((ContentPage) content);
             sendContentPage(request, (ContentPage) content);
         } else if (content instanceof ContentFile) {
             request.sendFile(((ContentFile) content).getFile());
+        } else if (content instanceof ContentDocument) {
+            if (request.getPath().endsWith("/")) {
+                request.getEnvironment().setDocument((ContentDocument) content);
+                sendContent(request, request.getEnvironment().getPage());
+            } else {
+                request.sendRedirect(request.getPath() + "/");
+            }
         } else {
             throw RequestException.RESOURCE_NOT_FOUND;
         }

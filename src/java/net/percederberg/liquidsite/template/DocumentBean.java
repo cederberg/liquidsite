@@ -40,7 +40,7 @@ import net.percederberg.liquidsite.content.DocumentProperty;
 public class DocumentBean implements TemplateHashModel {
 
     /**
-     * The document being encapsulated. 
+     * The document being encapsulated.
      */
     private ContentDocument document;
 
@@ -52,9 +52,9 @@ public class DocumentBean implements TemplateHashModel {
     /**
      * Creates a new document template bean.
      * 
-     * @param document       the content document
+     * @param document       the content document, or null
      */
-    public DocumentBean(ContentDocument document) {
+    DocumentBean(ContentDocument document) {
         this.document = document;
         this.metadata = new MetaDataBean(document);
     }
@@ -81,10 +81,12 @@ public class DocumentBean implements TemplateHashModel {
     public TemplateModel get(String id) {
         String  str;
 
-        if (id.equals("name")) {
-            return new SimpleScalar(document.getName());
-        } else if (id.equals("meta")) {
+        if (id.equals("meta")) {
             return metadata;
+        } else if (document == null) {
+            return new SimpleScalar("");
+        } else if (id.equals("name")) {
+            return new SimpleScalar(document.getName());
         } else {
             str = document.getProperty(id);
             if (document.getPropertyType(id) != DocumentProperty.HTML_TYPE) {
@@ -126,6 +128,7 @@ public class DocumentBean implements TemplateHashModel {
         return buffer.toString();
     }
 
+
     /**
      * A document meta-data bean.
      *
@@ -166,7 +169,9 @@ public class DocumentBean implements TemplateHashModel {
          *         null if the property wasn't found
          */
         public TemplateModel get(String name) {
-            if (name.equals("id")) {
+            if (document == null) {
+                return new SimpleScalar("");
+            } else if (name.equals("id")) {
                 return new SimpleNumber(document.getId());
             } else if (name.equals("revision")) {
                 return new SimpleNumber(document.getRevisionNumber());

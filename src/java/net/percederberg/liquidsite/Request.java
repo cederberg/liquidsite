@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.template.Template;
 import net.percederberg.liquidsite.template.TemplateException;
@@ -117,9 +116,9 @@ public class Request {
     private String responseData = null;
     
     /**
-     * The request site.
+     * The request environment.
      */
-    private ContentSite site = null;
+    private RequestEnvironment environment = new RequestEnvironment();
 
     /**
      * Creates a new request. 
@@ -196,60 +195,6 @@ public class Request {
      */
     public String getServletPath() {
         return request.getContextPath();
-    }
-
-    /**
-     * Returns the request site. The site is set for the request upon 
-     * dispatching the request. 
-     * 
-     * @return the request site object
-     */
-    public ContentSite getSite() {
-        return site;
-    }
-    
-    /**
-     * Sets the request site. This method is called by the request
-     * dispatcher to associate the request with a site.
-     * 
-     * @param site           the request site
-     */
-    public void setSite(ContentSite site) {
-        this.site = site;
-    }
-
-    /**
-     * Returns the session user. The session user is null until it is
-     * set by the setUser() method. Normally the session user is not
-     * set until the user has been authenticated. 
-     * 
-     * @return the session user, or
-     *         null if no user has been set
-     * 
-     * @see #setUser
-     */
-    public User getUser() {
-        return (User) getSessionAttribute("user");
-    }
-    
-    /**
-     * Sets the session user. The session user is null until it is
-     * set by this method. Normally the session user is not set until
-     * the user has been authenticated. If the user is set to null, 
-     * the whole session will be invalidated.
-     * 
-     * @param user           the new session user, or null to logout
-     * 
-     * @see #getUser
-     */
-    public void setUser(User user) {
-        if (user == null) {
-            if (request.getSession(false) != null) {
-                request.getSession().invalidate();
-            }
-        } else {
-            setSessionAttribute("user", user);
-        }
     }
 
     /**
@@ -441,6 +386,51 @@ public class Request {
     }
 
     /**
+     * Returns the session user. The session user is null until it is
+     * set by the setUser() method. Normally the session user is not
+     * set until the user has been authenticated. 
+     * 
+     * @return the session user, or
+     *         null if no user has been set
+     * 
+     * @see #setUser
+     */
+    public User getUser() {
+        return (User) getSessionAttribute("user");
+    }
+    
+    /**
+     * Sets the session user. The session user is null until it is
+     * set by this method. Normally the session user is not set until
+     * the user has been authenticated. If the user is set to null, 
+     * the whole session will be invalidated.
+     * 
+     * @param user           the new session user, or null to logout
+     * 
+     * @see #getUser
+     */
+    public void setUser(User user) {
+        if (user == null) {
+            if (request.getSession(false) != null) {
+                request.getSession().invalidate();
+            }
+        } else {
+            setSessionAttribute("user", user);
+        }
+    }
+
+    /**
+     * Returns the request environment object. The request
+     * environment is used for storing references to objects that the
+     * request touches. 
+     *
+     * @return the request environment object
+     */
+    public RequestEnvironment getEnvironment() {
+        return environment;
+    }
+    
+    /**
      * Returns a string representation of this request.
      * 
      * @return a string representation of this request
@@ -511,7 +501,7 @@ public class Request {
         responseType = NO_RESPONSE;
         responseMimeType = null;
         responseData = null;
-        site = null;
+        environment = null;
     }
 
     /**

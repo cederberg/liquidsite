@@ -38,7 +38,6 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.DocumentProperty;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.template.DocumentBean;
 
 /**
  * A helper class for the content view. This class contains methods 
@@ -389,10 +388,8 @@ public class ContentView extends AdminView {
     public void viewDocumentPreview(Request request, ContentDocument doc)
         throws ContentException {
 
+        request.getEnvironment().setDocument(doc);
         request.setAttribute("properties", findSectionProperties(doc));
-        // TODO: The usage of the document bean should be nicer here.
-        //       Maybe when we have a proper request environment?
-        request.setAttribute("doc", new DocumentBean(doc));
         request.sendTemplate("admin/preview-document.ftl");
     }
 

@@ -107,7 +107,7 @@ class DeleteDialogHandler extends AdminDialogHandler {
         
         if (ref instanceof Domain) {
             domain = (Domain) ref;
-            if (domain.equals(request.getSite().getDomain())) {
+            if (domain.equals(request.getEnvironment().getDomain())) {
                 throw new ContentSecurityException(
                     "cannot remove the domain containing the site " +
                     "currently being used");
@@ -115,7 +115,7 @@ class DeleteDialogHandler extends AdminDialogHandler {
             domain.delete(request.getUser());
         } else if (ref instanceof Content) {
             content = (Content) ref;
-            if (content.equals(request.getSite())) {
+            if (content.equals(request.getEnvironment().getSite())) {
                 throw new ContentSecurityException(
                     "cannot remove the site currently being used");
             }
