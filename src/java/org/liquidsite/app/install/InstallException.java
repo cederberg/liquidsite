@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.install;
+package org.liquidsite.app.install;
 
 /**
  * An installation exception. This exception is thrown when some

@@ -31,8 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.percederberg.liquidsite.install.InstallRequestProcessor;
-
+import org.liquidsite.app.install.InstallRequestProcessor;
 import org.liquidsite.app.servlet.Application;
 import org.liquidsite.app.servlet.Configuration;
 import org.liquidsite.app.servlet.ConfigurationException;
