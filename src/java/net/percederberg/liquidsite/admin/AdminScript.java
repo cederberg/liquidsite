@@ -282,7 +282,9 @@ class AdminScript {
         StringBuffer  buffer = new StringBuffer();
         
         if (domain.hasWriteAccess(user)) {
-            buffer.append("objectAddNewButton('add-site.html');\n");
+            buffer.append("objectAddNewButton('add-site.html");
+            buffer.append(getLinkParameters(domain));
+            buffer.append("');\n");
         }
         if (user.isSuperUser()) {
             buffer.append("objectAddDeleteButton('delete-site.html');\n");
@@ -307,7 +309,9 @@ class AdminScript {
         StringBuffer  buffer = new StringBuffer();
         
         if (content.hasWriteAccess(user)) {
-            buffer.append("objectAddNewButton('add-site.html');\n");
+            buffer.append("objectAddNewButton('add-site.html");
+            buffer.append(getLinkParameters(content));
+            buffer.append("');\n");
         }
         if (content.hasPublishAccess(user)) {
             buffer.append("objectAddDeleteButton('delete-site.html');\n");
@@ -601,5 +605,28 @@ class AdminScript {
         } else {
             return "'" + str + "'";
         }
+    }
+
+    /**
+     * Returns the domain link parameters.
+     * 
+     * @param domain         the domain object
+     * 
+     * @return the domain URL parameter string
+     */
+    private String getLinkParameters(Domain domain) {
+        return "?type=domain&id=" + domain.getName();
+    }
+
+    /**
+     * Returns the content link parameters.
+     * 
+     * @param content        the content object
+     * 
+     * @return the content URL parameter string
+     */
+    private String getLinkParameters(Content content) {
+        return "?type=" + getContentCategory(content) + 
+               "&id=" + content.getId();
     }
 }

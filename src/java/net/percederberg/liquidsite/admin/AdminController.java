@@ -171,42 +171,60 @@ public class AdminController extends Controller {
     private void processAddObject(Request request) throws RequestException {
         String  step = request.getParameter("step", "");
         String  category = request.getParameter("category", "");
+        Object  parent;
         
-        if (request.getParameter("prev") != null) {
-            if (step.equals("1")) {
-                request.sendRedirect("site.html");
+        try {
+            parent = getRequestReference(request);
+            if (request.getParameter("prev") != null) {
+                if (step.equals("1")) {
+                    request.sendRedirect("site.html");
+                } else {
+                    view.pageAddObject(request, parent);
+                }
+            } else if (category.equals("domain")) {
+                if (step.equals("1")) {
+                    view.pageAddDomain(request, parent);
+                } else {
+                    processAddDomain(request, parent);
+                }
+            } else if (category.equals("site")) {
+                if (step.equals("1")) {
+                    view.pageAddSite(request, parent);
+                } else {
+                    processAddSite(request, parent);
+                }
             } else {
-                view.pageAddObject(request);
+                view.pageAddObject(request, parent);
             }
-        } else if (category.equals("domain")) {
-            if (step.equals("1")) {
-                view.pageAddDomain(request);
-            } else {
-                processAddDomain(request);
-            }
-        } else if (category.equals("site")) {
-            if (step.equals("1")) {
-                view.pageAddSite(request);
-            } else {
-                processAddSite(request);
-            }
-        } else {
-            view.pageAddObject(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            // TODO: show nice error page instead
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            // TODO: show nice error page instead
+            throw RequestException.FORBIDDEN;
         }
     }
 
     /**
-     * Processes the add domain requests for the site view.
+     * Processes the add domain requests for the site view. The 
+     * parent domain object must be specified in case the uses 
+     * chooses to go back to the preceeding step. 
      * 
      * @param request        the request object
+     * @param parent         the parent domain object
      *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
      */
-    private void processAddDomain(Request request) throws RequestException {
+    private void processAddDomain(Request request, Object parent) 
+        throws ContentException, ContentSecurityException {
+
         Domain  domain;
         Host    host;
-        String  error;
         
         try {
             validator.validateAddDomain(request);
@@ -220,17 +238,7 @@ public class AdminController extends Controller {
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
-            view.pageAddDomain(request);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            error = "Failed to save to database, " + e.getMessage();
-            request.setAttribute("error", error);
-            view.pageAddDomain(request);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            error = "You don't have permission for adding domains";
-            request.setAttribute("error", error);
-            view.pageAddDomain(request);
+            view.pageAddDomain(request, parent);
         }
     }
 
@@ -238,20 +246,23 @@ public class AdminController extends Controller {
      * Processes the add site requests for the site view.
      * 
      * @param request        the request object
+     * @param parent         the parent domain object
      *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
      */
-    private void processAddSite(Request request) throws RequestException {
+    private void processAddSite(Request request, Object parent) 
+        throws ContentException, ContentSecurityException {
+
         User    user = request.getUser();
         Domain  domain;
         Site    site;
-        String  error;
         
         try {
             validator.validateAddSite(request);
-            // TODO: change this, as it is unsafe!
-            domain = (Domain) view.getSiteTreeFocus(request);
+            domain = (Domain) parent;
             site = new Site(domain);
             site.setName(request.getParameter("name"));
             site.setProtocol(request.getParameter("protocol"));
@@ -265,17 +276,7 @@ public class AdminController extends Controller {
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
-            view.pageAddSite(request);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            error = "Failed to save to database, " + e.getMessage();
-            request.setAttribute("error", error);
-            view.pageAddSite(request);
-        } catch (ContentSecurityException e) {
-            LOG.warning(e.getMessage());
-            error = "You don't have permission for adding sites";
-            request.setAttribute("error", error);
-            view.pageAddSite(request);
+            view.pageAddSite(request, parent);
         }
     }
 
@@ -360,6 +361,35 @@ public class AdminController extends Controller {
             error = "You don't have permission for removing this object";
             request.setAttribute("error", error);
             view.dialogError(request);
+        }
+    }
+    
+    /**
+     * Returns the domain or content referenced by in a request.
+     * 
+     * @param request        the request
+     * 
+     * @return the domain or content object referenced, or
+     *         null if not found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private Object getRequestReference(Request request) 
+        throws ContentException, ContentSecurityException {
+
+        User    user = request.getUser();
+        String  type = request.getParameter("type");
+        String  id = request.getParameter("id");
+        
+        if (type == null || id == null) {
+            return null;
+        } else if (type.equals("domain")) {
+            return getContentManager().getDomain(user, id);
+        } else {
+            return getContentManager().getContent(user, Integer.parseInt(id));
         }
     }
 }

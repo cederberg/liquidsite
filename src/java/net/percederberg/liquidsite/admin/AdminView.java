@@ -186,33 +186,26 @@ class AdminView {
      * Shows the add object page.
      * 
      * @param request        the request object
+     * @param parent         the parent object
      * 
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void pageAddObject(Request request) 
-        throws RequestException {
+    public void pageAddObject(Request request, Object parent) 
+        throws ContentException {
 
-        Object  focus = getSiteTreeFocus(request);
-        User    user = request.getUser();
-        Domain  domain;
+        User     user = request.getUser();
+        Domain   domain;
 
-        try {
-            // TODO: remove the use of the focus object as it is unsafe
-            if (focus instanceof Domain) {
-                domain = (Domain) focus; 
-                if (user.isSuperUser()) {
-                    request.setAttribute("enableDomain", true);
-                }
-                if (domain.hasWriteAccess(user)) {
-                    request.setAttribute("enableSite", true);
-                }
-            } else {
-                // TODO: add support for other types!
+        setRequestReference(request, parent);
+        if (parent instanceof Domain) {
+            domain = (Domain) parent;
+            if (user.isSuperUser()) {
+                request.setAttribute("enableDomain", true);
             }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
+            if (domain.hasWriteAccess(user)) {
+                request.setAttribute("enableSite", true);
+            }
         }
         request.sendTemplate("admin/add-object.ftl");
     }
@@ -221,8 +214,10 @@ class AdminView {
      * Shows the add domain page.
      * 
      * @param request        the request object
+     * @param parent         the parent object
      */
-    public void pageAddDomain(Request request) {
+    public void pageAddDomain(Request request, Object parent) {
+        setRequestReference(request, parent);
         request.setAttribute("name", request.getParameter("name", ""));
         request.setAttribute("description", 
                              request.getParameter("description", ""));
@@ -234,19 +229,21 @@ class AdminView {
      * Shows the add site page.
      * 
      * @param request        the request object
+     * @param parent         the parent object
      * 
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    public void pageAddSite(Request request) throws RequestException {
+    public void pageAddSite(Request request, Object parent) 
+        throws ContentException {
+
         Domain     domain;
         Host[]     hosts;
         ArrayList  list = new ArrayList();
         String     defaultHost = "*";
         
-        try {
-            // TODO: remove the use of the focus object as it is unsafe
-            domain = (Domain) getSiteTreeFocus(request);
+        if (parent instanceof Domain) {
+            domain = (Domain) parent;
             hosts = domain.getHosts();
             for (int i = 0; i < hosts.length; i++) {
                 if (i == 0) {
@@ -254,10 +251,8 @@ class AdminView {
                 }
                 list.add(hosts[i].getName());
             }
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
         }
+        setRequestReference(request, parent);
         request.setAttribute("hostnames", list);
         request.setAttribute("name", 
                              request.getParameter("name", ""));
@@ -400,5 +395,26 @@ class AdminView {
      */
     public void setSiteTreeFocus(Request request, Object obj) {
         request.setSessionAttribute("site.tree.focus", obj);
+    }
+    
+    /**
+     * Sets the domain or content reference attributes in a request.
+     * 
+     * @param request        the request
+     * @param obj            the domain or content object
+     */
+    private void setRequestReference(Request request, Object obj) {
+        Content  content;
+
+        if (obj instanceof Domain) {
+            request.setAttribute("type", "domain");
+            request.setAttribute("id", ((Domain) obj).getName());
+        } else {
+            content = (Content) obj;
+            request.setAttribute("type", 
+                                 script.getContentCategory(content));
+            request.setAttribute("id", 
+                                 String.valueOf(content.getId()));
+        }
     }
 }

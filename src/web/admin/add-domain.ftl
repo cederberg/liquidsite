@@ -8,6 +8,8 @@
     </script>
 
     <form method="post">
+      <input type="hidden" name="type" value="${type}" />
+      <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="step" value="2" />
       <input type="hidden" name="category" value="domain" />
       <table class="form">
