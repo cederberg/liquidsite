@@ -75,10 +75,54 @@ public class SectionBean {
      * @return the section identifier
      */
     public int getId() {
-        if (section == null) {
-            return 0;
-        } else {
+        if (section != null) {
             return section.getId();
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the section name.
+     *
+     * @return the section name
+     */
+    public String getName() {
+        if (section != null) {
+            return section.getName();
+        }
+        return "";
+    }
+
+    /**
+     * Returns the full section path.
+     *
+     * @return the section path
+     */
+    public String getPath() {
+        try {
+            return getPath(section);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
+        return "";
+    }
+
+    /**
+     * Returns the full section path of the specified section.
+     *
+     * @param section        the section
+     *
+     * @return the section path
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getPath(ContentSection section) throws ContentException {
+        if (section == null) {
+            return "";
+        } else {
+            return getPath((ContentSection) section.getParent()) + "/" +
+                   section.getName();
         }
     }
 
