@@ -95,14 +95,14 @@ public class SessionBean implements TemplateHashModel {
         // Handle methods
         if (name.equals("clear")) {
             return new TemplateMethodModel() {
-                public TemplateModel exec(List args) {
+                public Object exec(List args) {
                     clear();
                     return NOTHING;
                 }
             };
         } else if (name.equals("destroy")) {
             return new TemplateMethodModel() {
-                public TemplateModel exec(List args) {
+                public Object exec(List args) {
                     destroy();
                     return NOTHING;
                 }
@@ -245,7 +245,7 @@ public class SessionBean implements TemplateHashModel {
             // Handle methods
             if (name.equals("add")) {
                 return new TemplateMethodModel() {
-                    public TemplateModel exec(List args)
+                    public Object exec(List args)
                         throws TemplateModelException {
 
                         if (args.size() <= 0) {
@@ -258,7 +258,7 @@ public class SessionBean implements TemplateHashModel {
                 };
             } else if (name.equals("remove")) {
                 return new TemplateMethodModel() {
-                    public TemplateModel exec(List args) {
+                    public Object exec(List args) {
                         remove();
                         return NOTHING;
                     }

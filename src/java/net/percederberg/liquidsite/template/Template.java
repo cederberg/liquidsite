@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-import freemarker.template.Environment;
+import freemarker.core.Environment;
 import freemarker.template.TemplateExceptionHandler;
 
 import net.percederberg.liquidsite.Log;
