@@ -326,7 +326,8 @@ function tagEditInternalAddImage(editor) {
            "<th width='50%'>Image:</th>\n" +
            "<td width='50%'><select name='url'>\n";
     for (var i = 0; i < TAGEDIT_IMAGES.length; i++) {
-        html += "<option>" + TAGEDIT_IMAGES[i] + "</option>\n";
+        html += "<option value='" + TAGEDIT_IMAGES[i] + "'>" +
+                TAGEDIT_IMAGES[i] + "</option>\n";
     }
     html += "</select>\n" +
             "</td>\n" +

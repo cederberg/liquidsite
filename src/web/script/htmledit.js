@@ -279,7 +279,8 @@ function htmlEditInternalAddImage(editor) {
            "<th width='50%'>Image:</th>\n" +
            "<td width='50%'><select name='url'>\n";
     for (var i = 0; i < HTMLEDIT_IMAGES.length; i++) {
-        html += "<option>" + HTMLEDIT_IMAGES[i] + "</option>\n";
+        html += "<option value='" + HTMLEDIT_IMAGES[i] + "'>" +
+                HTMLEDIT_IMAGES[i] + "</option>\n";
     }
     html += "</select>\n" +
             "</td>\n" +
