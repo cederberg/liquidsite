@@ -175,12 +175,10 @@ public class AdminController extends Controller {
             view.pageSite(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            // TODO: show nice error page instead
-            throw RequestException.INTERNAL_ERROR;
+            view.pageError(request, e);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            // TODO: show nice error page instead
-            throw RequestException.FORBIDDEN;
+            view.pageError(request, e);
         }
     }
 
@@ -222,12 +220,10 @@ public class AdminController extends Controller {
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            // TODO: show nice error page instead
-            throw RequestException.INTERNAL_ERROR;
+            view.pageError(request, e);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            // TODO: show nice error page instead
-            throw RequestException.FORBIDDEN;
+            view.pageError(request, e);
         }
     }
 
@@ -316,7 +312,6 @@ public class AdminController extends Controller {
         throws RequestException {
 
         Object  obj;
-        String  error;
         
         try {
             obj = view.getRequestReference(request);
@@ -337,12 +332,10 @@ public class AdminController extends Controller {
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            error = "Database access problem, " + e.getMessage();
-            view.dialogError(request, error);
+            view.dialogError(request, e);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            error = "Security violation, " + e.getMessage();
-            view.dialogError(request, error);
+            view.dialogError(request, e);
         }
     }
 

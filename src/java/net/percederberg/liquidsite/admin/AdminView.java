@@ -82,6 +82,26 @@ class AdminView {
     }
 
     /**
+     * Shows the error message dialog.
+     * 
+     * @param request        the request object
+     * @param e              the content database error
+     */
+    public void dialogError(Request request, ContentException e) {
+        dialogError(request, "Database access error, " + e.getMessage());
+    }
+
+    /**
+     * Shows the error message dialog.
+     * 
+     * @param request        the request object
+     * @param e              the content security error
+     */
+    public void dialogError(Request request, ContentSecurityException e) {
+        dialogError(request, "Security violation, " + e.getMessage());
+    }
+
+    /**
      * Shows the delete domain confirmation dialog.
      * 
      * @param request        the request object
@@ -103,6 +123,38 @@ class AdminView {
         setRequestReference(request, site);
         request.setAttribute("name", site.getName());
         request.sendTemplate("admin/dialog/delete-site.ftl");
+    }
+
+    /**
+     * Shows the error message page.
+     * 
+     * @param request        the request object
+     * @param message        the error message
+     */
+    public void pageError(Request request, String message) {
+        request.setAttribute("error", message);
+        request.setAttribute("page", "index.html");
+        request.sendTemplate("admin/error.ftl");
+    }
+
+    /**
+     * Shows the error message page.
+     * 
+     * @param request        the request object
+     * @param e              the content database error
+     */
+    public void pageError(Request request, ContentException e) {
+        pageError(request, "Database access error, " + e.getMessage());
+    }
+
+    /**
+     * Shows the error message page.
+     * 
+     * @param request        the request object
+     * @param e              the content security error
+     */
+    public void pageError(Request request, ContentSecurityException e) {
+        pageError(request, "Security violation, " + e.getMessage());
     }
 
     /**
