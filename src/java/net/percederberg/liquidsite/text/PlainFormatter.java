@@ -55,7 +55,7 @@ public class PlainFormatter {
     }
 
     /**
-     * Converts a plain text string to HTML. This method will escape
+     * Formats a plain text string in HTML. This method will escape
      * any occurencies of special HTML characters while also inserting
      * HTML linebreaks instead of normal line breaks.
      *
