@@ -24,6 +24,8 @@ package net.percederberg.liquidsite.content;
 import java.util.Collection;
 import java.util.HashMap;
 
+import net.percederberg.liquidsite.Log;
+
 /**
  * A content cache manager. This class will be used to cache objects
  * upon retrieval from a caching content manager. Only a single
@@ -33,6 +35,11 @@ import java.util.HashMap;
  * @version  1.0
  */
 class CacheManager {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(CacheManager.class);
 
     /**
      * The one and only cache manager instance.
@@ -69,6 +76,23 @@ class CacheManager {
     private HashMap sites = new HashMap();
 
     /**
+     * The content parent identifier cache. This is a map containing
+     * content parent identifiers, indexed by the content identifiers.
+     * Only content objects where the work and the highest revision
+     * correlates will be added to this cache.
+     */
+    private HashMap parents = new HashMap();
+
+    /**
+     * The permission list cache. This is a map of domain and content
+     * permission lists. It is indexed by either the domain name or
+     * the content identifier. If the permission list is empty for a
+     * specified domain or content object, a null value is stored in
+     * this map.
+     */
+    private HashMap permissions = new HashMap();
+
+    /**
      * Creates a new content cache manager.
      */
     private CacheManager() {
@@ -80,11 +104,39 @@ class CacheManager {
      * @param obj            the object to add
      */
     public void add(PersistentObject obj) {
-        remove(obj);
+        Domain          domain;
+        Host            host;
+        Content         content;
+        PermissionList  perms;
+        Object          key;
+
         if (obj instanceof Domain) {
-            domains.put(((Domain) obj).getName(), obj);
+            domain = (Domain) obj;
+            domains.put(domain.getName(), obj);
+            LOG.trace("cached domain " + domain.getName());
         } else if (obj instanceof Host) {
-            hosts.put(((Host) obj).getName(), obj);
+            host = (Host) obj;
+            hosts.put(host.getName(), obj);
+            LOG.trace("cached host " + host.getName());
+        } else if (obj instanceof Content) {
+            content = (Content) obj;
+            if (content.isLatestRevision() && content.isPublishedRevision()) {
+                parents.put(new Integer(content.getId()),
+                            new Integer(content.getParentId()));
+                LOG.trace("cached content parent for " + content.getId());
+            }
+        } else if (obj instanceof PermissionList) {
+            perms = (PermissionList) obj;
+            if (perms.getContentId() == 0) {
+                key = perms.getDomainName();
+            } else {
+                key = new Integer(perms.getContentId());
+            }
+            if (perms.isEmpty()) {
+                perms = null;
+            }
+            permissions.put(key, perms);
+            LOG.trace("cached permission list for " + key);
         }
     }
 
@@ -108,7 +160,9 @@ class CacheManager {
      * @param content        the array of content sites
      */
     public void addSites(Domain domain, Content[] content) {
+        addAll(content);
         sites.put(domain.getName(), content);
+        LOG.trace("cached site list for " + domain.getName());
     }
 
     /**
@@ -117,12 +171,43 @@ class CacheManager {
      * @param obj            the object to remove
      */
     public void remove(PersistentObject obj) {
+        Domain          domain;
+        Host            host;
+        Content         content;
+        PermissionList  perms;
+
         if (obj instanceof Domain) {
-            domains.remove(((Domain) obj).getName());
+            domain = (Domain) obj;
+            domains.remove(domain.getName());
+            LOG.trace("uncached domain " + domain.getName());
+            permissions.remove(domain.getName());
+            LOG.trace("uncached permission list for " + domain.getName());
         } else if (obj instanceof Host) {
-            hosts.remove(((Host) obj).getName());
-        } else if (obj instanceof ContentSite) {
-            sites.remove(((ContentSite) obj).getDomainName());
+            host = (Host) obj;
+            hosts.remove(host.getName());
+            LOG.trace("uncached host " + host.getName());
+        } else if (obj instanceof Content) {
+            content = (Content) obj;
+            if (obj instanceof ContentSite) {
+                sites.remove(content.getDomainName());
+                LOG.trace("uncached site list for " +
+                          content.getDomainName());
+            }
+            parents.remove(new Integer(content.getId()));
+            LOG.trace("uncached content parent for " + content.getId());
+            permissions.remove(new Integer(content.getId()));
+            LOG.trace("uncached permission list for " + content.getId());
+        } else if (obj instanceof PermissionList) {
+            perms = (PermissionList) obj;
+            if (perms.getContentId() == 0) {
+                permissions.remove(perms.getDomainName());
+                LOG.trace("uncached permission list for " +
+                          perms.getDomainName());
+            } else {
+                permissions.remove(new Integer(perms.getContentId()));
+                LOG.trace("uncached permission list for " +
+                          perms.getContentId());
+            }
         }
     }
 
@@ -134,6 +219,9 @@ class CacheManager {
         domains.clear();
         hosts.clear();
         sites.clear();
+        parents.clear();
+        permissions.clear();
+        LOG.trace("cleared all caches");
     }
 
     /**
@@ -179,5 +267,85 @@ class CacheManager {
      */
     public Content[] getSites(Domain domain) {
         return (Content[]) sites.get(domain.getName());
+    }
+
+    /**
+     * Returns a domain permission list from the cache.
+     *
+     * @param domain         the domain
+     *
+     * @return the permission list for the domain, or
+     *         null if not present in the cache
+     */
+    public PermissionList getPermissions(Domain domain) {
+        PermissionList  perms;
+
+        if (domain == null) {
+            return null;
+        }
+        perms = (PermissionList) permissions.get(domain.getName());
+        if (!permissions.containsKey(domain.getName())) {
+            LOG.trace("cache miss on permission list for " +
+                      domain.getName());
+            return null;
+        } else if (perms == null) {
+            LOG.trace("cache hit on empty permission list for " +
+                      domain.getName());
+            return new PermissionList(domain.getContentManager(), domain);
+        } else {
+            LOG.trace("cache hit on permission list for " +
+                      domain.getName());
+            return perms;
+        }
+    }
+    
+    /**
+     * Returns a content permission list from the cache. If the object
+     * has no permissions either an empty list or the inherited
+     * permission list will be returned.
+     *
+     * @param content        the content object
+     * @param inherit        the search inherited permissions flag
+     *
+     * @return the permission list for the domain, or
+     *         null if not present in the cache
+     */
+    public PermissionList getPermissions(Content content, boolean inherit) {
+        PermissionList  perms;
+        Object          key;
+
+        if (content == null) {
+            return null;
+        }
+        key = new Integer(content.getId());
+        perms = (PermissionList) permissions.get(key);
+        if (inherit) {
+            while (perms == null && permissions.containsKey(key)) {
+                key = (Integer) parents.get(key);
+                if (key == null) {
+                    LOG.trace("cache miss on permission list for " +
+                              content.getId() + " due to uncached parents");
+                    return null;
+                } else if (key instanceof Integer
+                        && ((Integer) key).intValue() == 0) {
+
+                    return getPermissions(getDomain(content.getDomainName()));
+                }
+                perms = (PermissionList) permissions.get(key);
+            }
+        }
+        if (!permissions.containsKey(key)) {
+            LOG.trace("cache miss on permission list for " +
+                      content.getId());
+            return null;
+        } else if (perms == null) {
+            LOG.trace("cache hit on empty permission list for " +
+                      content.getId());
+            return new PermissionList(content.getContentManager(), content);
+        } else {
+            LOG.trace("cache hit on permission list for " +
+                      content.getId());
+            return perms;
+        }
     }
 }

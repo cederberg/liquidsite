@@ -243,7 +243,9 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Returns the permission list applicable to this domain object.
+     * Returns the permission list applicable to this domain object. 
+     * If the object has no permissions an empty permission list will
+     * be returned.
      *
      * @return the permission list for this object
      *
@@ -251,7 +253,7 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public PermissionList getPermissions() throws ContentException {
-        return PermissionList.findByDomain(getContentManager(), this);
+        return getContentManager().getPermissions(this);
     }
 
     /**

@@ -182,7 +182,7 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
         if (ref instanceof Domain) {
             permissions = ((Domain) ref).getPermissions();
         } else {
-            permissions = ((Content) ref).getPermissions();
+            permissions = ((Content) ref).getPermissions(false);
         }
         permissions.setPermissions(perms);
         permissions.save(request.getUser());

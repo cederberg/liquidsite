@@ -235,6 +235,36 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Checks if this content object revision is the latest one. The
+     * revision is considered the latest if it is a work revision, or
+     * if no work revision exists and it is the latest published
+     * revision.
+     *
+     * @return true if this content revision is the latest one, or
+     *         false otherwise
+     */
+    public boolean isLatestRevision() {
+        int  status = data.getInt(ContentData.STATUS);
+
+        return (status & ContentPeer.LATEST_STATUS) > 0;
+    }
+
+    /**
+     * Checks if this content object revision is the published one.
+     * The revision is considered the published one if it is the
+     * revision with the highest revision number. Note that working
+     * revision always have a revision number of zero.
+     *
+     * @return true if this content revision is the published one, or
+     *         false otherwise
+     */
+    public boolean isPublishedRevision() {
+        int  status = data.getInt(ContentData.STATUS);
+
+        return (status & ContentPeer.PUBLISHED_STATUS) > 0;
+    }
+
+    /**
      * Returns the content domain.
      *
      * @return the content domain
@@ -589,15 +619,20 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Returns the permission list applicable to this content object.
-     * This method will not return the inherited permission list.
+     * If this object has no permissions either an empty list or the
+     * inherited permission list will be returned.
+     *
+     * @param inherit        the search inherited permissions flag
      *
      * @return the permission list for this object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public PermissionList getPermissions() throws ContentException {
-        return PermissionList.findByContent(getContentManager(), this);
+    public PermissionList getPermissions(boolean inherit)
+        throws ContentException {
+
+        return getContentManager().getPermissions(this, inherit);
     }
 
     /**

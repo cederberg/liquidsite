@@ -323,26 +323,12 @@ public class ContentManager {
     public Content getContent(User user, int id)
         throws ContentException, ContentSecurityException {
 
-        return postProcess(user, getContent(id));
-    }
+        CacheManager  cache = CacheManager.getInstance();
+        Content       content;
 
-    /**
-     * Returns the content object with the specified identifier and
-     * revision.
-     *
-     * @param id             the content identifier
-     * @param revision       the content revision
-     *
-     * @return the content object found, or
-     *         null if no matching content existed
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    Content getContent(int id, int revision)
-        throws ContentException {
-
-        return InternalContent.findByRevision(this, id, revision);
+        content = getContent(id);
+        cache.add(content);
+        return postProcess(user, content);
     }
 
     /**
@@ -364,8 +350,11 @@ public class ContentManager {
     public Content getContentChild(User user, Domain domain, String name)
         throws ContentException, ContentSecurityException {
 
-        Content  content = InternalContent.findByName(this, domain, name);
+        CacheManager  cache = CacheManager.getInstance();
+        Content       content;
 
+        content = InternalContent.findByName(this, domain, name);
+        cache.add(content);
         return postProcess(user, content);
     }
 
@@ -388,8 +377,11 @@ public class ContentManager {
     public Content getContentChild(User user, Content parent, String name)
         throws ContentException, ContentSecurityException {
 
-        Content  content = InternalContent.findByName(this, parent, name);
+        CacheManager  cache = CacheManager.getInstance();
+        Content       content;
 
+        content = InternalContent.findByName(this, parent, name);
+        cache.add(content);
         return postProcess(user, content);
     }
 
@@ -408,8 +400,11 @@ public class ContentManager {
     public Content[] getContentChildren(User user, Domain domain)
         throws ContentException {
 
-        Content[]  children = InternalContent.findByParent(this, domain);
+        CacheManager  cache = CacheManager.getInstance();
+        Content[]     children;
 
+        children = InternalContent.findByParent(this, domain);
+        cache.addAll(children);
         return postProcess(user, children);
     }
 
@@ -432,9 +427,11 @@ public class ContentManager {
                                         int category)
         throws ContentException {
 
-        Content[]  children;
+        CacheManager  cache = CacheManager.getInstance();
+        Content[]     children;
 
         children = InternalContent.findByCategory(this, domain, category);
+        cache.addAll(children);
         return postProcess(user, children);
     }
 
@@ -453,8 +450,11 @@ public class ContentManager {
     public Content[] getContentChildren(User user, Content parent)
         throws ContentException {
 
-        Content[]  children = InternalContent.findByParent(this, parent);
+        CacheManager  cache = CacheManager.getInstance();
+        Content[]     children;
 
+        children = InternalContent.findByParent(this, parent);
+        cache.addAll(children);
         return postProcess(user, children);
     }
 
@@ -477,9 +477,11 @@ public class ContentManager {
                                         int category)
         throws ContentException {
 
-        Content[]  children;
+        CacheManager  cache = CacheManager.getInstance();
+        Content[]     children;
 
         children = InternalContent.findByCategory(this, parent, category);
+        cache.addAll(children);
         return postProcess(user, children);
     }
 
@@ -519,10 +521,82 @@ public class ContentManager {
     public Content[] getContentObjects(User user, ContentSelector selector)
         throws ContentException {
 
-        Content[]  content;
+        CacheManager  cache = CacheManager.getInstance();
+        Content[]     content;
 
         content = InternalContent.findBySelector(this, selector);
+        cache.addAll(content);
         return postProcess(user, content);
+    }
+
+    /**
+     * Returns the permission list applicable to a domain object. If
+     * the object has no permissions an empty permission list will be
+     * returned.
+     *
+     * @param domain         the domain object
+     *
+     * @return the permission list for this object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public PermissionList getPermissions(Domain domain)
+        throws ContentException {
+
+        CacheManager    cache = CacheManager.getInstance();
+        PermissionList  permissions;
+
+        permissions = cache.getPermissions(domain);
+        if (permissions == null) {
+            permissions = PermissionList.findByDomain(this, domain);
+            cache.add(permissions);
+        }
+        return permissions;
+    }
+
+    /**
+     * Returns the permission list applicable to a content object. If
+     * the object has no permissions either an empty list or the
+     * inherited permission list will be returned.
+     *
+     * @param content        the content object
+     * @param inherit        the search inherited permissions flag
+     *
+     * @return the permission list for this object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public PermissionList getPermissions(Content content, boolean inherit)
+        throws ContentException {
+
+        CacheManager    cache = CacheManager.getInstance();
+        PermissionList  permissions;
+
+        permissions = cache.getPermissions(content, inherit);
+        if (permissions == null) {
+            permissions = PermissionList.findByContent(this, content);
+            cache.add(permissions);
+            while (permissions.isEmpty() && inherit) {
+                permissions = cache.getPermissions(content, true);
+                if (permissions != null) {
+                    break;
+                }
+                if (content.getParentId() <= 0) {
+                    return getPermissions(content.getDomain());
+                }
+                content = content.getParent();
+                cache.add(content);
+                permissions = cache.getPermissions(content, true);
+                if (permissions == null) {
+                    permissions = PermissionList.findByContent(this, content);
+                    cache.add(permissions);
+                }
+                
+            }
+        }
+        return permissions;
     }
 
     /**

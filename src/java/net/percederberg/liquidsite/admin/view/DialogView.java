@@ -223,13 +223,14 @@ public class DialogView extends AdminView {
     public void viewPermissions(Request request, PersistentObject obj)
         throws ContentException {
 
-        Domain     domain;
-        Content    content;
-        ArrayList  inherited;
-        ArrayList  local;
-        HashMap    map;
-        int        index = 0;
-        String     str;
+        Domain          domain;
+        Content         content;
+        PermissionList  permissions;
+        ArrayList       inherited;
+        ArrayList       local;
+        HashMap         map;
+        int             index = 0;
+        String          str;
 
         AdminUtils.setReference(request, obj);
         if (obj instanceof Domain) {
@@ -241,8 +242,8 @@ public class DialogView extends AdminView {
             content = (Content) obj;
             domain = content.getDomain();
             inherited = getInheritedPermissions(content);
-            local = getPermissions(content.getPermissions().getPermissions(),
-                                   false);
+            permissions = content.getPermissions(false);
+            local = getPermissions(permissions.getPermissions(), false);
         }
         if (request.getParameter("perm_0_type") != null) {
             local.clear();
@@ -312,17 +313,12 @@ public class DialogView extends AdminView {
         throws ContentException {
 
         PermissionList  permissions;
-        Content         parent = content;
 
-        do {
-            parent = parent.getParent();
-            if (parent == null) {
-                permissions = content.getDomain().getPermissions();
-            } else {
-                permissions = parent.getPermissions();
-            }
-        } while (permissions.isEmpty() && parent != null);
-
+        if (content.getParentId() <= 0) {
+            permissions = content.getDomain().getPermissions();
+        } else {
+            permissions = content.getParent().getPermissions(true);
+        }
         return getPermissions(permissions.getPermissions(), true);
     }
 

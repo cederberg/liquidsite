@@ -608,18 +608,12 @@ public class ScriptView {
         throws ContentException {
 
         PermissionList  permissions;
-        Content         parent = content;
         boolean         inherited = false;
 
-        permissions = content.getPermissions();
-        while (permissions.isEmpty() && parent != null) {
+        permissions = content.getPermissions(false);
+        if (permissions.isEmpty()) {
             inherited = true;
-            parent = parent.getParent();
-            if (parent == null) {
-                permissions = content.getDomain().getPermissions();
-            } else {
-                permissions = parent.getPermissions();
-            }
+            permissions = content.getPermissions(true);
         }
         return getPermissions(permissions, inherited);
     }

@@ -221,14 +221,12 @@ class SecurityManager {
     private boolean hasAccess(User user, Domain domain, int access)
         throws ContentException {
 
-        Permission[]  perms = domain.getPermissions().getPermissions();
         Group[]       groups = null;
+        Permission[]  perms;
 
-        // Check for superuser and empty permission list
+        // Check for superuser
         if (user != null && user.isSuperUser()) {
             return true;
-        } else if (perms.length == 0) {
-            return false;
         }
 
         // Check domain permissions
@@ -239,6 +237,7 @@ class SecurityManager {
                 groups = user.getGroups();
             }
         }
+        perms = domain.getPermissions().getPermissions();
         for (int i = 0; i < perms.length; i++) {
             if (hasAccess(user, groups, perms[i], access)) {
                 return true;
@@ -267,21 +266,17 @@ class SecurityManager {
     private boolean hasAccess(User user, Content content, int access)
         throws ContentException {
 
-        Permission[]  perms = content.getPermissions().getPermissions();
         Group[]       groups = null;
+        Permission[]  perms;
 
         // Check for prohibited local permissions
         if (access == ADMIN && !hasPermissionList(content)) {
             return false;
         }
 
-        // Check for superuser or inherited permissions
+        // Check for superuser
         if (user != null && user.isSuperUser()) {
             return true;
-        } else if (perms.length == 0 && content.getParentId() <= 0) {
-            return hasAccess(user, content.getDomain(), access);
-        } else if (perms.length == 0) {
-            return hasAccess(user, content.getParent(), access);
         }
 
         // Check content permissions
@@ -292,6 +287,7 @@ class SecurityManager {
                 groups = user.getGroups();
             }
         }
+        perms = content.getPermissions(true).getPermissions();
         for (int i = 0; i < perms.length; i++) {
             if (hasAccess(user, groups, perms[i], access)) {
                 return true;
