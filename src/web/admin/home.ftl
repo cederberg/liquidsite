@@ -60,7 +60,7 @@
         </tr>
 </#if>
         <tr>
-          <td class="buttons" colspan="2">
+          <td class="buttons" colspan="2" style="width: 300px;">
             <button type="button" tabindex="1" onclick="doEditUser()">
               <img src="images/icons/24x24/edit.png" />
               Edit
