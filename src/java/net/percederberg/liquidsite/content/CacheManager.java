@@ -179,6 +179,11 @@ class CacheManager {
             LOG.trace("cached host " + host.getName());
         } else if (obj instanceof Content) {
             content = (Content) obj;
+            if (content instanceof ContentSite) {
+                sites.remove(content.getDomainName());
+                LOG.trace("uncached site list for " +
+                          content.getDomainName());
+            }
             if (content.isLatestRevision() && content.isPublishedRevision()) {
                 key = new Integer(content.getId());
                 parents.put(key, new Integer(content.getParentId()));
