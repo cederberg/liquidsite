@@ -158,6 +158,46 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
+     * Returns a list of content objects having the specified 
+     * category. Only the latest revision of each content object will 
+     * be returned.
+     * 
+     * @param domain         the domain name
+     * @param category       the category
+     * @param con            the database connection to use
+     * 
+     * @return a list of all matching content objects
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    public static ArrayList doSelectByCategory(String domain,
+                                               int category, 
+                                               DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        DatabaseQuery    query = new DatabaseQuery("content.select.category");
+        DatabaseResults  res;
+        ArrayList        list = new ArrayList();
+        ContentData      data;
+        
+        query.addParameter(domain);
+        query.addParameter(category);
+        res = PEER.execute("reading content list", query, con);
+        try {
+            for (int i = 0; i < res.getRowCount(); i++) {
+                data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
+                                             con);
+                list.add(data);
+            }
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DatabaseObjectException(e);
+        }
+        return list;
+    }
+
+    /**
      * Inserts a new content object into the database. This method 
      * will assign a new content id if it is set to zero (0).
      * 
