@@ -686,7 +686,7 @@ public class ScriptView {
 
         if (!content.isOnline()) {
             return 0;
-        } else if (content.getRevision(0) != null) {
+        } else if (content.getRevisionNumber() == 0) {
             return 2;
         } else {
             return 1;

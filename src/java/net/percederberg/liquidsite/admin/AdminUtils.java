@@ -241,9 +241,6 @@ public class AdminUtils {
                 throw new ContentSecurityException(message);
             }
             content = getContentManager().getContent(user, value);
-            if (content != null) {
-                revision = content.getRevision(0);
-            }
             return (revision == null) ? content : revision;
         }
     }
