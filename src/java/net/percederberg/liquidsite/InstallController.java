@@ -362,7 +362,7 @@ public class InstallController extends Controller {
             displayStep5(request);
         } else {
             getApplication().restart();
-            request.redirect("index.html");
+            request.sendRedirect("index.html");
         }
     }
 

@@ -21,9 +21,16 @@
 
 package net.percederberg.liquidsite;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -40,6 +47,33 @@ public class Request {
     private static final Log LOG = new Log(Request.class);
 
     /**
+     * The no response type. This type is used when no request 
+     * response has been issued. 
+     */
+    private static final int NO_RESPONSE = 0;
+    
+    /**
+     * The forward response type. This type is used when a request
+     * forward has been issued. The response data contains the 
+     * forwarding location when this type is set.
+     */
+    private static final int FORWARD_RESPONSE = 1;
+     
+    /**
+     * The redirect response type. This type is used when a request
+     * redirect has been issued. The response data contains the 
+     * redirect URI (absolute or relative) when this type is set.
+     */
+    private static final int REDIRECT_RESPONSE = 2;
+
+    /**
+     * The file response type. This type is used when a file has been
+     * set as the request response. The response data contains the 
+     * absolute file name when this type is set.
+     */
+    private static final int FILE_RESPONSE = 3;
+
+    /**
      * The HTTP request. 
      */
     private HttpServletRequest request;
@@ -50,15 +84,15 @@ public class Request {
     private HttpServletResponse response;
 
     /**
-     * The request processed flag. This flag is set to true if the 
+     * The reqponse type. This flag is set to true if the 
      * response object has been modified.
      */
-    private boolean processed = false;
+    private int responseType = NO_RESPONSE;
 
     /**
-     * The request forward path. 
+     * The response data. 
      */
-    private String forwardPath = null;
+    private String responseData = null;
 
     /**
      * Creates a new request. 
@@ -74,62 +108,13 @@ public class Request {
     }
     
     /**
-     * Checks if this request has been processed. A request is 
-     * considered processed when the response object has been 
-     * modified.
+     * Checks if this request contains a response.
      * 
-     * @return true if the request has been processed, or
+     * @return true if the request contains a response, or
      *         false otherwise
      */
-    public boolean isProcessed() {
-        return processed;
-    }
-
-    /**
-     * Checks if this request should be forwarded. 
-     * 
-     * @return true if this request should be forwarded, or
-     *         false otherwise
-     */
-    public boolean isForward() {
-        return forwardPath != null;
-    }
-
-    /**
-     * Returns the forward path. 
-     * 
-     * @return the request forward path, or
-     *         null if the request shouldn't be forwarded
-     */
-    public String getForwardPath() {
-        return forwardPath;
-    }
-
-    /**
-     * Forwards this request within the same servlet context.
-     * 
-     * @param path           the path to the resource
-     */
-    public void forward(String path) {
-        forwardPath = path; 
-    }
-    
-    /**
-     * Redirects this request by sending a temporary redirection URL
-     * to the browser. The location specified may be either an 
-     * absolute or a relative URL.
-     * 
-     * @param location       the destination location
-     */
-    public void redirect(String location) {
-        processed = true;
-        try {
-            response.sendRedirect(location);
-        } catch (IllegalStateException e) {
-            LOG.warning("couldn't redirect request, already processed", e);
-        } catch (IOException e) {
-            LOG.warning("couldn't redirect request", e);
-        }
+    public boolean hasResponse() {
+        return responseType != NO_RESPONSE;
     }
 
     /**
@@ -224,5 +209,186 @@ public class Request {
      */
     public String toString() {
         return request.getRequestURI();
+    }
+
+    /**
+     * Forwards this request to within the same servlet context. This
+     * method will set a request response.
+     * 
+     * @param path           the path to the resource
+     */
+    public void forward(String path) {
+        responseType = FORWARD_RESPONSE;
+        responseData = path;
+    }
+    
+    /**
+     * Redirects this request by sending a temporary redirection URL
+     * to the browser. The location specified may be either an 
+     * absolute or a relative URL. This method will set a request 
+     * response.
+     * 
+     * @param location       the destination location
+     */
+    public void sendRedirect(String location) {
+        responseType = REDIRECT_RESPONSE;
+        responseData = location;
+    }
+
+    /**
+     * Sends the contents of a file as the request response. The file
+     * name extension will be used for determining the MIME type for
+     * the file contents.
+     * 
+     * @param file           the file containing the response
+     */
+    public void sendFile(File file) {
+        responseType = FILE_RESPONSE;
+        responseData = file.toString();
+    }
+    
+    /**
+     * Sends the request response to the underlying HTTP response 
+     * object. 
+     * 
+     * @param context        the servlet context
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             commit the response
+     * @throws ServletException if a configuration error was 
+     *             encountered while sending the response
+     */
+    void commit(ServletContext context) 
+        throws IOException, ServletException {
+
+        switch (responseType) {
+        case FORWARD_RESPONSE:
+            commitForward(context);
+            break;
+        case REDIRECT_RESPONSE:
+            commitRedirect();
+            break;
+        case FILE_RESPONSE:
+            commitFile(context);
+            break;
+        default:
+            throw new ServletException("No request response available: " + 
+                                       this);
+        }
+    }
+
+    /**
+     * Sends the forward response to the underlying HTTP response 
+     * object. 
+     * 
+     * @param context        the servlet context
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             forward the request
+     * @throws ServletException if the JSP servlet wasn't found
+     */
+    private void commitForward(ServletContext context)
+        throws IOException, ServletException {
+
+        RequestDispatcher  disp;
+
+        LOG.debug("Forwarding request for " + this + " to " + responseData);
+        disp = context.getNamedDispatcher("JspServlet");
+        if (disp == null) {
+            throw new ServletException(
+                "Couldn't find 'JspServlet' in context");
+        }
+        disp.forward(new ForwardRequestWrapper(request, responseData), 
+                     response);
+    }
+
+    /**
+     * Sends the redirect response to the underlying HTTP response 
+     * object. 
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             redirect the request
+     */
+    private void commitRedirect() throws IOException {
+        LOG.debug("Redirecting request for " + this + " to " + responseData);
+        response.sendRedirect(responseData);
+    }
+    
+    /**
+     * Sends the file response to the underlying HTTP response object. 
+     * 
+     * @param context        the servlet context
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             commit the response
+     */
+    private void commitFile(ServletContext context) throws IOException {
+        File             file;
+        FileInputStream  input;
+        OutputStream     output;
+        byte[]           buffer = new byte[4096];
+        int              length;      
+
+        LOG.debug("Handling request for " + this + " with file " + 
+                  responseData);
+        file = new File(responseData);
+        input = new FileInputStream(file);
+        response.setContentType(context.getMimeType(responseData));
+        response.setContentLength((int) file.length());
+        output = response.getOutputStream();
+        while ((length = input.read(buffer)) > 0) {
+            output.write(buffer, 0, length);
+        }
+        input.close();
+        output.close();
+    }
+
+
+    /**
+     * An HTTP forwarding request. This request wrapper is used to 
+     * forward request to JSP:s. 
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    private class ForwardRequestWrapper extends HttpServletRequestWrapper {
+
+        /**
+         * The request forward path.
+         */
+        private String forward;
+
+        /**
+         * Creates a new forwarding request.
+         * 
+         * @param request        the original HTTP request
+         * @param forward        the forwarding path
+         */
+        public ForwardRequestWrapper(HttpServletRequest request, 
+                                     String forward) {
+
+            super(request);
+            this.forward = forward;
+        }
+        
+        /**
+         * Returns the forwarding path.
+         * 
+         * @return the forwarding path
+         */
+        public String getServletPath() {
+            return forward;
+        }
+
+        /**
+         * Returns the additional path. This method always returns 
+         * null, as the forwarding request does not support 
+         * additional paths. 
+         * 
+         * @return null as no additional path exists
+         */
+        public String getPathInfo() {
+            return null;
+        }
     }
 }

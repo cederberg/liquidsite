@@ -25,11 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import net.percederberg.liquidsite.content.ContentException;
@@ -247,28 +245,18 @@ public class LiquidSiteServlet extends HttpServlet
                         HttpServletResponse response) 
         throws ServletException, IOException {
 
-        Request            r = new Request(request, response);
-        RequestDispatcher  disp;
-        String             str;
+        Request  r = new Request(request, response);
         
         // TODO: handle offline state gracefully
+        // TODO: handle exceptions and error responses
         
         // Process request
         LOG.debug("Incoming request: " + r);
         process(r);
         
-        // Handle response
-        if (r.isProcessed()) {
-            LOG.debug("Request processed: " + r);
-        } else if (r.isForward()) {
-            str = r.getForwardPath();
-            LOG.debug("Forwarding request to " + str);
-            disp = getServletContext().getNamedDispatcher("JspServlet");
-            if (disp == null) {
-                throw new ServletException("Failed to forward request " +
-                                           "to " + str);
-            }
-            disp.forward(new ForwardRequest(request, str), response);
+        // Send response
+        if (r.hasResponse()) {
+            r.commit(getServletContext());
         } else {
             LOG.debug("Unhandled request, reporting HTTP 404: " + r);
             response.sendError(HttpServletResponse.SC_NOT_FOUND); 
@@ -288,7 +276,7 @@ public class LiquidSiteServlet extends HttpServlet
         for (int i = 0; i < controllers.size(); i++) {
             c = (Controller) controllers.get(i);
             c.process(request);
-            if (request.isProcessed() || request.isForward()) {
+            if (request.hasResponse()) {
                 return;
             }
         }
@@ -426,53 +414,6 @@ public class LiquidSiteServlet extends HttpServlet
             } catch (InterruptedException ignore) {
                 // Do nothing
             }
-        }
-    }
-    
-
-    /**
-     * An HTTP forwarding request. This request wrapper is used to 
-     * forward request to JSP:s. 
-     *
-     * @author   Per Cederberg, <per at percederberg dot net>
-     * @version  1.0
-     */
-    private class ForwardRequest extends HttpServletRequestWrapper {
-
-        /**
-         * The request forward path.
-         */
-        private String forward;
-
-        /**
-         * Creates a new forwarding request.
-         * 
-         * @param request        the original HTTP request
-         * @param forward        the forwarding path
-         */
-        public ForwardRequest(HttpServletRequest request, String forward) {
-            super(request);
-            this.forward = forward;
-        }
-        
-        /**
-         * Returns the forwarding path.
-         * 
-         * @return the forwarding path
-         */
-        public String getServletPath() {
-            return forward;
-        }
-
-        /**
-         * Returns the additional path. This method always returns 
-         * null, as the forwarding request does not support 
-         * additional paths. 
-         * 
-         * @return null as no additional path exists
-         */
-        public String getPathInfo() {
-            return null;
         }
     }
 }
