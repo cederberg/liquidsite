@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentPost;
 import net.percederberg.liquidsite.content.ContentSelector;
+import net.percederberg.liquidsite.text.PlainFormatter;
 
 /**
  * A post template bean. This class is used to access posts from the
@@ -86,7 +87,7 @@ public class PostBean {
      */
     public String getSubject() {
         if (post != null) {
-            return post.getSubject();
+            return PlainFormatter.formatHtml(post.getSubject());
         }
         return "";
     }
@@ -98,8 +99,7 @@ public class PostBean {
      */
     public String getText() {
         if (post != null) {
-            // TODO: convert to HTML
-            return post.getText();
+            return PlainFormatter.formatHtml(post.getText());
         }
         return "";
     }

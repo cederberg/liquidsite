@@ -36,6 +36,7 @@ import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSection;
 import net.percederberg.liquidsite.content.DocumentProperty;
+import net.percederberg.liquidsite.text.PlainFormatter;
 
 /**
  * A document template bean. This class is used to access document
@@ -157,7 +158,7 @@ public class DocumentBean implements TemplateHashModel {
             } else if (type == DocumentProperty.HTML_TYPE) {
                 str = processHtmlText(str);
             } else {
-                str = processPlainText(str);
+                str = PlainFormatter.formatHtml(str);
             }
             return new SimpleScalar(str);
         }
@@ -194,44 +195,6 @@ public class DocumentBean implements TemplateHashModel {
         } else {
             return "";
         }
-    }
-
-    /**
-     * Processes a plain text string. This method will escape any
-     * occurencies of special HTML characters while also inserting
-     * HTML linebreaks instead of normal line breaks.
-     *
-     * @param str            the string to process
-     *
-     * @return the HTML encoded string
-     */
-    private String processPlainText(String str) {
-        StringBuffer  buffer = new StringBuffer();
-        char          c;
-
-        for (int i = 0; i < str.length(); i++) {
-            c = str.charAt(i);
-            switch (c) {
-            case '<':
-                buffer.append("&lt;");
-                break;
-            case '>':
-                buffer.append("&gt;");
-                break;
-            case '&':
-                buffer.append("&amp;");
-                break;
-            case '\n':
-                buffer.append("<br/>");
-                break;
-            case '\r':
-                // Discard
-                break;
-            default:
-                buffer.append(c);
-            }
-        }
-        return buffer.toString();
     }
 
     /**
