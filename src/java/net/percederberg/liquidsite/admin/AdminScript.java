@@ -324,10 +324,12 @@ class AdminScript {
                 buffer.append("');\n");
             }
         } else {
-            if (content instanceof Site && content.hasWriteAccess(user)) {
-                buffer.append("objectAddNewButton('add-site.html");
-                buffer.append(getLinkParameters(content));
-                buffer.append("');\n");
+            if (content.hasWriteAccess(user)) {
+                if (content instanceof Site && !((Site) content).isAdmin()) { 
+                    buffer.append("objectAddNewButton('add-site.html");
+                    buffer.append(getLinkParameters(content));
+                    buffer.append("');\n");
+                }
             }
             if (content.hasPublishAccess(user)) {
                 if (status == 1) {
