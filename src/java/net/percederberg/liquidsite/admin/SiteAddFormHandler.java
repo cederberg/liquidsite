@@ -53,13 +53,11 @@ class SiteAddFormHandler extends AdminFormHandler {
     }
 
     /**
-     * Displays a form for the specified workflow step. The special
-     * workflow step zero (0) is used for indicating display of the
-     * originating page outside the form workflow. Normally that 
-     * would cause a redirect.
+     * Displays a form for the specified workflow step. This method
+     * will NOT be called when returning to the start page.
      * 
      * @param request        the request object
-     * @param step           the workflow step, or zero (0)
+     * @param step           the workflow step
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
@@ -72,9 +70,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         String  category = request.getParameter("category", "");
         Object  parent = getReference(request);
 
-        if (step == 0) {
-            request.sendRedirect(getStartPage());
-        } else if (step == 1) {
+        if (step == 1) {
             SITE_VIEW.pageAddObject(request, parent);
         } else if (category.equals("domain")) {
             SITE_VIEW.pageAddDomain(request, parent);
