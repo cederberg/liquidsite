@@ -345,6 +345,34 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Returns the section corresponding to the specified path.
+     *
+     * @param path           the section path
+     *
+     * @return the section found, or
+     *         an empty section if not found
+     */
+    public SectionBean findSection(String path) {
+        Domain   domain;
+        Content  content;
+
+        try {
+            domain = request.getEnvironment().getDomain();
+            content = findContent(path, domain);
+            if (content instanceof ContentSection) {
+                return new SectionBean((ContentSection) content);
+            } else {
+                LOG.error("failed to find section: " + path);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+        }
+        return new SectionBean();
+    }
+
+    /**
      * Finds a specified content section or document.
      *
      * @param path           the content path
