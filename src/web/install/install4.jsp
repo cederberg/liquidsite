@@ -5,6 +5,11 @@ String  dir = (String) request.getAttribute("dir");
 String  user = (String) request.getAttribute("user");
 String  password = (String) request.getAttribute("password");
 %>
+    <script type="text/javascript">
+        function initialize() {
+            document.getElementsByName("dir").item(0).focus();
+        }
+    </script>
 
     <form method="post" action="install.html">
       <input type="hidden" name="step" value="4" />

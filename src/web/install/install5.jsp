@@ -9,6 +9,10 @@ String   adminUser = (String) request.getAttribute("adminuser");
 Boolean  createDatabase = (Boolean) request.getAttribute("createdatabase");
 Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
 %>
+    <script type="text/javascript">
+        function initialize() {
+        }
+    </script>
 
     <form method="post" action="install.html">
       <input type="hidden" name="step" value="5" />

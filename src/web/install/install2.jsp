@@ -13,6 +13,10 @@ String    style;
 String    options;
 String    str;
 %>
+    <script type="text/javascript">
+        function initialize() {
+        }
+    </script>
 
     <form method="post" action="install.html">
       <input type="hidden" name="step" value="2" />

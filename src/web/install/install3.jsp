@@ -1,4 +1,3 @@
-<% request.setAttribute("onload", "enableForm()"); %>
 <%@ include file="header.jsp" %>
 <% 
 String    error = (String) request.getAttribute("error");
@@ -10,7 +9,7 @@ String    options;
 boolean   found = false;
 %>
     <script type="text/javascript">
-        function enableForm() {
+        function initialize() {
             var  user1 = document.getElementsByName("user1").item(0);
             var  user2 = document.getElementsByName("user2").item(0);
             var  pwd2 = document.getElementsByName("password2").item(0);
@@ -48,7 +47,7 @@ boolean   found = false;
             User&nbsp;Name:
           </th>
           <td class="field">
-            <select name="user1" onchange="enableForm()">
+            <select name="user1" onchange="initialize()">
 <%
    for (int i = 0; i < userNames.length; i++) {
        options = "";

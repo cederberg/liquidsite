@@ -13,11 +13,7 @@
     <title>Liquid Site Installation</title>
   </head>
 
-<% if (request.getAttribute("onload") != null) { %>
-  <body onload="<%=request.getAttribute("onload")%>">
-<% } else { %>
-  <body>
-<% } %>
+  <body onload="initialize()">
 
     <table class="menu">
       <tr>

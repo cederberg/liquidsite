@@ -5,6 +5,11 @@ String  host = (String) request.getAttribute("host");
 String  user = (String) request.getAttribute("user");
 String  password = (String) request.getAttribute("password");
 %>
+    <script type="text/javascript">
+        function initialize() {
+            document.getElementsByName("host").item(0).focus();
+        }
+    </script>
 
     <form method="post" action="install.html">
       <input type="hidden" name="step" value="1" />
