@@ -21,7 +21,6 @@
 
 package org.liquidsite.core.text;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -33,8 +32,6 @@ import java.util.LinkedList;
  * @version  1.0
  */
 public class TaggedFormatter {
-
-    // TODO: add unit tests for all methods
 
     /**
      * Cleans a tagged text string. Unneeded line feeds and space
@@ -463,8 +460,8 @@ public class TaggedFormatter {
 
     /**
      * Formats a tagged text string in HTML. This method will resolve
-     * any links in the tagged text and convert the tags to valid HTML
-     * tags.
+     * any links in the tagged text and convert the tags to valid
+     * HTML tags.
      *
      * @param text           the tagged text string
      * @param context        the formatting context
@@ -472,131 +469,184 @@ public class TaggedFormatter {
      * @return the HTML encoded text
      */
     public static String formatHtml(String text, FormattingContext context) {
-        ArrayList     paragraphs = new ArrayList();
-        StringBuffer  buffer = new StringBuffer();
-        String        str;
-
-        // TODO: change to implementation similar to clean()
-
-        // Clean formatted text
-        // TODO: remove this, add to installer instead?
-        text = clean(text);
-
-        // Split into paragraphs
-        while (text.indexOf("\n\n") >= 0) {
-            str = text.substring(0, text.indexOf("\n\n")).trim();
-            if (str.length() > 0) {
-                paragraphs.add(str);
-            }
-            text = text.substring(text.indexOf("\n\n") + 2);
-        }
-        if (text.length() > 0) {
-            paragraphs.add(text);
-        }
-
-        // Process paragraphs
-        buffer = new StringBuffer();
-        for (int i = 0; i < paragraphs.size(); i++) {
-            str = (String) paragraphs.get(i);
-            buffer.append(formatHtmlParagraph(str, context));
-            buffer.append("\n\n");
-        }
-
-        return buffer.toString();
-    }
-
-    /**
-     * Formats a tagged paragraph in HTML. This method will insert
-     * HTML paragraph and line breaks, while also adjusting links and
-     * other special tags.
-     *
-     * @param str            the string to process
-     * @param context        the formatting context
-     *
-     * @return the HTML encoded string
-     */
-    private static String formatHtmlParagraph(String str,
-                                              FormattingContext context) {
-
-        StringBuffer  buffer = new StringBuffer();
-        boolean       isBlock;
-        boolean       isList;
-        char          c;
+        StringBuffer  result = new StringBuffer();
         int           pos;
 
-        isBlock = startsWithBlockTag(str);
-        isList = str.startsWith("<list");
-        if (!isBlock && !isList) {
-            buffer.append("<p>");
-        }
-        for (int i = 0; i < str.length(); i++) {
-            c = str.charAt(i);
-            switch (c) {
-            case '<':
-                pos = str.indexOf(">", i);
-                if (pos > 0) {
-                    buffer.append(formatHtmlTag(str.substring(i, pos + 1),
-                                                context));
-                    i = pos;
-                } else {
-                    // Discard
-                    i = str.length();
-                }
-                break;
-            case '>':
-                // Discard
-                break;
-            case '&':
-                buffer.append("&amp;");
-                break;
-            case '\n':
-                if (isList) {
-                    buffer.append("\n");
-                } else {
-                    buffer.append("<br/>\n");
-                }
-                break;
-            case '\r':
-                // Discard
-                break;
-            default:
-                buffer.append(c);
+        pos = formatHtmlBlock(text, 0, context, result);
+        while (pos < text.length()) {
+            if (text.charAt(pos) == '\n') {
+                pos++;
+            } else {
+                result.append("\n\n");
+                pos = formatHtmlBlock(text, pos, context, result);
             }
         }
-        if (!isBlock && !isList) {
-            buffer.append("</p>");
-        }
-
-        return buffer.toString();
+        return result.toString();
     }
 
     /**
-     * Formats a tag in HTML. This method will return the HTML code
-     * corresponding to the tag.
+     * Formats a single block in a tagged text string. This method
+     * returns when a block break or double newline is encountered.
      *
-     * @param tag            the tag to process
+     * @param text           the tagged text string
+     * @param pos            the current text position
      * @param context        the formatting context
+     * @param result         the cleaned tagged text
      *
-     * @return the HTML encoded result
+     * @return the new text position
      */
-    private static String formatHtmlTag(String tag,
-                                        FormattingContext context) {
+    private static int formatHtmlBlock(String text,
+                                       int pos,
+                                       FormattingContext context,
+                                       StringBuffer result) {
 
+        if (text.startsWith("<list>", pos)) {
+            pos = formatHtmlList(text, pos, context, result);
+        } else if (text.startsWith("<h1>", pos)
+                || text.startsWith("<h2>", pos)
+                || text.startsWith("<h3>", pos)) {
+
+            pos = formatHtmlInline(text, pos, context, result);
+        } else {
+            result.append("<p>");
+            pos = formatHtmlInline(text, pos, context, result);
+            result.append("</p>");
+        }
+        return pos;
+    }
+
+    /**
+     * Formats an inline text in a tagged text string. This method
+     * returns when a double newline is encountered.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param context        the formatting context
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position
+     */
+    private static int formatHtmlInline(String text,
+                                        int pos,
+                                        FormattingContext context,
+                                        StringBuffer result) {
+
+        while (pos < text.length()
+            && !text.startsWith("\n\n", pos)
+            && !text.startsWith("</list>", pos)
+            && !text.startsWith("</item>", pos)) {
+
+            switch (text.charAt(pos)) {
+            case '<':
+                pos = formatHtmlTag(text, pos, context, result);
+                break;
+            case '>':
+                result.append("&gt;");
+                pos++;
+                break;
+            case '&':
+                result.append("&amp;");
+                pos++;
+                break;
+            case '\n':
+                result.append("<br/>\n");
+                pos++;
+                break;
+            case '\r':
+                pos++;
+                break;
+            default:
+                result.append(text.charAt(pos));
+                pos++;
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * Formats a list block in a tagged text string. This method
+     * returns when a block break or double newline is encountered.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param context        the formatting context
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position
+     */
+    private static int formatHtmlList(String text,
+                                      int pos,
+                                      FormattingContext context,
+                                      StringBuffer result) {
+
+        pos = formatHtmlTag(text, pos, context, result);
+        result.append("\n");
+        while (pos < text.length()) {
+            if (text.charAt(pos) == '\n') {
+                pos++;
+            } else if (text.startsWith("<item>", pos)) {
+                pos = formatHtmlTag(text, pos, context, result);
+                pos = formatHtmlInline(text, pos, context, result);
+            } else if (text.startsWith("</item>", pos)) {
+                pos = formatHtmlTag(text, pos, context, result);
+                result.append("\n\n");
+            } else if (text.startsWith("</list>", pos)) {
+                return formatHtmlTag(text, pos, context, result);
+            } else {
+                result.append("<li>");
+                pos = formatHtmlInline(text, pos, context, result);
+                result.append("</li>\n");
+            }
+        }
+        result.append("</ul>");
+        return pos;
+    }
+
+    /**
+     * Formats a tag in a tagged text string.
+     *
+     * @param text           the tagged text string
+     * @param pos            the current text position
+     * @param context        the formatting context
+     * @param result         the cleaned tagged text
+     *
+     * @return the new text position
+     */
+    private static int formatHtmlTag(String text,
+                                     int pos,
+                                     FormattingContext context,
+                                     StringBuffer result) {
+
+        int      start = pos;
+        int      end;
         String   name;
-        HashMap  attrs;
-        int      pos;
-        String   url;
+        HashMap  attributes;
+        boolean  insideQuote = false;
         String   str;
 
-        // Parse tag
-        pos = tag.indexOf(" ");
-        if (pos > 0) {
-            name = tag.substring(1, pos);
-            attrs = processTagAttributes(tag.substring(pos, tag.length() - 1));
-        } else {
-            name = tag.substring(1, tag.length() - 1);
-            attrs = new HashMap(0);
+        // Find ending '>' character
+        while (pos < text.length()
+            && (text.charAt(pos) != '>' || insideQuote)) {
+
+            if (text.charAt(pos) == '"') {
+                insideQuote = !insideQuote;
+            }
+            pos++;
         }
+        if (pos >= text.length()) {
+            result.append("&lt;");
+            return start + 1;
+        }
+        end = pos + 1;
+
+        // Find tag name and attribute start
+        pos = text.indexOf(' ', start);
+        if (pos < 0 || pos >= end) {
+            pos = end - 1;
+        }
+        name = text.substring(start + 1, pos);
+
+        // Format tag
         if (name.equals("p") || name.equals("/p")
          || name.equals("h1") || name.equals("/h1")
          || name.equals("h2") || name.equals("/h2")
@@ -604,102 +654,64 @@ public class TaggedFormatter {
          || name.equals("b") || name.equals("/b")
          || name.equals("i") || name.equals("/i")) {
 
-            return "<" + name + ">";
+            result.append("<");
+            result.append(name);
+            result.append(">");
         } else if (name.equals("link")) {
-            url = context.linkTo((String) attrs.get("url"));
-            url = PlainFormatter.escapeHtml(url);
-            str = (String) attrs.get("window");
+            attributes = parseTagAttributes(text, pos, end - 1);
+            result.append("<a href=\"");
+            str = context.linkTo((String) attributes.get("url"));
+            result.append(PlainFormatter.escapeHtml(str));
+            result.append("\"");
+            str = (String) attributes.get("window");
             if (str != null && str.equals("new")) {
-                return "<a href=\"" + url + "\" target=\"_blank\">";
-            } else {
-                return "<a href=\"" + url + "\">";
+                result.append(" target=\"_blank\"");
             }
+            result.append(">");
         } else if (name.equals("/link")) {
-            return "</a>";
+            result.append("</a>");
         } else if (name.equals("image")) {
-            url = context.linkTo((String) attrs.get("url"));
-            url = PlainFormatter.escapeHtml(url);
-            str = (String) attrs.get("layout");
+            attributes = parseTagAttributes(text, pos, end - 1);
+            result.append("<img src=\"");
+            str = context.linkTo((String) attributes.get("url"));
+            result.append(PlainFormatter.escapeHtml(str));
+            result.append("\" alt=\"\"");
+            str = (String) attributes.get("layout");
             if (str != null && str.equals("right")) {
-                return "<img src=\"" + url +
-                       "\" alt=\"\" style=\"float: right;\" />";
+                result.append(" style=\"float: right;\"");
             } else if (str != null && str.equals("left")) {
-                return "<img src=\"" + url +
-                       "\" alt=\"\" style=\"float: left;\" />";
-            } else {
-                return "<img src=\"" + url + "\" alt=\"\" />";
+                result.append(" style=\"float: left;\"");
             }
+            result.append(" />");
         } else if (name.equals("list")) {
-            str = (String) attrs.get("type");
+            attributes = parseTagAttributes(text, pos, end - 1);
+            result.append("<ul");
+            str = (String) attributes.get("type");
             if (str != null && str.equals("*")) {
-                return "<ul style=\"list-style-type: disc;\">";
+                result.append(" style=\"list-style-type: disc;\"");
             } else if (str != null && str.equals("1")) {
-                return "<ul style=\"list-style-type: decimal;\">";
+                result.append(" style=\"list-style-type: decimal;\"");
             } else if (str != null && str.equals("i")) {
-                return "<ul style=\"list-style-type: lower-roman;\">";
+                result.append(" style=\"list-style-type: lower-roman;\"");
             } else if (str != null && str.equals("I")) {
-                return "<ul style=\"list-style-type: upper-roman;\">";
+                result.append(" style=\"list-style-type: upper-roman;\"");
             } else if (str != null && str.equals("a")) {
-                return "<ul style=\"list-style-type: lower-alpha;\">";
+                result.append(" style=\"list-style-type: lower-alpha;\"");
             } else if (str != null && str.equals("A")) {
-                return "<ul style=\"list-style-type: upper-alpha;\">";
-            } else {
-                return "<ul>";
+                result.append(" style=\"list-style-type: upper-alpha;\"");
             }
+            result.append(">");
         } else if (name.equals("/list")) {
-            return "</ul>";
+            result.append("</ul>");
         } else if (name.equals("item")) {
-            return "<li>";
+            result.append("<li>");
         } else if (name.equals("/item")) {
-            return "</li>";
+            result.append("</li>");
         } else {
-            return "";
+            result.append("&lt;");
+            end = start + 1;
         }
-    }
-
-    /**
-     * Processes a tag attribute string. This method extracts all the
-     * attributes and their values from the string and returns the
-     * mappings in a hash map.
-     *
-     * @param attrs          the tag attribute string
-     *
-     * @return the hash map with attribute names and values
-     */
-    private static HashMap processTagAttributes(String attrs) {
-        HashMap  result = new HashMap();
-        String   name;
-        String   value;
-        String   str;
-        int      pos;
-
-        attrs = attrs.trim();
-        while (attrs.length() > 0) {
-            pos = attrs.indexOf(" ");
-            if (pos > 0) {
-                str = attrs.substring(0, pos);
-                attrs = attrs.substring(pos).trim();
-            } else {
-                str = attrs;
-                attrs = "";
-            }
-            pos = str.indexOf("=");
-            if (pos > 0) {
-                name = str.substring(0, pos);
-                value = str.substring(pos + 1);
-            } else {
-                name = str;
-                value = "";
-            }
-            if (value.startsWith("\"")) {
-                value = value.substring(1);
-            }
-            if (value.endsWith("\"")) {
-                value = value.substring(0, value.length() - 1);
-            }
-            result.put(name, value);
-        }
-        return result;
+        return end;
     }
 
     /**
@@ -765,20 +777,5 @@ public class TaggedFormatter {
             }
         }
         return result;
-    }
-
-    /**
-     * Checks if a string starts with an HTML block tag.
-     *
-     * @param str            the string to check
-     *
-     * @return true if the string starts with a block tag, or
-     *         false otherwise
-     */
-    private static boolean startsWithBlockTag(String str) {
-        return str.startsWith("<p>")
-            || str.startsWith("<h1>")
-            || str.startsWith("<h2>")
-            || str.startsWith("<h3>");
     }
 }
