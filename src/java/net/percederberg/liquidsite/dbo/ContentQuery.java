@@ -260,7 +260,7 @@ public class ContentQuery {
         DatabaseQuery  query = new DatabaseQuery();
         StringBuffer   sql = new StringBuffer();
 
-        sql.append("SELECT COUNT(*) FROM LS_CONTENT");
+        sql.append("SELECT COUNT(*) FROM LS_CONTENT AS c");
         appendWhere(sql);
         query.setSql(sql.toString());
         return query;
