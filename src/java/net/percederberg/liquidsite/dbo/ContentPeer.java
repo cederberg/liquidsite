@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
@@ -155,7 +154,6 @@ public class ContentPeer extends AbstractPeer {
             LOG.error(e.getMessage());
             throw new DatabaseObjectException(e);
         }
-        Collections.sort(list);
         return list;
     }
 
@@ -196,7 +194,6 @@ public class ContentPeer extends AbstractPeer {
             LOG.error(e.getMessage());
             throw new DatabaseObjectException(e);
         }
-        Collections.sort(list);
         return list;
     }
 
@@ -260,9 +257,10 @@ public class ContentPeer extends AbstractPeer {
     }
     
     /**
-     * Deletes a content object revision from the database. This 
-     * method also deletes all attributes related to the specified 
-     * object.
+     * Deletes a content object from the database. This method will
+     * delete all revisions, as well as related attributes, 
+     * permissions and locks. It will also delete all child content
+     * objects recursively in the same way.
      * 
      * @param data           the content data object
      * @param con            the database connection to use
@@ -275,30 +273,12 @@ public class ContentPeer extends AbstractPeer {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete");
         int            id = data.getInt(ContentData.ID);
-        int            revision = data.getInt(ContentData.REVISION);
+        ArrayList      list;
 
-        query.addParameter(id);
-        query.addParameter(revision);
-        PEER.delete(query, con);
-        AttributePeer.doDeleteRevision(id, revision, con);
-    }
-    
-    /**
-     * Deletes all revisions for a content object from the database. 
-     * This method also deletes all attributes, permissions and locks
-     * to the specified object.
-     * 
-     * @param id             the content object id
-     * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
-     */
-    public static void doDeleteAllRevisions(int id, DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("content.delete.id");
-
+        list = doSelectByParent(id, con);
+        for (int i = 0; i < list.size(); i++) {
+            doDelete((ContentData) list.get(i), con);
+        }
         query.addParameter(id);
         PEER.delete(query, con);
         AttributePeer.doDeleteContent(id, con);

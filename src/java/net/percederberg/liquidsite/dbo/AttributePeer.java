@@ -197,29 +197,6 @@ public class AttributePeer extends AbstractPeer {
     }
     
     /**
-     * Deletes all attributes for a specified content revision from 
-     * the database.
-     * 
-     * @param id             the content object id
-     * @param revision       the content revision
-     * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
-     */
-    public static void doDeleteRevision(int id,
-                                        int revision,
-                                        DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("attribute.delete.revision");
-
-        query.addParameter(id);
-        query.addParameter(revision);
-        PEER.delete(query, con);
-    }
-
-    /**
      * Creates a new content attribute database peer.
      */
     private AttributePeer() {
