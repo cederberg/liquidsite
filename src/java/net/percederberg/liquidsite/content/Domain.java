@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.content;
@@ -252,6 +252,39 @@ public class Domain extends PersistentObject implements Comparable {
      */
     public Permission[] getPermissions() throws ContentException {
         return Permission.findByDomain(getContentManager(), this);
+    }
+
+    /**
+     * Sets the permissions applicable to this domain object. This
+     * will overwrite any previous permissions. To reset to default
+     * permissions, use an empty array of permissions.
+     *
+     * @param user            the user performing the operation
+     * @param permissions     the array of new permissions
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have admin permissions
+     */
+    public void setPermissions(User user, Permission[] permissions)
+        throws ContentException, ContentSecurityException {
+
+        Permission[]        old = getPermissions();
+        DatabaseConnection  con;
+        int                 i;
+
+        con = getDatabaseConnection(getContentManager());
+        try {
+            for (i = 0; i < old.length; i++) {
+                old[i].delete(user, con);
+            }
+            for (i = 0; i < permissions.length; i++) {
+                permissions[i].save(user, con);
+            }
+        } finally {
+            returnDatabaseConnection(getContentManager(), con);
+        }
     }
 
     /**
