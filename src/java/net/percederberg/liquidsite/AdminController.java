@@ -29,6 +29,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.User;
 
@@ -401,15 +402,32 @@ public class AdminController extends Controller {
         buffer.append(getDateScript(content.getOfflineDate()));
         buffer.append(");\n");
         buffer.append("objectAddStatusProperty(");
-        // TODO: check for working revision and content locks
+        // TODO: check for working revision
         if (content.isOnline()) {
             buffer.append(ONLINE_STATUS);
         } else {
             buffer.append(OFFLINE_STATUS);
         }
-        buffer.append(", null);\n");
+        buffer.append(", ");
+        buffer.append(getLockScript(content.getLock()));
+        buffer.append(");\n");
         buffer.append(getPermissionsScript(content));
         return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting a lock object.
+     * 
+     * @param lock           the lock object, or null
+     * 
+     * @return the JavaScript for presenting a lock object
+     */
+    private String getLockScript(Lock lock) {
+        if (lock == null) {
+            return "null";
+        } else {
+            return "'" + lock.getUserName() + "'";
+        }
     }
 
     /**

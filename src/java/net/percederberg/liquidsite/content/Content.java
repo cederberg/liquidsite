@@ -291,7 +291,7 @@ public abstract class Content extends PersistentObject {
         Date  now = new Date();
         
         return online != null 
-            && !online.before(now)
+            && online.before(now)
             && (offline == null || offline.after(now));
     }
 
@@ -560,6 +560,20 @@ public abstract class Content extends PersistentObject {
         }
         attr.setString(AttributeData.DATA, value);
         attr.setBoolean(AttributeData.SEARCHABLE, searchable);
+    }
+
+    /**
+     * Returns the lock applicable to this content object. If no lock
+     * has been set on this object, null will be returned. 
+     * 
+     * @return the content lock object found, or
+     *         null if this object is not locked
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Lock getLock() throws ContentException {
+        return Lock.findByContent(this);
     }
 
     /**

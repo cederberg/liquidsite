@@ -41,7 +41,7 @@ public class LockPeer extends AbstractPeer {
     /**
      * Returns the lock object with the specified content id.
      * 
-     * @param id             the content id
+     * @param content        the content id
      * @param con            the database connection to use
      * 
      * @return the lock found, or
@@ -50,12 +50,13 @@ public class LockPeer extends AbstractPeer {
      * @throws DatabaseObjectException if the database couldn't be 
      *             accessed properly
      */
-    public static LockData doSelectById(int id, DatabaseConnection con)
+    public static LockData doSelectByContent(int content, 
+                                             DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery  query = new DatabaseQuery("lock.select.id");
+        DatabaseQuery  query = new DatabaseQuery("lock.select.content");
         
-        query.addParameter(id);
+        query.addParameter(content);
         return (LockData) PEER.select(query, con);
     }
 
