@@ -274,10 +274,11 @@ public class LiquidSiteBean {
     }
 
     /**
-     * Returns all document in the specified section path.
-     * 
+     * Returns all document in the specified section path. All
+     * documents in subsections will also be returned.
+     *
      * @param path           the section path
-     * 
+     *
      * @return a list of the documents found (as document beans)
      */
     public ArrayList findDocuments(String path) {
@@ -404,11 +405,34 @@ public class LiquidSiteBean {
         ArrayList         list = new ArrayList();
         ContentSection[]  res;
 
-        list.add(section);
-        // TODO: find child sections
+        findSubSections(section, list);
         res = new ContentSection[list.size()];
         list.toArray(res);
         return res;
+    }
+
+    /**
+     * Finds all subsections to a specified section. The specified
+     * section will be included in the result.
+     *
+     * @param section        the content section
+     * @param result         the list to add the sections to
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void findSubSections(ContentSection section, ArrayList result)
+        throws ContentException {
+
+        Content[]  children;
+
+        result.add(section);
+        children = manager.getContentChildren(request.getUser(),
+                                              section,
+                                              Content.SECTION_CATEGORY);
+        for (int i = 0; i < children.length; i++) {
+            findSubSections((ContentSection) children[i], result);
+        }
     }
 
     /**
@@ -425,13 +449,15 @@ public class LiquidSiteBean {
                                ArrayList results)
         throws ContentException {
 
-        Content[]  children;
+        Content[]     children;
+        DocumentBean  doc;
 
         children = manager.getContentChildren(request.getUser(), sections);
         for (int i = 0; i < children.length; i++) {
             if (children[i] instanceof ContentDocument) {
-                // TODO: add base section to provide correct URL
-                results.add(new DocumentBean((ContentDocument) children[i]));
+                doc = new DocumentBean((ContentDocument) children[i],
+                                       sections[0]);
+                results.add(doc);
             }
         }
     }
