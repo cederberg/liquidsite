@@ -558,8 +558,9 @@ public abstract class Content extends PersistentObject {
 
     /**
      * Checks the read access for a user. If no content permissions 
-     * are set, this method will return true for all but root content 
-     * objects. 
+     * are set for this object, the parent permissions will be 
+     * checked instead. In the absence of both content permissions 
+     * and a parent object, false is returned. 
      *
      * @param user           the user to check, or null for none
      * 
@@ -574,14 +575,17 @@ public abstract class Content extends PersistentObject {
 
         Permission[]  perms = getPermissions();
         Group[]       groups = null;
+        Content       parent;
         
+        // Check for superuser or inherited permissions
         if (user != null && user.getDomainName().equals("")) {
             return true;
+        } else if (perms.length == 0) {
+            parent = getParent();
+            return (parent == null) ? false : parent.hasReadAccess(user); 
         }
-        if (perms.length == 0) {
-            // TODO: Check parent access!
-            return getParentId() > 0;
-        }
+
+        // Check content permissions
         if (user != null) {
             groups = user.getGroups();
         }
@@ -590,13 +594,15 @@ public abstract class Content extends PersistentObject {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Checks the write access for a user. If no content permissions 
-     * are set, this method will return true for all but root content 
-     * objects. 
+     * are set for this object, the parent permissions will be 
+     * checked instead. In the absence of both content permissions 
+     * and a parent object, false is returned.
      *
      * @param user           the user to check, or null for none
      * 
@@ -611,14 +617,17 @@ public abstract class Content extends PersistentObject {
 
         Permission[]  perms = getPermissions();
         Group[]       groups = null;
+        Content       parent;
         
+        // Check for superuser or inherited permissions
         if (user != null && user.getDomainName().equals("")) {
             return true;
+        } else if (perms.length == 0) {
+            parent = getParent();
+            return (parent == null) ? false : parent.hasWriteAccess(user); 
         }
-        if (perms.length == 0) {
-            // TODO: Check parent access!
-            return getParentId() > 0;
-        }
+
+        // Check content permissions
         if (user != null) {
             groups = user.getGroups();
         }
@@ -627,6 +636,7 @@ public abstract class Content extends PersistentObject {
                 return true;
             }
         }
+
         return false;
     }
 
