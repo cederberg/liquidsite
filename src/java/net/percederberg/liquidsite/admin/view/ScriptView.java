@@ -275,6 +275,8 @@ public class ScriptView {
         buffer.append(");\n");
         if (content instanceof ContentSite) {
             buffer.append(getSiteProperties((ContentSite) content));
+        } else if (content instanceof ContentFile) {
+            buffer.append(getFileProperties((ContentFile) content));
         }
         buffer.append(getButtons(user, content, view, status, lock));
         buffer.append(getRevisions(content));
@@ -295,6 +297,54 @@ public class ScriptView {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Returns the JavaScript for presenting additional file
+     * properties.
+     * 
+     * @param file           the content file
+     * 
+     * @return the JavaScript for additional file properties
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getFileProperties(ContentFile file)
+        throws ContentException {
+
+        StringBuffer  buffer = new StringBuffer();
+        float         size = file.getFile().length();
+        String        str;
+
+        buffer.append("objectAddProperty('Size', '");
+        if (size > 1000000) {
+            size /= 1000000;
+            str = "MB";
+        } else if (size > 2000) {
+            size /= 1000;
+            str = "kB";
+        } else {
+            str = "bytes";
+        }
+        size = Math.round(size * 10) / 10.0f;
+        if (size == (int) size) {
+            buffer.append((int) size);
+        } else {
+            buffer.append(size);
+        }
+        buffer.append(" ");
+        buffer.append(str);
+        buffer.append("');\n");
+        buffer.append("objectAddProperty('Type', ");
+        str = file.getMimeType();
+        if (str == null) {
+            buffer.append("'Unknown'");
+        } else {
+            buffer.append(AdminUtils.getScriptString(str));
+        }
+        buffer.append(");\n");
+        return buffer.toString();
     }
 
     /**

@@ -23,6 +23,8 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 
+import javax.servlet.ServletContext;
+
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.db.DatabaseConnector;
 
@@ -105,4 +107,11 @@ public interface Application {
      * @return the application content manager
      */
     ContentManager getContentManager();
+    
+    /**
+     * Returns the application servlet context.
+     *
+     * @return the application servlet context
+     */
+    ServletContext getServletContext();
 }

@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.content;
 
 import java.io.File;
 
+import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
 
@@ -172,6 +173,19 @@ public class ContentFile extends Content {
                 "access denied while creating content file directory");
         }
         return dir;
+    }
+
+    /**
+     * Returns the MIME type of the file. The MIME types are
+     * configured in the application servlet context.
+     *
+     * @return the MIME type of the file, or 
+     *         null if unknown
+     */
+    public String getMimeType() {
+        Application  app = getContentManager().getApplication();
+        
+        return app.getServletContext().getMimeType(getFileName());
     }
 
     /**
