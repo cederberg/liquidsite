@@ -57,6 +57,16 @@ public class Site extends Content {
     private static final String DIRECTORY_ATTRIBUTE = "DIRECTORY";
 
     /**
+     * The flags content attribute.
+     */
+    private static final String FLAGS_ATTRIBUTE = "FLAGS";
+
+    /**
+     * The administration site flag.
+     */
+    private static final int ADMIN_FLAG = 1;
+
+    /**
      * Returns an array of all domain sites in the database.
      * 
      * @param domain         the domain
@@ -100,6 +110,7 @@ public class Site extends Content {
         setAttribute(HOST_ATTRIBUTE, "*");
         setAttribute(PORT_ATTRIBUTE, "0");
         setAttribute(DIRECTORY_ATTRIBUTE, "/");
+        setAttribute(FLAGS_ATTRIBUTE, "0");
     }
 
     /**
@@ -218,6 +229,34 @@ public class Site extends Content {
             directory += "/";
         }
         setAttribute(DIRECTORY_ATTRIBUTE, directory);
+    }
+
+    /**
+     * Checks if the admin flag is set. 
+     * 
+     * @return true if the admin flag is set, or
+     *         false otherwise
+     */
+    public boolean isAdmin() {
+        int flags = Integer.parseInt(getAttribute(FLAGS_ATTRIBUTE));
+        
+        return (flags & ADMIN_FLAG) > 0;
+    }
+
+    /**
+     * Sets the admin flag. 
+     * 
+     * @param admin          the new admin flag
+     */
+    public void setAdmin(boolean admin) {
+        int flags = Integer.parseInt(getAttribute(FLAGS_ATTRIBUTE));
+        
+        if (admin) {
+            flags = (flags | ADMIN_FLAG);
+        } else {
+            flags = (flags & ~ADMIN_FLAG);
+        }
+        setAttribute(FLAGS_ATTRIBUTE, String.valueOf(flags));
     }
 
     /**

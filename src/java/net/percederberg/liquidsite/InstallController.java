@@ -749,6 +749,7 @@ public class InstallController extends Controller {
             site.setHost("*");
             site.setPort(0);
             site.setDirectory("/");
+            site.setAdmin(true);
             site.setOnlineDate(new Date());
             site.setOfflineDate(null);
             site.setAuthor(user);
