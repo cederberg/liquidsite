@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin.view;
@@ -39,8 +39,8 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
 
 /**
- * A helper class for the content view. This class contains methods 
- * for creating the HTML and JavaScript responses to the various 
+ * A helper class for the content view. This class contains methods
+ * for creating the HTML and JavaScript responses to the various
  * pages in the content view.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -61,8 +61,8 @@ public class ContentView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     public void viewContent(Request request)
         throws ContentException, ContentSecurityException {
@@ -74,14 +74,14 @@ public class ContentView extends AdminView {
         Content         content;
         StringBuffer    buffer = new StringBuffer();
         String          str;
-        
+
         domains = manager.getDomains(user);
         buffer.append(SCRIPT.getTreeView(domains));
         if (focus != null && focus instanceof Content) {
             content = manager.getContent(user, ((Content) focus).getId());
             if (content != null) {
-                str = getContentTreeScript(user, 
-                                           content.getDomain(), 
+                str = getContentTreeScript(user,
+                                           content.getDomain(),
                                            content.getParent(),
                                            true);
                 buffer.append(str);
@@ -98,14 +98,14 @@ public class ContentView extends AdminView {
 
     /**
      * Shows the add object page.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewAddObject(Request request, Object parent) 
+    public void viewAddObject(Request request, Object parent)
         throws ContentException {
 
         User     user = request.getUser();
@@ -138,17 +138,17 @@ public class ContentView extends AdminView {
     /**
      * Shows the add or edit section page. Either the parent or the
      * section object must be specified.
-     * 
+     *
      * @param request        the request object
      * @param parent         the parent object, or null
      * @param section        the section object, or null
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditSection(Request request, 
-                                Object parent, 
-                                ContentSection section) 
+    public void viewEditSection(Request request,
+                                Object parent,
+                                ContentSection section)
         throws ContentException {
 
         String            name;
@@ -171,8 +171,8 @@ public class ContentView extends AdminView {
         } else {
             AdminUtils.setReference(request, section);
             name = section.getName();
-            parents = findSections(request.getUser(), 
-                                   section.getDomain(), 
+            parents = findSections(request.getUser(),
+                                   section.getDomain(),
                                    section);
             parentId = section.getParentId();
             if (section.getRevisionNumber() == 0) {
@@ -238,19 +238,19 @@ public class ContentView extends AdminView {
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-section.ftl");
     }
-    
+
     /**
      * Shows the add or edit document page. Either the parent or the
      * document object must be specified.
-     * 
+     *
      * @param request        the request object
-     * @param reference      the parent or document object 
-     * 
+     * @param reference      the parent or document object
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewEditDocument(Request request, 
-                                 Content reference) 
+    public void viewEditDocument(Request request,
+                                 Content reference)
         throws ContentException {
 
         ContentDocument   doc;
@@ -261,6 +261,7 @@ public class ContentView extends AdminView {
         ArrayList         properties = new ArrayList();
         HashMap           data = new HashMap();
         DocumentProperty  property;
+        boolean           publish;
         String            str;
         int               i;
 
@@ -270,7 +271,7 @@ public class ContentView extends AdminView {
             doc = (ContentDocument) reference;
             name = doc.getName();
             section = doc.getParentId();
-            sections = findSections(request.getUser(), 
+            sections = findSections(request.getUser(),
                                     doc.getDomain(),
                                     null);
             properties = findSectionProperties(doc);
@@ -287,6 +288,8 @@ public class ContentView extends AdminView {
             } else {
                 comment = "";
             }
+            publish = doc.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(doc.getParent());
         } else {
             name = "";
             section = 0;
@@ -301,6 +304,8 @@ public class ContentView extends AdminView {
                 data.put(property.getId(), str);
             }
             comment = "Created";
+            publish = reference.hasPublishAccess(request.getUser()) &&
+                      AdminUtils.isOnline(reference);
         }
 
         // Adjust for incoming request
@@ -331,6 +336,7 @@ public class ContentView extends AdminView {
         request.setAttribute("properties", properties);
         request.setAttribute("data", data);
         request.setAttribute("comment", comment);
+        request.setAttribute("publish", String.valueOf(publish));
         request.sendTemplate("admin/edit-document.ftl");
     }
 
@@ -376,10 +382,10 @@ public class ContentView extends AdminView {
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/edit-file.ftl");
     }
-    
+
     /**
      * Shows the section preview page.
-     * 
+     *
      * @param request        the request object
      * @param section        the section object
      *
@@ -395,7 +401,7 @@ public class ContentView extends AdminView {
 
     /**
      * Shows the document preview page.
-     * 
+     *
      * @param request        the request object
      * @param doc            the document object
      *
@@ -412,14 +418,14 @@ public class ContentView extends AdminView {
 
     /**
      * Shows the load content object JavaScript code.
-     * 
+     *
      * @param request        the request object
      * @param obj            the domain or content parent object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewLoadContentScript(Request request, Object obj) 
+    public void viewLoadContentScript(Request request, Object obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -427,24 +433,24 @@ public class ContentView extends AdminView {
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = getContentTreeScript(user, (Domain) obj, null, false); 
+            buffer = getContentTreeScript(user, (Domain) obj, null, false);
         } else {
             content = (Content) obj;
-            buffer = getContentTreeScript(user, null, content, false); 
+            buffer = getContentTreeScript(user, null, content, false);
         }
         request.sendData("text/javascript", buffer);
     }
 
     /**
      * Shows the open content object JavaScript code.
-     * 
+     *
      * @param request        the request object
      * @param obj            the domain or content object
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void viewOpenContentScript(Request request, Object obj) 
+    public void viewOpenContentScript(Request request, Object obj)
         throws ContentException {
 
         User     user = request.getUser();
@@ -463,24 +469,24 @@ public class ContentView extends AdminView {
     }
 
     /**
-     * Returns the JavaScript code for displaying child content 
-     * objects. This method may create a nested tree view with all 
+     * Returns the JavaScript code for displaying child content
+     * objects. This method may create a nested tree view with all
      * parent objects up to the domain if the recursive flag is set.
-     * 
+     *
      * @param user           the current user
      * @param domain         the domain object
      * @param content        the content object
      * @param recursive      the recursive flag
-     * 
+     *
      * @return the JavaScript code for adding the object to the tree
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getContentTreeScript(User user, 
-                                        Domain domain, 
+    private String getContentTreeScript(User user,
+                                        Domain domain,
                                         Content content,
-                                        boolean recursive) 
+                                        boolean recursive)
         throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
@@ -501,24 +507,24 @@ public class ContentView extends AdminView {
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
             parent = content.getParent();
-            return getContentTreeScript(user, domain, parent, true) 
+            return getContentTreeScript(user, domain, parent, true)
                  + SCRIPT.getTreeView(content, children);
         } else {
             children = manager.getContentChildren(user, content);
             return SCRIPT.getTreeView(content, children);
         }
     }
-    
+
     /**
-     * Returns the content tree focus object. The focus object is 
-     * either a domain or a content object, and is stored in the 
-     * session. It is not possible to trust the focus object for any 
-     * operations. It may have been removed from the database by 
+     * Returns the content tree focus object. The focus object is
+     * either a domain or a content object, and is stored in the
+     * session. It is not possible to trust the focus object for any
+     * operations. It may have been removed from the database by
      * another user.
-     * 
+     *
      * @param request        the request
-     * 
-     * @return the content view focus object, or 
+     *
+     * @return the content view focus object, or
      *         null for none
      */
     public Object getContentTreeFocus(Request request) {
@@ -526,9 +532,9 @@ public class ContentView extends AdminView {
     }
 
     /**
-     * Sets the content tree focus object. The focus object is either 
+     * Sets the content tree focus object. The focus object is either
      * a domain or a content object, and is stored in the session.
-     * 
+     *
      * @param request        the request
      * @param obj            the new focus object
      */
@@ -537,10 +543,10 @@ public class ContentView extends AdminView {
     }
 
     /**
-     * Checks if an object should be shown in the content view. 
-     * 
+     * Checks if an object should be shown in the content view.
+     *
      * @param obj            the object to check
-     * 
+     *
      * @return true if the object should be shown, or
      *         false otherwise
      */
@@ -548,16 +554,16 @@ public class ContentView extends AdminView {
         return obj instanceof Domain
             || obj instanceof ContentSection;
     }
-    
+
     /**
      * Finds all content document properties and adds them to a list.
-     * This method will retrieve the document properties from the 
-     * first content section having any. 
-     * 
+     * This method will retrieve the document properties from the
+     * first content section having any.
+     *
      * @param content        the content object
-     * 
+     *
      * @return the list of properties found
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -575,19 +581,19 @@ public class ContentView extends AdminView {
 
     /**
      * Finds all content document properties and adds them to a list.
-     * This method may retrieve the document properties from the 
+     * This method may retrieve the document properties from the
      * parent section if the recurse flag is set and the section does
-     * not have any properties. 
-     * 
+     * not have any properties.
+     *
      * @param section        the content section
      * @param recurse        the recursive lookup flag
-     * 
+     *
      * @return the list of properties found
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private ArrayList findSectionProperties(ContentSection section, 
+    private ArrayList findSectionProperties(ContentSection section,
                                             boolean recurse)
         throws ContentException {
 

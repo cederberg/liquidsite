@@ -22,12 +22,14 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.admin.view.AdminView;
+import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -293,10 +295,12 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         Map       params = request.getAllParameters();
         Iterator  iter = params.keySet().iterator();
+        Content[] revisions;
         int       section;
         String    id;
         int       type;
         String    str;
+        int       max;
 
         doc.setRevisionNumber(0);
         doc.setName(request.getParameter("name"));
@@ -331,6 +335,18 @@ public class ContentEditFormHandler extends AdminFormHandler {
             if (!params.containsKey("property." + id)) {
                 doc.setProperty(id, null);
             }
+        }
+        if (request.getParameter("publish", "").equals("true")) {
+            max = 0;
+            revisions = doc.getAllRevisions();
+            for (int i = 0; i < revisions.length; i++) {
+                if (max < revisions[i].getRevisionNumber()) {
+                    max = revisions[i].getRevisionNumber();
+                }
+            }
+            doc.setRevisionNumber(max + 1);
+            doc.setOnlineDate(new Date());
+            doc.setOfflineDate(null);
         }
         doc.save(request.getUser());
     }

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin.view;
@@ -41,7 +41,7 @@ import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.User;
 
 /**
- * A helper class for creating JavaScript code to the administration 
+ * A helper class for creating JavaScript code to the administration
  * application.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
@@ -57,9 +57,9 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for selecting an item in a tree view.
-     * 
+     *
      * @param domain         the domain object to select
-     * 
+     *
      * @return the JavaScript for selecting the item
      */
     public String getTreeViewSelect(Domain domain) {
@@ -73,9 +73,9 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for selecting an item in a tree view.
-     * 
+     *
      * @param content        the content object to select
-     * 
+     *
      * @return the JavaScript for selecting the item
      */
     public String getTreeViewSelect(Content content) {
@@ -91,16 +91,16 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting a tree view.
-     * 
+     *
      * @param domains        the root domain objects
-     * 
+     *
      * @return the JavaScript for presenting a tree view
      */
     public String getTreeView(Domain[] domains) {
 
         StringBuffer  buffer = new StringBuffer();
         String        str;
-        
+
         for (int i = 0; i < domains.length; i++) {
             buffer.append("treeAddItem(0, '");
             buffer.append(domains[i].getName());
@@ -116,16 +116,16 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting a tree view.
-     * 
+     *
      * @param domain         the domain object
      * @param children       the child content objects
-     * 
+     *
      * @return the JavaScript for presenting a tree view
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getTreeView(Domain domain, Content[] children) 
+    public String getTreeView(Domain domain, Content[] children)
         throws ContentException {
 
         StringBuffer    buffer = new StringBuffer();
@@ -159,16 +159,16 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting a tree view.
-     * 
+     *
      * @param parent         the parent content object
      * @param children       the child content objects
-     * 
+     *
      * @return the JavaScript for presenting a tree view
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getTreeView(Content parent, Content[] children) 
+    public String getTreeView(Content parent, Content[] children)
         throws ContentException {
 
         StringBuffer    buffer = new StringBuffer();
@@ -204,17 +204,17 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting an object view.
-     * 
+     *
      * @param user           the current user
      * @param domain         the domain object
      * @param view           the view name
-     * 
+     *
      * @return the JavaScript for presenting an object view
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getObjectView(User user, Domain domain, String view) 
+    public String getObjectView(User user, Domain domain, String view)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -247,17 +247,17 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting an object view.
-     * 
+     *
      * @param user           the current user
      * @param content        the content object
      * @param view           the view name
-     * 
+     *
      * @return the JavaScript for presenting an object view
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getObjectView(User user, Content content, String view) 
+    public String getObjectView(User user, Content content, String view)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -300,9 +300,9 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting special site properties.
-     * 
+     *
      * @param site           the site
-     * 
+     *
      * @return the JavaScript for additional site properties
      */
     private String getSiteProperties(ContentSite site) {
@@ -316,11 +316,11 @@ public class ScriptView {
     /**
      * Returns the JavaScript for presenting additional file
      * properties.
-     * 
+     *
      * @param file           the content file
-     * 
+     *
      * @return the JavaScript for additional file properties
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -363,21 +363,21 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting domain buttons.
-     * 
+     *
      * @param user           the current user
      * @param domain         the domain object
      * @param view           the view name
-     * 
+     *
      * @return the JavaScript for presenting domain buttons
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getButtons(User user, Domain domain, String view) 
+    private String getButtons(User user, Domain domain, String view)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
-        
+
         if (domain.hasWriteAccess(user)) {
             buffer.append("objectAddNewButton('add-");
             buffer.append(view);
@@ -400,27 +400,27 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting domain buttons.
-     * 
+     *
      * @param user           the current user
      * @param content        the content object
      * @param view           the view name
      * @param status         the content status
      * @param lock           the content lock
-     * 
+     *
      * @return the JavaScript for presenting domain buttons
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getButtons(User user, 
+    private String getButtons(User user,
                               Content content,
-                              String view, 
-                              int status, 
-                              Lock lock) 
+                              String view,
+                              int status,
+                              Lock lock)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
-        
+
         if (lock != null) {
             if (content.hasWriteAccess(user)) {
                 buffer.append("objectAddUnlockButton('unlock.html");
@@ -429,7 +429,7 @@ public class ScriptView {
             }
         } else {
             if (content.hasWriteAccess(user)) {
-                if (isContainer(content)) { 
+                if (isContainer(content)) {
                     buffer.append("objectAddNewButton('add-");
                     buffer.append(view);
                     buffer.append(".html");
@@ -448,7 +448,7 @@ public class ScriptView {
                     buffer.append("unpublish.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
-                } else if (isOnline(content.getParent())) {
+                } else if (AdminUtils.isOnline(content.getParent())) {
                     buffer.append("objectAddPublishButton('");
                     buffer.append("publish.html");
                     buffer.append(getLinkParameters(content));
@@ -474,21 +474,21 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting domain hosts.
-     * 
+     *
      * @param domain         the domain object
-     * 
+     *
      * @return the JavaScript for presenting domain hosts
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getHosts(Domain domain) 
+    private String getHosts(Domain domain)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
         Host[]        hosts;
         String        str;
-        
+
         hosts = domain.getHosts();
         if (hosts.length == 0) {
             buffer.append("objectAddHost('N/A', 'No hosts registered');\n");
@@ -511,18 +511,18 @@ public class ScriptView {
      * @param content        the content object
      *
      * @return the JavaScript for presenting content revisions
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getRevisions(User user, Content content) 
+    private String getRevisions(User user, Content content)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
         Content[]     revisions;
         Content       work = null;
         String        previewUrl = getPreviewUrl(content);
-        
+
         revisions = content.getAllRevisions();
         for (int i = 0; i < revisions.length; i++) {
             if (revisions[i].getRevisionNumber() == 0) {
@@ -585,15 +585,15 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting domain permissions.
-     * 
+     *
      * @param domain         the domain object
-     * 
+     *
      * @return the JavaScript for presenting domain permissions
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getPermissions(Domain domain) 
+    private String getPermissions(Domain domain)
         throws ContentException {
 
         return getPermissions(domain.getPermissions(), false);
@@ -601,21 +601,21 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript for presenting content permissions.
-     * 
+     *
      * @param content        the content object
-     * 
+     *
      * @return the JavaScript for presenting content permissions
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getPermissions(Content content) 
+    private String getPermissions(Content content)
         throws ContentException {
 
         Permission[]  permissions;
         Content       parent = content;
         boolean       inherited = false;
-        
+
         permissions = content.getPermissions();
         while (permissions.length == 0 && parent != null) {
             inherited = true;
@@ -680,11 +680,11 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript representation of a content URL.
-     * 
+     *
      * @param content        the content object
-     * 
+     *
      * @return the JavaScript representation of a content URL
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
@@ -694,15 +694,15 @@ public class ScriptView {
         if (content instanceof ContentSite) {
             return content.toString();
         } else if (content instanceof ContentFolder) {
-            return getContentUrl(content.getParent()) +  
-                   content.toString() + "/"; 
+            return getContentUrl(content.getParent()) +
+                   content.toString() + "/";
         } else if (content instanceof ContentPage) {
-            return getContentUrl(content.getParent()) +  
-                   content.toString(); 
+            return getContentUrl(content.getParent()) +
+                   content.toString();
         } else if (content instanceof ContentFile) {
             str = getContentUrl(content.getParent());
-            if (str.endsWith("/")) {  
-                return str + content.toString(); 
+            if (str.endsWith("/")) {
+                return str + content.toString();
             } else {
                 return str;
             }
@@ -730,14 +730,14 @@ public class ScriptView {
                 return "preview/" + content.getId() + "/";
             }
         } else if (content instanceof ContentFolder) {
-            return getPreviewUrl(content.getParent()) +  
-                   content.toString() + "/"; 
+            return getPreviewUrl(content.getParent()) +
+                   content.toString() + "/";
         } else if (content instanceof ContentPage) {
-            return getPreviewUrl(content.getParent()) +  
-                   content.toString(); 
+            return getPreviewUrl(content.getParent()) +
+                   content.toString();
         } else if (content instanceof ContentFile) {
-            return getPreviewUrl(content.getParent()) +  
-                   content.toString(); 
+            return getPreviewUrl(content.getParent()) +
+                   content.toString();
         } else if (content instanceof ContentTemplate) {
             return "preview/" + content.getId() + "/";
         } else if (content instanceof ContentSection) {
@@ -751,47 +751,23 @@ public class ScriptView {
 
     /**
      * Returns the JavaScript representation of a content status.
-     * 
+     *
      * @param content        the content object
-     * 
+     *
      * @return the JavaScript representation of a content status
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private int getContentStatus(Content content) 
+    private int getContentStatus(Content content)
         throws ContentException {
 
-        if (!isOnline(content)) {
+        if (!AdminUtils.isOnline(content)) {
             return 0;
         } else if (content.getRevisionNumber() == 0) {
             return 2;
         } else {
             return 1;
-        }
-    }
-
-    /**
-     * Checks is a specified content object is online. This method 
-     * will check that all parent content objects are also online.
-     * 
-     * @param content        the content object
-     * 
-     * @return true if the object and all parents are online, or
-     *         false otherwise
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    private boolean isOnline(Content content)
-        throws ContentException {
-
-        if (content == null) {
-            return true;
-        } else if (!content.isOnline()) {
-            return false;
-        } else {
-            return isOnline(content.getParent());
         }
     }
 
@@ -816,17 +792,17 @@ public class ScriptView {
     }
 
     /**
-     * Returns the JavaScript for setting all the inherited template 
+     * Returns the JavaScript for setting all the inherited template
      * page elements.
-     * 
+     *
      * @param template       the content template, or null
-     * 
+     *
      * @return the JavaScript for setting the page elements
-     * 
+     *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getTemplateElements(ContentTemplate template) 
+    public String getTemplateElements(ContentTemplate template)
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -853,9 +829,9 @@ public class ScriptView {
 
     /**
      * Returns the domain link parameters.
-     * 
+     *
      * @param domain         the domain object
-     * 
+     *
      * @return the domain URL parameter string
      */
     private String getLinkParameters(Domain domain) {
@@ -864,22 +840,22 @@ public class ScriptView {
 
     /**
      * Returns the content link parameters.
-     * 
+     *
      * @param content        the content object
-     * 
+     *
      * @return the content URL parameter string
      */
     private String getLinkParameters(Content content) {
-        return "?type=" + AdminUtils.getCategory(content) + 
+        return "?type=" + AdminUtils.getCategory(content) +
                "&id=" + content.getId();
     }
 
     /**
      * Checks if the specified content object is a container. I.e. if
      * the content object supports having child content objects.
-     * 
+     *
      * @param content        the content object to check
-     * 
+     *
      * @return true if the content object is a container, or
      *         false otherwise
      */

@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -264,6 +265,10 @@ public class ContentAddFormHandler extends AdminFormHandler {
                 }
                 doc.setProperty(id, str);
             }
+        }
+        if (request.getParameter("publish", "").equals("true")) {
+            doc.setRevisionNumber(1);
+            doc.setOnlineDate(new Date());
         }
         doc.save(request.getUser());
         AdminView.CONTENT.setContentTreeFocus(request, doc);

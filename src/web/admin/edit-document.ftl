@@ -11,9 +11,19 @@
         utilSessionKeepAlive();
     }
 
-    function previous() {
+    function doPrevious() {
         document.getElementsByName("liquidsite.prev").item(0).value = "true";
         document.forms.item(0).submit();
+    }
+
+    function doSave() {
+        document.getElementsByName("publish").item(0).value = "false";
+        return false;
+    }
+
+    function doPublish() {
+        document.getElementsByName("publish").item(0).value = "true";
+        return false;
     }
     </script>
 
@@ -27,6 +37,7 @@
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
       <input type="hidden" name="category" value="document" />
+      <input type="hidden" name="publish" value="false" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">
@@ -128,14 +139,20 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="102" onclick="previous()">
+            <button type="button" tabindex="103" onclick="doPrevious()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" tabindex="101">
+            <button type="submit" tabindex="102" onclick="doSave()">
               <img src="images/icons/24x24/save.png" />
               Save
             </button>
+<#if publish = "true">
+            <button type="submit" tabindex="101" onclick="doPublish()">
+              <img src="images/icons/24x24/online.png" />
+              Publish
+            </button>
+</#if>
           </td>
         </tr>
       </table>

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin;
@@ -57,7 +57,7 @@ public class AdminUtils {
 
     /**
      * Returns the configuration currently used
-     * 
+     *
      * @return the configuraiton currently used
      */
     public static Configuration getConfiguration() {
@@ -66,7 +66,7 @@ public class AdminUtils {
 
     /**
      * Sets the configuration currently used.
-     * 
+     *
      * @param config         the configuration to use
      */
     static void setConfiguration(Configuration config) {
@@ -75,12 +75,12 @@ public class AdminUtils {
 
     /**
      * Returns the content manager for administration.
-     * 
+     *
      * @return the content manager for administration
-     * 
+     *
      * @throws ContentException if no content manager exists
      */
-    public static ContentManager getContentManager() 
+    public static ContentManager getContentManager()
         throws ContentException {
 
         if (manager == null) {
@@ -91,7 +91,7 @@ public class AdminUtils {
 
     /**
      * Sets the content manager for administration.
-     * 
+     *
      * @param manager        the content manager for administration
      */
     static void setContentManager(ContentManager manager) {
@@ -153,7 +153,7 @@ public class AdminUtils {
             return getDateFormat(user).format(date);
         }
     }
-    
+
     /**
      * Parses a date string into a date. The user timezone will be
      * used.
@@ -163,7 +163,7 @@ public class AdminUtils {
      *
      * @return the date found
      *
-     * @throws ParseException if the string didn't contain a valid 
+     * @throws ParseException if the string didn't contain a valid
      *             date
      */
     public static Date parseDate(User user, String str)
@@ -182,26 +182,26 @@ public class AdminUtils {
     /**
      * Returns the JavaScript representation of a date. The user
      * timezone will be used.
-     * 
+     *
      * @param user           the user
      * @param date           the date to present, or null
-     * 
+     *
      * @return a JavaScript representation of the date
      */
     public static String getScriptDate(User user, Date date) {
         if (date == null) {
             return "null";
         } else {
-            return getScriptString(formatDate(user, date)); 
+            return getScriptString(formatDate(user, date));
         }
     }
 
     /**
      * Returns the JavaScript representation of a string. This method
-     * will take care of required character escapes. 
-     * 
+     * will take care of required character escapes.
+     *
      * @param str            the string to present, or null
-     * 
+     *
      * @return a JavaScript representation of the string
      */
     public static String getScriptString(String str) {
@@ -237,11 +237,11 @@ public class AdminUtils {
 
     /**
      * Returns an object category name. The category name is used in
-     * various places to identify incoming or outgoing objects. 
-     * 
+     * various places to identify incoming or outgoing objects.
+     *
      * @param obj            the domain or content object
-     * 
-     * @return the category name, or 
+     *
+     * @return the category name, or
      *         null if unknown
      */
     public static String getCategory(Object obj) {
@@ -272,21 +272,45 @@ public class AdminUtils {
     }
 
     /**
+     * Checks is a specified content object is online. This method
+     * will check that all parent content objects are also online.
+     *
+     * @param content        the content object
+     *
+     * @return true if the object and all parents are online, or
+     *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public static boolean isOnline(Content content)
+        throws ContentException {
+
+        if (content == null) {
+            return true;
+        } else if (!content.isOnline()) {
+            return false;
+        } else {
+            return isOnline(content.getParent());
+        }
+    }
+
+    /**
      * Returns the domain or content referenced by a request. When
-     * returning a content object, the latest revision (including 
+     * returning a content object, the latest revision (including
      * work revisions) will be returned.
-     * 
+     *
      * @param request        the request
-     * 
+     *
      * @return the domain or content object referenced, or
      *         null if not found
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
-    public static Object getReference(Request request) 
+    public static Object getReference(Request request)
         throws ContentException, ContentSecurityException {
 
         User     user = request.getUser();
@@ -294,7 +318,7 @@ public class AdminUtils {
         String   id = request.getParameter("id");
         String   message;
         int      value;
-        
+
         if (type == null || id == null) {
             return null;
         } else if (type.equals("domain")) {
@@ -309,10 +333,10 @@ public class AdminUtils {
             return getContentManager().getContent(user, value);
         }
     }
-    
+
     /**
      * Sets the domain or content reference attributes in a request.
-     * 
+     *
      * @param request        the request
      * @param obj            the domain or content object
      */
@@ -325,7 +349,7 @@ public class AdminUtils {
         } else {
             content = (Content) obj;
             request.setAttribute("type", getCategory(content));
-            request.setAttribute("id", 
+            request.setAttribute("id",
                                  String.valueOf(content.getId()));
         }
     }
