@@ -21,9 +21,11 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.percederberg.liquidsite.Configuration;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
@@ -258,6 +260,41 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
+     * Returns the domain file directory. This directory is composed 
+     * of the application file directory and the domain name. Note 
+     * that this method will create the domain directory if it does 
+     * not already exist. 
+     * 
+     * @return the domain file directory
+     * 
+     * @throws ContentException if the domain file directory wasn't 
+     *             found or couldn't be created
+     */
+    public File getDirectory() throws ContentException {
+        Configuration  config;
+        String         basedir;
+        File           dir;
+        
+        config = getContentManager().getApplication().getConfig();
+        basedir = config.get(Configuration.FILE_DIRECTORY, null);
+        if (basedir == null) {
+            throw new ContentException(
+                "application base file directory not configured");
+        }
+        dir = new File(basedir, getName());
+        try {
+            if (!dir.exists() && !dir.mkdirs()) {
+                throw new ContentException(
+                    "couldn't create domain file directory");
+            }
+        } catch (SecurityException e) {
+            throw new ContentException(
+                "access denied while creating domain file directory");
+        }
+        return dir;
+    }
+
+    /**
      * Checks the read access for a user.
      *
      * @param user           the user to check, or null for none
@@ -395,6 +432,35 @@ public class Domain extends PersistentObject implements Comparable {
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
+        }
+        doDelete(getDirectory());
+    }
+    
+    /**
+     * Deletes a file or directory. All contents of a directory will
+     * be deleted recursively.
+     * 
+     * @param file           the file or directory to delete
+     * 
+     * @throws ContentException if the file or directory couldn't be
+     *             deleted properly
+     */
+    private void doDelete(File file) throws ContentException {
+        File[]  files;
+
+        try {
+            files = file.listFiles();
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    doDelete(files[i]);
+                }
+            }
+            file.delete();
+        } catch (SecurityException e) {
+            LOG.error("deleting domain directory for " + getName() +
+                      ": " + e.getMessage());
+            throw new ContentException(
+                "access denied while deleting domain file directory");
         }
     }
 }

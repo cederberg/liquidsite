@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.content;
 
 import java.io.File;
 
-import net.percederberg.liquidsite.Configuration;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
 
@@ -142,11 +141,11 @@ public class FileContent extends Content {
     
     /**
      * Returns the content directory. This directory is composed of 
-     * the application file directory, the domain name, and the 
-     * unique content identifier. Note that this method requires that
-     * the content object has a valid content identifier, or an 
-     * exception will be thrown. Also note that the content directory
-     * will be created if not already existing. 
+     * the domain file directory and the unique content identifier. 
+     * Note that this method requires that the content object has a 
+     * valid content identifier, or an exception will be thrown. Also 
+     * note that the content directory will be created if it doesn 
+     * not already exist. 
      * 
      * @return the content directory
      * 
@@ -154,21 +153,13 @@ public class FileContent extends Content {
      *             found or couldn't be created
      */
     private File getDirectory() throws ContentException {
-        Configuration  config;
-        String         basedir;
-        File           dir;
+        File  dir;
         
-        config = getContentManager().getApplication().getConfig();
-        basedir = config.get(Configuration.FILE_DIRECTORY, null);
-        if (basedir == null) {
-            throw new ContentException(
-                "content file base directory not configured");
-        }
         if (getId() <= 0) {
             throw new ContentException(
                 "content file hasn't got a valid content id");
         }
-        dir = new File(new File(basedir, getDomainName()), 
+        dir = new File(getDomain().getDirectory(), 
                        String.valueOf(getId()));
         try {
             if (!dir.exists() && !dir.mkdirs()) {
@@ -179,7 +170,6 @@ public class FileContent extends Content {
             throw new ContentException(
                 "access denied while creating content file directory");
         }
-
         return dir;
     }
 
@@ -227,8 +217,10 @@ public class FileContent extends Content {
         try {
             dir = getDirectory();
             files = dir.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                files[i].delete();
+            if (files != null) {
+                for (int i = 0; i < files.length; i++) {
+                    files[i].delete();
+                }
             }
             dir.delete();
         } catch (SecurityException e) {
