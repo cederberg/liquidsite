@@ -415,6 +415,28 @@ public abstract class RequestProcessor {
     }
 
     /**
+     * Processes a request to a template file. The template file name
+     * is relative to the web context directory, and the output MIME
+     * type will always be set to "text/html".
+     *
+     * @param request        the request object
+     * @param templateName   the template file name
+     *
+     * @throws TemplateException if the file template couldn't be
+     *             processed correctly
+     */
+    protected void sendTemplate(Request request, String templateName)
+        throws TemplateException {
+
+        Template      template;
+        StringWriter  buffer = new StringWriter();
+
+        template = TemplateManager.getFileTemplate(templateName);
+        template.process(request, getContentManager(), buffer);
+        request.sendData("text/html", buffer.toString());
+    }
+
+    /**
      * Checks if the specified content object represents a directory.
      *
      * @param content        the content object to check

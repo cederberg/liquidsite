@@ -38,6 +38,7 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.template.TemplateException;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseConnectionException;
@@ -430,7 +431,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         request.setAttribute("host", host);
         request.setAttribute("user", installUser);
         request.setAttribute("password", installPassword);
-        request.sendTemplate("install/install1.ftl");
+        displayTemplate(request, "install/install1.ftl");
     }
 
     /**
@@ -503,7 +504,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         request.setAttribute("databaseInfo", databaseInfo);
         request.setAttribute("enableCreate", isAdministrator());
         request.setAttribute("enableNext", enableNext);
-        request.sendTemplate("install/install2.ftl");
+        displayTemplate(request, "install/install2.ftl");
     }
 
     /**
@@ -517,7 +518,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         request.setAttribute("password", databasePassword);
         request.setAttribute("userNames", listUsers());
         request.setAttribute("enableCreate", isAdministrator());
-        request.sendTemplate("install/install3.ftl");
+        displayTemplate(request, "install/install3.ftl");
     }
 
     /**
@@ -533,7 +534,7 @@ public class InstallRequestProcessor extends RequestProcessor {
             request.setAttribute("user", adminUser);
             request.setAttribute("password", adminPassword);
         }
-        request.sendTemplate("install/install4.ftl");
+        displayTemplate(request, "install/install4.ftl");
     }
 
     /**
@@ -553,9 +554,25 @@ public class InstallRequestProcessor extends RequestProcessor {
             request.setAttribute("dataDir", dataDir);
             request.setAttribute("adminUser", adminUser);
         }
-        request.sendTemplate("install/install5.ftl");
+        displayTemplate(request, "install/install5.ftl");
     }
 
+    /**
+     * Processes a request to a template file. The template file name
+     * is relative to the web context directory, and the output MIME
+     * type will always be set to "text/html".
+     *
+     * @param request        the request object
+     * @param templateName   the template file name
+     */
+    private void displayTemplate(Request request, String templateName) {
+        try {
+            sendTemplate(request, templateName);
+        } catch (TemplateException e) {
+            request.sendData("text/plain", "Error: " + e.getMessage());
+        }
+    }
+    
     /**
      * Creates a new database connector and tests it. If an old
      * database connector exists, it will be closed. The instance

@@ -54,7 +54,7 @@ public class SystemView {
      * @param request        the request object
      */
     public void viewSystem(Request request) {
-        request.sendTemplate("admin/system.ftl");
+        AdminUtils.sendTemplate(request, "admin/system.ftl");
     }
 
     /**
@@ -76,7 +76,7 @@ public class SystemView {
             list.add(domains[i].getName());
         }
         request.setAttribute("domains", list);
-        request.sendTemplate("admin/system-backup.ftl");
+        AdminUtils.sendTemplate(request, "admin/system-backup.ftl");
     }
 
     /**
@@ -110,6 +110,6 @@ public class SystemView {
         request.setAttribute("backups", backups);
         request.setAttribute("domain", domain);
         request.setAttribute("revisions", revisions);
-        request.sendTemplate("admin/system-restore.ftl");
+        AdminUtils.sendTemplate(request, "admin/system-restore.ftl");
     }
 }

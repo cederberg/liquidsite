@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +37,9 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.template.Template;
+import org.liquidsite.core.template.TemplateException;
+import org.liquidsite.core.template.TemplateManager;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
 
@@ -478,5 +482,28 @@ public class AdminUtils {
             html = html.substring(0, html.length() - 4);
         }
         return html;
+    }
+
+    /**
+     * Processes a request to a template file. The template file name
+     * is relative to the web context directory, and the output MIME
+     * type will always be set to "text/html".
+     *
+     * @param request        the request object
+     * @param templateName   the template file name
+     */
+    public static void sendTemplate(Request request, String templateName) {
+        Template      template;
+        StringWriter  buffer = new StringWriter();
+
+        try {
+            template = TemplateManager.getFileTemplate(templateName);
+            template.process(request, getContentManager(), buffer);
+            request.sendData("text/html", buffer.toString());
+        } catch (ContentException e) {
+            request.sendData("text/plain", "Error: " + e.getMessage());
+        } catch (TemplateException e) {
+            request.sendData("text/plain", "Error: " + e.getMessage());
+        }
     }
 }

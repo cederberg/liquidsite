@@ -197,7 +197,7 @@ public class AdminRequestProcessor extends RequestProcessor {
                 request.setAttribute("error",
                                      "Access denied for your current user.");
             }
-            request.sendTemplate("admin/login.ftl");
+            AdminUtils.sendTemplate(request, "admin/login.ftl");
         } else {
             str = request.getEnvironment().getSite().getDirectory();
             request.sendRedirect(str);

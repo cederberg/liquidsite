@@ -109,7 +109,7 @@ public class AdminView {
     public void viewError(Request request, String message, String page) {
         request.setAttribute("error", message);
         request.setAttribute("page", page);
-        request.sendTemplate("admin/error.ftl");
+        AdminUtils.sendTemplate(request, "admin/error.ftl");
     }
 
     /**
@@ -124,7 +124,7 @@ public class AdminView {
     public void viewInfo(Request request, String message, String page) {
         request.setAttribute("message", message);
         request.setAttribute("page", page);
-        request.sendTemplate("admin/info.ftl");
+        AdminUtils.sendTemplate(request, "admin/info.ftl");
     }
 
     /**
@@ -137,7 +137,7 @@ public class AdminView {
      */
     public void viewRedirect(Request request, String url) {
         request.setAttribute("url", url);
-        request.sendTemplate("admin/redirect.ftl");
+        AdminUtils.sendTemplate(request, "admin/redirect.ftl");
     }
 
     /**

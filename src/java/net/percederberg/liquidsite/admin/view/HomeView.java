@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite.admin.view;
 
+import net.percederberg.liquidsite.admin.AdminUtils;
+
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 
@@ -46,7 +48,7 @@ public class HomeView {
      * @param request        the request object
      */
     public void viewHome(Request request) {
-        request.sendTemplate("admin/home.ftl");
+        AdminUtils.sendTemplate(request, "admin/home.ftl");
     }
 
     /**
@@ -62,7 +64,7 @@ public class HomeView {
         request.setAttribute("name", str);
         str = request.getParameter("email", user.getEmail());
         request.setAttribute("email", str);
-        request.sendTemplate("admin/edit-account.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-account.ftl");
     }
 
     /**
@@ -71,6 +73,6 @@ public class HomeView {
      * @param request        the request object
      */
     public void viewEditPassword(Request request) {
-        request.sendTemplate("admin/edit-password.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-password.ftl");
     }
 }

@@ -103,7 +103,7 @@ public class ContentView extends AdminView {
             buffer.append(SCRIPT.getTreeViewSelect(domains[0]));
         }
         request.setAttribute("initialize", buffer.toString());
-        request.sendTemplate("admin/content.ftl");
+        AdminUtils.sendTemplate(request, "admin/content.ftl");
     }
 
     /**
@@ -152,7 +152,7 @@ public class ContentView extends AdminView {
             request.setAttribute("startpage", 
                                  request.getParameter("liquidsite.startpage"));
         }
-        request.sendTemplate("admin/add-object.ftl");
+        AdminUtils.sendTemplate(request, "admin/add-object.ftl");
     }
 
     /**
@@ -271,7 +271,7 @@ public class ContentView extends AdminView {
             request.setAttribute("startpage", 
                                  request.getParameter("liquidsite.startpage"));
         }
-        request.sendTemplate("admin/edit-section.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-section.ftl");
     }
 
     /**
@@ -380,7 +380,7 @@ public class ContentView extends AdminView {
             request.setAttribute("startpage", 
                                  request.getParameter("liquidsite.startpage"));
         }
-        request.sendTemplate("admin/edit-document.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-document.ftl");
     }
 
     /**
@@ -445,7 +445,7 @@ public class ContentView extends AdminView {
         }
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-file.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-file.ftl");
     }
 
     /**
@@ -535,7 +535,7 @@ public class ContentView extends AdminView {
             request.setAttribute("startpage", 
                                  request.getParameter("liquidsite.startpage"));
         }
-        request.sendTemplate("admin/edit-forum.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-forum.ftl");
     }
 
     /**
@@ -608,7 +608,7 @@ public class ContentView extends AdminView {
         request.setAttribute("locked", String.valueOf(locked));
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-topic.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-topic.ftl");
     }
 
     /**
@@ -663,7 +663,7 @@ public class ContentView extends AdminView {
         request.setAttribute("text", text);
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-post.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-post.ftl");
     }
 
     /**
@@ -680,7 +680,7 @@ public class ContentView extends AdminView {
 
         request.setAttribute("description", section.getDescription());
         request.setAttribute("properties", findSectionProperties(section));
-        request.sendTemplate("admin/preview-section.ftl");
+        AdminUtils.sendTemplate(request, "admin/preview-section.ftl");
     }
 
     /**
@@ -697,7 +697,7 @@ public class ContentView extends AdminView {
 
         request.getEnvironment().setDocument(doc);
         request.setAttribute("properties", findSectionProperties(doc));
-        request.sendTemplate("admin/preview-document.ftl");
+        AdminUtils.sendTemplate(request, "admin/preview-document.ftl");
     }
 
     /**

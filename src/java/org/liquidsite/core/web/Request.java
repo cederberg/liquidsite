@@ -37,9 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.liquidsite.core.content.User;
-import org.liquidsite.core.template.Template;
-import org.liquidsite.core.template.TemplateException;
-import org.liquidsite.core.template.TemplateManager;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -73,14 +70,6 @@ public class Request {
      * absolute file name when this type is set.
      */
     private static final int FILE_RESPONSE = 2;
-
-    /**
-     * The template response type. This type is used when a template
-     * has been set as the request response. The response data
-     * contains the template file name (relative to the web context
-     * directory) when this type is set.
-     */
-    private static final int TEMPLATE_RESPONSE = 3;
 
     /**
      * The redirect response type. This type is used when a request
@@ -488,20 +477,6 @@ public class Request {
     }
 
     /**
-     * Sends the results from processing a template as the request
-     * response. The template file name is relative to the web
-     * context directory, and the output MIME type will always be set
-     * to "text/html".
-     *
-     * @param template       the template file name
-     */
-    public void sendTemplate(String template) {
-        responseType = TEMPLATE_RESPONSE;
-        responseMimeType = null;
-        responseData = template;
-    }
-
-    /**
      * Redirects this request by sending a temporary redirection URL
      * to the browser. The location specified may be either an
      * absolute or a relative URL. This method will set a request
@@ -552,9 +527,6 @@ public class Request {
             break;
         case FILE_RESPONSE:
             commitFile(context, content);
-            break;
-        case TEMPLATE_RESPONSE:
-            commitTemplate(content);
             break;
         case REDIRECT_RESPONSE:
             commitRedirect();
@@ -671,37 +643,6 @@ public class Request {
             }
             input.close();
             output.close();
-        }
-    }
-
-    /**
-     * Sends the processed template response to the underlying HTTP
-     * response object.
-     *
-     * @param content        the complete content response flag
-     *
-     * @throws IOException if an IO error occured while attempting to
-     *             commit the response
-     */
-    private void commitTemplate(boolean content) throws IOException {
-        PrintWriter  out;
-        Template     template;
-
-        LOG.info("Handling request for " + this + " with template " +
-                 responseData);
-        commitDynamicHeaders();
-        response.setContentType("text/html; charset=UTF-8");
-        if (content) {
-            out = response.getWriter();
-            try {
-                template = TemplateManager.getFileTemplate(responseData);
-                template.process(this, null, out);
-            } catch (TemplateException e) {
-                LOG.error("while processing " + responseData + " template", e);
-                throw new IOException(e.getMessage());
-            } finally {
-                out.close();
-            }
         }
     }
 

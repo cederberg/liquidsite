@@ -101,7 +101,7 @@ public class SiteView extends AdminView {
             buffer.append(SCRIPT.getTreeViewSelect(domains[0]));
         }
         request.setAttribute("initialize", buffer.toString());
-        request.sendTemplate("admin/site.ftl");
+        AdminUtils.sendTemplate(request, "admin/site.ftl");
     }
 
     /**
@@ -155,7 +155,7 @@ public class SiteView extends AdminView {
                 request.setAttribute("enableTemplate", true);
             }
         }
-        request.sendTemplate("admin/add-object.ftl");
+        AdminUtils.sendTemplate(request, "admin/add-object.ftl");
     }
 
     /**
@@ -226,7 +226,7 @@ public class SiteView extends AdminView {
         request.setAttribute("name", name);
         request.setAttribute("description", description);
         request.setAttribute("hosts", hosts);
-        request.sendTemplate("admin/edit-domain.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-domain.ftl");
     }
 
     /**
@@ -296,7 +296,7 @@ public class SiteView extends AdminView {
         str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-site.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-site.ftl");
     }
 
     /**
@@ -375,7 +375,7 @@ public class SiteView extends AdminView {
         request.setAttribute("sections", sections);
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-translator.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-translator.ftl");
     }
 
     /**
@@ -473,7 +473,7 @@ public class SiteView extends AdminView {
         request.setAttribute("comment", comment);
         request.setAttribute("locals", locals);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-page.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-page.ftl");
     }
 
     /**
@@ -554,7 +554,7 @@ public class SiteView extends AdminView {
         }
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-file.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-file.ftl");
     }
 
     /**
@@ -622,7 +622,7 @@ public class SiteView extends AdminView {
         request.setAttribute("folders", folders);
         request.setAttribute("comment", comment);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-folder.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-folder.ftl");
     }
 
     /**
@@ -717,7 +717,7 @@ public class SiteView extends AdminView {
         request.setAttribute("parent", String.valueOf(inherited));
         request.setAttribute("templates", templates);
         request.setAttribute("publish", String.valueOf(publish));
-        request.sendTemplate("admin/edit-template.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-template.ftl");
     }
 
     /**
@@ -752,7 +752,7 @@ public class SiteView extends AdminView {
         }
         request.setAttribute("locals", locals);
         request.setAttribute("inherited", inherited);
-        request.sendTemplate("admin/preview-template.ftl");
+        AdminUtils.sendTemplate(request, "admin/preview-template.ftl");
     }
 
     /**

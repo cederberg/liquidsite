@@ -129,7 +129,7 @@ public class UserView extends AdminView {
             request.setAttribute("pages", count / PAGE_SIZE + 1);
         }
         request.setAttribute("userCount", count);
-        request.sendTemplate("admin/users.ftl");
+        AdminUtils.sendTemplate(request, "admin/users.ftl");
     }
 
     /**
@@ -181,7 +181,7 @@ public class UserView extends AdminView {
             request.setAttribute("pages", count / PAGE_SIZE + 1);
         }
         request.setAttribute("userCount", count);
-        request.sendTemplate("admin/view-group.ftl");
+        AdminUtils.sendTemplate(request, "admin/view-group.ftl");
     }
 
     /**
@@ -264,7 +264,7 @@ public class UserView extends AdminView {
             }
         }
         request.setAttribute("memberships", memberships);
-        request.sendTemplate("admin/edit-user.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-user.ftl");
     }
 
     /**
@@ -299,7 +299,7 @@ public class UserView extends AdminView {
         request.setAttribute("description", str);
         str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
-        request.sendTemplate("admin/edit-group.ftl");
+        AdminUtils.sendTemplate(request, "admin/edit-group.ftl");
     }
 
     /**

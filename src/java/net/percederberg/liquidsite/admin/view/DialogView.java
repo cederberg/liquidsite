@@ -60,7 +60,7 @@ public class DialogView extends AdminView {
      * @param request        the request object
      */
     public void viewClose(Request request) {
-        request.sendTemplate("admin/dialog/close.ftl");
+        AdminUtils.sendTemplate(request, "admin/dialog/close.ftl");
     }
 
     /**
@@ -71,7 +71,7 @@ public class DialogView extends AdminView {
      */
     public void viewError(Request request, String message) {
         request.setAttribute("error", message);
-        request.sendTemplate("admin/dialog/error.ftl");
+        AdminUtils.sendTemplate(request, "admin/dialog/error.ftl");
     }
 
     /**
@@ -110,7 +110,7 @@ public class DialogView extends AdminView {
             name = ((Content) obj).getName();
         }
         request.setAttribute("name", name);
-        request.sendTemplate("admin/dialog/delete-object.ftl");
+        AdminUtils.sendTemplate(request, "admin/dialog/delete-object.ftl");
     }
 
     /**
@@ -133,7 +133,7 @@ public class DialogView extends AdminView {
         request.setAttribute("type", type);
         request.setAttribute("domain", request.getParameter("domain"));
         request.setAttribute("name", name);
-        request.sendTemplate("admin/dialog/delete-user.ftl");
+        AdminUtils.sendTemplate(request, "admin/dialog/delete-user.ftl");
     }
 
     /**
@@ -160,7 +160,8 @@ public class DialogView extends AdminView {
         AdminUtils.setReference(request, content);
         request.setAttribute("date", dateStr);
         request.setAttribute("comment", comment);
-        request.sendTemplate("admin/dialog/publish-object.ftl");
+        AdminUtils.sendTemplate(request,
+                                "admin/dialog/publish-object.ftl");
     }
 
     /**
@@ -186,7 +187,8 @@ public class DialogView extends AdminView {
         AdminUtils.setReference(request, content);
         request.setAttribute("date", dateStr);
         request.setAttribute("comment", comment);
-        request.sendTemplate("admin/dialog/unpublish-object.ftl");
+        AdminUtils.sendTemplate(request,
+                                "admin/dialog/unpublish-object.ftl");
     }
 
     /**
@@ -205,7 +207,8 @@ public class DialogView extends AdminView {
             str = String.valueOf(content.getRevisionNumber());
         }
         request.setAttribute("revision", str);
-        request.sendTemplate("admin/dialog/revert-object.ftl");
+        AdminUtils.sendTemplate(request,
+                                "admin/dialog/revert-object.ftl");
     }
 
     /**
@@ -265,7 +268,8 @@ public class DialogView extends AdminView {
         request.setAttribute("groups", findGroups(domain, ""));
         request.setAttribute("inherited", inherited);
         request.setAttribute("local", local);
-        request.sendTemplate("admin/dialog/permissions-object.ftl");
+        AdminUtils.sendTemplate(request,
+                                "admin/dialog/permissions-object.ftl");
     }
 
     /**
@@ -276,7 +280,7 @@ public class DialogView extends AdminView {
      */
     public void viewUnlock(Request request, Content content) {
         AdminUtils.setReference(request, content);
-        request.sendTemplate("admin/dialog/unlock-object.ftl");
+        AdminUtils.sendTemplate(request, "admin/dialog/unlock-object.ftl");
     }
 
     /**
