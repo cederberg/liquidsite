@@ -214,22 +214,23 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
-     * @return the new content object, or
-     *         null if the content category is unknown
+     * @return the new content object
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly, or if the content object was unknown
      */
     private static Content createContent(ContentData data,
                                          boolean latest, 
                                          DatabaseConnection con)
-        throws DatabaseObjectException {
+        throws ContentException {
 
         switch (data.getInt(ContentData.CATEGORY)) {
         case SITE_CATEGORY:
             return new Site(data, latest, con);
         default:
-            return null;
+            throw new ContentException(
+                "content category " + data.getInt(ContentData.CATEGORY) +
+                " hasn't been defined"); 
         }
     }
 
@@ -257,18 +258,23 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
     protected Content(ContentData data, 
                       boolean latest, 
                       DatabaseConnection con) 
-        throws DatabaseObjectException {
+        throws ContentException {
 
         super(true, latest);
         this.data = data;
         this.oldRevision = data.getInt(ContentData.REVISION);
-        doReadAttributes(con);
+        try {
+            doReadAttributes(con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
     
     /**

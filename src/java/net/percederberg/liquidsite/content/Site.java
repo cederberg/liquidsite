@@ -120,11 +120,11 @@ public class Site extends Content {
      * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
     protected Site(ContentData data, boolean latest, DatabaseConnection con) 
-        throws DatabaseObjectException {
+        throws ContentException {
 
         super(data, latest, con);
     }
