@@ -131,6 +131,13 @@ public class Request {
 
         this.request = request;
         this.response = response;
+        if (request.getCharacterEncoding() == null) {
+            try {
+                request.setCharacterEncoding("UTF-8");
+            } catch (UnsupportedEncodingException ignore) {
+                // Do nothing
+            }
+        }
     }
     
     /**
@@ -335,15 +342,7 @@ public class Request {
     public String getParameter(String name, String defVal) {
         String  value = request.getParameter(name);
         
-        if (value == null) {
-            return defVal;
-        } else {
-            try {
-                return new String(value.getBytes("ISO-8859-1"), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                return value;
-            }
-        }
+        return (value == null) ? defVal : value;
     }
     
     /**

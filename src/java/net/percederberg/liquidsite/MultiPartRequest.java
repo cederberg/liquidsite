@@ -101,6 +101,7 @@ public class MultiPartRequest extends Request {
         FileItem        item;
         String          dir;
         int             size;
+        String          value;
 
         // Create multi-part parser
         dir = config.get(Configuration.UPLOAD_DIRECTORY, "/tmp");
@@ -114,7 +115,12 @@ public class MultiPartRequest extends Request {
         for (int i = 0; i < list.size(); i++) {
             item = (FileItem) list.get(i);
             if (item.isFormField()) {
-                parameters.put(item.getFieldName(), item.getString());
+                try {
+                    value = item.getString("UTF-8");
+                } catch (UnsupportedEncodingException ignore) {
+                    value = item.getString();
+                }
+                parameters.put(item.getFieldName(), value);
             } else {
                 files.put(item.getFieldName(), new MultiPartFile(item));
             }
@@ -134,15 +140,7 @@ public class MultiPartRequest extends Request {
     public String getParameter(String name, String defVal) {
         String  value = (String) parameters.get(name);
         
-        if (value == null) {
-            return defVal;
-        } else {
-            try {
-                return new String(value.getBytes("ISO-8859-1"), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                return value;
-            }
-        }
+        return (value == null) ? defVal : value;
     }
 
     /**
