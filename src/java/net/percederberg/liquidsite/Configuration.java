@@ -93,7 +93,8 @@ public class Configuration {
         "liquidsite.db.pool.size";
 
     /**
-     * The configuration file.
+     * The configuration file. If this file is set to null, the 
+     * configuration is read-only.
      */
     private File file;
 
@@ -112,6 +113,15 @@ public class Configuration {
      * configuration file has been read correctly.
      */
     private boolean initialized = false;
+
+    /**
+     * Creates a new read-only configuration. Thiis constructor is 
+     * only used for accessing configuration data in databases during
+     * the installation.
+     */
+    public Configuration() {
+        this(null);
+    }
 
     /**
      * Creates a new configuration.
@@ -196,6 +206,29 @@ public class Configuration {
     public void set(String key, int value) {
         set(key, String.valueOf(value)); 
     }
+
+    /**
+     * Sets all configuration properties from a set. Any existing 
+     * configuration properties with identical names will be 
+     * overwritten.
+     * 
+     * @param config         the configuration properties
+     */
+    public void setAll(Configuration config) {
+        Enumeration  e;
+        String       name;
+
+        e = config.fileProperties.propertyNames();
+        while (e.hasMoreElements()) {
+            name = (String) e.nextElement();
+            set(name, config.get(name, ""));
+        }
+        e = config.databaseProperties.propertyNames();
+        while (e.hasMoreElements()) {
+            name = (String) e.nextElement();
+            set(name, config.get(name, ""));
+        }
+    }
     
     /**
      * Reads the configuration. The configuration is read from both
@@ -223,6 +256,11 @@ public class Configuration {
     private void readFile() throws ConfigurationException {
         FileInputStream  input;
         String           message;
+
+        // Check for missing file
+        if (file == null) {
+            return;
+        }
 
         // Open configuration file
         try {
@@ -325,6 +363,12 @@ public class Configuration {
     private void writeFile() throws ConfigurationException {
         FileOutputStream  output;
         String            message;
+
+        // Check for missing file
+        if (file == null) {
+            message = "no configuration file has been set"; 
+            throw new ConfigurationException(message);
+        }
 
         // Open configuration file
         try {
