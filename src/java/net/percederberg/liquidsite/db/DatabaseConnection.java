@@ -23,7 +23,6 @@ package net.percederberg.liquidsite.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,7 +46,7 @@ public class DatabaseConnection {
      * The default query timeout in seconds. No queries are allowed
      * to run longer than this timout value.
      */
-    public static int DEFAULT_QUERY_TIMEOUT = 5;
+    public static final int DEFAULT_QUERY_TIMEOUT = 5;
 
     /**
      * The JDBC database connection.
@@ -213,29 +212,5 @@ public class DatabaseConnection {
         } catch (SQLException ignore) {
             // Ignore this error
         }
-    }
-
-    /**
-     * Creates a PreparedStatement object for sending parameterized
-     * SQL statements to the database.
-     *
-     * @param sql            an SQL statement that may contain one
-     *                       or more '?' IN parameter placeholders
-     *
-     * @return a new PreparedStatement object, containing the
-     *         pre-compiled SQL statement, that will have the capability
-     *         of returning auto-generated keys
-     *
-     * @throws SQLException if a database access error occurs or the
-     *             given parameter is not a Statement constant indicating
-     *             whether auto-generated keys should be returned
-     * 
-     * @deprecated Use the execute() method instead of this one. This
-     *             method will be removed before release 1.0.
-     */
-    public PreparedStatement prepareStatement(String sql)
-        throws SQLException {
-
-        return con.prepareStatement(sql);
     }
 }

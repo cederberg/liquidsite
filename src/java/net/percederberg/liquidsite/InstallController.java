@@ -21,22 +21,24 @@
 
 package net.percederberg.liquidsite;
 
-import net.percederberg.liquidsite.db.*;
-
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.Vector;
 import java.util.Enumeration;
 import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.db.DatabaseConnectionException;
+import net.percederberg.liquidsite.db.DatabaseDataException;
+import net.percederberg.liquidsite.db.DatabaseException;
+import net.percederberg.liquidsite.db.DatabaseResults;
+import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 
 /**
  * A controller for the installation process.
@@ -49,7 +51,7 @@ public class InstallController implements Controller {
     /**
      * The front controller servlet.
      */
-    FrontControllerServlet servlet;
+    private FrontControllerServlet servlet;
 
     /**
      * Creates a new install controller. 
@@ -104,7 +106,7 @@ public class InstallController implements Controller {
         }
     }
 
-    /*
+    /**
      * Forwards to the start installation page.
      *
      * @param request           the request object
@@ -113,7 +115,7 @@ public class InstallController implements Controller {
         request.forward("/install/start.jsp");
     }
 
-    /*
+    /**
      * Processes the request information and forwards to the first
      * page of the web installation.
      *
@@ -217,7 +219,7 @@ public class InstallController implements Controller {
         request.forward("/install/install.jsp");
     }
 
-    /*
+    /**
      * Processes the request information. If an error happened in the
      * request information, it forwards to the first page in the
      * web installation, otherwise it forwards to the second page.
@@ -286,13 +288,13 @@ public class InstallController implements Controller {
         }
 
         // if no error happened, open a database connection
-        if (! error) {
+        if (!error) {
             // get list of databases
             try {
                 databases =
-                    getVectorDatabases(host, rootUsername, rootPassword);
+                    getDatabaseNames(host, rootUsername, rootPassword);
                 lsdatabases =
-                    getVectorLSDatabases(host, rootUsername, rootPassword);
+                    getLSDatabaseNames(host, rootUsername, rootPassword);
             } catch (DatabaseConnectionException e) {
                 // could not open connection
                 error = true;
@@ -301,7 +303,13 @@ public class InstallController implements Controller {
                 lsdatabases = null;
                 // TODO write log
                 e.printStackTrace();
-            } catch (SQLException e) {
+            } catch (DatabaseException e) {
+                // TODO write log
+                e.printStackTrace();
+                // forward to error page
+                request.forward("/install/error.jsp");
+                return;
+            } catch (DatabaseDataException e) {
                 // TODO write log
                 e.printStackTrace();
                 // forward to error page
@@ -354,7 +362,7 @@ public class InstallController implements Controller {
         }
     }
 
-    /*
+    /**
      * Processes the request information. If an error happened in the
      * request information, it forwards to the second page in the
      * web installation, otherwise it forwards to the third page.
@@ -411,14 +419,20 @@ public class InstallController implements Controller {
         // get list of databases
         try {
             databases = 
-                getVectorDatabases(host, rootUsername, rootPassword);
+                getDatabaseNames(host, rootUsername, rootPassword);
         } catch (DatabaseConnectionException e) {
             // could not open connection
             error = true;
             errorConnection = true;
             // TODO write log
             e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
+            // TODO write log
+            e.printStackTrace();
+            // forward to error page
+            request.forward("/install/error.jsp");
+            return;
+        } catch (DatabaseDataException e) {
             // TODO write log
             e.printStackTrace();
             // forward to error page
@@ -467,7 +481,7 @@ public class InstallController implements Controller {
 
             // get list of users
             try {
-                users = getVectorUsers(host, rootUsername, rootPassword);
+                users = getUserNames(host, rootUsername, rootPassword);
                 // TODO uncomment 
 //                  if (dbchoice.equals("select")) {
 //                      lsusers = getVectorLSUsers(dbsel, host, rootUsername, 
@@ -482,7 +496,13 @@ public class InstallController implements Controller {
                 errorConnection = true;
                 // TODO write log
                 e.printStackTrace();
-            } catch (SQLException e) {
+            } catch (DatabaseException e) {
+                // TODO write log
+                e.printStackTrace();
+                // forward to error page
+                request.forward("/install/error.jsp");
+                return;
+            } catch (DatabaseDataException e) {
                 // TODO write log
                 e.printStackTrace();
                 // forward to error page
@@ -506,7 +526,7 @@ public class InstallController implements Controller {
         }
     }
 
-    /*
+    /**
      * Processes the request information. If an error happened in the
      * request information, it forwards to the third page in the
      * web installation, otherwise it forwards to the fourth page.
@@ -557,14 +577,20 @@ public class InstallController implements Controller {
 
         // get list of users
         try {
-            users = getVectorUsers(host, rootUsername, rootPassword);
+            users = getUserNames(host, rootUsername, rootPassword);
         } catch (DatabaseConnectionException e) {
             // could not open connection
             error = true;
             errorConnection = true;
             // TODO write log
             e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
+            // TODO write log
+            e.printStackTrace();
+            // forward to error page
+            request.forward("/install/error.jsp");
+            return;
+        } catch (DatabaseDataException e) {
             // TODO write log
             e.printStackTrace();
             // forward to error page
@@ -584,7 +610,7 @@ public class InstallController implements Controller {
                 errorUserExists = true;
             }
         }
-        if (! error && ! password.equals(verify)) {
+        if (!error && !password.equals(verify)) {
             error = true;
             errorVerify = true;
             password = "";
@@ -623,7 +649,7 @@ public class InstallController implements Controller {
         }
     }
 
-    /*
+    /**
      * Performs the installation and forwards to the last page of the
      * installation.
      *
@@ -698,12 +724,15 @@ public class InstallController implements Controller {
         } catch (DatabaseConnectionException e) {
             // TODO write log
             e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (DatabaseException e) {
             // TODO write log
             e.printStackTrace();
             // forward to error page
             request.forward("/install/error.jsp");
             return;
+        } catch (DatabaseDataException e) {
+            // TODO write log
+            e.printStackTrace();
         } catch (FileNotFoundException e) {
             // TODO write log
             e.printStackTrace();
@@ -722,250 +751,323 @@ public class InstallController implements Controller {
         request.forward("/install/install5.jsp");
     }
 
-    private Vector getVectorDatabases(String host, String username,
-                                      String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Returns a list with all database names.
+     * 
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     * 
+     * @return a vector with database names
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     * @throws DatabaseDataException if the database table structure
+     *             didn't match the expected one
+     */
+    private Vector getDatabaseNames(String host, 
+                                    String username,
+                                    String password) 
+        throws DatabaseConnectionException, DatabaseException,
+               DatabaseDataException {
 
-        String query;
-        ResultSet result;
-        Vector databases;
+        Vector           databases = new Vector();
+        DatabaseResults  res;
 
-        // get all databases 
-        query = "show databases";
-        result =  executeQuery("mysql", query, host, username, password);
-
-        // create vector of databases
-        databases = new Vector();
-        while (result.next()) {
-            databases.addElement(result.getString(1));
+        res =  execute(host, username, password, "SHOW DATABASES");
+        for (int i = 0; i < res.getRowCount(); i++) {
+            databases.add(res.getRow(i).getString("Database"));
         }
-        result.close();
 
         return databases;
     }
 
-    private Vector getVectorLSDatabases(String host, String username,
-                                        String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Returns a list with all Liquid Site database names.
+     * 
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     * 
+     * @return a vector with database names
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     * @throws DatabaseDataException if the database table structure
+     *             didn't match the expected one
+     */
+    private Vector getLSDatabaseNames(String host, 
+                                      String username,
+                                      String password) 
+        throws DatabaseConnectionException, DatabaseException,
+               DatabaseDataException {
 
-        String query;
-        ResultSet result1, result2;
-        boolean nameExists, valueExists;
-        Vector databases;
-        Vector lsdatabases;
-        String database;
-
-        // get all databases
-        databases = getVectorDatabases(host, username, password);
-
-        // create a vector with all liquid site databases
-        lsdatabases = new Vector();
-        for (int i=0; i<databases.size(); i++) {
-            database = (String) databases.elementAt(i);
-            // get database tables
-            query = "show tables";
-            result1 = executeQuery(database, query, host, username, password);
-            while (result1.next()) {
-                if (result1.getString(1).equals("Configuration")) {
-                    query = "show columns from Configuration";
-                    result2 = executeQuery(database, query, host, 
-                                           username, password);
-                    nameExists = false;
-                    valueExists = false;
-                    while (result2.next() && (! nameExists || ! valueExists)) {
-                        if (result2.getString(1).equals("name")) {
-                            nameExists = true;
-                        }
-                        if (result2.getString(1).equals("value")) {
-                            valueExists = true;
-                        }
-                    }
-                    result2.close();
-                    if (nameExists && valueExists) {
-                        query = "select * from Configuration where name = " +
-                            "'name' and value = 'Liquid Site'";
-                        result2 = executeQuery(database, query, host, 
-                                               username, password);
-                        if (result2.next()) {
-                            lsdatabases.addElement(databases.elementAt(i));
-                        }
-                        result2.close();
-                    }
+        Vector           lsDatabases = new Vector();
+        Vector           databases;
+        DatabaseResults  res;
+        String           db;
+        String           sql;
+        
+        databases = getDatabaseNames(host, username, password);
+        sql = "SELECT * FROM CONFIGURATION WHERE NAME='liquidsite.version'";
+        for (int i = 0; i < databases.size(); i++) {
+            db = (String) databases.get(i);
+            try {
+                res = execute(db, host, username, password, sql);
+                if (res.getRowCount() == 1) {
+                    lsDatabases.add(db);
                 }
+            } catch (DatabaseException ignore) {
+                // Do nothing
             }
-            result1.close();
         }
-
-        return lsdatabases;
+        return lsDatabases;
     }
 
-    private Vector getVectorUsers(String host, String username,
-                                  String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Returns a list with all database users.
+     * 
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     * 
+     * @return a vector with database user names
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     * @throws DatabaseDataException if the database table structure
+     *             didn't match the expected one
+     */
+    private Vector getUserNames(String host, 
+                                String username,
+                                String password) 
+        throws DatabaseConnectionException, DatabaseException,
+               DatabaseDataException {
 
-        String query;
-        ResultSet result;
-        Vector users;
+        Vector           users = new Vector();
+        DatabaseResults  res;
+        String           sql;
 
-        // get the list of database users
-        query = "select User from user where Password != ''";
-        result =  executeQuery("mysql", query, host, username, password);
-
-        // create vector of users
-        users = new Vector();
-        while (result.next()) {
-            users.addElement(result.getString(1));
+        sql = "SELECT User FROM user WHERE Password != ''";
+        res = execute(host, username, password, sql);
+        for (int i = 0; i < res.getRowCount(); i++) {
+            users.add(res.getRow(i).getString("User"));
         }
-        result.close();
-
         return users;
     }
 
-    private Vector getVectorLSUsers(String database, String host, 
-                                    String username, String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Returns the password hash for a database user. 
+     * 
+     * @param user           the user to search for
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     *
+     * @return the password hash for a database user
+     *  
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     * @throws DatabaseDataException if the database table structure
+     *             didn't match the expected one
+     */
+    private String getUserPassword(String user, 
+                                   String host, 
+                                   String username,
+                                   String password) 
+        throws DatabaseConnectionException, DatabaseException, 
+               DatabaseDataException {
 
-        String query;
-        ResultSet result;
-        Vector users;
-        Vector lsusers;
+        String           sql;
+        DatabaseResults  res;
 
-        // get all users
-        users = getVectorUsers(host, username, password);
-
-        // get Liquid Site users
-        lsusers = new Vector();
-        for (int i=0; i<users.size(); i++) {
-            // TODO write query
-            query = "";
-            result =  executeQuery("mysql", query, host, username, password);
-            if (result.next()) {
-                lsusers.addElement(users.elementAt(i));
-            }
-            result.close();
-        }
-
-        return lsusers;
-    }
-
-    private String getUserPassword(String user, String host, 
-                                   String username, String password) 
-        throws DatabaseConnectionException, SQLException {
-
-        String query;
-        ResultSet result;
-        String passwd;
-
-        // get user password
-        query = "select Password from user where User='" + user + "'";
-        result =  executeQuery("mysql", query, host, username, password);
-        if (result.next()) {
-            passwd = result.getString(1);
+        sql = "SELECT Password FROM user WHERE User='" + user + "'";
+        res =  execute(host, username, password, sql);
+        if (res.getRowCount() > 0) {
+            return res.getRow(0).getString("Password");
         } else {
-            passwd = "";
+            return "";
         }
-        result.close();
-
-        return passwd;
     }
 
-    private void dropDatabase(String database, String host, 
-                              String username, String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Drops a database.
+     * 
+     * @param database       the database name
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    private void dropDatabase(String database, 
+                              String host, 
+                              String username, 
+                              String password) 
+        throws DatabaseConnectionException, DatabaseException {
 
-        String query;
+        String  sql;
 
-        // drop database
-        query = "drop database " + database;
-        execute("mysql", query, host, username, password);
+        sql = "DROP DATABASE " + database;
+        execute(host, username, password, sql);
     }
 
-    private void createDatabase(String database, String host, 
-                                String username, String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Creates a database.
+     * 
+     * @param database       the database name
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    private void createDatabase(String database, 
+                                String host, 
+                                String username, 
+                                String password) 
+        throws DatabaseConnectionException, DatabaseException {
 
-        String query;
+        String  sql;
 
-        // drop database
-        query = "create database " + database;
-        execute("mysql", query, host, username, password);
+        sql = "CREATE DATABASE " + database;
+        execute(host, username, password, sql);
     }
 
-    private void grantLSPermissions(String database, String user, 
-                                    String passwd, String host, 
-                                    String username, String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Adds permissions for a user to a database.
+     * 
+     * @param database       the database name
+     * @param user           the user name
+     * @param passwd         the user password hash
+     * @param host           the database host
+     * @param username       the database user name
+     * @param password       the database user password
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    private void grantLSPermissions(String database, 
+                                    String user, 
+                                    String passwd, 
+                                    String host, 
+                                    String username, 
+                                    String password) 
+        throws DatabaseConnectionException, DatabaseException {
 
-        String query;
+        String  sql;
 
         // grant permissions
-        query = "grant select on " + database + ".* to " + user;
+        sql = "grant select on " + database + ".* to " + user;
         if (password != null) {
-            query += " identified by password '" + passwd + "'";
+            sql += " identified by password '" + passwd + "'";
         }
-        execute(database, query, host, username, password);
-        query = "grant insert on " + database + ".* to " + user;
+        execute(database, host, username, password, sql);
+        sql = "grant insert on " + database + ".* to " + user;
         if (password != null) {
-            query += " identified by password '" + passwd + "'";
+            sql += " identified by password '" + passwd + "'";
         }
-        execute(database, query, host, username, password);
-        query = "grant update on " + database + ".* to " + user;
+        execute(database, host, username, password, sql);
+        sql = "grant update on " + database + ".* to " + user;
         if (password != null) {
-            query += " identified by password '" + passwd + "'";
+            sql += " identified by password '" + passwd + "'";
         }
-        execute(database, query, host, username, password);
-        query = "grant delete on " + database + ".* to " + user;
+        execute(database, host, username, password, sql);
+        sql = "grant delete on " + database + ".* to " + user;
         if (password != null) {
-            query += " identified by password '" + passwd + "'";
+            sql += " identified by password '" + passwd + "'";
         }
-        execute(database, query, host, username, password);
+        execute(database, host, username, password, sql);
     }
 
-    private ResultSet executeQuery(String database, String query, String host, 
-                                   String username, String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Executes an SQL statement or query on a database. A new 
+     * connection will be opened to the database, the SQL statement 
+     * will be executed, and finally the connection is closed.
+     * 
+     * @param host           the database host name
+     * @param username       the database user name
+     * @param password       the database user password
+     * @param sql            the SQL query to execute
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    private DatabaseResults execute(String host, 
+                                    String username, 
+                                    String password,
+                                    String sql)
+        throws DatabaseConnectionException, DatabaseException {
 
-        MySQLDatabaseConnector connector;
-        DatabaseConnection con;
-        PreparedStatement prepStm;
+        MySQLDatabaseConnector  con;
 
-        // open a connection to the database server
-        connector =
-            new MySQLDatabaseConnector(host, database, username, password);
-        con = connector.getConnection();
-
-        // return result of executing the query
-        prepStm = con.prepareStatement(query);
-        return prepStm.executeQuery();
+        con = new MySQLDatabaseConnector(host, username, password);
+        return con.execute(sql);
     }
 
-    private void execute(String database, String query, String host, 
-                         String username, String password) 
-        throws DatabaseConnectionException, SQLException {
+    /**
+     * Executes an SQL statement or query on a database. A new 
+     * connection will be opened to the database, the SQL statement 
+     * will be executed, and finally the connection is closed.
+     * 
+     * @param database       the database name
+     * @param host           the database host name
+     * @param username       the database user name
+     * @param password       the database user password
+     * @param sql            the SQL query to execute
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseConnectionException if a new database 
+     *             connection couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    private DatabaseResults execute(String database, 
+                                    String host, 
+                                    String username, 
+                                    String password,
+                                    String sql)
+        throws DatabaseConnectionException, DatabaseException {
 
-        MySQLDatabaseConnector connector;
-        DatabaseConnection con;
-        PreparedStatement prepStm;
+        MySQLDatabaseConnector  con;
 
-        // open a connection to the database server
-        connector =
-            new MySQLDatabaseConnector(host, database, username, password);
-        con = connector.getConnection();
-
-        // execute the query
-        prepStm = con.prepareStatement(query);
-        prepStm.execute();
+        con = new MySQLDatabaseConnector(host, database, username, password);
+        return con.execute(sql);
     }
 
-    private void createTables(String database, String host, 
-                              String username, String password) 
-        throws DatabaseConnectionException, SQLException,
+    // TODO: rewrite this method to NOT use resource properties
+    private void createTables(String database, 
+                              String host, 
+                              String username, 
+                              String password) 
+        throws DatabaseConnectionException, DatabaseException,
                FileNotFoundException, IOException {
 
         String filename;
         FileInputStream queriesFile;
         PropertyResourceBundle queries;
-        String query;
+        String sql;
 
         // read properties file
         filename = servlet.getServletContext().getRealPath("/") + 
@@ -975,20 +1077,23 @@ public class InstallController implements Controller {
 
         // perform all queries
         for (Enumeration e = queries.getKeys(); e.hasMoreElements();) {
-            execute(database, queries.getString((String) e.nextElement()), 
-                    host, username, password);
+            sql = queries.getString((String) e.nextElement());
+            execute(database, host, username, password, sql);
         }
     }
 
-    private void initTables(String database, String host, 
-                            String username, String password) 
-        throws DatabaseConnectionException, SQLException,
+    // TODO: rewrite this method to NOT use resource properties
+    private void initTables(String database, 
+                            String host, 
+                            String username, 
+                            String password) 
+        throws DatabaseConnectionException, DatabaseException,
                FileNotFoundException, IOException {
 
         String filename;
         FileInputStream queriesFile;
         PropertyResourceBundle queries;
-        String query;
+        String sql;
 
         // read properties file
         filename = servlet.getServletContext().getRealPath("/") + 
@@ -998,12 +1103,13 @@ public class InstallController implements Controller {
 
         // perform all queries
         for (Enumeration e = queries.getKeys(); e.hasMoreElements();) {
-            execute(database, queries.getString((String) e.nextElement()), 
-                    host, username, password);
+            sql = queries.getString((String) e.nextElement());
+            execute(database, host, username, password, sql);
         }
     }
 
-    private void createConfigProp(String host, String username, 
+    private void createConfigProp(String host, 
+                                  String username, 
                                   String password) 
         throws FileNotFoundException {
 
