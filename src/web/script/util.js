@@ -326,10 +326,23 @@ function utilLoadScript(url, iframeParentId, iframeScriptUrl) {
         iframe.style.border = "0px";
         iframe.style.width = "0px";
         iframe.style.height = "0px";
-        parent.appendChild(iframe);
-        script = "utilInternalLoadScript('" + iframe.id + "','" +
-                 iframeScriptUrl + "','" + url + "')"
-        setTimeout(script, 10);
+        iframe = parent.appendChild(iframe);
+        if (iframe.contentWindow) {
+            iframe = iframe.contentWindow;
+        }
+        script = "<html>\n" +
+                 "<head>\n" +
+                 "<script type='text/javascript' src='" +
+                 iframeScriptUrl + "'></script>\n" +
+                 "<script type='text/javascript' src='" + url +
+                 "'></script>\n" +
+                 "</head>\n" +
+                 "<body>\n" +
+                 "</body>\n" +
+                 "</html>\n";
+        iframe.document.open("about:blank", "replace");
+        iframe.document.write(html);
+        iframe.document.close();
     }
 }
 
@@ -344,34 +357,4 @@ function utilInternalIsDynamicallyScriptable() {
 
     return agent.indexOf("applewebkit/") < 0
         && agent.indexOf("khtml") < 0;
-}
-
-/**
- * Internal helper function to utilLoadScript(), shouldn't be called
- * directly. This function will change the inner frame document HTML
- * to one that loads the specified JavaScript URL:s.
- *
- * @param id                 the unique frame identifier
- * @param url1               the first JavaScript URL to load
- * @param url1               the second JavaScript URL to load
- */
-function utilInternalLoadScript(id, url1, url2) {
-    var  win;
-    var  html;
-
-    win = document.getElementById(id);
-    if (win.contentWindow) {
-        win = win.contentWindow;
-    }
-    html = "<html>\n" +
-           "<head>\n" +
-           "<script type='text/javascript' src='" + url1 + "'></script>\n" +
-           "<script type='text/javascript' src='" + url2 + "'></script>\n" +
-           "</head>\n" +
-           "<body>\n" +
-           "</body>\n" +
-           "</html>\n";
-    win.document.open("about:blank", "replace");
-    win.document.write(html);
-    win.document.close();
 }
