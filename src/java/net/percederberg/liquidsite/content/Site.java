@@ -141,11 +141,13 @@ public class Site extends Content {
         buffer.append(getProtocol());
         buffer.append("://");
         if (getHost().equals("*")) {
-            buffer.append("<any>");
+            buffer.append("<*>");
         } else {
             buffer.append(getHost());
         }
-        if (port != 0 && port != 80) {
+        if (port == 0) {
+            buffer.append(":<*>");
+        } else if (port != 80) {
             buffer.append(":");
             buffer.append(port); 
         }
