@@ -195,7 +195,7 @@ public class LiquidSiteServlet extends HttpServlet
         if (!config.isInitialized()) {
             controllers.add(new InstallController(this));
         } else {
-            // TODO: add default controller
+            controllers.add(new AdminController(this));
         }
         
         // Set the online status
