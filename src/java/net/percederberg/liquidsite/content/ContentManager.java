@@ -271,6 +271,7 @@ public class ContentManager {
                 list.add(sites[i]);
             }
         }
+        Collections.sort(list);
         res = new Site[list.size()];
         list.toArray(res);
         return res;
@@ -361,6 +362,7 @@ public class ContentManager {
                 list.add(children[i]);
             }
         } 
+        Collections.sort(list);
         res = new Content[list.size()];
         list.toArray(res);
         return res;                    

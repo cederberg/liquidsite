@@ -357,7 +357,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      *         the specified object
      */
     public int compareTo(Content content) {
-        int category = content.getCategory() - getCategory();
+        int category = getCategory() - content.getCategory();
         
         if (category != 0) {
             return category;
