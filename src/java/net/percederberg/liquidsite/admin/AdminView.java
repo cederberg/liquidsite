@@ -770,6 +770,18 @@ class AdminView {
         }
     }
     
+    /**
+     * Sets template id and name attributes in a request. This method
+     * will retrieve all templates in the domain, excluding the 
+     * specified content id.
+     * 
+     * @param request        the request
+     * @param domain         the domain object
+     * @param excludeId      the content id to exclude
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
     private void setRequestTemplates(Request request, 
                                      Domain domain,
                                      int excludeId)
@@ -791,6 +803,21 @@ class AdminView {
         request.setAttribute("templateNames", templateNames);
     }
 
+    /**
+     * Adds all content templates to lists of template ids and names.
+     * This method will retrieve all child templates as well, 
+     * excluding only a specified content id.
+     * 
+     * @param user           the user
+     * @param baseName       the base template name
+     * @param content        the array of content objects
+     * @param excludeId      the content id to exclude
+     * @param ids            the list of template ids to add to
+     * @param names          the map of template names to add to
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
     private void addTemplates(User user, 
                               String baseName,
                               Content[] content,
@@ -813,7 +840,12 @@ class AdminView {
                 ids.add(id);
                 names.put(id, name);
                 children = cm.getContentChildren(user, content[i]);
-                addTemplates(user, name + " / ", children, excludeId, ids, names);
+                addTemplates(user, 
+                             name + " / ", 
+                             children, 
+                             excludeId, 
+                             ids, 
+                             names);
             }
         }
     }
