@@ -232,16 +232,14 @@ class InternalContent {
 
         DatabaseConnection  con = getDatabaseConnection(manager);
         ArrayList           list;
-        Domain              domain;
         int[]               ids;
 
-        domain = parents[0].getDomain();
         ids = new int[parents.length];
         for (int i = 0; i < parents.length; i++) {
             ids[i] = parents[i].getId();
         }
         try {
-            list = ContentPeer.doSelectByParents(domain.getName(),
+            list = ContentPeer.doSelectByParents(parents[0].getDomainName(),
                                                  ids,
                                                  manager.isAdmin(),
                                                  con);
