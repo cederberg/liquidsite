@@ -48,21 +48,6 @@ public class AdminController extends Controller {
     private static final Log LOG = new Log(AdminController.class);
 
     /**
-     * The offline status constant.
-     */
-    private static final int OFFLINE_STATUS = 0;
-
-    /**
-     * The online status constant.
-     */
-    private static final int ONLINE_STATUS = 1;
-    
-    /**
-     * The modified status constant.
-     */
-    private static final int MODIFIED_STATUS = 2;
-
-    /**
      * The date format used by this class.
      */
     private static final SimpleDateFormat DATE_FORMAT = 
@@ -181,8 +166,15 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displaySite(Request request) throws RequestException {
-        request.setAttribute("initialize", 
-                             getSiteInitializeScript(request.getUser()));
+        Domain[]  domains;
+        
+        try {
+            domains = getContentManager().getDomains(request.getUser());
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+        request.setAttribute("initialize", getTreeViewScript(domains));
         request.sendTemplate("admin/site.ftl");
     }
 
@@ -222,23 +214,24 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void displayLoadSite(Request request) throws RequestException {
-        StringBuffer    buffer = new StringBuffer();
         String          type = request.getParameter("type", "");
         String          id = request.getParameter("id", "0");
         ContentManager  cm = getContentManager();
         User            user = request.getUser();
-        Domain          domain = null;
-        Content         content = null;
+        Domain          domain;
+        Content         content;
         Content[]       children; 
+        String          script;
 
-        // Find object and children
         try {
             if (type.equals("domain")) {
                 domain = cm.getDomain(user, id);
                 children = cm.getSites(user, domain);
+                script = getTreeViewScript(domain, children);
             } else {
                 content = cm.getContent(user, Integer.parseInt(id));
                 children = cm.getContentChildren(user, content);
+                script = getTreeViewScript(content, children);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -246,33 +239,7 @@ public class AdminController extends Controller {
         } catch (ContentSecurityException e) {
             throw RequestException.FORBIDDEN;
         }
-
-        // Create JavaScript output
-        buffer.append("treeAddContainer('");
-        buffer.append(id);
-        buffer.append("');\n");
-        for (int i = 0; i < children.length; i++) {
-            buffer.append("treeAddItem('");
-            buffer.append(id);
-            buffer.append("', ");
-            buffer.append(children[i].getId());
-            buffer.append(", '");
-            buffer.append(getScriptCategory(children[i].getCategory()));
-            buffer.append("', '");
-            buffer.append(children[i].getName());
-            buffer.append("', '");
-            buffer.append(children[i].toString());
-            buffer.append("', ");
-            // TODO: add real status
-            buffer.append(ONLINE_STATUS);
-            buffer.append(");\n");
-        }
-        buffer.append("treeOpen('");
-        buffer.append(type);
-        buffer.append("', '");
-        buffer.append(id);
-        buffer.append("');\n");
-        request.sendData("text/javascript", buffer.toString());
+        request.sendData("text/javascript", script);
     }
     
     /**
@@ -308,39 +275,111 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Returns the JavaScript for initializing the site view.
+     * Returns the JavaScript for presenting a tree view.
      * 
-     * @param user           the user performing the operation
+     * @param domains        the root domain objects
      * 
-     * @return the JavaScript for initializing the site view
+     * @return the JavaScript for presenting a tree view
      * 
      * @throws RequestException if the database couldn't be accessed
      *             properly
      */
-    private String getSiteInitializeScript(User user) 
+    private String getTreeViewScript(Domain[] domains) 
         throws RequestException {
 
         StringBuffer  buffer = new StringBuffer();
-        Domain[]      domains;
         
-        try {
-            domains = getContentManager().getDomains(user);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        }
         for (int i = 0; i < domains.length; i++) {
-            buffer.append("        treeAddItem(0, '");
+            buffer.append("treeAddItem(0, '");
             buffer.append(domains[i].getName());
             buffer.append("', 'domain', '");
             buffer.append(domains[i].getName());
             buffer.append("', '");
             buffer.append(domains[i].getDescription());
+            buffer.append("', 1);\n");
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting a tree view.
+     * 
+     * @param domain         the domain object
+     * @param children       the child content objects
+     * 
+     * @return the JavaScript for presenting a tree view
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getTreeViewScript(Domain domain, Content[] children) 
+        throws ContentException {
+
+        StringBuffer    buffer = new StringBuffer();
+
+        buffer.append("treeAddContainer('");
+        buffer.append(domain.getName());
+        buffer.append("');\n");
+        for (int i = 0; i < children.length; i++) {
+            buffer.append("treeAddItem('");
+            buffer.append(domain.getName());
             buffer.append("', ");
-            // TODO: set the correct status
-            buffer.append(ONLINE_STATUS);
+            buffer.append(children[i].getId());
+            buffer.append(", '");
+            buffer.append(getScriptContentCategory(children[i]));
+            buffer.append("', '");
+            buffer.append(children[i].getName());
+            buffer.append("', '");
+            buffer.append(children[i].toString());
+            buffer.append("', ");
+            buffer.append(getScriptContentStatus(children[i]));
             buffer.append(");\n");
         }
+        buffer.append("treeOpen('domain', '");
+        buffer.append(domain.getName());
+        buffer.append("');\n");
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting a tree view.
+     * 
+     * @param parent         the parent content object
+     * @param children       the child content objects
+     * 
+     * @return the JavaScript for presenting a tree view
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private String getTreeViewScript(Content parent, Content[] children) 
+        throws ContentException {
+
+        StringBuffer    buffer = new StringBuffer();
+
+        buffer.append("treeAddContainer(");
+        buffer.append(parent.getId());
+        buffer.append(");\n");
+        for (int i = 0; i < children.length; i++) {
+            buffer.append("treeAddItem(");
+            buffer.append(parent.getId());
+            buffer.append(", ");
+            buffer.append(children[i].getId());
+            buffer.append(", '");
+            buffer.append(getScriptContentCategory(children[i]));
+            buffer.append("', '");
+            buffer.append(children[i].getName());
+            buffer.append("', '");
+            buffer.append(children[i].toString());
+            buffer.append("', ");
+            buffer.append(getScriptContentStatus(children[i]));
+            buffer.append(");\n");
+        }
+        buffer.append("treeOpen('");
+        buffer.append(getScriptContentCategory(parent));
+        buffer.append("', ");
+        buffer.append(parent.getId());
+        buffer.append(");\n");
         return buffer.toString();
     }
 
@@ -387,62 +426,27 @@ public class AdminController extends Controller {
         StringBuffer  buffer = new StringBuffer();
 
         buffer.append("objectShow('");
-        buffer.append(getScriptCategory(content.getCategory()));
+        buffer.append(getScriptContentCategory(content));
         buffer.append("', ");
         buffer.append(content.getId());
         buffer.append(", '");
         buffer.append(content.getName());
         buffer.append("');\n");
         buffer.append("objectAddUrlProperty('");
-        buffer.append(getContentUrlScript(content));
+        buffer.append(getScriptContentUrl(content));
         buffer.append("');\n");
         buffer.append("objectAddOnlineProperty(");
-        buffer.append(getDateScript(content.getOnlineDate()));
+        buffer.append(getScriptDate(content.getOnlineDate()));
         buffer.append(", ");
-        buffer.append(getDateScript(content.getOfflineDate()));
+        buffer.append(getScriptDate(content.getOfflineDate()));
         buffer.append(");\n");
         buffer.append("objectAddStatusProperty(");
-        // TODO: check for working revision
-        if (content.isOnline()) {
-            buffer.append(ONLINE_STATUS);
-        } else {
-            buffer.append(OFFLINE_STATUS);
-        }
+        buffer.append(getScriptContentStatus(content));
         buffer.append(", ");
-        buffer.append(getLockScript(content.getLock()));
+        buffer.append(getScriptLock(content.getLock()));
         buffer.append(");\n");
         buffer.append(getPermissionsScript(content));
         return buffer.toString();
-    }
-
-    /**
-     * Returns the JavaScript for presenting a content URL.
-     * 
-     * @param content        the content object
-     * 
-     * @return the JavaScript for presenting a content URL
-     */
-    private String getContentUrlScript(Content content) {
-        if (content instanceof Site) {
-            return content.toString();
-        } else {
-            return "N/A";
-        }
-    }
-
-    /**
-     * Returns the JavaScript for presenting a lock object.
-     * 
-     * @param lock           the lock object, or null
-     * 
-     * @return the JavaScript for presenting a lock object
-     */
-    private String getLockScript(Lock lock) {
-        if (lock == null) {
-            return "null";
-        } else {
-            return "'" + lock.getUserName() + "'";
-        }
     }
 
     /**
@@ -525,9 +529,9 @@ public class AdminController extends Controller {
         if (perm == null) {
             buffer.append("null, null, false, false, false, false");
         } else {
-            buffer.append(getStringScript(perm.getUserName()));
+            buffer.append(getScriptString(perm.getUserName()));
             buffer.append(", ");
-            buffer.append(getStringScript(perm.getGroupName()));
+            buffer.append(getScriptString(perm.getGroupName()));
             buffer.append(", ");
             buffer.append(perm.getRead());
             buffer.append(", ");
@@ -545,13 +549,81 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Returns a JavaScript representation of a date.
+     * Returns the JavaScript representation of a content category.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript representation of a content category
+     */
+    private String getScriptContentCategory(Content content) {
+        switch (content.getCategory()) {
+        case Content.SITE_CATEGORY:
+            return "site";
+        default:
+            return "";
+        }
+    }
+
+    /**
+     * Returns the JavaScript representation of a content URL.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript representation of a content URL
+     */
+    private String getScriptContentUrl(Content content) {
+        if (content instanceof Site) {
+            return content.toString();
+        } else {
+            return "N/A";
+        }
+    }
+
+    /**
+     * Returns the JavaScript representation of a content status.
+     * 
+     * @param content        the content object
+     * 
+     * @return the JavaScript representation of a content status
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private int getScriptContentStatus(Content content) 
+        throws ContentException {
+
+        if (!content.isOnline()) {
+            return 0;
+        } else if (content.getRevision(0) != null) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     * Returns the JavaScript representation of a lock object.
+     * 
+     * @param lock           the lock object, or null
+     * 
+     * @return the JavaScript representation of a lock object
+     */
+    private String getScriptLock(Lock lock) {
+        if (lock == null) {
+            return "null";
+        } else {
+            return "'" + lock.getUserName() + "'";
+        }
+    }
+
+    /**
+     * Returns the JavaScript representation of a date.
      * 
      * @param date           the date to present, or null
      * 
      * @return a JavaScript representation of the date
      */
-    private String getDateScript(Date date) {
+    private String getScriptDate(Date date) {
         if (date == null) {
             return "null";
         } else {
@@ -560,34 +632,18 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Returns a JavaScript representation of a string. This method
+     * Returns the JavaScript representation of a string. This method
      * will present empty strings as null.
      * 
      * @param str            the string to present, or null
      * 
      * @return a JavaScript representation of the string
      */
-    private String getStringScript(String str) {
+    private String getScriptString(String str) {
         if (str == null || str.equals("")) {
             return "null";
         } else {
             return "'" + str + "'";
-        }
-    }
-
-    /**
-     * Returns the JavaScript content category name.
-     * 
-     * @param category       the content category
-     * 
-     * @return the JavaScript content category name
-     */
-    private String getScriptCategory(int category) {
-        switch (category) {
-        case Content.SITE_CATEGORY:
-            return "site";
-        default:
-            return "";
         }
     }
 }
