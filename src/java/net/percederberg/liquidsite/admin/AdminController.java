@@ -196,7 +196,7 @@ public class AdminController extends Controller {
         throws RequestException {
 
         try {
-            AdminView.BASE.pageSite(request);
+            AdminView.SITE.viewSite(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             AdminView.BASE.viewError(request, e.getMessage(), "site.html");
@@ -252,7 +252,7 @@ public class AdminController extends Controller {
 
         try {
             obj = AdminUtils.getReference(request);
-            AdminView.BASE.scriptLoadSite(request, obj);
+            AdminView.SITE.viewLoadSiteScript(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
@@ -274,7 +274,7 @@ public class AdminController extends Controller {
 
         try {
             obj = AdminUtils.getReference(request);
-            AdminView.BASE.scriptOpenSite(request, obj);
+            AdminView.SITE.viewOpenSiteScript(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
@@ -292,17 +292,18 @@ public class AdminController extends Controller {
      *             correctly
      */
     private void processOpenTemplate(Request request) throws RequestException {
-        int      id;
-        Content  content;
+        int              id;
+        Content          content;
+        ContentTemplate  template;
 
         try {
             id = Integer.parseInt(request.getParameter("id", "0"));
             content = getContentManager().getContent(request.getUser(), id);
             if (content instanceof ContentTemplate) {
-                AdminView.BASE.scriptOpenTemplate(request, 
-                                                  (ContentTemplate) content);
+                template = (ContentTemplate) content;
+                AdminView.SITE.viewOpenTemplateScript(request, template);
             } else {
-                AdminView.BASE.scriptOpenTemplate(request, null);
+                AdminView.SITE.viewOpenTemplateScript(request, null);
             }
         } catch (NumberFormatException e) {
             throw RequestException.FORBIDDEN;

@@ -75,21 +75,21 @@ class SiteAddFormHandler extends AdminFormHandler {
         Object  parent = AdminUtils.getReference(request);
 
         if (step == 1) {
-            SITE_VIEW.pageAddObject(request, parent);
+            AdminView.SITE.viewAddObject(request, parent);
         } else if (category.equals("domain")) {
-            SITE_VIEW.pageAddDomain(request, parent);
+            AdminView.SITE.viewAddDomain(request, parent);
         } else if (category.equals("site")) {
-            SITE_VIEW.pageEditSite(request, parent);
+            AdminView.SITE.viewEditSite(request, parent);
         } else if (category.equals("folder")) {
-            SITE_VIEW.pageEditFolder(request, parent, null);
+            AdminView.SITE.viewEditFolder(request, parent, null);
         } else if (category.equals("page")) {
-            SITE_VIEW.pageEditPage(request, parent);
+            AdminView.SITE.viewEditPage(request, parent);
         } else if (category.equals("file")) {
-            SITE_VIEW.pageEditFile(request, parent);
+            AdminView.SITE.viewEditFile(request, parent);
         } else if (category.equals("template")) {
-            SITE_VIEW.pageEditTemplate(request, parent, null);
+            AdminView.SITE.viewEditTemplate(request, parent, null);
         } else {
-            SITE_VIEW.pageAddObject(request, parent);
+            AdminView.SITE.viewAddObject(request, parent);
         }
     }
 
@@ -218,7 +218,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         host = new Host(domain, request.getParameter("host"));
         host.setDescription("Default domain host");
         host.save(request.getUser());
-        SITE_VIEW.setSiteTreeFocus(request, domain);
+        AdminView.SITE.setSiteTreeFocus(request, domain);
     }
 
     /**
@@ -247,7 +247,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         site.setAdmin(request.getParameter("admin", "").equals("true"));
         site.setComment(request.getParameter("comment"));
         site.save(user);
-        SITE_VIEW.setSiteTreeFocus(request, site);
+        AdminView.SITE.setSiteTreeFocus(request, site);
     }
 
     /**
@@ -271,7 +271,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         folder.setName(request.getParameter("name"));
         folder.setComment(request.getParameter("comment"));
         folder.save(user);
-        SITE_VIEW.setSiteTreeFocus(request, folder);
+        AdminView.SITE.setSiteTreeFocus(request, folder);
     }
 
     /**
@@ -312,7 +312,7 @@ class SiteAddFormHandler extends AdminFormHandler {
             }
         }
         page.save(request.getUser());
-        SITE_VIEW.setSiteTreeFocus(request, page);
+        AdminView.SITE.setSiteTreeFocus(request, page);
     }
 
     /**
@@ -340,7 +340,7 @@ class SiteAddFormHandler extends AdminFormHandler {
             file.setComment(request.getParameter("comment"));
             file.save(user);
             param.write(file.getFile());
-            SITE_VIEW.setSiteTreeFocus(request, file);
+            AdminView.SITE.setSiteTreeFocus(request, file);
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
@@ -381,6 +381,6 @@ class SiteAddFormHandler extends AdminFormHandler {
             }
         }
         template.save(request.getUser());
-        SITE_VIEW.setSiteTreeFocus(request, template);
+        AdminView.SITE.setSiteTreeFocus(request, template);
     }
 }

@@ -70,15 +70,19 @@ class SiteEditFormHandler extends AdminFormHandler {
         Object  ref = AdminUtils.getReference(request);
 
         if (ref instanceof ContentSite) {
-            SITE_VIEW.pageEditSite(request, (ContentSite) ref);
+            AdminView.SITE.viewEditSite(request, (ContentSite) ref);
         } else if (ref instanceof ContentFolder) {
-            SITE_VIEW.pageEditFolder(request, null, (ContentFolder) ref);
+            AdminView.SITE.viewEditFolder(request,
+                                          null,
+                                          (ContentFolder) ref);
         } else if (ref instanceof ContentPage) {
-            SITE_VIEW.pageEditPage(request, (ContentPage) ref);
+            AdminView.SITE.viewEditPage(request, (ContentPage) ref);
         } else if (ref instanceof ContentFile) {
-            SITE_VIEW.pageEditFile(request, (ContentFile) ref);
+            AdminView.SITE.viewEditFile(request, (ContentFile) ref);
         } else if (ref instanceof ContentTemplate) {
-            SITE_VIEW.pageEditTemplate(request, null, (ContentTemplate) ref);
+            AdminView.SITE.viewEditTemplate(request,
+                                            null,
+                                            (ContentTemplate) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }

@@ -47,11 +47,6 @@ abstract class AdminFormHandler extends FormHandler {
     private static final Log LOG = new Log(AdminFormHandler.class);
 
     /**
-     * The site view helper.
-     */
-    protected static final AdminView SITE_VIEW = new AdminView();
-
-    /**
      * The administration validator helper.
      */
     protected static final AdminValidator VALIDATOR = new AdminValidator();
@@ -176,7 +171,7 @@ abstract class AdminFormHandler extends FormHandler {
      * @param message        the error message
      */
     protected void displayError(Request request, String message) {
-        SITE_VIEW.viewError(request, message, startPage);
+        AdminView.BASE.viewError(request, message, startPage);
     }
     
     /**

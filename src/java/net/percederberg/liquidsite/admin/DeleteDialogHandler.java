@@ -103,7 +103,6 @@ class DeleteDialogHandler extends AdminDialogHandler {
         Object   ref = AdminUtils.getReference(request);
         Domain   domain;
         Content  content;
-        Content  parent;
         
         if (ref instanceof Domain) {
             domain = (Domain) ref;
@@ -113,7 +112,6 @@ class DeleteDialogHandler extends AdminDialogHandler {
                     "currently being used");
             }
             domain.delete(request.getUser());
-            AdminView.BASE.setSiteTreeFocus(request, null);
         } else if (ref instanceof Content) {
             content = (Content) ref;
             if (content.equals(request.getSite())) {
@@ -121,13 +119,37 @@ class DeleteDialogHandler extends AdminDialogHandler {
                     "cannot remove the site currently being used");
             }
             content.delete(request.getUser());
-            parent = content.getParent();
-            if (parent == null) {
-                AdminView.BASE.setSiteTreeFocus(request, content.getDomain());
-            } else {
-                AdminView.BASE.setSiteTreeFocus(request, parent);
-            }
         }
+        unfocus(request, ref);
         return 0;
+    }
+    
+    /**
+     * Unfocuses the specified object. This will modify the site or
+     * content tree focuses, if they were pointing to the specified
+     * object.
+     *  
+     * @param request        the request object
+     * @param ref            the object to unfocus
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void unfocus(Request request, Object ref) 
+        throws ContentException {
+
+        Object  siteFocus = AdminView.SITE.getSiteTreeFocus(request);
+
+        if (siteFocus.equals(ref)) {
+            if (ref instanceof Domain) {
+                siteFocus = null;
+            } else {
+                siteFocus = ((Content) ref).getParent();
+                if (siteFocus == null) {
+                    siteFocus = ((Content) ref).getDomain();
+                }
+            }
+            AdminView.SITE.setSiteTreeFocus(request, siteFocus);
+        }
     }
 }
