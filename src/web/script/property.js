@@ -52,7 +52,7 @@ function propertyInitialize(id) {
     tbody = utilAddElement(table, "tbody");
     tr = utilAddElement(tbody, "tr");
     utilAddElement(tr, "th", "Identifier");
-    utilAddElement(tr, "th", "Definition");
+    utilAddElement(tr, "th", "Document Editing Interface");
     PROPERTY_ROOT = tbody;
 }
 
@@ -184,6 +184,7 @@ function propertyInternalDisplayProperty(position, property) {
     var  tr = utilAddElement(PROPERTY_ROOT, "tr");
     var  td;
     var  a;
+    var  span;
     var  input;
     var  select;
     var  option;
@@ -213,34 +214,40 @@ function propertyInternalDisplayProperty(position, property) {
     input.type = "hidden";
     input.name = "property." + property.id + ".position";
     input.value = position;
-    utilAddTextElement(td, "Name: ");
+    span = utilAddElement(td, "span", "Name: ");
+    span.title = "The property name is the only visible name of the property.";
     input = utilAddElement(td, "input")
     input.tabIndex = "10";
     input.name = "property." + property.id + ".name";
     input.value = property.name;
     input.onchange = new Function("PROPERTY_VALUES[" + position + 
                                   "].name = this.value");
-    utilAddTextElement(td, " Type: ");
+    span = utilAddElement(td, "span", " Type: ");
+    span.title = "The property type controls how property data is entered.";
     select = utilAddElement(td, "select")
     select.tabIndex = "10";
     select.name = "property." + property.id + ".type";
     select.onchange = new Function("PROPERTY_VALUES[" + position + 
                                    "].type = this.value");
-	option = utilAddElement(select, "option", "String");
+	option = utilAddElement(select, "option", "Single-line Text");
 	option.value = 1;
-	option = utilAddElement(select, "option", "Text");
+	option = utilAddElement(select, "option", "Multi-line Text");
 	option.value = 2;
 	if (property.type == 2) {
 	    option.selected = "selected";
 	}
-	option = utilAddElement(select, "option", "HTML");
+/* TODO: uncomment this when HTML is supported
+	option = utilAddElement(select, "option", "Formatted Text (HTML)");
 	option.value = 3;
 	if (property.type == 3) {
 	    option.selected = "selected";
 	}
+*/
     utilAddElement(td, "br");
     utilAddElement(td, "br");
-    utilAddTextElement(td, "Description:");
+    span = utilAddElement(td, "span", "Description:");
+    span.title = "The property description is shown as the user help " +
+                 "for the property.";
     utilAddElement(td, "br");
     textarea = utilAddElement(td, "textarea")
     textarea.rows = "4";
