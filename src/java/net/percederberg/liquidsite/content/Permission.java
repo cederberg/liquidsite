@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.PermissionData;
@@ -35,6 +36,11 @@ import net.percederberg.liquidsite.dbo.PermissionPeer;
  * @version  1.0
  */
 public class Permission extends PersistentObject {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(Permission.class);
 
     /**
      * The permission data object.
@@ -71,6 +77,7 @@ public class Permission extends PersistentObject {
                 res[i] = new Permission((PermissionData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -108,6 +115,7 @@ public class Permission extends PersistentObject {
                 res[i] = new Permission((PermissionData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -144,6 +152,7 @@ public class Permission extends PersistentObject {
                                                  group.getName(),
                                                  con);
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -504,42 +513,71 @@ public class Permission extends PersistentObject {
     /**
      * Inserts the object data into the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have insert permissions
      */
-    protected void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        PermissionPeer.doInsert(data, con);
+        // TODO: check admin permissions on content object
+        validate();
+        try {
+            PermissionPeer.doInsert(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        PermissionPeer.doUpdate(data, con);
+        // TODO: check admin permissions on content object
+        validate();
+        try {
+            PermissionPeer.doUpdate(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        PermissionPeer.doDelete(data, con);
+        // TODO: check admin permissions on content object
+        try {
+            PermissionPeer.doDelete(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 }

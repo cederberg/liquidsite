@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.GroupData;
@@ -37,6 +38,11 @@ import net.percederberg.liquidsite.dbo.UserGroupPeer;
  * @version  1.0
  */
 public class Group extends PersistentObject {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(Group.class);
 
     /**
      * The group data.
@@ -77,6 +83,7 @@ public class Group extends PersistentObject {
                 res[i] = new Group((GroupData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -105,6 +112,7 @@ public class Group extends PersistentObject {
         try {
             data = GroupPeer.doSelectByName(domain.getName(), name, con);
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -150,6 +158,7 @@ public class Group extends PersistentObject {
                 res[i] = new Group(group);
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -350,45 +359,74 @@ public class Group extends PersistentObject {
     /**
      * Inserts the object data into the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have insert permissions
      */
-    protected void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        GroupPeer.doInsert(data, con);
-        doUserGroups(con);
+        // TODO: check permissions for user
+        validate();
+        try {
+            GroupPeer.doInsert(data, con);
+            doUserGroups(con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        GroupPeer.doUpdate(data, con);
-        doUserGroups(con);
+        // TODO: check permissions for user
+        validate();
+        try {
+            GroupPeer.doUpdate(data, con);
+            doUserGroups(con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        GroupPeer.doDelete(data, con);
+        // TODO: check permissions for user
+        try {
+            GroupPeer.doDelete(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.content;
 
 import java.util.Date;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.LockData;
@@ -35,6 +36,11 @@ import net.percederberg.liquidsite.dbo.LockPeer;
  * @version  1.0
  */
 public class Lock extends PersistentObject {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(Lock.class);
 
     /**
      * The lock data object.
@@ -61,6 +67,7 @@ public class Lock extends PersistentObject {
         try {
             data = LockPeer.doSelectByContent(content.getId(), con);
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -242,43 +249,69 @@ public class Lock extends PersistentObject {
     /**
      * Inserts the object data into the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have insert permissions
      */
-    protected void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
+        if (!getContent().hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        }
+        validate();
         data.setDate(LockData.ACQUIRED, new Date());
-        LockPeer.doInsert(data, con);
+        try {
+            LockPeer.doInsert(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        // Do nothing, locks cannot be updated
+        throw new ContentSecurityException(user, "update", this);
     }
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        LockPeer.doDelete(data, con);
+        if (!getContent().hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
+        }
+        try {
+            LockPeer.doDelete(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 }

@@ -24,6 +24,7 @@ package net.percederberg.liquidsite.content;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.DomainData;
@@ -36,6 +37,11 @@ import net.percederberg.liquidsite.dbo.DomainPeer;
  * @version  1.0
  */
 public class Domain extends PersistentObject implements Comparable {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(Domain.class);
 
     /**
      * The domain data object.
@@ -68,6 +74,7 @@ public class Domain extends PersistentObject implements Comparable {
                 res[i] = new Domain((DomainData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -95,6 +102,7 @@ public class Domain extends PersistentObject implements Comparable {
         try {
             data = DomainPeer.doSelectByName(name, con);
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -339,88 +347,81 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Saves this object to the database. This method checks the 
-     * permissions of the specified user for performing the 
-     * operation.
-     * 
-     * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have write permissions
-     */
-    public void save(User user) 
-        throws ContentException, ContentSecurityException {
-
-        if (!hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "write", this);
-        }
-        super.save(user);
-    }
-    
-    /**
-     * Deletes this object from the database. This method to check 
-     * the permissions of the specified user for performing the 
-     * operation.
-     * 
-     * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have write permissions
-     */
-    public void delete(User user) 
-        throws ContentException, ContentSecurityException {
-
-        if (!hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
-        super.delete(user);
-    }
-
-    /**
      * Inserts the object data into the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have insert permissions
      */
-    protected void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "write", this);
+        }
+        validate();
         data.setString(DomainData.OPTIONS, encodeMap(options));
-        DomainPeer.doInsert(data, con);
+        try {
+            DomainPeer.doInsert(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "write", this);
+        }
+        validate();
         data.setString(DomainData.OPTIONS, encodeMap(options));
-        DomainPeer.doUpdate(data, con);
+        try {
+            DomainPeer.doUpdate(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        DomainPeer.doDelete(data, con);
+        if (!user.isSuperUser()) {
+            throw new ContentSecurityException(user, "delete", this);
+        }
+        try {
+            DomainPeer.doDelete(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 }

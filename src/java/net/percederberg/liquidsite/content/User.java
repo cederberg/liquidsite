@@ -96,6 +96,7 @@ public class User extends PersistentObject {
                 res[i] = new User((UserData) list.get(i));
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -128,6 +129,7 @@ public class User extends PersistentObject {
             }
             data = UserPeer.doSelectByName(domainName, name, con);
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -173,6 +175,7 @@ public class User extends PersistentObject {
                 res[i] = new User(user);
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -450,48 +453,77 @@ public class User extends PersistentObject {
     /**
      * Inserts the object data into the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have insert permissions
      */
-    protected void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doInsert(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        UserPeer.doInsert(data, con);
-        doUserGroups(con);
-        groups = null;
+        // TODO: check permissions for user
+        validate();
+        try {
+            UserPeer.doInsert(data, con);
+            doUserGroups(con);
+            groups = null;
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        UserPeer.doUpdate(data, con);
-        doUserGroups(con);
-        groups = null;
+        // TODO: check permissions for user
+        validate();
+        try {
+            UserPeer.doUpdate(data, con);
+            doUserGroups(con);
+            groups = null;
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        UserPeer.doDelete(data, con);
-        groups = null;
+        // TODO: check permissions for user
+        try {
+            UserPeer.doDelete(data, con);
+            groups = null;
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
     
     /**

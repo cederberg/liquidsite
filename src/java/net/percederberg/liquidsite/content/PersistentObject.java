@@ -28,7 +28,6 @@ import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseConnector;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
  * A persistent object.
@@ -227,17 +226,7 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Validates this content object. This method is called before 
-     * writing the data to the database. 
-     * 
-     * @throws ContentException if the data object contained errors
-     */
-    public abstract void validate() throws ContentException;
-
-    /**
-     * Saves this object to the database. Subclasses may override 
-     * this method to check the permissions of the specified user for 
-     * performing the operation.
+     * Saves this object to the database.
      * 
      * @param user           the user performing the operation
      * 
@@ -246,26 +235,20 @@ public abstract class PersistentObject {
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public void save(User user) 
+    public final void save(User user) 
         throws ContentException, ContentSecurityException {
 
         DatabaseConnection  con;
         
-        // Validate data
-        validate();
-
         // Save to database
         con = getDatabaseConnection();
         try {
             if (!isPersistent()) {
-                doInsert(con);
+                doInsert(user, con);
                 persistent = true;
             } else {
-                doUpdate(con);
+                doUpdate(user, con);
             }
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
         }
@@ -283,9 +266,7 @@ public abstract class PersistentObject {
     }
     
     /**
-     * Deletes this object from the database. Subclasses may override 
-     * this method to check the permissions of the specified user for 
-     * performing the operation.
+     * Deletes this object from the database.
      * 
      * @param user           the user performing the operation
      * 
@@ -294,17 +275,14 @@ public abstract class PersistentObject {
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public void delete(User user) 
+    public final void delete(User user) 
         throws ContentException, ContentSecurityException {
 
         DatabaseConnection  con = getDatabaseConnection();
 
         // Delete from database
         try {
-            doDelete(con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
+            doDelete(user, con);
         } finally {
             returnDatabaseConnection(con);
         }
@@ -320,33 +298,42 @@ public abstract class PersistentObject {
     /**
      * Inserts the object data into the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have insert permissions
      */
-    protected abstract void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException;
+    protected abstract void doInsert(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException;
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected abstract void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException;
+    protected abstract void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException;
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected abstract void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException;
+    protected abstract void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException;
 }

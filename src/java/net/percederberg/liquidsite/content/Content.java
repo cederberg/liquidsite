@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.AttributeData;
 import net.percederberg.liquidsite.dbo.AttributePeer;
@@ -40,6 +41,11 @@ import net.percederberg.liquidsite.dbo.DatabaseObjectException;
  * @version  1.0
  */
 public abstract class Content extends PersistentObject {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(Content.class);
 
     /**
      * The site content category.
@@ -85,6 +91,7 @@ public abstract class Content extends PersistentObject {
                 res[i] = createContent((ContentData) list.get(i), false, con);
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -118,6 +125,7 @@ public abstract class Content extends PersistentObject {
                 return null;
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -151,6 +159,7 @@ public abstract class Content extends PersistentObject {
                 return null;
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -183,6 +192,7 @@ public abstract class Content extends PersistentObject {
                 res[i] = createContent((ContentData) list.get(i), true, con);
             }
         } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
             returnDatabaseConnection(con);
@@ -755,92 +765,89 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Saves this object to the database. This method checks the 
-     * permissions of the specified user for performing the 
-     * operation.
+     * Inserts the object data into the database.
      * 
      * @param user           the user performing the operation
+     * @param con            the database connection to use
      * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
      * @throws ContentSecurityException if the user specified didn't
-     *             have write permissions
+     *             have insert permissions
      */
-    public void save(User user) 
+    protected void doInsert(User user, DatabaseConnection con)
         throws ContentException, ContentSecurityException {
 
+        // TODO: check publish access when writing revision > 0
         if (!hasWriteAccess(user)) {
             throw new ContentSecurityException(user, "write", this);
         }
+        validate();
         data.setString(ContentData.AUTHOR, user.getName());
-        super.save(user);
-    }
-    
-    /**
-     * Deletes this object from the database. This method to check 
-     * the permissions of the specified user for performing the 
-     * operation.
-     * 
-     * @param user           the user performing the operation
-     * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have write permissions
-     */
-    public void delete(User user) 
-        throws ContentException, ContentSecurityException {
-
-        if (!hasWriteAccess(user)) {
-            throw new ContentSecurityException(user, "delete", this);
-        }
-        super.delete(user);
-    }
-
-    /**
-     * Inserts the object data into the database.
-     * 
-     * @param con            the database connection to use
-     * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
-     */
-    protected void doInsert(DatabaseConnection con)
-        throws DatabaseObjectException {
-
         data.setDate(ContentData.MODIFIED, new Date());
-        ContentPeer.doInsert(data, con);
-        doWriteAttributes(con);
+        try {
+            ContentPeer.doInsert(data, con);
+            doWriteAttributes(con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Updates the object data in the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the object data didn't validate or 
+     *             if the database couldn't be accessed properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have update permissions
      */
-    protected void doUpdate(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doUpdate(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
+        // TODO: check publish access when writing revision > 0
+        if (!hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "write", this);
+        }
+        validate();
+        data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
-        ContentPeer.doInsert(data, con);
-        doWriteAttributes(con);
+        try {
+            ContentPeer.doInsert(data, con);
+            doWriteAttributes(con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
      * Deletes the object data from the database.
      * 
+     * @param user           the user performing the operation
      * @param con            the database connection to use
      * 
-     * @throws DatabaseObjectException if the database couldn't be 
-     *             accessed properly
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the user specified didn't
+     *             have delete permissions
      */
-    protected void doDelete(DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void doDelete(User user, DatabaseConnection con)
+        throws ContentException, ContentSecurityException {
 
-        ContentPeer.doDelete(data, con);
+        // TODO: check publish access instead of write access
+        if (!hasWriteAccess(user)) {
+            throw new ContentSecurityException(user, "delete", this);
+        }
+        try {
+            ContentPeer.doDelete(data, con);
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**

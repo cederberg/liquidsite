@@ -321,4 +321,15 @@ public class Site extends Content {
 
         return result;
     }
+    
+    /**
+     * Validates this data object. This method checks that all 
+     * required fields have been filled with suitable values.
+     * 
+     * @throws ContentException if the data object contained errors
+     */
+    public void validate() throws ContentException {
+        super.validate();
+        // TODO: implement validation controls
+    }
 }
