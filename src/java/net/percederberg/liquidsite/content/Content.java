@@ -93,9 +93,9 @@ public abstract class Content extends PersistentObject {
     public static final int FORUM_CATEGORY = 13;
 
     /**
-     * The thread content category.
+     * The topic content category.
      */
-    public static final int THREAD_CATEGORY = 14;
+    public static final int TOPIC_CATEGORY = 14;
 
     /**
      * The post content category.

@@ -65,12 +65,12 @@ public class ContentPost extends Content {
      * Creates a new post with default values.
      *
      * @param manager        the content manager to use
-     * @param parent         the parent content thread
+     * @param parent         the parent content topic
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public ContentPost(ContentManager manager, ContentThread parent)
+    public ContentPost(ContentManager manager, ContentTopic parent)
         throws ContentException {
 
         super(manager, parent.getDomain(), Content.POST_CATEGORY);

@@ -1,5 +1,5 @@
 /*
- * ContentThread.java
+ * ContentTopic.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -25,12 +25,12 @@ import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
 
 /**
- * A discussion forum thread.
+ * A discussion forum topic.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ContentThread extends Content {
+public class ContentTopic extends Content {
 
     /**
      * The locked content attribute.
@@ -38,7 +38,7 @@ public class ContentThread extends Content {
     private static final String LOCKED_ATTRIBUTE = "LOCKED";
 
     /**
-     * Creates a new thread with default values.
+     * Creates a new topic with default values.
      *
      * @param manager        the content manager to use
      * @param parent         the parent content forum
@@ -46,16 +46,16 @@ public class ContentThread extends Content {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public ContentThread(ContentManager manager, ContentForum parent)
+    public ContentTopic(ContentManager manager, ContentForum parent)
         throws ContentException {
 
-        super(manager, parent.getDomain(), Content.THREAD_CATEGORY);
+        super(manager, parent.getDomain(), Content.TOPIC_CATEGORY);
         setParent(parent);
         setAttribute(LOCKED_ATTRIBUTE, "0");
     }
 
     /**
-     * Creates a new thread.
+     * Creates a new topic.
      *
      * @param manager        the content manager to use
      * @param data           the content data object
@@ -64,9 +64,9 @@ public class ContentThread extends Content {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected ContentThread(ContentManager manager,
-                            ContentData data,
-                            DatabaseConnection con)
+    protected ContentTopic(ContentManager manager,
+                           ContentData data,
+                           DatabaseConnection con)
         throws ContentException {
 
         super(manager, data, con);
@@ -84,9 +84,9 @@ public class ContentThread extends Content {
     }
 
     /**
-     * Checks if the thread locked flag is set.
+     * Checks if the topic locked flag is set.
      *
-     * @return true if the thread locked flag is set, or
+     * @return true if the topic locked flag is set, or
      *         false otherwise
      */
     public boolean isLocked() {
@@ -94,9 +94,9 @@ public class ContentThread extends Content {
     }
 
     /**
-     * Sets the thread locked flag.
+     * Sets the topic locked flag.
      *
-     * @param locked         the new thread locked flag
+     * @param locked         the new topic locked flag
      */
     public void setLocked(boolean locked) {
         if (locked) {
@@ -115,7 +115,7 @@ public class ContentThread extends Content {
     public void validate() throws ContentException {
         super.validate();
         if (getParent() == null) {
-            throw new ContentException("no parent set for thread");
+            throw new ContentException("no parent set for topic");
         }
         if (getName().equals("")) {
             super.setName(createName());
@@ -123,8 +123,8 @@ public class ContentThread extends Content {
     }
 
     /**
-     * Creates a new name for the post. The name will be the next
-     * available number among the parent forum threads.
+     * Creates a new name for the topic. The name will be the next
+     * available number among the parent forum topics.
      *
      * @return the new name
      */

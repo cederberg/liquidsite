@@ -429,8 +429,8 @@ class InternalContent {
             return new ContentDocument(manager, data, con);
         case Content.FORUM_CATEGORY:
             return new ContentForum(manager, data, con);
-        case Content.THREAD_CATEGORY:
-            return new ContentThread(manager, data, con);
+        case Content.TOPIC_CATEGORY:
+            return new ContentTopic(manager, data, con);
         case Content.POST_CATEGORY:
             return new ContentPost(manager, data, con);
         default:
