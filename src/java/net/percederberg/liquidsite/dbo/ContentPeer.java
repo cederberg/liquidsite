@@ -274,7 +274,9 @@ public class ContentPeer extends AbstractPeer {
                 data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
                                              maxIsZero,
                                              con);
-                if (data.getString(ContentData.NAME).equals(name)) {
+                if (data.getInt(ContentData.PARENT) == parent
+                 && data.getString(ContentData.NAME).equals(name)) {
+
                     return data;
                 }
             }
@@ -323,7 +325,9 @@ public class ContentPeer extends AbstractPeer {
                 data = doSelectByMaxRevision(res.getRow(i).getInt("ID"),
                                              maxIsZero,
                                              con);
-                list.add(data);
+                if (data.getInt(ContentData.PARENT) == parent) {
+                    list.add(data);
+                }
             }
         } catch (DatabaseDataException e) {
             LOG.error(e.getMessage());
