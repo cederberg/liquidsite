@@ -67,11 +67,6 @@ public class InstallController extends Controller {
     private String rootPassword;
     
     /**
-     * The database choice specification.
-     */
-    private String dbchoice;
-    
-    /**
      * The selected database.
      */
     private String dbsel;
@@ -80,11 +75,6 @@ public class InstallController extends Controller {
      * The entered database.
      */
     private String database;
-    
-    /**
-     * The liquid site user choice specification.
-     */
-    private String userchoice;
     
     /**
      * The selected liquid site user name.
@@ -347,7 +337,6 @@ public class InstallController extends Controller {
     private void install5(Request request) {
         String db;
         String user;
-        String passwd = "";
 
         // get info from request
         getParameters(request);
@@ -355,39 +344,42 @@ public class InstallController extends Controller {
         try {
 
             // get selected database and user
-            db = (dbchoice.equals("select")) ? dbsel : database;
-            user = (userchoice.equals("select")) ? usersel : username;
+            db = (dbsel.equals("")) ? database : dbsel;
+            user = (usersel.equals("")) ? username : usersel;
 
             // drop database if exists
-            if (dbchoice.equals("select")) {
+            if (!dbsel.equals("")) {
                 con.deleteDatabase(db);
             }
 
             // create database
             con.createDatabase(db);
 
-            // grant permissions to user to read/write rows in database
+            // create user if it doesn't exist
+            con.createUser(user, password);
+
+            // grant permissions to user
             con.addAccessPrivileges(db, user);
 
             // create tables
-            createTables(db, host, rootUsername, rootPassword);
+            con.executeSql(getFile("WEB-INF/sql/create-tables.sql"));
 
-            // populate tables
-            initTables(db, host, rootUsername, rootPassword);
-
-            // create config.properties file
-            createConfigProp(host, user, passwd);
+            // create config file and table
+            writeConfiguration(host, db, user, password);
 
         } catch (DatabaseConnectionException e) {
             // TODO write log
             e.printStackTrace();
+            // forward to error page
+            request.forward("/install/error.jsp");
+            return;
         } catch (DatabaseException e) {
             // TODO write log
             e.printStackTrace();
             // forward to error page
             request.forward("/install/error.jsp");
             return;
-        } catch (FileNotFoundException e) {
+        } catch (ConfigurationException e) {
             // TODO write log
             e.printStackTrace();
             // forward to error page
@@ -400,7 +392,7 @@ public class InstallController extends Controller {
             request.forward("/install/error.jsp");
             return;
         }
-
+        
         // forward to next page
         request.forward("/install/install5.jsp");
     }
@@ -468,9 +460,6 @@ public class InstallController extends Controller {
         }
         if (database == null) {
             database = "liquidsite";
-        }
-        if (userchoice == null) {
-            userchoice = "create";
         }
         if (usersel == null) {
             usersel = "";
@@ -809,72 +798,63 @@ public class InstallController extends Controller {
         return con.executeSql(sql);
     }
 
-    // TODO: rewrite this method to NOT use resource properties
-    private void createTables(String database, 
-                              String host, 
-                              String username, 
-                              String password) 
-        throws DatabaseConnectionException, DatabaseException,
-               FileNotFoundException, IOException {
+    /**
+     * Writes the configuration file and database table. 
+     *
+     * @param host           the host name
+     * @param database       the database name
+     * @param username       the user name
+     * @param password       the user password
+     *
+     * @throws ConfigurationException if the configuration
+     *             could not be written
+     * @throws DatabaseConnectionException if a connection to
+     *             the database could not be established
+     * @throws DatabaseException if the given database name does
+     *             not exist
+     */
+    private void writeConfiguration(String host,
+                                    String database,
+                                    String username, 
+                                    String password) 
+        throws DatabaseConnectionException, DatabaseException, 
+               ConfigurationException {
 
-        File file;
-        FileInputStream queriesFile;
-        PropertyResourceBundle queries;
-        String sql;
-
-        // read properties file
-        file = getFile("WEB-INF/db_create_tables.properties");
-        queriesFile = new FileInputStream(file);
-        queries = new PropertyResourceBundle(queriesFile);
-
-        // perform all queries
-        for (Enumeration e = queries.getKeys(); e.hasMoreElements();) {
-            sql = queries.getString((String) e.nextElement());
-            execute(database, host, username, password, sql);
+        Configuration config;
+        DatabaseConnection c;
+        
+        // load functions
+        try {
+            con.loadFunctions(getFile("WEB-INF/database.properties"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
+        
+        // get the application configuration
+        config = getApplication().getConfig();
 
-    // TODO: rewrite this method to NOT use resource properties
-    private void initTables(String database, 
-                            String host, 
-                            String username, 
-                            String password) 
-        throws DatabaseConnectionException, DatabaseException,
-               FileNotFoundException, IOException {
-
-        File file;
-        FileInputStream queriesFile;
-        PropertyResourceBundle queries;
-        String sql;
-
-        // read properties file
-        file = getFile("WEB-INF/db_init.properties");
-        queriesFile = new FileInputStream(file);
-        queries = new PropertyResourceBundle(queriesFile);
-
-        // perform all queries
-        for (Enumeration e = queries.getKeys(); e.hasMoreElements();) {
-            sql = queries.getString((String) e.nextElement());
-            execute(database, host, username, password, sql);
+        // open a database connection
+        c = con.getConnection();
+            
+        try {
+            // select database
+            c.setCatalog(database);
+        } finally {
+            // close the database connection
+            con.returnConnection(c);
         }
-    }
 
-    private void createConfigProp(String host, 
-                                  String username, 
-                                  String password) 
-        throws FileNotFoundException {
-
-        File file;
-        PrintStream config;
-
-        // create print stream
-        file = getFile("WEB-INF/config.properties");
-        config = new PrintStream(new FileOutputStream(file));
-
-        // write to stream
-        config.println("HOST=" + host);
-        config.println("USERNAME=" + username);
-        config.println("PASSWORD=" + password);
+        // set configuration information
+        config.set(Configuration.VERSION, "1.0");
+        config.set(Configuration.DATABASE_HOSTNAME, host);
+        config.set(Configuration.DATABASE_NAME, database);
+        config.set(Configuration.DATABASE_USER, username);
+        config.set(Configuration.DATABASE_PASSWORD, password);
+        
+        // write out configuration
+        config.write(c);
     }
 }
 
