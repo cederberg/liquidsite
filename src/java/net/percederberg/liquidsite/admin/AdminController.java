@@ -218,7 +218,9 @@ public class AdminController extends Controller {
             displayAddDomain(request);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            throw RequestException.FORBIDDEN;
+            error = "You don't have permission for adding domains";
+            request.setAttribute("error", error);
+            displayAddDomain(request);
         }
     }
 
