@@ -78,6 +78,15 @@ is left intact.</xsl:text>
     &newline;&newline;
   </xsl:template>
 
+  <xsl:template match="h2">
+    <xsl:variable name="text">
+      <xsl:apply-templates />
+    </xsl:variable>
+    &newline;
+    <xsl:value-of select="$text" />
+    &newline;&newline;
+  </xsl:template>
+
   <xsl:template match="p">
     <xsl:variable name="text">
       <xsl:apply-templates />
@@ -120,6 +129,18 @@ is left intact.</xsl:text>
     <xsl:value-of select="substring-after($lines,'      ')" />
   </xsl:template>
 
+  <xsl:template match="em">
+    <xsl:text>/</xsl:text>
+    <xsl:apply-templates />
+    <xsl:text>/</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="strong">
+    <xsl:text>*</xsl:text>
+    <xsl:apply-templates />
+    <xsl:text>*</xsl:text>
+  </xsl:template>
+
   <xsl:template match="code">
     <xsl:apply-templates />
   </xsl:template>
@@ -140,6 +161,20 @@ is left intact.</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="object">
+    <xsl:choose>
+      <xsl:when test="@type = 'image'">
+        <xsl:value-of select="@description" />
+        <xsl:text> (See image in </xsl:text>
+        <xsl:value-of select="@url" />
+        <xsl:text>.)</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>[Unsupported object type]</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

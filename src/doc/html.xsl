@@ -143,6 +143,10 @@
   </xsl:template>
 
   <xsl:template match="h1">
+    <h1><xsl:apply-templates select="@*|*|text()" /></h1>
+  </xsl:template>
+
+  <xsl:template match="h2">
     <h2><xsl:apply-templates select="@*|*|text()" /></h2>
   </xsl:template>
 
@@ -171,6 +175,14 @@
 
   <xsl:template match="item/text">
     <span><xsl:apply-templates select="@*|*|text()" /></span>
+  </xsl:template>
+
+  <xsl:template match="em">
+    <em><xsl:apply-templates select="@*|*|text()" /></em>
+  </xsl:template>
+
+  <xsl:template match="strong">
+    <strong><xsl:apply-templates select="@*|*|text()" /></strong>
   </xsl:template>
 
   <xsl:template match="code">
@@ -218,6 +230,24 @@
       </xsl:when>
       <xsl:otherwise>
         <em><xsl:apply-templates select="@*|*|text()" /></em>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="object">
+    <xsl:choose>
+      <xsl:when test="@type = 'image'">
+        <img>
+          <xsl:attribute name="src">
+            <xsl:value-of select="@url" />
+          </xsl:attribute>
+          <xsl:attribute name="alt">
+            <xsl:value-of select="@description" />
+          </xsl:attribute>
+        </img>
+      </xsl:when>
+      <xsl:otherwise>
+        <strong>Unsupported object type</strong>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

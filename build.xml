@@ -175,6 +175,10 @@ build.date=${build.printdate}
       <param name="version" expression="${build.version}" />
       <param name="url" expression="http://www.liquidsite.org/" />
     </xslt>
+    <copy todir="doc/manual">
+      <fileset dir="src/doc/manual"
+               includes="*.png" />
+    </copy>
   </target>
 
   <target name="doc-db">
