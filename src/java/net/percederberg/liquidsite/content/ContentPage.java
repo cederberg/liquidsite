@@ -67,7 +67,6 @@ public class ContentPage extends Content {
      * 
      * @param manager        the content manager to use
      * @param data           the content data object
-     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @throws ContentException if the database couldn't be accessed 
@@ -75,11 +74,10 @@ public class ContentPage extends Content {
      */
     protected ContentPage(ContentManager manager,
                           ContentData data, 
-                          boolean latest, 
                           DatabaseConnection con) 
         throws ContentException {
 
-        super(manager, data, latest, con);
+        super(manager, data, con);
     }
 
     /**
@@ -93,6 +91,7 @@ public class ContentPage extends Content {
     public ContentTemplate getTemplate() throws ContentException {
         int  id = getTemplateId();
         
+        // TODO: this is not security-wise correct
         if (id <= 0) {
             return null;
         } else {
@@ -147,7 +146,7 @@ public class ContentPage extends Content {
         Iterator         iter;
         Object           obj;
 
-        // TODO: check security implications of this...
+        // TODO: this is not security-wise correct
         if (getTemplateId() > 0) {
             template = getTemplate();
             iter = template.getAllElementNames().iterator();

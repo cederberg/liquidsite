@@ -196,7 +196,7 @@ public class User extends PersistentObject {
      * @param name           the user name
      */
     public User(ContentManager manager, Domain domain, String name) {
-        super(manager, false, true);
+        super(manager, false);
         this.data = new UserData();
         if (domain == null) {
             this.data.setString(UserData.DOMAIN, "");
@@ -213,7 +213,7 @@ public class User extends PersistentObject {
      * @param data           the user data object
      */
     private User(ContentManager manager, UserData data) {
-        super(manager, true, true);
+        super(manager, true);
         this.data = data;
     }
 

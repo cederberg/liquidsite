@@ -87,7 +87,7 @@ public class Lock extends PersistentObject {
      * @param content        the content object
      */
     public Lock(ContentManager manager, Content content) {
-        super(manager, false, false);
+        super(manager, false);
         this.data = new LockData();
         this.data.setString(LockData.DOMAIN, content.getDomainName());
         this.data.setInt(LockData.CONTENT, content.getId());
@@ -102,7 +102,7 @@ public class Lock extends PersistentObject {
      * @param data           the lock data object
      */
     private Lock(ContentManager manager, LockData data) {
-        super(manager, true, false);
+        super(manager, true);
         this.data = data;
     }
 

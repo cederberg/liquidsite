@@ -54,13 +54,6 @@ public abstract class PersistentObject {
     private boolean persistent = false;
 
     /**
-     * The cacheable flag. This flag should be set when the object 
-     * supports being cached in the content manager. 
-     */
-    // TODO: remove this flag
-    private boolean cacheable = false;
-
-    /**
      * Returns the content manager database connector.
      * 
      * @param manager        the content manager to use
@@ -196,15 +189,12 @@ public abstract class PersistentObject {
      *
      * @param manager        the content manager to use 
      * @param persistent     the persistent flag
-     * @param cacheable      the cacheable flag
      */
     protected PersistentObject(ContentManager manager,
-                               boolean persistent,
-                               boolean cacheable) {
+                               boolean persistent) {
 
         this.manager = manager;
         this.persistent = persistent;
-        this.cacheable = cacheable;
     }
 
     /**
@@ -216,17 +206,6 @@ public abstract class PersistentObject {
      */
     public boolean isPersistent() {
         return persistent;
-    }
-
-    /**
-     * Checks if this object is cacheable. I.e. if it can be cached
-     * in the content manager.
-     * 
-     * @return true if the object is cacheable, or
-     *         false otherwise
-     */
-    public boolean isCacheable() {
-        return cacheable;
     }
 
     /**
@@ -336,12 +315,8 @@ public abstract class PersistentObject {
             returnDatabaseConnection(getContentManager(), con);
         }
 
-        // Save to cache
-        if (cacheable) {
-            getContentManager().cacheAdd(this);
-        } else {
-            getContentManager().cacheRemove(this);
-        }
+        // Remove from cache
+        CacheManager.getInstance().remove(this);
     }
     
     /**
@@ -367,8 +342,8 @@ public abstract class PersistentObject {
             returnDatabaseConnection(getContentManager(), con);
         }
 
-        // Delete from cache
-        getContentManager().cacheRemove(this);
+        // Remove from cache
+        CacheManager.getInstance().remove(this);
     }
 
     /**

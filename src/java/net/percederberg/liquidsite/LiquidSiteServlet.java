@@ -190,12 +190,7 @@ public class LiquidSiteServlet extends HttpServlet
         }
 
         // Initialize content and template managers
-        try {
-            contentManager = new ContentManager(this);
-        } catch (ContentException e) {
-            errors++;
-            LOG.error(e.getMessage());
-        }
+        contentManager = new ContentManager(this, false);
         try {
             TemplateManager.initialize(this);
         } catch (TemplateException e) {

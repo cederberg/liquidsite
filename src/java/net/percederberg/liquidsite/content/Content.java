@@ -130,7 +130,7 @@ public abstract class Content extends PersistentObject implements Comparable {
 
         try {
             list = ContentPeer.doSelectById(id, con);
-            return createContent(manager, list, false, con);
+            return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -161,7 +161,7 @@ public abstract class Content extends PersistentObject implements Comparable {
         try {
             data = ContentPeer.doSelectByMaxRevision(id, con);
             if (data != null) {
-                return createContent(manager, data, true, con);
+                return createContent(manager, data, con);
             } else {
                 return null;
             }
@@ -198,7 +198,7 @@ public abstract class Content extends PersistentObject implements Comparable {
         try {
             data = ContentPeer.doSelectByRevision(id, revision, con);
             if (data != null) {
-                return createContent(manager, data, false, con);
+                return createContent(manager, data, con);
             } else {
                 return null;
             }
@@ -231,7 +231,7 @@ public abstract class Content extends PersistentObject implements Comparable {
 
         try {
             list = ContentPeer.doSelectByParent(domain.getName(), 0, con);
-            return createContent(manager, list, true, con);
+            return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -263,7 +263,7 @@ public abstract class Content extends PersistentObject implements Comparable {
             list = ContentPeer.doSelectByParent(parent.getDomainName(),
                                                 parent.getId(), 
                                                 con);
-            return createContent(manager, list, true, con);
+            return createContent(manager, list, con);
         } catch (DatabaseObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -278,7 +278,6 @@ public abstract class Content extends PersistentObject implements Comparable {
      * 
      * @param manager        the content manager to use 
      * @param list           the list of content object data
-     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @return the array of new content objects
@@ -288,7 +287,6 @@ public abstract class Content extends PersistentObject implements Comparable {
      */
     private static Content[] createContent(ContentManager manager,
                                            ArrayList list,
-                                           boolean latest,
                                            DatabaseConnection con)
         throws ContentException {
 
@@ -298,7 +296,7 @@ public abstract class Content extends PersistentObject implements Comparable {
         res = new Content[list.size()];
         for (int i = 0; i < list.size(); i++) {
             data = (ContentData) list.get(i);
-            res[i] = createContent(manager, data, latest, con);
+            res[i] = createContent(manager, data, con);
         }
         return res;
     }
@@ -309,7 +307,6 @@ public abstract class Content extends PersistentObject implements Comparable {
      * 
      * @param manager        the content manager to use 
      * @param data           the content object data
-     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @return the new content object
@@ -319,25 +316,24 @@ public abstract class Content extends PersistentObject implements Comparable {
      */
     private static Content createContent(ContentManager manager,
                                          ContentData data,
-                                         boolean latest, 
                                          DatabaseConnection con)
         throws ContentException {
 
         switch (data.getInt(ContentData.CATEGORY)) {
         case SITE_CATEGORY:
-            return new ContentSite(manager, data, latest, con);
+            return new ContentSite(manager, data, con);
         case FOLDER_CATEGORY:
-            return new ContentFolder(manager, data, latest, con);
+            return new ContentFolder(manager, data,  con);
         case PAGE_CATEGORY:
-            return new ContentPage(manager, data, latest, con);
+            return new ContentPage(manager, data, con);
         case FILE_CATEGORY:
-            return new ContentFile(manager, data, latest, con);
+            return new ContentFile(manager, data, con);
         case TEMPLATE_CATEGORY:
-            return new ContentTemplate(manager, data, latest, con);
+            return new ContentTemplate(manager, data, con);
         case SECTION_CATEGORY:
-            return new ContentSection(manager, data, latest, con);
+            return new ContentSection(manager, data, con);
         case DOCUMENT_CATEGORY:
-            return new ContentDocument(manager, data, latest, con);
+            return new ContentDocument(manager, data, con);
         default:
             throw new ContentException(
                 "content category " + data.getInt(ContentData.CATEGORY) +
@@ -355,7 +351,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @param category       the category
      */
     protected Content(ContentManager manager, Domain domain, int category) {
-        super(manager, false, false);
+        super(manager, false);
         this.data = new ContentData();
         this.data.setString(ContentData.DOMAIN, domain.getName());
         this.data.setInt(ContentData.CATEGORY, category);
@@ -368,7 +364,6 @@ public abstract class Content extends PersistentObject implements Comparable {
      * 
      * @param manager        the content manager to use 
      * @param data           the content data object
-     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @throws ContentException if the database couldn't be accessed 
@@ -376,11 +371,10 @@ public abstract class Content extends PersistentObject implements Comparable {
      */
     protected Content(ContentManager manager,
                       ContentData data, 
-                      boolean latest, 
                       DatabaseConnection con) 
         throws ContentException {
 
-        super(manager, true, latest);
+        super(manager, true);
         this.data = data;
         this.oldRevision = data.getInt(ContentData.REVISION);
         try {
@@ -501,6 +495,7 @@ public abstract class Content extends PersistentObject implements Comparable {
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
+        // TODO: this is not security-wise correct
         return getContentManager().getDomain(getDomainName());
     }
     
@@ -591,6 +586,7 @@ public abstract class Content extends PersistentObject implements Comparable {
     public Content getParent() throws ContentException {
         int  parent = getParentId();
         
+        // TODO: this is not security-wise correct
         if (parent <= 0) {
             return null;
         } else {
@@ -898,8 +894,8 @@ public abstract class Content extends PersistentObject implements Comparable {
             returnDatabaseConnection(getContentManager(), con);
         }
 
-        // Delete from cache
-        getContentManager().cacheRemove(this);
+        // Remove from cache
+        CacheManager.getInstance().remove(this);
     }
 
     /**

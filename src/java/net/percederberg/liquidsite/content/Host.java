@@ -158,7 +158,7 @@ public class Host extends PersistentObject {
      * @param name           the host name
      */
     public Host(ContentManager manager, Domain domain, String name) {
-        super(manager, false, true);
+        super(manager, false);
         this.data = new HostData();
         this.data.setString(HostData.DOMAIN, domain.getName());
         this.data.setString(HostData.NAME, name);
@@ -172,7 +172,7 @@ public class Host extends PersistentObject {
      * @param data           the host data object
      */
     private Host(ContentManager manager, HostData data) {
-        super(manager, true, true);
+        super(manager, true);
         this.data = data;
         this.options = decodeMap(data.getString(HostData.OPTIONS));
     }

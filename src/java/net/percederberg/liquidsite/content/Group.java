@@ -179,7 +179,7 @@ public class Group extends PersistentObject {
      * @param name           the group name
      */
     public Group(ContentManager manager, Domain domain, String name) {
-        super(manager, false, true);
+        super(manager, false);
         this.data = new GroupData();
         this.data.setString(GroupData.DOMAIN, domain.getName());
         this.data.setString(GroupData.NAME, name);
@@ -192,7 +192,7 @@ public class Group extends PersistentObject {
      * @param data           the group data object
      */
     private Group(ContentManager manager, GroupData data) {
-        super(manager, true, true);
+        super(manager, true);
         this.data = data;
     }
 

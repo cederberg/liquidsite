@@ -52,20 +52,60 @@ public class ContentManager {
      * The application context.
      */
     private Application app;
+    
+    /**
+     * The admin flag. When this flag is set, the content manager may
+     * return content objects being offline or having work revisions.
+     * Also, when this flag is set caching will be turned off.
+     */
+    private boolean admin;
 
     /**
      * Creates a new content manager. All new content handling 
      * requests will pass through the newly created content manager.
-     * If the application is installed, the domain and content caches
-     * will also be initialized.
+     * If the admin content manager flag is set, the content manager
+     * will NOT cache content objects and the latest revision 
+     * returned will always be a work revision if one is available.
+     *  
      * 
      * @param app            the application context
-     * 
-     * @throws ContentException if the content manager couldn't be 
-     *             initialized properly
+     * @param admin          the admin content manager flag
      */
-    public ContentManager(Application app) throws ContentException {
+    public ContentManager(Application app, boolean admin) {
         this.app = app;
+        this.admin = admin;
+    }
+
+    /**
+     * Checks if the admin flag is set.
+     * 
+     * @return true if the admin flag is set, or
+     *         false otherwise
+     */
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    /**
+     * Checks if the specified user can read a content object. This
+     * method will check that the object is online (unless the admin
+     * flag is set) and that the user has read permissions to the
+     * object.
+     *
+     * @param user           the user
+     * @param content        the content object
+     *
+     * @return true if the user can read the content object, or
+     *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    private boolean canRead(User user, Content content)
+        throws ContentException {
+
+        return (admin || content.isOnline())
+            && content.hasReadAccess(user);
     }
 
     /**
@@ -247,7 +287,7 @@ public class ContentManager {
 
         Content  content = getContent(id);
 
-        if (content != null && !content.hasReadAccess(user)) {
+        if (content != null && !canRead(user, content)) {
             throw new ContentSecurityException(user, "read", content);
         }
         return content;
@@ -292,10 +332,10 @@ public class ContentManager {
         Content[]  res;
 
         for (int i = 0; i < children.length; i++) {
-            if (children[i].hasReadAccess(user)) {
+            if (canRead(user, children[i])) {
                 list.add(children[i]);
             }
-        } 
+        }
         Collections.sort(list);
         res = new Content[list.size()];
         list.toArray(res);
@@ -322,7 +362,7 @@ public class ContentManager {
         Content[]  res;
 
         for (int i = 0; i < children.length; i++) {
-            if (children[i].hasReadAccess(user)) {
+            if (canRead(user, children[i])) {
                 list.add(children[i]);
             }
         } 
@@ -532,24 +572,6 @@ public class ContentManager {
         default:
             return "";
         }
-    }
-
-    /**
-     * Adds a persistent object to the cache.
-     *
-     * @param obj            the object to add
-     */
-    void cacheAdd(PersistentObject obj) {
-        CacheManager.getInstance().add(obj);
-    }
-
-    /**
-     * Removes a persistent object from the cache.
-     *
-     * @param obj            the object to remove
-     */
-    void cacheRemove(PersistentObject obj) {
-        CacheManager.getInstance().remove(obj);
     }
 
     /**

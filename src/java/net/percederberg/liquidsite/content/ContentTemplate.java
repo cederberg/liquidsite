@@ -72,7 +72,6 @@ public class ContentTemplate extends Content {
      * 
      * @param manager        the content manager to use 
      * @param data           the content data object
-     * @param latest         the latest revision flag
      * @param con            the database connection to use
      * 
      * @throws ContentException if the database couldn't be accessed 
@@ -80,11 +79,10 @@ public class ContentTemplate extends Content {
      */
     protected ContentTemplate(ContentManager manager,
                               ContentData data, 
-                              boolean latest, 
                               DatabaseConnection con) 
         throws ContentException {
 
-        super(manager, data, latest, con);
+        super(manager, data, con);
     }
 
     /**

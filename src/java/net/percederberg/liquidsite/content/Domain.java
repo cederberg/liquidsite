@@ -128,7 +128,7 @@ public class Domain extends PersistentObject implements Comparable {
      * @param name           the domain name
      */
     public Domain(ContentManager manager, String name) {
-        super(manager, false, true);
+        super(manager, false);
         this.data = new DomainData();
         this.data.setString(DomainData.NAME, name);
         this.options = new HashMap();
@@ -141,7 +141,7 @@ public class Domain extends PersistentObject implements Comparable {
      * @param data           the domain data object
      */
     private Domain(ContentManager manager, DomainData data) {
-        super(manager, true, true);
+        super(manager, true);
         this.data = data;
         this.options = decodeMap(data.getString(DomainData.OPTIONS));
     }

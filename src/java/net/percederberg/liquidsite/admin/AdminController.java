@@ -32,6 +32,7 @@ import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentTemplate;
 
@@ -60,8 +61,7 @@ public class AdminController extends Controller {
      */
     public AdminController(Application app) {
         super(app);
-        // TODO: set internal content manager here!
-        AdminUtils.setContentManager(app.getContentManager());
+        AdminUtils.setContentManager(new ContentManager(app, true));
         workflows.add(new HomeEditFormHandler());
         workflows.add(new SiteAddFormHandler());
         workflows.add(new SiteEditFormHandler());

@@ -187,7 +187,7 @@ public class Permission extends PersistentObject {
                       User user,
                       Group group) {
 
-        super(manager, false, true);
+        super(manager, false);
         this.data = new PermissionData();
         this.data.setString(PermissionData.DOMAIN, domain.getName());
         this.data.setInt(PermissionData.CONTENT, 0);
@@ -212,7 +212,7 @@ public class Permission extends PersistentObject {
                       User user,
                       Group group) {
 
-        super(manager, false, true);
+        super(manager, false);
         this.data = new PermissionData();
         this.data.setString(PermissionData.DOMAIN, content.getDomainName());
         this.data.setInt(PermissionData.CONTENT, content.getId());
@@ -231,7 +231,7 @@ public class Permission extends PersistentObject {
      * @param data           the permission data object
      */
     private Permission(ContentManager manager, PermissionData data) {
-        super(manager, true, true);
+        super(manager, true);
         this.data = data;
     }
 
