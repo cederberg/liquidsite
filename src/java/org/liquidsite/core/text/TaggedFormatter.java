@@ -43,15 +43,16 @@ public class TaggedFormatter {
      */
     public static String clean(String text) {
         StringBuffer  result = new StringBuffer();
-        int           pos;
+        int           pos = 0;
 
         text = cleanWhitespace(text);
-        pos = cleanBlock(text, 0, result);
         while (pos < text.length()) {
             if (text.charAt(pos) == '\n') {
                 pos++;
             } else {
-                result.append("\n\n");
+                if (result.length() > 0) {
+                    result.append("\n\n");
+                }
                 pos = cleanBlock(text, pos, result);
             }
         }
@@ -434,10 +435,12 @@ public class TaggedFormatter {
         buffer.append(text.trim());
 
         // Remove empty starting and ending lines
-        while (buffer.indexOf("\n") == 0) {
+        while (buffer.length() > 0 && buffer.charAt(0) == '\n') {
             buffer.deleteCharAt(0);
         }
-        while (buffer.lastIndexOf("\n") == buffer.length() - 1) {
+        while (buffer.length() > 0
+            && buffer.charAt(buffer.length() - 1) == '\n') {
+
             buffer.setLength(buffer.length() - 1);
         }
 
@@ -470,14 +473,15 @@ public class TaggedFormatter {
      */
     public static String formatHtml(String text, FormattingContext context) {
         StringBuffer  result = new StringBuffer();
-        int           pos;
+        int           pos = 0;
 
-        pos = formatHtmlBlock(text, 0, context, result);
         while (pos < text.length()) {
             if (text.charAt(pos) == '\n') {
                 pos++;
             } else {
-                result.append("\n\n");
+                if (result.length() > 0) {
+                    result.append("\n\n");
+                }
                 pos = formatHtmlBlock(text, pos, context, result);
             }
         }
