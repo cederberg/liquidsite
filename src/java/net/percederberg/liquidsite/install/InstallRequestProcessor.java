@@ -780,7 +780,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         config.set(Configuration.DATABASE_NAME, database);
         config.set(Configuration.DATABASE_USER, databaseUser);
         config.set(Configuration.DATABASE_PASSWORD, databasePassword);
-        config.set(Configuration.DATABASE_POOL_SIZE, 10);
+        config.set(Configuration.DATABASE_POOL_SIZE, 50);
         if (updateVersion == null) {
             config.set(Configuration.FILE_DIRECTORY, dataDir);
             config.set(Configuration.UPLOAD_DIRECTORY,
