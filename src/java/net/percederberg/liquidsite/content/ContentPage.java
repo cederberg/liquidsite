@@ -248,18 +248,17 @@ public class ContentPage extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
+     * Validates the object data before writing to the database.
      *
-     * @throws ContentException if the data object contained errors
+     * @throws ContentException if the object data wasn't valid
      */
-    public void validate() throws ContentException {
+    protected void doValidate() throws ContentException {
         Content[]  children;
         Iterator   iter = getLocalElementNames().iterator();
         String     str;
         char       c;
 
-        super.validate();
+        super.doValidate();
         if (getParent() == null) {
             throw new ContentException("no parent set for page");
         }

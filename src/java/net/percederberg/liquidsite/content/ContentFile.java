@@ -252,32 +252,6 @@ public class ContentFile extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
-     *
-     * @throws ContentException if the data object contained errors
-     */
-    public void validate() throws ContentException {
-        Content[]  children;
-
-        super.validate();
-        if (getParent() == null) {
-            throw new ContentException("no parent set for file");
-        }
-        children = InternalContent.findByParent(getContentManager(),
-                                                getParent());
-        for (int i = 0; i < children.length; i++) {
-            if (children[i].getId() != getId()
-             && children[i].getName().equals(getName())) {
-
-                throw new ContentException(
-                    "another object with the same name is already " +
-                    "present in the same folder");
-            }
-        }
-    }
-
-    /**
      * Deletes this content revision from the database.
      *
      * @param user           the user performing the operation
@@ -292,6 +266,31 @@ public class ContentFile extends Content {
 
         super.deleteRevision(user);
         cleanUnusedFiles();
+    }
+
+    /**
+     * Validates the object data before writing to the database.
+     *
+     * @throws ContentException if the object data wasn't valid
+     */
+    protected void doValidate() throws ContentException {
+        Content[]  children;
+
+        super.doValidate();
+        if (getParent() == null) {
+            throw new ContentException("no parent set for file");
+        }
+        children = InternalContent.findByParent(getContentManager(),
+                                                getParent());
+        for (int i = 0; i < children.length; i++) {
+            if (children[i].getId() != getId()
+             && children[i].getName().equals(getName())) {
+
+                throw new ContentException(
+                    "another object with the same name is already " +
+                    "present in the same folder");
+            }
+        }
     }
 
     /**

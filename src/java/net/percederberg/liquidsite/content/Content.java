@@ -601,23 +601,6 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
-     *
-     * @throws ContentException if the data object contained errors
-     */
-    public void validate() throws ContentException {
-        if (getDomain().equals("")) {
-            throw new ContentException("no domain set for content object");
-        } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() +
-                                       "'does not exist");
-        } else if (getName().equals("")) {
-            throw new ContentException("no name set for content object");
-        }
-    }
-
-    /**
      * Deletes this content revision from the database.
      *
      * @param user           the user performing the operation
@@ -649,18 +632,33 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Validates the object data before writing to the database.
+     *
+     * @throws ContentException if the object data wasn't valid
+     */
+    protected void doValidate() throws ContentException {
+        if (getDomain().equals("")) {
+            throw new ContentException("no domain set for content object");
+        } else if (getDomain() == null) {
+            throw new ContentException("domain '" + getDomainName() +
+                                       "'does not exist");
+        } else if (getName().equals("")) {
+            throw new ContentException("no name set for content object");
+        }
+    }
+
+    /**
      * Inserts the object data into the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected void doInsert(User user, DatabaseConnection con)
         throws ContentException {
 
-        validate();
         data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
         try {
@@ -680,13 +678,12 @@ public abstract class Content extends PersistentObject {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
         throws ContentException {
 
-        validate();
         data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
         try {

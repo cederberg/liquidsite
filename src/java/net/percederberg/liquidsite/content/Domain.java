@@ -302,12 +302,11 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
+     * Validates the object data before writing to the database.
      *
-     * @throws ContentException if the data object contained errors
+     * @throws ContentException if the object data wasn't valid
      */
-    public void validate() throws ContentException {
+    protected void doValidate() throws ContentException {
         Domain  domain = getContentManager().getDomain(getName());
 
         if (getName().equals("")) {
@@ -324,13 +323,12 @@ public class Domain extends PersistentObject implements Comparable {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected void doInsert(User user, DatabaseConnection con)
         throws ContentException {
 
-        validate();
         data.setString(DomainData.OPTIONS, encodeMap(options));
         try {
             DomainPeer.doInsert(data, con);
@@ -346,13 +344,12 @@ public class Domain extends PersistentObject implements Comparable {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
         throws ContentException {
 
-        validate();
         data.setString(DomainData.OPTIONS, encodeMap(options));
         try {
             DomainPeer.doUpdate(data, con);

@@ -289,16 +289,15 @@ public class ContentSite extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
+     * Validates the object data before writing to the database.
      *
-     * @throws ContentException if the data object contained errors
+     * @throws ContentException if the object data wasn't valid
      */
-    public void validate() throws ContentException {
+    protected void doValidate() throws ContentException {
         Content[]    sites;
         ContentSite  site;
 
-        super.validate();
+        super.doValidate();
         if (!getProtocol().equals("http") && !getProtocol().equals("https")) {
             throw new ContentException("protocol must be 'http' or 'https'");
         } else if (getHost().equals("")) {

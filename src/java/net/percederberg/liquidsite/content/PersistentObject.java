@@ -325,10 +325,12 @@ public abstract class PersistentObject {
         // Save to database
         if (!isPersistent()) {
             SecurityManager.getInstance().checkInsert(user, this);
+            doValidate();
             doInsert(user, con);
             persistent = true;
         } else {
             SecurityManager.getInstance().checkUpdate(user, this);
+            doValidate();
             doUpdate(user, con);
         }
 
@@ -385,13 +387,20 @@ public abstract class PersistentObject {
     }
 
     /**
+     * Validates the object data before writing to the database.
+     *
+     * @throws ContentException if the object data wasn't valid
+     */
+    protected abstract void doValidate() throws ContentException;
+
+    /**
      * Inserts the object data into the database.
      *
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected abstract void doInsert(User user, DatabaseConnection con)
         throws ContentException;
@@ -402,8 +411,8 @@ public abstract class PersistentObject {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected abstract void doUpdate(User user, DatabaseConnection con)
         throws ContentException ;

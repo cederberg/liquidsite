@@ -175,15 +175,14 @@ public class ContentPost extends Content {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
+     * Validates the object data before writing to the database.
      *
-     * @throws ContentException if the data object contained errors
+     * @throws ContentException if the object data wasn't valid
      */
-    public void validate() throws ContentException {
+    protected void doValidate() throws ContentException {
         Content  parent;
 
-        super.validate();
+        super.doValidate();
         parent = getParent();
         if (parent == null) {
             throw new ContentException("no parent topic set for post");

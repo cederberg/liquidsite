@@ -375,12 +375,11 @@ public class Group extends PersistentObject {
     }
 
     /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
+     * Validates the object data before writing to the database.
      *
-     * @throws ContentException if the data object contained errors
+     * @throws ContentException if the object data wasn't valid
      */
-    public void validate() throws ContentException {
+    protected void doValidate() throws ContentException {
         if (getDomainName().equals("")) {
             throw new ContentException("no domain set for group object");
         } else if (getDomain() == null) {
@@ -397,13 +396,12 @@ public class Group extends PersistentObject {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected void doInsert(User user, DatabaseConnection con)
         throws ContentException {
 
-        validate();
         try {
             GroupPeer.doInsert(data, con);
             doUserGroups(con);
@@ -419,13 +417,12 @@ public class Group extends PersistentObject {
      * @param user           the user performing the operation
      * @param con            the database connection to use
      *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     protected void doUpdate(User user, DatabaseConnection con)
         throws ContentException {
 
-        validate();
         try {
             GroupPeer.doUpdate(data, con);
             doUserGroups(con);
