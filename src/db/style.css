@@ -29,16 +29,20 @@ h2 {
     padding: 3px;
 }
 
-h4 {
-    font-size: 120%;
-}
 
-/* Table style*/
-table {
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Table Styles
+ *
+ */
+
+/* Summary tables */
+table.summary {
     width: 100%;
     border-collapse: collapse;
 }
-th {
+table.summary th {
     font-size: 150%;
     font-weight: bold;
     background-color: #ccccff;
@@ -49,7 +53,7 @@ th {
     text-align: left;
     vertical-align: top;
 }
-td {
+table.summary td {
     border-style: outset;
     border-width: 2px;
     border-color: #808080;
@@ -57,17 +61,29 @@ td {
     text-align: left;
     vertical-align: top;
 }
-
-/* Header and footer */
-.header table {
-    width: auto;
+table.summary td.name {
+    text-align: right;
 }
-.header td {
+
+/* Navigation tables */
+table.navOuter {
+    width: 100%;
+}
+table.navOuter td {
     background-color: #eeeeff;
     border-style: none;
     padding: 4px;
 }
-.header table th {
+table.navOuter td.last {
+    font-weight: bold;
+    background: white;
+    width: 100%;
+    text-align: right;
+}
+table.navInner {
+    width: auto;
+}
+table.navInner th {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 100%;
     background-color: #00008b;
@@ -78,7 +94,7 @@ td {
     padding-left: 7px;
     padding-right: 7px;
 }
-.header table td {
+table.navInner td {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 100%;
     background-color: #eeeeff;
@@ -89,31 +105,15 @@ td {
     padding-left: 5px;
     padding-right: 5px;
 }
-.header td.end {
-    font-weight: bold;
-    background: white;
-    width: 100%;
-    text-align: right;
-}
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Other Styles
+ *
+ */
+
 .footer {
     font-size: smaller;
 }
-
-
-
-
-/* Table colors */
-.TableSubHeadingColor  { background: #EEEEFF } /* Light mauve */
-
-/* Font used in left-hand frame lists */
-.FrameTitleFont   { font-size: 10pts; font-family: Helvetica, Arial, san-serif }
-.FrameHeadingFont { font-size: 10pts; font-family: Helvetica, Arial, san-serif }
-.FrameItemFont    { font-size: 10pts; font-family: Helvetica, Arial, san-serif }
-
-/* Example of smaller, sans-serif font in frames */
-/* .FrameItemFont  { font-size: 10pt; font-family: Helvetica, Arial, sans-serif } */
-
-/* Navigation bar fonts and colors */
-.NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
-.NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
-

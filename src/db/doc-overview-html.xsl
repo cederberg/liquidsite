@@ -21,7 +21,7 @@
     &newline;&indent;&indent;
     <p><xsl:value-of select="description" /></p>
     &newline;&indent;&indent;
-    <table>
+    <table class="summary">
       &newline;&indent;&indent;&indent;
       <tr>
         &newline;&indent;&indent;&indent;&indent;
@@ -35,6 +35,8 @@
       <xsl:apply-templates />
       &indent;&indent;
     </table>
+    &newline;&newline;&indent;&indent;
+    <hr />
     &newline;
   </xsl:template>
 

@@ -53,8 +53,6 @@
       <xsl:apply-templates />
       &newline;&newline;&indent;&indent;
       <p></p>
-      &newline;&newline;&indent;&indent;
-      <hr />
       &newline;&newline;
       <xsl:call-template name="header" />
       &newline;&newline;&indent;&indent;
@@ -74,13 +72,13 @@
 
   <xsl:template name="header">
     &indent;&indent;
-    <table class="header">
+    <table class="navOuter">
       &newline;&indent;&indent;&indent;
       <tr>
         &newline;&indent;&indent;&indent;&indent;
         <td>
           &newline;&indent;&indent;&indent;&indent;&indent;
-          <table>
+          <table class="navInner">
             &newline;&indent;&indent;&indent;&indent;&indent;&indent;
             <tr>
               &newline;&indent;&indent;&indent;&indent;&indent;&indent;&indent;
@@ -100,7 +98,7 @@
           &newline;&indent;&indent;&indent;&indent;
         </td>
         &newline;&indent;&indent;&indent;&indent;
-        <td class="end">
+        <td class="last">
           <xsl:value-of select="$name" />
           <xsl:text> Database Documentation</xsl:text>
         </td>
