@@ -28,12 +28,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.web.FormHandlingException;
-import net.percederberg.liquidsite.web.FormValidationException;
-import net.percederberg.liquidsite.web.FormValidator;
-import net.percederberg.liquidsite.web.Request;
-import net.percederberg.liquidsite.web.Request.FileParameter;
-import net.percederberg.liquidsite.web.RequestSession;
 
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;
@@ -45,6 +39,12 @@ import org.liquidsite.core.content.ContentSection;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.DocumentProperty;
+import org.liquidsite.core.web.FormHandlingException;
+import org.liquidsite.core.web.FormValidationException;
+import org.liquidsite.core.web.FormValidator;
+import org.liquidsite.core.web.Request;
+import org.liquidsite.core.web.Request.FileParameter;
+import org.liquidsite.core.web.RequestSession;
 
 /**
  * The content edit request handler. This class handles the edit

@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
@@ -37,6 +36,7 @@ import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 
 /**
  * A helper class for the dialog views. This class contains methods

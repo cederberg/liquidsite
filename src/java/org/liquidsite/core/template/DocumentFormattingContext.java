@@ -19,15 +19,14 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.template;
-
-import net.percederberg.liquidsite.web.RequestEnvironment;
+package org.liquidsite.core.template;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentSection;
 import org.liquidsite.core.text.FormattingContext;
+import org.liquidsite.core.web.RequestEnvironment;
 import org.liquidsite.util.log.Log;
 
 /**

@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.web;
+package org.liquidsite.core.web;
 
 /**
  * A form request handler. This class attempts to provide some

@@ -24,14 +24,14 @@ package net.percederberg.liquidsite;
 import org.liquidsite.util.log.Log;
 
 import net.percederberg.liquidsite.admin.AdminRequestProcessor;
-import net.percederberg.liquidsite.template.TemplateException;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.template.TemplateException;
+import org.liquidsite.core.web.Request;
 
 /**
  * The default request processor for normal requests.

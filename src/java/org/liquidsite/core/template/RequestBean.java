@@ -19,13 +19,13 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.template;
+package org.liquidsite.core.template;
 
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 
-import net.percederberg.liquidsite.web.Request;
+import org.liquidsite.core.web.Request;
 
 /**
  * A request bean. This class is used to access the request object

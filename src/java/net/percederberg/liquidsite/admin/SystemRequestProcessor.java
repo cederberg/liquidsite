@@ -43,7 +43,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
@@ -57,6 +56,7 @@ import org.liquidsite.core.content.Lock;
 import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
 
 /**

@@ -25,12 +25,12 @@ import java.io.File;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 
 /**
  * A helper class for the system view. This class contains methods

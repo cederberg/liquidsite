@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.template;
+package org.liquidsite.core.template;
 
 import org.liquidsite.core.content.ContentPost;
 import org.liquidsite.core.text.PlainFormatter;

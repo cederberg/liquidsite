@@ -28,9 +28,6 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.web.Request;
-import net.percederberg.liquidsite.web.Request.FileParameter;
-import net.percederberg.liquidsite.web.RequestSession;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
@@ -46,6 +43,9 @@ import org.liquidsite.core.content.DocumentProperty;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
+import org.liquidsite.core.web.Request.FileParameter;
+import org.liquidsite.core.web.RequestSession;
 
 /**
  * A helper class for the content view. This class contains methods

@@ -28,8 +28,6 @@ import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.RequestProcessor;
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.template.TemplateException;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
@@ -43,6 +41,8 @@ import org.liquidsite.core.content.ContentTemplate;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.template.TemplateException;
+import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
 
 /**

@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.web.Request;
-import net.percederberg.liquidsite.web.RequestSession;
 
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
@@ -35,6 +33,8 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
+import org.liquidsite.core.web.RequestSession;
 
 /**
  * A helper class for the user view. This class contains methods

@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.web;
+package org.liquidsite.core.web;
 
 /**
  * A form validation exception. This exception is thrown when an

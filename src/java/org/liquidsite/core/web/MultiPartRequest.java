@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.web;
+package org.liquidsite.core.web;
 
 import java.io.File;
 import java.io.IOException;

@@ -25,8 +25,6 @@ import java.util.Date;
 
 import org.liquidsite.util.log.Log;
 
-import net.percederberg.liquidsite.web.Request;
-
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentForum;
 import org.liquidsite.core.content.ContentException;
@@ -36,6 +34,7 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.text.PlainFormatter;
+import org.liquidsite.core.web.Request;
 
 /**
  * The forum request processor for forum posts and previews.

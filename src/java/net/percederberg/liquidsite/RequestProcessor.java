@@ -24,11 +24,6 @@ package net.percederberg.liquidsite;
 import java.io.File;
 import java.io.StringWriter;
 
-import net.percederberg.liquidsite.template.Template;
-import net.percederberg.liquidsite.template.TemplateException;
-import net.percederberg.liquidsite.template.TemplateManager;
-import net.percederberg.liquidsite.web.Request;
-
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;
@@ -43,6 +38,10 @@ import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.template.Template;
+import org.liquidsite.core.template.TemplateException;
+import org.liquidsite.core.template.TemplateManager;
+import org.liquidsite.core.web.Request;
 
 /**
  * A request processor.

@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.template;
+package org.liquidsite.core.template;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateScalarModel;
 import freemarker.template.TemplateSequenceModel;
 
-import net.percederberg.liquidsite.web.RequestSession;
+import org.liquidsite.core.web.RequestSession;
 
 /**
  * A user session bean. This class is used to access and manipulate

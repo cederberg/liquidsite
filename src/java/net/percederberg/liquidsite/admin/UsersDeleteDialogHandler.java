@@ -22,7 +22,6 @@
 package net.percederberg.liquidsite.admin;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
@@ -30,6 +29,7 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 
 /**
  * The users delete request handler. This class handles the delete

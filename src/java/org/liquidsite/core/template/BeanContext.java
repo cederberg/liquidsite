@@ -19,12 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.template;
+package org.liquidsite.core.template;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
@@ -39,6 +37,7 @@ import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
 import org.liquidsite.util.mail.MailException;
 import org.liquidsite.util.mail.MailMessage;

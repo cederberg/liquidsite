@@ -33,9 +33,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.web.FormValidationException;
-import net.percederberg.liquidsite.web.Request;
-import net.percederberg.liquidsite.web.Request.FileParameter;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
@@ -51,6 +48,9 @@ import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Host;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.FormValidationException;
+import org.liquidsite.core.web.Request;
+import org.liquidsite.core.web.Request.FileParameter;
 
 /**
  * The site add request handler. This class handles the add workflow

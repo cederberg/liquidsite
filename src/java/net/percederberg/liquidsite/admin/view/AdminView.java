@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
@@ -40,6 +39,7 @@ import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 
 /**
  * A helper class for creating the HTML and JavaScript output for the

@@ -24,8 +24,6 @@ package net.percederberg.liquidsite.admin;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.web.FormValidationException;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
@@ -37,6 +35,8 @@ import org.liquidsite.core.content.PermissionList;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.content.Group;
+import org.liquidsite.core.web.FormValidationException;
+import org.liquidsite.core.web.Request;
 
 /**
  * The permission editing request handler. This class handles the

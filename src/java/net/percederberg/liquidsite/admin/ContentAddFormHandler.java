@@ -27,10 +27,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.web.FormHandlingException;
-import net.percederberg.liquidsite.web.FormValidationException;
-import net.percederberg.liquidsite.web.Request;
-import net.percederberg.liquidsite.web.Request.FileParameter;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
@@ -45,6 +41,10 @@ import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.DocumentProperty;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.PersistentObject;
+import org.liquidsite.core.web.FormHandlingException;
+import org.liquidsite.core.web.FormValidationException;
+import org.liquidsite.core.web.Request;
+import org.liquidsite.core.web.Request.FileParameter;
 
 /**
  * The content add request handler. This class handles the add

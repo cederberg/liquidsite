@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.template;
+package org.liquidsite.core.template;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -28,8 +28,7 @@ import java.util.Map;
 import freemarker.core.Environment;
 import freemarker.template.TemplateExceptionHandler;
 
-import net.percederberg.liquidsite.web.Request;
-
+import org.liquidsite.core.web.Request;
 import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.util.log.Log;
 

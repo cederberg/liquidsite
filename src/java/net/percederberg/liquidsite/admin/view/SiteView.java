@@ -27,8 +27,6 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.admin.AdminUtils;
-import net.percederberg.liquidsite.web.Request;
-import net.percederberg.liquidsite.web.Request.FileParameter;
 
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
@@ -44,6 +42,8 @@ import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Host;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
+import org.liquidsite.core.web.Request.FileParameter;
 
 /**
  * A helper class for the site view. This class contains methods for

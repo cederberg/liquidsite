@@ -32,7 +32,6 @@ import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Configuration;
 import net.percederberg.liquidsite.ConfigurationException;
 import net.percederberg.liquidsite.RequestProcessor;
-import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
@@ -40,6 +39,7 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseConnectionException;
 import org.liquidsite.util.db.DatabaseDataException;
