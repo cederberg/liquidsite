@@ -59,7 +59,7 @@
       <webinf dir="${build.dir}/src/metainf"
               excludes="web.xml" />
       <lib dir="${build.dir}/lib">
-        <include name="liquidsite*.jar" />
+        <exclude name="servlet.jar" />
       </lib>
     </war>
   </target>
