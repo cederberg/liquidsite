@@ -21,124 +21,100 @@
 
 package net.percederberg.liquidsite;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseException;
-import net.percederberg.liquidsite.db.DatabaseResults;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 
 /**
- * A controller for the installation process.
+ * A controller for the installation process. This controller differs
+ * from normal controllers in that it uses instance variables to keep
+ * session information. This makes this controller impossible to use
+ * in a multi-user scenario, but the installation process is supposed
+ * to be run by a single user. 
  *
  * @author   Marielle Fois, <marielle at kth dot se>
+ * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
 public class InstallController extends Controller {
 
     /**
-     * The MySQL database connector.
+     * The class logger.
      */
-    private MySQLDatabaseConnector con = null;
+    private static final Log LOG = new Log(InstallController.class);
+
+    /**
+     * The description of the last error encountered. If this 
+     * variable is set to null, no error has ocurred.
+     */
+    private String lastError = null;
+
+    /**
+     * The MySQL database connector. This variable is set to null if 
+     * no valid database connection has been made.
+     */
+    private MySQLDatabaseConnector connector = null;
      
     /**
      * The database host name.
      */
-    private String host;
+    private String host = "localhost";
     
     /**
-     * The database user name.
+     * The database name.
      */
-    private String rootUsername;
+    private String database = "liquidsite";
     
     /**
-     * The database password.
+     * The data directory.
      */
-    private String rootPassword;
+    private String dataDir = "/home/liquidsite";
     
     /**
-     * The selected database.
+     * The database user used in the installation.
      */
-    private String dbsel;
+    private String installUser = "";
     
     /**
-     * The entered database.
+     * The database user password used in the installation.
      */
-    private String database;
+    private String installPassword = "";
     
     /**
-     * The selected liquid site user name.
+     * The database user name for Liquid Site.
      */
-    private String usersel;
+    private String databaseUser = "liquidsite";
     
     /**
-     * The entered liquid site user name.
+     * The database user password for Liquid Site.
      */
-    private String username;
+    private String databasePassword = "";
     
     /**
-     * The liquid site password.
+     * The administrator user name for Liquid Site.
      */
-    private String password;
+    private String adminUser = "root";
     
     /**
-     * The liquid site password verification.
+     * The administrator user password for Liquid Site.
      */
-    private String verify;
-
-    /**
-     * Any error.
-     */
-    private boolean error;
+    private String adminPassword = "";
     
     /**
-     * Error in the host name.
+     * The create database flag.
      */
-    private boolean errorHost;
+    private boolean createDatabase = false;
     
     /**
-     * Error in the username.
+     * The create database user flag.
      */
-    private boolean errorUsername;
-    
-    /**
-     * Error in the password.
-     */
-    private boolean errorPassword;
-    
-    /**
-     * Error in re-typed password.
-     */
-    private boolean errorVerify;
-    
-    /**
-     * The database to create already exists.
-     */
-    private boolean errorDbExists;
-
-    /**
-     * Password verification failed.
-     */
-    private boolean errorVerification;
-    
-    /**
-     * The liquid site user to create already exists.
-     */
-    private boolean errorUserExists;
-
-    /**
-     * Error in attempting to connect to the database.
-     */
-    private boolean errorConnection;
-
-    /**
-     * Technical error.
-     */
-    private boolean errorTech;
+    private boolean createDatabaseUser = false;
 
     /**
      * Creates a new install controller. 
@@ -158,883 +134,587 @@ public class InstallController extends Controller {
     }
 
     /**
-     * Processes a request. This method looks at the request parameter
-     * "step" to know the next step in the installation process. If
-     * this parameter doesn't exist, it forwards to the start
-     * installation page.
+     * Processes a request.
      *
      * @param request        the request object to process
      */
     public void process(Request request) {
-        String step = request.getParameter("step");
-        if (step != null && step.equals("1")) {
-            install2(request);
-        } else if (step != null && step.equals("2")) {
-            install3(request);
-        } else if (step != null && step.equals("3")) {
-            install4(request);
-        } else if (step != null && step.equals("4")) {
-            install5(request);
+        String  step = request.getParameter("step", "");
+
+        lastError = null;
+        if (request.getParameter("prev") != null) {
+            processPrevious(request, step);
+        } else if (step.equals("1")) {
+            processStep1(request);
+        } else if (step.equals("2")) {
+            processStep2(request);
+        } else if (step.equals("3")) {
+            processStep3(request);
+        } else if (step.equals("4")) {
+            processStep4(request);
+        } else if (step.equals("5")) {
+            processStep5(request);
         } else {
-            install(request);
+            displayStep1(request);
         }
     }
 
     /**
-     * Processes the request information and forwards to the first
-     * page of the web installation.
+     * Processes a request for the previous page.
      *
-     * @param request           the request object
+     * @param request        the request object to process
+     * @param step           the request step
      */
-    private void install(Request request) {
-        // initialize error variables
-        initializeErrors();
-        
-        // get request parameters
-        getParameters(request);
-        
-        // set installation default values
-        setDefaultValues();
-        
-        // set request attributes
-        setAttributes(request);
-        
-        request.forward("/install/install.jsp");
-    }
-
-    /**
-     * Processes the request information. If an error happened in the
-     * request information, it forwards to the first page in the
-     * web installation, otherwise it forwards to the second page.
-     *
-     * @param request           the request object
-     */
-    private void install2(Request request) {
-        ArrayList dbsInfo = null;
-        boolean isAdmin = false;
-
-        // initialize error variables
-        initializeErrors();
-
-        // get request parameters
-        getParameters(request);
-
-        // check database connection info
-        checkDbConnInfo();
-        
-        if (!error) {
-            // close connector if already created
-            closeConnector();
-            
-            // create connector if connector not already created
-            createConnector(host, rootUsername, rootPassword);
-            
-            // get databases information 
-            dbsInfo = getDatabasesInfo();
-            
-            // get if database user entered is administrator
-            isAdmin = isAdministrator();
-            
-            // initialize dbsel variable
-            initializeDbsel(dbsInfo);
-        }
-
-        if (errorTech) {
-            request.forward("/install/error.jsp");
-
+    private void processPrevious(Request request, String step) {
+        if (step.equals("5")) {
+            displayStep4(request);
+        } else if (step.equals("4")) {
+            displayStep3(request);
+        } else if (step.equals("3")) {
+            displayStep2(request);
         } else {
-            // set request attributes
-            setAttributes(request);
-        
-            if (error) {
-                request.forward("/install/install.jsp");
-            } else {
-                request.setAttribute("dbsInfo", dbsInfo);
-                request.setAttribute("isAdmin", new Boolean(isAdmin));
-                request.forward("/install/install2.jsp");
-            }
+            displayStep1(request);
         }
     }
 
     /**
-     * Processes the request information. If an error happened in the
-     * request information, it forwards to the second page in the
-     * web installation, otherwise it forwards to the third page.
+     * Processes a request originating from step 1.
      *
-     * @param request           the request object
+     * @param request        the request object to process
      */
-    private void install3(Request request) {
-        ArrayList dbsInfo = null;
-        ArrayList users = null;
-        boolean isAdmin = false;
-                
-        // initialize error variables
-        initializeErrors();
-
-        // get request parameters
-        getParameters(request);
-
-        // check database info
-        checkDbInfo();
-
-        if (!errorTech) {
-            // if error, get the databases information,  
-            // if not error, get the list of users
-            if (error) {
-                dbsInfo = getDatabasesInfo();
-            } else {
-                users = getUserNames();
-            }
-
-            // get whether the connection database user is admin
-            isAdmin = isAdministrator();
+    private void processStep1(Request request) {
+        host = request.getParameter("host", "").trim();
+        installUser = request.getParameter("user", "").trim();
+        installPassword = request.getParameter("password", "");
+        createConnector();
+        if (lastError == null && !isAdministrator()) {
+            databaseUser = installUser;
+            databasePassword = installPassword;
         }
-        
-        if (errorTech) {
-            request.forward("/install/error.jsp");
-
+        if (lastError != null) {
+            displayStep1(request);
         } else {
-            // set request attributes
-            setAttributes(request);
-            request.setAttribute("isAdmin", new Boolean(isAdmin));
-        
-            if (error) {
-                request.setAttribute("dbsInfo", dbsInfo);
-                request.forward("/install/install2.jsp");
-            } else {
-                request.setAttribute("users", users);
-                request.forward("/install/install3.jsp");
-            }
+            displayStep2(request);
         }
     }
 
     /**
-     * Processes the request information. If an error happened in the
-     * request information, it forwards to the third page in the
-     * web installation, otherwise it forwards to the fourth page.
+     * Processes a request originating from step 2.
      *
-     * @param request           the request object
+     * @param request        the request object to process
      */
-    private void install4(Request request) {
-        ArrayList users = null;
-
-        // initialize errors
-        initializeErrors();
-
-        // get request parameters
-        getParameters(request);
-
-        // get the list of users
-        users = getUserNames();
-
-        if (!error) {        
-            // check user info
-            checkUserInfo(users);
+    private void processStep2(Request request) {
+        createDatabase = false;
+        database = request.getParameter("database1", "");
+        if (database.equals("")) {
+            createDatabase = true;
+            database = request.getParameter("database2", "").trim();
         }
-        
-        if (errorTech) {
-            request.forward("/install/error.jsp");
-
+        if (database.equals("")) {
+            lastError = "No database selected";
+        } else if (createDatabase && listDatabases().contains(database)) {
+            lastError = "Cannot create a database that already exists";
+        }
+        if (lastError != null) {
+            displayStep2(request);
         } else {
-            // reset passwords if they didn't match  
-            if (errorVerification) {
-                password = "";
-                verify = "";
-            }
-            
-            // set request attributes
-            setAttributes(request);
-
-            if (error) {
-                request.setAttribute("users", users);
-                request.setAttribute("isAdmin", 
-                    new Boolean(isAdministrator()));
-                request.forward("/install/install3.jsp");
-            } else {
-                request.forward("/install/install4.jsp");
-            }
+            displayStep3(request);
         }
     }
 
     /**
-     * Performs the installation and forwards to the last page of the
-     * installation.
+     * Processes a request originating from step 3.
      *
-     * @param request           the request object
+     * @param request        the request object to process
      */
-    private void install5(Request request) {
-        String db;
-        String user;
+    private void processStep3(Request request) {
+        MySQLDatabaseConnector  test;
+        String                  str;
 
-        // get info from request
-        getParameters(request);
-        
-        // get selected database and user
-        db = (dbsel.equals("")) ? database : dbsel;
-        user = (usersel.equals("")) ? username : usersel;
+        // Extract form data
+        createDatabaseUser = false;
+        databaseUser = request.getParameter("user1", "");
+        if (databaseUser.equals("")) {
+            createDatabaseUser = true;
+            databaseUser = request.getParameter("user2", "").trim();
+        }
+        databasePassword = request.getParameter("password1", "");
+        str = request.getParameter("password2", "");
 
+        // Validate form data
+        if (databaseUser.equals("")) {
+            lastError = "No user name selected";
+        } else if (createDatabaseUser && !databasePassword.equals(str)) {
+            lastError = "The two passwords must be identical";
+            databasePassword = "";
+        } else if (createDatabaseUser && listUsers().contains(databaseUser)) {
+            lastError = "Cannot create a user that already exists";
+        } else if (!createDatabaseUser) {
+            if (createDatabase) {
+                test = new MySQLDatabaseConnector(host,
+                                                  databaseUser, 
+                                                  databasePassword);
+            } else {
+                test = new MySQLDatabaseConnector(host,
+                                                  database,
+                                                  databaseUser, 
+                                                  databasePassword);
+            }
+            try {
+                test.returnConnection(test.getConnection());
+            } catch (DatabaseConnectionException e) {
+                lastError = "Couldn't connect to database with specified " +
+                            "user name and password";
+            }
+        }
+
+        // Print results
+        if (lastError != null) {
+            displayStep3(request);
+        } else {
+            displayStep4(request);
+        }
+    }
+
+    /**
+     * Processes a request originating from step 4.
+     *
+     * @param request        the request object to process
+     */
+    private void processStep4(Request request) {
+        File    file;
+        String  str;
+
+        // Extract form data
+        dataDir = request.getParameter("dir", "").trim();
+        adminUser = request.getParameter("user", "").trim();
+        adminPassword = request.getParameter("password1", "");
+        str = request.getParameter("password2", "");
+
+        // Validate form data
+        if (dataDir.equals("")) {
+            lastError = "No data directory specified";
+        } else if (adminUser.equals("")) {
+            lastError = "No administrator user name specified";
+        } else if (adminPassword.equals("")) {
+            lastError = "No administrator password specified";
+        } else if (!adminPassword.equals(str)) {
+            lastError = "The two passwords must be identical";
+            adminPassword = "";
+        } else {
+            file = new File(dataDir);
+            if (!file.exists()) {
+                lastError = "Data directory does not exist";
+            } else if (!file.canWrite()) {
+                lastError = "Cannot write to data directory, " +
+                            "check permissions";
+            }
+        }
+
+        // Print results
+        if (lastError != null) {
+            displayStep4(request);
+        } else {
+            displayStep5(request);
+        }
+    }
+
+    /**
+     * Processes a request originating from step 5.
+     *
+     * @param request        the request object to process
+     */
+    private void processStep5(Request request) {
+
+        // Write database and configuration 
         try {
-            // drop database if exists
-            if (!dbsel.equals("")) {
-                con.deleteDatabase(db);
+            if (createDatabase) {
+                connector.createDatabase(database);
             }
-
-            // create database
-            con.createDatabase(db);
-
-            // create user if it doesn't exist
-            con.createUser(user, password);
-
-            // grant permissions to user
-            con.addAccessPrivileges(db, user);
-
-            // create tables
-            createTables(db); 
-
-            // create config file and table
-            writeConfiguration(host, db, user, password);
-            
+            if (createDatabaseUser) {
+                connector.createUser(databaseUser, databasePassword);
+            }
+            if (isAdministrator()) {
+                connector.addAccessPrivileges(database, databaseUser);
+            }
+            createTables();
+            writeConfiguration();
+            // TODO: write default web site and admin users
         } catch (DatabaseConnectionException e) {
-            error = true;
-            errorConnection = true;
-            e.printStackTrace();
+            LOG.error("couldn't finish installation", e);
+            lastError = e.getMessage();
         } catch (DatabaseException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
+            LOG.error("couldn't finish installation", e);
+            lastError = e.getMessage();
+        } catch (FileNotFoundException e) {
+            LOG.error("couldn't finish installation", e);
+            lastError = e.getMessage();
+        } catch (IOException e) {
+            LOG.error("couldn't finish installation", e);
+            lastError = e.getMessage();
         } catch (ConfigurationException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
+            LOG.error("couldn't finish installation", e);
+            lastError = e.getMessage();
         }
-        
-        if (errorTech) {
-            request.forward("/install/error.jsp");
+
+        // Display errors or restart application
+        if (lastError != null) {
+            displayStep5(request);
         } else {
             getApplication().restart();
-            request.forward("/install/install5.jsp");
+            request.redirect("index.html");
         }
     }
 
     /**
-     * Gets the installation information from the request parameters.
+     * Displays the step 1 page.
      *
-     * @param request        the request object from which to 
-     *                       get the information
+     * @param request        the request object
      */
-    private void getParameters(Request request) {
-        host = request.getParameter("host");
-        rootUsername = request.getParameter("rootUsername");
-        rootPassword = request.getParameter("rootPassword");
-        dbsel = request.getParameter("dbsel");
-        database = request.getParameter("database");
-        usersel = request.getParameter("usersel");
-        username = request.getParameter("username");
-        password = request.getParameter("password");
-        verify = request.getParameter("verify");
-    }
-    
-    /**
-     * Sets the installation information as request attributes.
-     *
-     * @param request        the request object where to set
-     *                       the information
-     */
-    private void setAttributes(Request request) {
+    private void displayStep1(Request request) {
+        request.setAttribute("error", lastError);
         request.setAttribute("host", host);
-        request.setAttribute("rootUsername", rootUsername);
-        request.setAttribute("rootPassword", rootPassword);
-        request.setAttribute("dbsel", dbsel);
-        request.setAttribute("database", database);
-        request.setAttribute("usersel", usersel);
-        request.setAttribute("username", username);
-        request.setAttribute("password", password);
-        request.setAttribute("verify", verify);         
-        request.setAttribute("error", error);
-        request.setAttribute("errorHost", errorHost);
-        request.setAttribute("errorUsername", errorUsername);
-        request.setAttribute("errorPassword", errorPassword);
-        request.setAttribute("errorDbExists", errorDbExists);
-        request.setAttribute("errorVerify", errorVerify);
-        request.setAttribute("errorVerification", errorVerification);
-        request.setAttribute("errorUserExists", errorUserExists);
-        request.setAttribute("errorConnection", errorConnection);
+        request.setAttribute("user", installUser);
+        request.setAttribute("password", installPassword);
+        request.forward("/install/install1.jsp");
     }
 
     /**
-     * Sets the default values for the installation process if no
-     * values were already set.
-     */
-    private void setDefaultValues() {
-        if (host == null) {
-            host = "localhost";
-        }
-        if (rootUsername == null) {
-            rootUsername = "root";
-        }
-        if (rootPassword == null) {
-            rootPassword = "";
-        }
-        if (database == null) {
-            database = "liquidsite";
-        }
-        if (usersel == null) {
-            usersel = "";
-        }
-        if (username == null) {
-            username = "liquidsite";
-        }
-        if (password == null) {
-            password = "";
-        }
-        if (verify == null) {
-            verify = "";
-        }
-    }
-    
-    /**
-     * Initializes the variable dbsel.
-     * 
-     * @param dbsInfo        databases info from which to 
-     *                       initialize dbsel
-     */
-    private void initializeDbsel(ArrayList dbsInfo) {
-        if (dbsel == null) {
-            if (isAdministrator()) {
-                dbsel = "";
-            } else if (dbsInfo.size() > 0) {
-                dbsel = (String) ((Hashtable) dbsInfo.get(0)).
-                    get("name");
-            }
-
-        } else {
-            boolean contained = false;
-
-            for (int i = 0; i < dbsInfo.size() && !contained; i++) {
-                if (dbsel.equals((String) 
-                    ((Hashtable) dbsInfo.get(i)).get("name"))) {
-                    contained = true;
-                }
-            }
-            
-            if (!contained) {
-                if (isAdministrator()) {
-                    dbsel = "";
-                } else if (dbsInfo.size() > 0) {
-                    dbsel = (String) ((Hashtable) dbsInfo.get(0)).
-                        get("name");
-                }
-            }
-        }
-    }
-    
-    /**
-     * Sets the error variables to false.
-     */
-    private void initializeErrors() {
-        error = false;
-        errorHost = false;
-        errorUsername = false;
-        errorPassword = false;
-        errorDbExists = false;
-        errorVerify = false;
-        errorVerification = false;
-        errorUserExists = false;
-        errorConnection = false;
-        errorTech = false;
-    }
-
-    /**
-     * Checks the correctness of the host, root username, and root
-     * password fields. If errors are found, the corresponding error 
-     * variable are updated.
-     */
-    private void checkDbConnInfo() {
-        // check host name
-        if (host.equals("")) {
-            error = true;
-            errorHost = true;
-        }
-        
-        // check username
-        if (rootUsername.equals("")) {
-            error = true;
-            errorUsername = true;
-        }
-        
-        // check password
-        if (rootPassword.equals("")) {
-            error = true;
-            errorPassword = true;
-        }
-    }
-
-    /**
-     * Checks the correctness of the database selection information.
-     */
-    private void checkDbInfo() {
-        if (dbsel.equals("") && database.equals("")) {
-            error = true;
-        } else if (dbsel.equals("") && databaseExists(database)) {
-            error = true;
-            errorDbExists = true;
-        }
-    }
-
-    /**
-     * Checks the correctness of the user selection information.
+     * Displays the step 2 page.
      *
-     * @param users          the names of the database users 
+     * @param request        the request object
      */
-    private void checkUserInfo(ArrayList users) {
-        if (isAdministrator()) {
-            if (usersel.equals("")) {
-                if (username.equals("")) {
-                    error = true;
-                    errorUsername = true;
-                }
-                if (password.equals("")) {
-                    error = true;
-                    errorPassword = true;
-                }
-                if (verify.equals("")) {
-                    error = true;
-                    errorVerify = true;
-                }
-                if (users.contains(username)) {
-                    error = true;
-                    errorUserExists = true;
-                }
-        
-                if (!errorPassword && !errorVerify && 
-                    !password.equals(verify)) {
-                    error = true;
-                    errorVerification = true;
-                }
+    private void displayStep2(Request request) {
+        String     originalError = lastError;
+        ArrayList  list;
+        String[]   databaseNames;
+        int[]      databaseStatus;
+        int[]      databaseTables;
+        String[]   databaseInfo;
+        boolean    enableNext = false;
 
+        // Find database list
+        list = listDatabases();
+        databaseNames = new String[list.size()];
+        databaseStatus = new int[list.size()];
+        databaseTables = new int[list.size()];
+        databaseInfo = new String[list.size()];
+        list.toArray(databaseNames);
+
+        // Find database details
+        for (int i = 0; i < databaseNames.length; i++) {
+            lastError = null;
+            list = listTables(databaseNames[i]);
+            databaseStatus[i] = 1;
+            databaseTables[i] = list.size();
+            databaseInfo[i] = "";
+            if (lastError != null) {
+                databaseStatus[i] = 0;
+                databaseInfo[i] = "Couldn't read database";
+            } else if (databaseNames[i].equals("mysql")) {
+                databaseStatus[i] = 0;
+                databaseInfo[i] = "MySQL administration database";
+            } else if (getTableConflicts(list) > 0) {
+                databaseStatus[i] = 0;
+                databaseInfo[i] = getTableConflicts(list) + 
+                                  " conflicting tables found";
             } else {
-                if (password.equals("")) {
-                    error = true;
-                    errorPassword = true;
-                } else {
-                    MySQLDatabaseConnector c;
-
-                    // set a connection and perform a query
-                    c = new MySQLDatabaseConnector(host, usersel, 
-                        password);
-                    try {
-                        c.setPoolSize(1);
-                        c.listDatabases();
-                    } catch (Exception e) {
-                        error = true;
-                        errorVerification = true;
-                    } finally {
-                        // free connection
-                        c.setPoolSize(0);
-                        try {
-                            c.update();
-                        } catch (Exception ignore) {
-                            // Do ignore
-                        }
-                    }
-                }
+                enableNext = true;
             }
         }
+        lastError = originalError;
+        if (!enableNext) {
+            if (isAdministrator()) {
+                enableNext = true;
+            } else {
+                lastError = "No databases available for selection";
+            }
+        }
+
+        // Display database list
+        request.setAttribute("error", lastError);
+        request.setAttribute("database", database);
+        request.setAttribute("databaseNames", databaseNames);
+        request.setAttribute("databaseStatus", databaseStatus);
+        request.setAttribute("databaseTables", databaseTables);
+        request.setAttribute("databaseInfo", databaseInfo);
+        request.setAttribute("enableCreate", isAdministrator());
+        request.setAttribute("enableNext", enableNext);
+        request.forward("/install/install2.jsp");
     }
 
     /**
-     * Creates a connector to the database.
+     * Displays the step 3 page.
      *
-     * @param host           the host name
-     * @param username       the user name
-     * @param password       the user password
+     * @param request        the request object
      */
-    private void createConnector(String host, 
-                                 String username, 
-                                 String password) {
-        con = new MySQLDatabaseConnector(host, username, password);
-        con.setPoolSize(1);
+    private void displayStep3(Request request) {
+        ArrayList  list;
+        String[]   userNames;
+
+        // Find user list
+        list = listUsers();
+        userNames = new String[list.size()];
+        list.toArray(userNames);
+
+        // Display user list
+        request.setAttribute("error", lastError);
+        request.setAttribute("user", databaseUser);
+        request.setAttribute("password", databasePassword);
+        request.setAttribute("userNames", userNames);
+        request.setAttribute("enableCreate", isAdministrator());
+        request.forward("/install/install3.jsp");
+    }
+
+    /**
+     * Displays the step 4 page.
+     *
+     * @param request        the request object
+     */
+    private void displayStep4(Request request) {
+        request.setAttribute("error", lastError);
+        request.setAttribute("dir", dataDir);
+        request.setAttribute("user", adminUser);
+        request.setAttribute("password", adminPassword);
+        request.forward("/install/install4.jsp");
+    }
+
+    /**
+     * Displays the step 5 page.
+     *
+     * @param request        the request object
+     */
+    private void displayStep5(Request request) {
+        request.setAttribute("error", lastError);
+        request.setAttribute("host", host);
+        request.setAttribute("database", database);
+        request.setAttribute("databaseuser", databaseUser);
+        request.setAttribute("datadir", dataDir);
+        request.setAttribute("adminuser", adminUser);
+        request.setAttribute("createdatabase", createDatabase);
+        request.setAttribute("createuser", createDatabaseUser);
+        request.forward("/install/install5.jsp");
+    }
+
+    /**
+     * Creates a new database connector and tests it. If an old 
+     * database connector exists, it will be closed. The instance 
+     * variables are used for passing the connection details. As a 
+     * side-effect, this method will also log any error encountered, 
+     * and set the lastError variable.
+     */
+    private void createConnector() {
+        if (connector != null) {
+            closeConnector();
+        }
+        connector = new MySQLDatabaseConnector(host, 
+                                               installUser, 
+                                               installPassword);
+        connector.setPoolSize(1);
+        try {
+            connector.loadFunctions(getFile("WEB-INF/database.properties"));
+            connector.returnConnection(connector.getConnection());
+        } catch (FileNotFoundException e) {
+            LOG.error("couldn't read database functions", e);
+            lastError = "Couldn't find 'database.properties' file";
+            connector = null;
+        } catch (IOException e) {
+            LOG.error("couldn't read database functions", e);
+            lastError = "Couldn't read 'database.properties' file";
+            connector = null;
+        } catch (DatabaseConnectionException e) {
+            LOG.error("couldn't connect to database", e);
+            lastError = e.getMessage();
+            connector = null;
+        }
     }
 
     /**
      * Closes the connector if it was created.
      */
     private void closeConnector() {
-        if (con != null) {
-            con.setPoolSize(0);
+        if (connector != null) {
+            connector.setPoolSize(0);
             try {
-                con.update();
+                connector.update();
             } catch (DatabaseConnectionException ignore) {
                 // Do ignore
             }
-            con = null;
+            connector = null;
         }
     }
 
     /**
-     * Checks if the connector's database user is administrator.
+     * Checks if the current connector is has administrator 
+     * privileges. As a side-effect, this method will log any error
+     * encountered, and set the lastError variable.
      * 
-     * @return true if the connector's database user is administrator,
+     * @return true if the connector user is administrator, or
      *         false otherwise
      */
-
     private boolean isAdministrator() {
-        boolean isAdmin = false;
-        
         try {
-            isAdmin = con.isAdministrator();
+            return connector.isAdministrator();
         } catch (DatabaseConnectionException e) {
-            error = true;
-            errorConnection = true;
-            e.printStackTrace();
+            LOG.error("couldn't connect to database", e);
+            lastError = e.getMessage();
         } catch (DatabaseException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
+            LOG.error("couldn't get user admin status", e);
+            lastError = e.getMessage();
         }
-        
-        return isAdmin;
+        return false;
     }
 
     /**
-     * Returns a list with information about all databases. Each
-     * component of the returned list is a list with the database
-     * name, whether it it a liquid site database, and what type of
-     * access it is allowed to the user used to create the connector
-     * with.
+     * Returns a list of databases found with the current connector.
+     * As a side-effect, this method will log any error encountered, 
+     * and set the lastError variable.
      * 
-     * @return a list with database names
-     * 
-     * @see #getDatabaseInfo
+     * @return the list of database names found
      */
-    private ArrayList getDatabasesInfo() {
-        ArrayList            dbs = new ArrayList();
-        ArrayList            dbsInfo = new ArrayList();
-        Hashtable            info;
-        
+    private ArrayList listDatabases() {
         try {
-            // load database functions
-            con.loadFunctions(getFile("WEB-INF/database.properties"));
-
-            // get databases information
-            dbs = con.listDatabases();
-            for (int i = 0; i < dbs.size(); i++) {
-                info = getDatabaseInfo((String) dbs.get(i));
-                dbsInfo.add(info);
-            }
-        } catch (FileNotFoundException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
-        } catch (IOException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
-        } catch (DatabaseException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
+            return connector.listDatabases();
         } catch (DatabaseConnectionException e) {
-            error = true;
-            errorConnection = true;
-            e.printStackTrace();
-        }
-        
-        return dbsInfo;
-    }
-
-    /**
-     * Returns information about a database as a hash table. The 
-     * information returned is the database name, how many tables
-     * were found in the database, whether it it a liquid site 
-     * database, whether conflicts were detected in the database
-     * table names, and whether the database has reading access.
-     * 
-     * A database has conflicts in its table names if it is not a
-     * liquid site database, and contains at least one table 
-     * beginning with "LS_".
-     * 
-     * @param db             a database name
-     * 
-     * @return a hash table with the database information
-     * 
-     * @throws DatabaseConnectionException if the connection failed
-     */
-    private Hashtable getDatabaseInfo(String db) 
-        throws DatabaseConnectionException {
-
-        DatabaseConnection c;
-        Hashtable          info = new Hashtable(3);
-        Configuration      config = new Configuration();
-        ArrayList          tables = null;
-        int                noTables = 0;
-        String             type = "normal";
-        boolean            conflict;
-        
-        try {
-            // get list of tables in database
-            tables = con.listTables(db);
-            noTables = tables.size();
-
-            // open a database connection
-            c = con.getConnection();
-            
-            try {
-                // check if LiquidSite database
-                c.setCatalog(db);
-                config.read(c);
-                type = config.get(Configuration.VERSION, "normal");
-            } catch (DatabaseException e) {
-                type = "noaccess";
-            } catch (ConfigurationException ignore) {
-                // Do ignore
-            } finally {
-                // close the database connection
-                con.returnConnection(c);
-            }
-            
-            // check for conflicts in table names
-            if (type.equals("normal")) {
-                conflict = false;
-                for (int i = 0; i < noTables && !conflict; i++) {
-                    if (((String) tables.get(i)).startsWith("LS_")) {
-                        type = "conflict";
-                        conflict = true;
-                    }
-                }
-            }
-
+            LOG.error("couldn't connect to database", e);
+            lastError = e.getMessage();
         } catch (DatabaseException e) {
-            // database not readable
-            type = "noaccess";
-            noTables = 0;
+            LOG.error("couldn't list databases", e);
+            lastError = e.getMessage();
         }
-        
-        
-        // insert information
-        info.put("name", db);
-        info.put("noTables", new Integer(noTables));
-        info.put("type", type);
-                        
-        return info;
+        return new ArrayList();
     }
 
     /**
-     * Returns a list with all database names.
-     * 
-     * @return a list with database names
+     * Returns a list of tables found in a specified database with 
+     * the current connector. As a side-effect, this method will log 
+     * any error encountered, and set the lastError variable.
+     *
+     * @param database       the database to check
+     *
+     * @return the list of database names found
      */
-    private ArrayList getDatabaseNames() {
-        ArrayList databases = new ArrayList();
-        
-        // get list of databases
+    private ArrayList listTables(String database) {
         try {
-            databases = con.listDatabases();
+            return connector.listTables(database);
         } catch (DatabaseConnectionException e) {
-            error = true;
-            errorConnection = true;
-            e.printStackTrace();
+            LOG.error("couldn't connect to database", e);
+            lastError = e.getMessage();
         } catch (DatabaseException e) {
-            error = true;
-            errorTech = true;
-            e.printStackTrace();
+            LOG.error("couldn't list tables", e);
+            lastError = e.getMessage();
         }
-        
-        return databases;
+        return new ArrayList();
     }
 
     /**
-     * Returns whether a database exists, given its name.
+     * Returns a list of all users found with the current connector.
+     * As a side-effect, this method will log any error encountered, 
+     * and set the lastError variable.
      * 
-     * @param db             the database name
-     * 
-     * @return true if the database exists, or
-     *         false otherwise
+     * @return the list with user names
      */
-    private boolean databaseExists(String db) {
-        ArrayList databases;
+    private ArrayList listUsers() {
+        ArrayList users;
         
-        databases = getDatabaseNames();
-        return databases.contains(db);
-    }
-    
-    /**
-     * Returns a list with all user names.
-     * 
-     * @return a list with the user names
-     */
-    private ArrayList getUserNames() {
-        ArrayList users = new ArrayList();
-        
-        // get list of users
-        if (isAdministrator()) {
-            try {
-                users = con.listUsers();
-            } catch (DatabaseConnectionException e) {
-                error = true;
-                errorConnection = true;
-                e.printStackTrace();
-            } catch (DatabaseException e) {
-                error = true;
-                errorTech = true;
-                e.printStackTrace();
-            }
-            
-        } else {
-            users.add(rootUsername);
+        try {
+            return connector.listUsers();
+        } catch (DatabaseConnectionException e) {
+            // Do nothing
+        } catch (DatabaseException e) {
+            // Do noting
         }
-            
+        users = new ArrayList();
+        users.add(installUser);
         return users;
     }
-    
-    /**
-     * Executes an SQL statement or query on a database. A new 
-     * connection will be opened to the database, the SQL statement 
-     * will be executed, and finally the connection is closed.
-     * 
-     * @param host           the database host name
-     * @param username       the database user name
-     * @param password       the database user password
-     * @param sql            the SQL query to execute
-     * 
-     * @return the database results
-     * 
-     * @throws DatabaseConnectionException if a new database 
-     *             connection couldn't be established
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
-     */
-    private DatabaseResults execute(String host, 
-                                    String username, 
-                                    String password,
-                                    String sql)
-        throws DatabaseConnectionException, DatabaseException {
-
-        MySQLDatabaseConnector  con;
-
-        con = new MySQLDatabaseConnector(host, username, password);
-        return con.executeSql(sql);
-    }
 
     /**
-     * Executes an SQL statement or query on a database. A new 
-     * connection will be opened to the database, the SQL statement 
-     * will be executed, and finally the connection is closed.
+     * Returns the number of tables in a list that may cause 
+     * conflicts. A conflicting table is one that has a name starting
+     * with "LS_".
      * 
-     * @param database       the database name
-     * @param host           the database host name
-     * @param username       the database user name
-     * @param password       the database user password
-     * @param sql            the SQL query to execute
+     * @param tables         the list of table names to check
      * 
-     * @return the database results
-     * 
-     * @throws DatabaseConnectionException if a new database 
-     *             connection couldn't be established
-     * @throws DatabaseException if the query or statement couldn't 
-     *             be executed correctly
+     * @return the number of conflicting table names
      */
-    private DatabaseResults execute(String database, 
-                                    String host, 
-                                    String username, 
-                                    String password,
-                                    String sql)
-        throws DatabaseConnectionException, DatabaseException {
+    private int getTableConflicts(ArrayList tables) {
+        int     conflicts = 0;
+        String  name;
 
-        MySQLDatabaseConnector  con;
-
-        con = new MySQLDatabaseConnector(host, database, username, password);
-        return con.executeSql(sql);
-    }
-
-    /**
-     * Creates the LiquidSite tables in a given database.
-     *
-     * @param database       the database name
-     *
-     * @throws DatabaseConnectionException if the connection to the
-     *             database couldn't be established
-     * @throws DatabaseException if the tables couldn't be created
-     */
-    private void createTables(String database) 
-        throws DatabaseConnectionException, DatabaseException {
-        
-        DatabaseConnection c;
-        
-        c = con.getConnection();
-        try {
-            c.setCatalog(database);
-            c.executeSql(getFile("WEB-INF/sql/create-tables.sql"));
-        } catch (FileNotFoundException e) {
-            throw new DatabaseException("couldn't find file " +
-                "'create-tables.sql'", e);
-        } catch (IOException e) {
-            throw new DatabaseException("couldn't read file " +
-                "'create-tables.sql'", e);
-        } finally {
-            con.returnConnection(c);
+        for (int i = 0; i < tables.size(); i++) {
+            name = ((String) tables.get(i)).toUpperCase();
+            if (name.startsWith("LS_")) {
+                conflicts++;
+            }
         }
+        return conflicts;
     }
-    
+
     /**
-     * Writes the configuration file and database table. 
-     *
-     * @param host           the host name
-     * @param database       the database name
-     * @param username       the user name
-     * @param password       the user password
-     *
-     * @throws DatabaseConnectionException if a connection to
-     *             the database could not be established
-     * @throws DatabaseException if the given database name does
-     *             not exist
-     * @throws ConfigurationException if the configuration
-     *             could not be written
+     * Creates the Liquid Site database tables.
+     * 
+     * @throws DatabaseConnectionException if a database connection
+     *             couldn't be established
+     * @throws DatabaseException if a database statement execution
+     *             failed
+     * @throws FileNotFoundException if the create tables SQL file
+     *             couldn't be found
+     * @throws IOException if the create tables SQL file couldn't be 
+     *             read
      */
-    private void writeConfiguration(String host,
-                                    String database,
-                                    String username, 
-                                    String password) 
+    private void createTables() 
         throws DatabaseConnectionException, DatabaseException, 
-               ConfigurationException {
+               FileNotFoundException, IOException {
 
-        DatabaseConnection c;
-        Configuration      config;
+        DatabaseConnection  con = null;
+        File                sqlFile;
         
-        // load functions
         try {
-            con.loadFunctions(getFile("WEB-INF/database.properties"));
-        } catch (FileNotFoundException e) {
-            throw new ConfigurationException("cannot find file " +
-                "'database.properties'", e);
-        } catch (IOException e) {
-            throw new ConfigurationException("cannot read file " +
-                "'database.properties'", e);
-        }
-        
-        // get the application configuration
-        config = getApplication().getConfig();
-
-        // open a database connection
-        c = con.getConnection();
-            
-        try {
-            // select database
-            c.setCatalog(database);
+            con = connector.getConnection();
+            con.setCatalog(database);
+            sqlFile = getFile("WEB-INF/sql/CREATE_LIQUIDSITE_TABLES.sql");
+            con.executeSql(sqlFile);
         } finally {
-            // close the database connection
-            con.returnConnection(c);
+            if (con != null) {
+                connector.returnConnection(con);
+            }
         }
+    }
+    
+    /**
+     * Writes the Liquid Site configuration file and database table.
+     * 
+     * @throws FileNotFoundException if the database functions file
+     *             couldn't be found
+     * @throws IOException if the database functions file couldn't be 
+     *             read
+     * @throws ConfigurationException if the configuration couldn't
+     *             be written
+     */
+    private void writeConfiguration() 
+        throws FileNotFoundException, IOException, ConfigurationException {
 
-        // set configuration information
+        MySQLDatabaseConnector  con = null;
+        Configuration           config;
+        
+        // Create database connector
+        con = new MySQLDatabaseConnector(host, 
+                                         database, 
+                                         databaseUser, 
+                                         databasePassword);
+        con.loadFunctions(getFile("WEB-INF/database.properties"));
+        
+        // Write configuration
+        config = getApplication().getConfig();
+        // TODO: version number should not be hardcoded (nor in header.jsp)
         config.set(Configuration.VERSION, "1.0");
         config.set(Configuration.DATABASE_HOSTNAME, host);
         config.set(Configuration.DATABASE_NAME, database);
-        config.set(Configuration.DATABASE_USER, username);
-        config.set(Configuration.DATABASE_PASSWORD, password);
-        
-        // write out configuration
-        config.write(c);
+        config.set(Configuration.DATABASE_USER, databaseUser);
+        config.set(Configuration.DATABASE_PASSWORD, databasePassword);
+        config.set(Configuration.DATABASE_POOL_SIZE, 10);
+        config.set(Configuration.FILE_DIRECTORY, dataDir);
+        config.write(con);
     }
 }
-

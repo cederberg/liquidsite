@@ -1,142 +1,117 @@
-<% 
-String host = (String) request.getAttribute("host");
-String rootUsername = (String) request.getAttribute("rootUsername");
-String rootPassword = (String) request.getAttribute("rootPassword");
-String dbsel = (String) request.getAttribute("dbsel");
-String database = (String) request.getAttribute("database");
-String usersel = (String) request.getAttribute("usersel");
-String username = (String) request.getAttribute("username");
-String password = (String) request.getAttribute("password");
-String verify = (String) request.getAttribute("verify");
-
-java.util.ArrayList dbsInfo = 
-    (java.util.ArrayList) request.getAttribute("dbsInfo");
-java.util.Hashtable dbInfo;
-String db;
-int noTables;
-String type;
-
-boolean isAdmin = 
-    ((Boolean) request.getAttribute("isAdmin")).booleanValue();
-
-boolean error = 
-    ((Boolean) request.getAttribute("error")).booleanValue();
-boolean errorDbExists = 
-    ((Boolean) request.getAttribute("errorDbExists")).booleanValue();
-boolean errorConnection = 
-    ((Boolean) request.getAttribute("errorConnection")).booleanValue();
-    
-String infoColor = "";
-String info1 = "";
-String info2 = "";
-String dbchecked = "";
-String crColor = "";
-String crchecked = "";
-String crenabled = "";
-String nextenabled = "";
-if (!isAdmin) {
-    crenabled = " disabled";
-    crColor = " class=\"unimportant\"";
-} else if (dbsel.equals("")) {
-    crchecked = " checked";
-}
-if (!isAdmin && dbsInfo.size() == 0) {
-    nextenabled = " disabled";
-}
-if (error && !errorConnection && !errorDbExists) {
-    crColor = " class=\"incorrect\"";
-}
-%>
 <%@ include file="header.jsp" %>
+<% 
+String    error = (String) request.getAttribute("error");
+String    database = (String) request.getAttribute("database");
+String[]  databaseNames = (String[]) request.getAttribute("databaseNames");
+int[]     databaseStatus = (int[]) request.getAttribute("databaseStatus");
+int[]     databaseTables = (int[]) request.getAttribute("databaseTables");
+String[]  databaseInfo = (String[]) request.getAttribute("databaseInfo");
+Boolean   enableCreate = (Boolean) request.getAttribute("enableCreate");
+Boolean   enableNext = (Boolean) request.getAttribute("enableNext");
+boolean   found = false;
+String    style;
+String    options;
+String    str;
+%>
 
-  <h2>Liquid Site Installation (Step 2 of 5)</h2>
+    <form method="post" action="install.html">
+      <input type="hidden" name="step" value="2" />
+      <table class="form">
+        <tr>
+          <td class="decoration" rowspan="3">
+            <img src="images/icons/48x48/install.png" alt="Install" />
+          </td>
+          <td>
+            <h2>Select Database (Step 2 of 5)</h2>
 
-  <p>Indicate the Liquid Site database. Note that if you select an 
-  existing database, all its information will be lost.</td>
-
-<% if (errorConnection) { %>
-  <p class="incorrect">A connection could not be established to the
-    database. You may be experiencing errors with your database
-    server.</p>
-<% } else if (errorDbExists) { %>
-  <p class="incorrect">The database to create already exists. If you
-    want to choose this database, select it from the list.</p>
-<% } else if (error) { %>
-  <p class="incorrect">Enter the database name.</p>
-<% } else if (!isAdmin && dbsInfo.size() == 0) { %>
-  <p class="incorrect">There are no available databases. Either go back
-    to the previous step and enter the information of a database user
-    with administration rights, or ask your admin to create a database
-    for your user.</p>
-<% } %>
-
-  <form method="post" action="install.html">
-    <input type="hidden" name="step" value="2" />
-    <input type="hidden" name="host" value="<%= host %>" />
-    <input type="hidden" name="rootUsername" value="<%= rootUsername %>" />
-    <input type="hidden" name="rootPassword" value="<%= rootPassword %>" />
-    <input type="hidden" name="usersel" value="<%= usersel %>" />
-    <input type="hidden" name="username" value="<%= username %>" />
-    <input type="hidden" name="password" value="<%= password %>" />
-    <input type="hidden" name="verify" value="<%= verify %>" />
-  
-    <table>
-<% for (int i=0; i<dbsInfo.size(); i++) {
-       dbInfo = (java.util.Hashtable) dbsInfo.get(i);
-       db = (String) dbInfo.get("name");
-       noTables = ((Integer) dbInfo.get("noTables")).intValue();
-       type = (String) dbInfo.get("type");
-       if (type.equals("conflict")) {
-           infoColor = " class=\"incorrect\"";
-           info1 = "(" + String.valueOf(noTables) + " tables found)";
-           info2 = "Conflict in tables";
-       } else if (type.equals("noaccess")) {
-           infoColor = " class=\"unimportant\"";
-           info1 = "";
-           info2 = "Not accessible";
-       } else if (type.equals("normal")) {
-           infoColor = "";
-           info1 = "(" + String.valueOf(noTables) + " tables found)";
-           info2 = "";
-       } else {
-           infoColor = "";
-           info1 = "(" + String.valueOf(noTables) + " tables found)";
-           info2 = "Liquid Site " + type;
+            <p>Select the database where you wish to store the Liquid
+            Site data. Note that no information will be lost, even if
+            an existing database is chosen.</p>
+<% if (error != null) { %>
+            <p class="incorrect">Error: <%=error%></p>
+<% } %>  
+          </td>
+        </tr>
+        <tr>
+          <td class="field">
+            <table class="border">
+              <tr>
+                <th>Database</th>
+                <th>Statistics</th>
+                <th>Information</th>
+              </tr>
+<%
+   for (int i=0; i < databaseNames.length; i++) {
+       style = "";
+       options = "";
+       if (database.equals(databaseNames[i])) {
+           found = true;
        }
-       if (dbsel.equals(db)) {
-           dbchecked = " checked";
-       } else {
-           dbchecked = "";
+       if (databaseStatus[i] == 0) {
+           style = " class=\"unimportant\"";
+           options = "disabled=\"disabled\"";
+       } else if (database.equals(databaseNames[i])) {
+           options = "checked=\"checked\"";
        }
 %>
-      <tr>
-        <td>
-          <input<%= dbchecked %> type="radio" name="dbsel" 
-            value="<%= db %>" /> <span<%= infoColor %>><%= db %></span>
-        </td>
-        <td><span<%= infoColor %>><%= info1 %></span></td>
-        <td><span<%= infoColor %>><%= info2 %></span></td>
-      </tr>
+              <tr<%=style%>>
+                <td>
+                  <input type="radio" name="database1" <%=options%>
+                         value="<%=databaseNames[i]%>" /> 
+                  <%=databaseNames[i]%>
+                </td>
+                <td>
+                  <%=databaseTables[i]%> Tables
+                </td>
+                <td>
+                  <%=databaseInfo[i]%>
+                </td>
+              </tr>
 <% } %>
-
-      <tr>
-        <td colspan="3">
-          <input<%= crchecked %><%= crenabled %> type="radio" 
-            name="dbsel" value="" />
-          <span<%= crColor %>>Create new database:</span>
-          <input<%= crenabled %> type="input" name="database" 
-            value="<%= database %>" />
-        </td>
-      </tr>
-
-      <tr>
-        <td colspan="3">
-          <input type="button" name="submit" value="&lt;&lt; Previous" 
-            onclick="submit();" />
-          <input<%= nextenabled %> type="submit" name="submit" 
-            value="Next &gt;&gt;" /></td>
-      </tr>
-    </table>
-  </form>
+<%
+   style = "";
+   options = "";
+   str = "";
+   if (!enableCreate.booleanValue()) {
+       style = " class=\"unimportant\"";
+       options = "disabled=\"disabled\"";
+   } else if (!found && !database.equals("")) {
+       str = database;
+       options = "checked=\"checked\"";
+   }
+%>
+              <tr<%=style%>>
+                <td>
+                  <input type="radio" name="database1" value="" <%=options%> />
+                  <input type="input" name="database2" <%=options%>
+                         value="<%=str%>" />
+                </td>
+                <td colspan="2">
+                  Creates a new database with the specified name.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+<%
+   options = "";
+   if (!enableNext.booleanValue()) {
+       options = " disabled=\"disabled\"";
+   }
+%>
+        <tr>
+          <td>
+            <button type="submit" name="prev">
+              <img src="images/icons/24x24/left_arrow.png" />
+              Previous
+            </button>
+            <button type="submit"<%=options%>>
+              Next
+              <img src="images/icons/24x24/right_arrow.png" />
+            </button>
+          </td>
+        </tr>
+      </table>
+    </form>
 
 <%@ include file="footer.jsp" %>

@@ -1,155 +1,110 @@
-<% 
-String host = (String) request.getAttribute("host");
-String rootUsername = (String) request.getAttribute("rootUsername");
-String rootPassword = (String) request.getAttribute("rootPassword");
-String dbsel = (String) request.getAttribute("dbsel");
-String database = (String) request.getAttribute("database");
-String usersel = (String) request.getAttribute("usersel");
-String username = (String) request.getAttribute("username");
-String password = (String) request.getAttribute("password");
-String verify = (String) request.getAttribute("verify");
-
-java.util.ArrayList users = 
-    (java.util.ArrayList) request.getAttribute("users");
-String user;
-
-boolean isAdmin = 
-    ((Boolean) request.getAttribute("isAdmin")).booleanValue();
-
-boolean error = 
-    ((Boolean) request.getAttribute("error")).booleanValue();
-boolean errorUsername = 
-    ((Boolean) request.getAttribute("errorUsername")).booleanValue();
-boolean errorPassword = 
-    ((Boolean) request.getAttribute("errorPassword")).booleanValue();
-boolean errorVerify = 
-    ((Boolean) request.getAttribute("errorVerify")).booleanValue();
-boolean errorVerification = 
-    ((Boolean) request.getAttribute("errorVerification")).booleanValue();
-boolean errorUserExists = 
-    ((Boolean) request.getAttribute("errorUserExists")).booleanValue();
-boolean errorConnection = 
-    ((Boolean) request.getAttribute("errorConnection")).booleanValue();
-
-String userColor = "";
-String paswdColor = "";
-String verifyColor = "";
-if (errorUsername) {
-    userColor = " class=\"incorrect\"";
-}
-if (errorPassword || errorVerification) {
-    paswdColor = " class=\"incorrect\"";
-}
-if (errorVerify || (errorVerification && usersel.equals(""))) {
-    verifyColor = " class=\"incorrect\"";
-}
-
-String usrchecked = "";
-String crchecked = "";
-if (!isAdmin) {
-    usersel = (String) users.get(0);
-} else if (isAdmin && usersel.equals("")) {
-    crchecked = " checked";
-}
-%>
+<% request.setAttribute("onload", "enableForm()"); %>
 <%@ include file="header.jsp" %>
+<% 
+String    error = (String) request.getAttribute("error");
+String[]  userNames = (String[]) request.getAttribute("userNames");
+Boolean   enableCreate = (Boolean) request.getAttribute("enableCreate");
+String    user = (String) request.getAttribute("user");
+String    password = (String) request.getAttribute("password");
+String    options;
+boolean   found = false;
+%>
+    <script type="text/javascript">
+        function enableForm() {
+            var  user1 = document.getElementsByName("user1").item(0);
+            var  user2 = document.getElementsByName("user2").item(0);
+            var  pwd2 = document.getElementsByName("password2").item(0);
 
-  <h2>Liquid Site Installation (Step 3 of 5)</h2>
+            if (user1.value == "") {
+                user2.disabled = "";
+                pwd2.disabled = "";
+            } else {
+                user2.disabled = "disabled";
+                pwd2.disabled = "disabled";
+            }
+        }
+    </script>
 
-  <p>Indicate the Liquid Site database user. Note that selecting an 
-  existing user will not alter the permissions it may already have, but 
-  will only add access permissions to the Liquid Site database to it.</p>
+    <form method="post" action="install.html">
+      <input type="hidden" name="step" value="3" />
+      <table class="form">
+        <tr>
+          <td class="decoration" rowspan="5">
+            <img src="images/icons/48x48/install.png" alt="Install" />
+          </td>
+          <td colspan="2">
+            <h2>Select Database User (Step 3 of 5)</h2>
 
-<% if (errorConnection) { %>
-  <p class="incorrect">A connection could not be established to the
-    database. You may be experiencing errors with your database
-    server.</p>
-<% } else if (errorUsername || errorPassword || errorVerify) { %>
-  <p class="incorrect">Insert information in the marked fields.</p>
-<% } else if (errorUserExists) { %>
-  <p class="incorrect">The username to create already exists. If you
-    want to choose this user, select it from the list.</p>
-<% } else if (errorVerification && usersel.equals("")) { %>
-  <p class="incorrect">The password could not be verified. Type your
-    password again.</p>
-<% } else if (errorVerification) { %>
-  <p class="incorrect">The given password is incorrect. 
-    Type it again.</p>
-<% } %>
-
-  <form method="post" action="install.html">
-    <input type="hidden" name="step" value="3" />
-    <input type="hidden" name="host" value="<%= host %>" />
-    <input type="hidden" name="rootUsername" value="<%= rootUsername %>" />
-    <input type="hidden" name="rootPassword" value="<%= rootPassword %>" />
-    <input type="hidden" name="database" value="<%= database %>" />
-    <input type="hidden" name="dbsel" value="<%= dbsel %>" />
-
-    <table>
-<% for (int i=0; i<users.size(); i++) {
-       user = (String) users.get(i);
-       if (usersel.equals(user)) {
-           usrchecked = " checked";
-       } else {
-           usrchecked = "";
+            <p>Select the database user to use when running Liquid 
+            Site normally. It is highly recommended to create a new
+            user with minimal privileges.</p>
+<% if (error != null) { %>
+            <p class="incorrect">Error: <%=error%></p>
+<% } %>  
+          </td>
+        </tr>
+        <tr>
+          <th>
+            User&nbsp;Name:
+          </th>
+          <td class="field">
+            <select name="user1" onchange="enableForm()">
+<%
+   for (int i = 0; i < userNames.length; i++) {
+       options = "";
+       if (userNames[i].equals(user)) {
+           options = " selected=\"selected\"";
+           found = true;
        }
 %>
-      <tr>
-        <td width="1%">
-          <input<%= usrchecked %> type="radio" name="usersel" 
-            value="<%= user %>" /></td>
-        <td colspan="2"><%= user %></td>
-      </tr>
-<% }
-
-    if (isAdmin) {
+              <option value="<%=userNames[i]%>"<%=options%>><%=userNames[i]%></option>
+<% 
+   }
+   options = (found) ? "" : " selected=\"selected\"";
+   if (enableCreate.booleanValue()) {
 %>
-      <tr>
-        <td>
-          <input<%= crchecked %> type="radio" name="usersel" value="" />
-        </td>
-        <td width="1%">
-          <span<%= userColor %>>Create&nbsp;new&nbsp;user:</span>
-        </td>
-        <td>
-          <input type="input" name="username" value="<%= username %>" />
-        </td>
-      </tr>
-      
-      <tr>
-        <td colspan="3">Enter the password of the selected user, or a
-          new password if you chose to create a user.</td>
-      </tr>
-
-      <tr>
-	<td></td>
-        <td><span<%= paswdColor %>>Password:</span></td>
-        <td>
-          <input type="password" name="password" value="<%= password %>" />
-        </td>
-      </tr>
-
-      <tr>
-        <td colspan="3">Re-type the password if you chose to create a 
-          user.</td>
-      </tr>
-
-      <tr>
-        <td></td>
-        <td><span<%= verifyColor %>>Re-type&nbsp;password:</span></td>
-        <td>
-          <input type="password" name="verify" value="<%= verify %>" />
-        </td>
-      </tr>
+              <option value=""<%=options%>>Create New --&gt;</option>
 <% } %>
-
-      <tr>
-        <td colspan="3">
-          <input type="button" name="submit" value="&lt;&lt; Previous" 
-            onclick="submit();" />
-          <input type="submit" name="submit" value="Next &gt;&gt;" /></td>
-      </tr>
-    </table>
-  </form>
+            </select>
+            <input type="text" name="user2" value="<%=user%>" size="20" />
+            <p>This is the database user name to use for accessing 
+            the Liquid Site database.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Password:
+          </th>
+          <td class="field">
+            <input type="password" name="password1" 
+                   value="<%=password%>" size="12" />
+            <p>The password for the database user above.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Verify&nbsp;Password:
+          </th>
+          <td class="field">
+            <input type="password" name="password2" 
+                   value="<%=password%>" size="12" />
+            <p>Verify the password for the database user. This field 
+            is only used when creating new users.</p>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button type="submit" name="prev">
+              <img src="images/icons/24x24/left_arrow.png" />
+              Previous
+            </button>
+            <button type="submit">
+              Next
+              <img src="images/icons/24x24/right_arrow.png" />
+            </button>
+          </td>
+        </tr>
+      </table>
+    </form>
 
 <%@ include file="footer.jsp" %>
