@@ -51,7 +51,7 @@
 </#if>
 <#if enableSite?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="2"
                    name="category" value="site" />
             Site
@@ -66,7 +66,7 @@
 </#if>
 <#if enableFolder?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="3"
                    name="category" value="folder" />
             Folder
@@ -80,7 +80,7 @@
 </#if>
 <#if enablePage?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="4" 
                    name="category" value="page" />
             Page
@@ -95,7 +95,7 @@
 </#if>
 <#if enableFile?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="5" 
                    name="category" value="file" />
             File
@@ -109,7 +109,7 @@
 </#if>
 <#if enableTemplate?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="6"
                    name="category" value="template" />
             Template
@@ -124,7 +124,7 @@
 </#if>
 <#if enableSection?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="7"
                    name="category" value="section" />
             Section
@@ -138,7 +138,7 @@
 </#if>
 <#if enableDocument?exists>
         <tr>
-          <th style="width: 7em;">
+          <th style="width: 8em;">
             <input type="radio" tabindex="8"
                    name="category" value="document" />
             Document
