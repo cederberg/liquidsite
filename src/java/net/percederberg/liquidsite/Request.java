@@ -32,6 +32,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import net.percederberg.liquidsite.content.User;
 
 /**
  * A document request.
@@ -162,6 +165,43 @@ public class Request {
      */
     public String getServletPath() {
         return request.getContextPath();
+    }
+
+    /**
+     * Returns the session user. The session user is null until it is
+     * set by the setUser() method. Normally the session user is not
+     * set until the user has been authenticated. 
+     * 
+     * @return the session user, or
+     *         null if no user has been set
+     * 
+     * @see #setUser
+     */
+    public User getUser() {
+        HttpSession  session = request.getSession(false);
+        
+        if (session != null && session.getAttribute("user") != null) {
+            return (User) session.getAttribute("user");
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Sets the session user. The session user is null until it is
+     * set by this method. Normally the session user is not set until
+     * the user has been authenticated. 
+     * 
+     * @param user           the new session user
+     * 
+     * @see #getUser
+     */
+    public void setUser(User user) {
+        if (user != null) {
+            request.getSession().setAttribute("user", user);
+        } else {
+            request.getSession().removeAttribute("user");
+        }
     }
 
     /**
