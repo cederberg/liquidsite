@@ -143,6 +143,7 @@ li {
 table {
         width: auto; 
         border: none;
+        font-size: 12pt;
 }
 th {
         padding: 5px;
@@ -180,7 +181,7 @@ button img {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- *  Table Styles
+ *  Complex Styles
  *
  */
 
@@ -259,7 +260,32 @@ table.form td.decoration {
         padding-top: 40px;
 }
 
-/* Compact style */
+/* Treeview style */
+.treeview {
+        width: 20em;
+        height: 20em;
+        border: 1px solid black;
+        padding: 5px;
+}
+.treeview p {
+        margin: 1px;
+}
+.treeview div {
+        display: none;
+        padding-left: 24px;
+}
+.treeview .selected {
+        margin: 0px;
+        border: 1px dashed black;
+        background: rgb(240, 237, 235);
+}
+.treeview a:hover {
+        text-decoration: none;
+        background: rgb(240, 237, 235);
+        text-decoration: none;
+}
+
+/* Compact table style */
 table.compact {
         border: none;
 }
@@ -274,7 +300,7 @@ table.compact td {
         padding-right: 5px;
 }
 
-/* Bordered style */
+/* Bordered table style */
 table.border {
         border-style: solid;
         border-width: 1px;
