@@ -209,7 +209,7 @@ public class Log {
                 }
                 i++;
             }
-            logger.logp(Level.FINER, className, methodName, message);
+            logger.logp(level, className, methodName, message);
         }
     }
 }
