@@ -261,10 +261,28 @@ class AdminScript {
         buffer.append(", ");
         buffer.append(getLock(lock));
         buffer.append(");\n");
+        if (content instanceof Site) {
+            buffer.append(getSiteProperties((Site) content));
+        }
         buffer.append(getButtons(user, content, status, lock));
         buffer.append(getRevisions(content));
         buffer.append(getPermissions(content));
         return buffer.toString();
+    }
+
+    /**
+     * Returns the JavaScript for presenting special site properties.
+     * 
+     * @param site           the site
+     * 
+     * @return the JavaScript for additional site properties
+     */
+    private String getSiteProperties(Site site) {
+        if (site.isAdmin()) {
+            return "objectAddProperty('Note', 'Administration Site');\n";
+        } else {
+            return "";
+        }
     }
 
     /**
