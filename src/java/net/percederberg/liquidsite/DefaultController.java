@@ -43,6 +43,11 @@ public class DefaultController extends Controller {
     private static final Log LOG = new Log(DefaultController.class);
 
     /**
+     * The delay in milliseconds on a failed login attempt.
+     */
+    private static final int FAILED_LOGIN_DELAY = 5000;
+
+    /**
      * The admin controller.
      */
     private AdminController admin;
@@ -204,6 +209,11 @@ public class DefaultController extends Controller {
             request.setUser(user);
             request.sendRedirect(request.getPath());
         } else {
+            try {
+                Thread.sleep(FAILED_LOGIN_DELAY);
+            } catch (InterruptedException ignore) {
+                // Do nothing
+            }
             request.setUser(null);
             request.setAttribute("error", "Invalid user name or password");
         }
