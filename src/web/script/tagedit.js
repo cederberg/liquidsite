@@ -460,11 +460,7 @@ function tagEditInternalGetSelection(editor) {
     var  range;
     var  text;
 
-    if (area.selectionStart) {
-        // Mozilla selection handling
-        selection.start = area.selectionStart;
-        selection.end = area.selectionEnd;
-    } else {
+    if (document.selection) {
         // IE selection handling
         range = document.selection.createRange().duplicate();
         text = range.text;
@@ -479,6 +475,10 @@ function tagEditInternalGetSelection(editor) {
         }
         range.text = text;
         range.moveStart("character", 0 - text.length);
+    } else {
+        // Mozilla selection handling
+        selection.start = area.selectionStart;
+        selection.end = area.selectionEnd;
     }
     return selection;
 }
@@ -493,11 +493,7 @@ function tagEditInternalSetSelection(editor, selection) {
     var  area = TAGEDIT_TEXTAREAS[editor];
     var  newlines = 0;
 
-    if (area.selectionStart) {
-        // Mozilla selection handling
-        area.selectionStart = selection.start;
-        area.selectionEnd = selection.end;
-    } else {
+    if (area.createTextRange) {
         // IE selection handling
         for (var i = 0; i < selection.start; i++) {
             if (area.value.charAt(i) == '\r') {
@@ -509,6 +505,10 @@ function tagEditInternalSetSelection(editor, selection) {
         range.moveEnd("character", selection.end - newlines);
         range.moveStart("character", selection.start - newlines);
         range.select();
+    } else {
+        // Mozilla selection handling
+        area.selectionStart = selection.start;
+        area.selectionEnd = selection.end;
     }
 }
 
