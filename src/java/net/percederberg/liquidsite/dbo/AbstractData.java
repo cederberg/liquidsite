@@ -42,7 +42,27 @@ public abstract class AbstractData {
      * The parameter sets for all data objects. The parameter sets 
      * are indexed by their data object class. 
      */
-    private static HashMap parameters = new HashMap();
+    private static HashMap parameterSets = new HashMap();
+
+    /**
+     * Returns the parameter set for a specified data class. If no 
+     * parameter set existed for the specified class, a new one will
+     * be created.
+     * 
+     * @param dataClass      the data class
+     * 
+     * @return the parameter set for the specified data class
+     */
+    protected static ParameterSet getParameterSet(Class dataClass) {
+        ParameterSet  set;
+
+        set = (ParameterSet) parameterSets.get(dataClass);
+        if (set == null) {
+            set = new ParameterSet();
+            parameterSets.put(dataClass, set);
+        }
+        return set;
+    }
 
     /**
      * The parameter values.
@@ -54,10 +74,7 @@ public abstract class AbstractData {
      * to their default values.
      */
     protected AbstractData() {
-        ParameterSet  set;
-        
-        set = (ParameterSet) parameters.get(this.getClass());
-        set.initialize(this);
+        getParameterSet(this.getClass()).initialize(this);
     }
 
     /**
@@ -203,12 +220,7 @@ public abstract class AbstractData {
      *             malformed data
      */
     void setAll(DatabaseResults.Row row) throws DatabaseDataException {
-        ParameterSet  set;
-        
-        set = (ParameterSet) parameters.get(this.getClass());
-        if (set != null) {
-            set.transfer(row, this);
-        }
+        getParameterSet(this.getClass()).transfer(row, this);
     }
 
 
@@ -304,15 +316,8 @@ public abstract class AbstractData {
          * @param column         the column name
          */
         protected Parameter(Class dataClass, String column) {
-            ParameterSet  set;
-
             this.column = column;
-            set = (ParameterSet) parameters.get(dataClass);
-            if (set == null) {
-                set = new ParameterSet();
-                parameters.put(dataClass, set);
-            }
-            set.add(this);
+            getParameterSet(dataClass).add(this);
         }
         
         /**
