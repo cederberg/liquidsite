@@ -69,7 +69,7 @@
           </th>
           <td class="field">
 <#if enabled = "true">
-            <input type="checkbox" tabindex="3" checked="checked"
+            <input type="checkbox" tabindex="2" checked="checked"
 <#else>
             <input type="checkbox" tabindex="3"
 </#if>
@@ -83,7 +83,7 @@
             Password:
           </th>
           <td class="field">
-            <input type="password" tabindex="2" size="30"
+            <input type="password" tabindex="3" size="30"
                    name="password" value="${password}" />
 <#if isadd>
             <p>The user password. This can later be modified by the
