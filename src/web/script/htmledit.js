@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 
@@ -130,7 +130,7 @@ function htmlEditInternalAddToolbar(parent, editor) {
     img.onclick = new Function("htmlEditInternalCommandSelect(" + editor +
                                ", 'redo');");
     td = utilAddElement(tr, "td");
-    img = htmlEditInternalAddButton(td, "View HTML Source", "source.png");
+    img = htmlEditInternalAddButton(td, "Toggle HTML View", "source.png");
     img.onclick = new Function("htmlEditInternalViewSource(" + editor + ");");
 }
 
@@ -219,7 +219,9 @@ function htmlEditInternalAddLink(editor) {
     var  url;
 
     url = prompt("Enter the link (URL) for the selection:", "");
-    htmlEditInternalExecCommand(editor, "createlink", url);
+    if (url != null) {
+        htmlEditInternalExecCommand(editor, "createlink", url);
+    }
 }
 
 /**
@@ -231,7 +233,9 @@ function htmlEditInternalAddImage(editor) {
     var  url;
 
     url = prompt("Enter image location (URL):", "");
-    htmlEditInternalExecCommand(editor, "insertimage", url);
+    if (url != null) {
+        htmlEditInternalExecCommand(editor, "insertimage", url);
+    }
 }
 
 /**
