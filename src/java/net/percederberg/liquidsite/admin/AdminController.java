@@ -133,6 +133,8 @@ public class AdminController extends Controller {
             processPublishObject(request);
         } else if (path.equals("unpublish-site.html")) {
             processUnpublishObject(request);
+        } else if (path.equals("unlock-site.html")) {
+            processUnlockObject(request);
         } else if (path.equals("loadsite.js")) {
             processLoadSite(request);
         } else if (path.equals("opensite.js")) {
@@ -541,6 +543,40 @@ public class AdminController extends Controller {
             comment = "Date format error, " + e.getMessage();
             request.setAttribute("error", comment);
             view.dialogPublish(request, content);
+        }
+    }
+
+    /**
+     * Processes the unlock object requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processUnlockObject(Request request) 
+        throws RequestException {
+
+        Content  content;
+        Lock     lock;
+        
+        try {
+            content = (Content) view.getRequestReference(request);
+            lock = content.getLock();
+            if (request.getParameter("confirmed") == null) {
+                view.dialogUnlock(request, content);
+            } else if (lock != null) {
+                lock.delete(request.getUser());
+                view.dialogClose(request);
+            } else {
+                view.dialogClose(request);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            view.dialogError(request, e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            view.dialogError(request, e);
         }
     }
 

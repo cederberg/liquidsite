@@ -181,6 +181,17 @@ class AdminView {
     }
 
     /**
+     * Shows the content unlock dialog.
+     * 
+     * @param request        the request object
+     * @param content        the content object to unlock
+     */
+    public void dialogUnlock(Request request, Content content) {
+        setRequestReference(request, content);
+        request.sendTemplate("admin/dialog/unlock-object.ftl");
+    }
+
+    /**
      * Shows the error message page.
      * 
      * @param request        the request object
