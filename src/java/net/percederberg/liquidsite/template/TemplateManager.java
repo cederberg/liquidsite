@@ -155,7 +155,11 @@ public class TemplateManager {
         try {
             pageLoader.setUser(user);
             pageLoader.setPage(page);
-            name = page.getId() + "/root";
+            if (page.getContentManager().isAdmin()) {
+                name = "preview/" + page.getId() + "/root";
+            } else {
+                name = "normal/" + page.getId() + "/root";
+            }
             template = new Template(pageConfig.getTemplate(name));
             return template;
         } catch (IOException e) {
@@ -263,7 +267,7 @@ public class TemplateManager {
 
             // Extract page element data
             try {
-                elemName = name.substring(name.indexOf("/") + 1);
+                elemName = name.substring(name.lastIndexOf("/") + 1);
                 return page.getElement(getUser(), elemName);
             } catch (ContentException e) {
                 message = "while reading page element " + name +
