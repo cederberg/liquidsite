@@ -151,6 +151,8 @@ class DocumentFormattingContext implements FormattingContext {
             return link;
         } else if (link.startsWith("/")) {
             return context.getSitePath() + link.substring(1);
+        } else if (link.startsWith("#")) {
+            return link;
         } else {
             return docPath + link;
         }
