@@ -310,7 +310,7 @@ public class AdminController extends Controller {
             site.setPort(Integer.parseInt(request.getParameter("port")));
             site.setDirectory(request.getParameter("dir"));
             site.setAdmin(request.getParameter("admin") != null);
-            site.setComment("Created");
+            site.setComment(request.getParameter("comment"));
             site.save(user);
             view.setSiteTreeFocus(request, site);
             request.sendRedirect("site.html");
@@ -388,13 +388,13 @@ public class AdminController extends Controller {
             site.setHost(request.getParameter("host"));
             site.setPort(Integer.parseInt(request.getParameter("port")));
             site.setDirectory(request.getParameter("dir"));
-            site.setComment("Modified");
+            site.setComment(request.getParameter("comment"));
             site.save(request.getUser());
             removeLock(site, request.getUser(), false);
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
-            view.pageAddSite(request, site);
+            view.pageEditSite(request, site);
         }
     }
 
@@ -505,6 +505,7 @@ public class AdminController extends Controller {
         throws RequestException {
 
         Content  content;
+        Content  revision;
         
         try {
             content = (Content) view.getRequestReference(request);
@@ -513,6 +514,10 @@ public class AdminController extends Controller {
                 view.dialogClose(request);
             } else if (request.getParameter("date") == null) {
                 checkLock(content, request.getUser(), true);
+                revision = content.getRevision(0);
+                if (revision != null) {
+                    content = revision;
+                }
                 view.dialogPublish(request, content);
             } else {
                 processPublishContent(request, content);

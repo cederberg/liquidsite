@@ -652,17 +652,29 @@ class AdminScript {
 
     /**
      * Returns the JavaScript representation of a string. This method
-     * will present empty strings as null.
+     * will present empty strings as null. It will also take care of
+     * needed character escapes. 
      * 
      * @param str            the string to present, or null
      * 
      * @return a JavaScript representation of the string
      */
     private String getString(String str) {
+        StringBuffer  buffer = new StringBuffer();
+
         if (str == null || str.equals("")) {
             return "null";
         } else {
-            return "'" + str + "'";
+            buffer.append("'");
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) == '\'') {
+                    buffer.append("\\'");
+                } else {
+                    buffer.append(str.charAt(i));
+                }
+            }
+            buffer.append("'");
+            return buffer.toString();
         }
     }
 

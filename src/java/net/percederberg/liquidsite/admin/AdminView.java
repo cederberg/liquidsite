@@ -147,7 +147,7 @@ class AdminView {
             dateStr = formatDate(new Date());
         }
         if (comment == null) {
-            comment = "Published";
+            comment = content.getComment();
         }
         setRequestReference(request, content);
         request.setAttribute("date", dateStr);
@@ -399,6 +399,8 @@ class AdminView {
                              request.getParameter("port", "80"));
         request.setAttribute("dir", 
                              request.getParameter("dir", "/"));
+        request.setAttribute("comment", 
+                             request.getParameter("comment", "Created"));
         request.sendTemplate("admin/add-site.ftl");
     }
 
@@ -434,6 +436,8 @@ class AdminView {
         request.setAttribute("port", str);
         str = request.getParameter("dir", site.getDirectory());
         request.setAttribute("dir", str);
+        str = request.getParameter("comment", "");
+        request.setAttribute("comment", str);
         request.sendTemplate("admin/edit-site.ftl");
     }
 

@@ -109,6 +109,8 @@ public class AdminValidator {
                 NUMBER_CHARACTERS + ".-_/";
         error = "Base directory contains invalid character";
         site.addCharacterConstraint("dir", chars, error);
+        error = "No revision comment specified";
+        site.addRequiredConstraint("comment", error);
 
         // Add publish validator
         publish.addRequiredConstraint("date", "No publish date specified");

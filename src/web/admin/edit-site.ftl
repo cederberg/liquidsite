@@ -96,6 +96,15 @@
           </td>
         </tr>
         <tr>
+          <th>
+            Comment:
+          </th>
+          <td class="field">
+            <input type="text" name="comment" value="${comment}" size="40" />
+            <p>The revision comment.</p>
+          </td>
+        </tr>
+        <tr>
           <td class="buttons" colspan="2">
             <button type="submit" name="prev">
               <img src="images/icons/24x24/left_arrow.png" />
