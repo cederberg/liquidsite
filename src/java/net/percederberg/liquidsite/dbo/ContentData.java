@@ -99,6 +99,12 @@ public class ContentData extends AbstractData {
         new StringParameter(ContentData.class, "COMMENT", "");
 
     /**
+     * The status parameter.
+     */
+    public static final Parameter STATUS =
+        new IntegerParameter(ContentData.class, "STATUS", 0);
+
+    /**
      * Creates a new content data object with default values.
      */
     public ContentData() {
