@@ -5,6 +5,7 @@
 <!ENTITY newline "<xsl:text>
 </xsl:text>">
 <!ENTITY indent "<xsl:text>  </xsl:text>">
+<!ENTITY nbsp "<xsl:text disable-output-escaping='yes'>&amp;nbsp;</xsl:text>">
 ]>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -13,6 +14,7 @@
   <!-- ### INPUT PARAMETERS ### -->
   <xsl:param name="date" select="'UNDEFINED'" />
   <xsl:param name="style" select="''" />
+  <xsl:param name="logo" select="''" />
   <xsl:param name="name" select="'UNDEFINED'" />
   <xsl:param name="version" select="'UNDEFINED'" />
   <xsl:param name="url" select="'UNDEFINED'" />
@@ -65,35 +67,73 @@
   <xsl:template match="body">
     <body>
       &newline;&newline;&indent;&indent;
-      <h1><xsl:value-of select="/doc/head/title" /></h1>
-      &newline;
-      <xsl:apply-templates />
+      <table class="menu">
+        &newline;&indent;&indent;&indent;
+        <tr>
+          &newline;&indent;&indent;&indent;&indent;
+          <td class="logo" rowspan="2">
+            &newline;&indent;&indent;&indent;&indent;&indent;
+            <a>
+              <xsl:attribute name="href">
+                <xsl:value-of select="$url" />
+              </xsl:attribute>
+              <img>
+                <xsl:attribute name="src">
+                  <xsl:value-of select="$logo" />
+                </xsl:attribute>
+                <xsl:attribute name="alt">
+                  <xsl:value-of select="$name" />
+                </xsl:attribute>
+              </img>
+            </a>
+            &newline;&indent;&indent;&indent;&indent;
+          </td>
+          &newline;&indent;&indent;&indent;&indent;
+          <td clsss="title">
+            &newline;&indent;&indent;&indent;&indent;&indent;
+            <h1><xsl:value-of select="/doc/head/title" /></h1>
+            &newline;&indent;&indent;&indent;&indent;
+          </td>
+          &newline;&indent;&indent;&indent;&indent;
+          <td class="extra">
+            &newline;&indent;&indent;&indent;&indent;&indent;
+            <xsl:text>Version</xsl:text>
+            &nbsp;
+            <xsl:value-of select="$version" />
+            <br />
+            &newline;&indent;&indent;&indent;&indent;&indent;
+            <xsl:value-of select="$date" />
+            &newline;&indent;&indent;&indent;&indent;
+          </td>
+          &newline;&indent;&indent;&indent;
+        </tr>
+        &newline;&indent;&indent;&indent;
+        <tr>
+          &newline;&indent;&indent;&indent;&indent;
+          <td class="filler"></td>
+          &newline;&indent;&indent;&indent;&indent;
+          <td class="end"></td>
+          &newline;&indent;&indent;&indent;
+        </tr>
+        &newline;&indent;&indent;
+      </table>
+      &newline;&newline;
+      <div class="content">
+        <xsl:apply-templates />
+      </div>
       &newline;&indent;&indent;
       <hr/>
       &newline;&newline;&indent;&indent;
       <p class="footer">
-        <xsl:value-of select="$name" />
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="$version" />
-        <xsl:text> (</xsl:text>
-        <xsl:value-of select="$date" />
-        <xsl:text>). See the</xsl:text>
+        <xsl:text disable-output-escaping="yes">Copyright &amp;copy; 2003 by</xsl:text>
         &newline;&indent;&indent;
-        <a>
-          <xsl:attribute name="href">
-            <xsl:value-of select="$url" />
-          </xsl:attribute>
-          <xsl:value-of select="$name" />
-          <xsl:text> web site</xsl:text>
-        </a>
+        <a href="http://www.percederberg.net/software/">Per Cederberg</a>
+        <xsl:text>.</xsl:text>
         &newline;&indent;&indent;
-        <xsl:text>for more information.</xsl:text>
-      </p>
-      &newline;&newline;&indent;&indent;
-      <p class="footer">
-        <xsl:text disable-output-escaping="yes">Copyright &amp;copy; 2003 Per Cederberg. Permission
-    is granted to copy this document verbatim in any medium, provided
-    that this copyright notice is left intact.</xsl:text>
+        <xsl:text>All rights reserved. Distributed under the</xsl:text>
+        &newline;&indent;&indent;
+        <a href="http://www.gnu.org/licenses/gpl.html">GNU GPL</a>
+        <xsl:text>.</xsl:text>
       </p>
       &newline;&newline;&indent;
     </body>

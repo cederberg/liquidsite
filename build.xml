@@ -141,7 +141,9 @@
   </target>
 
   <target name="doc-html">
-    <copy file="${build.dir}/src/doc/style.css"
+    <copy file="${build.dir}/src/web/style.css"
+          todir="${build.dir}/doc" />
+    <copy file="${build.dir}/src/web/images/liquidsite.jpeg"
           todir="${build.dir}/doc" />
     <xslt style="${build.dir}/src/doc/html.xsl"
           basedir="${build.dir}/src/doc/release"
@@ -150,6 +152,7 @@
           includes="*.xml">
       <param name="date" expression="${build.printdate}" />
       <param name="style" expression="style.css" />
+      <param name="logo" expression="liquidsite.jpeg" />
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
       <param name="url" expression="http://www.liquidsite.org/" />
@@ -161,6 +164,7 @@
           includes="*.xml">
       <param name="date" expression="${build.printdate}" />
       <param name="style" expression="../style.css" />
+      <param name="logo" expression="../liquidsite.jpeg" />
       <param name="name" expression="Liquid Site" />
       <param name="version" expression="${build.version}" />
       <param name="url" expression="http://www.liquidsite.org/" />

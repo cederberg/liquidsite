@@ -5,7 +5,7 @@
 <!ENTITY newline "<xsl:text>
 </xsl:text>">
 <!ENTITY indent "<xsl:text>  </xsl:text>">
-<!ENTITY nbsp "<xsl:text disable-output-escaping='yes'><![CDATA[&nbsp;]]></xsl:text>">
+<!ENTITY nbsp "<xsl:text disable-output-escaping='yes'>&amp;nbsp;</xsl:text>">
 ]>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
