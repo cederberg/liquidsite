@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -56,25 +57,31 @@ public class Request {
     private static final int NO_RESPONSE = 0;
     
     /**
+     * The data response type. This type is used when a data string
+     * has been set as the request response.
+     */
+    private static final int DATA_RESPONSE = 1;
+     
+    /**
+     * The file response type. This type is used when a file has been
+     * set as the request response. The response data contains the 
+     * absolute file name when this type is set.
+     */
+    private static final int FILE_RESPONSE = 2;
+
+    /**
      * The forward response type. This type is used when a request
      * forward has been issued. The response data contains the 
      * forwarding location when this type is set.
      */
-    private static final int FORWARD_RESPONSE = 1;
+    private static final int FORWARD_RESPONSE = 3;
      
     /**
      * The redirect response type. This type is used when a request
      * redirect has been issued. The response data contains the 
      * redirect URI (absolute or relative) when this type is set.
      */
-    private static final int REDIRECT_RESPONSE = 2;
-
-    /**
-     * The file response type. This type is used when a file has been
-     * set as the request response. The response data contains the 
-     * absolute file name when this type is set.
-     */
-    private static final int FILE_RESPONSE = 3;
+    private static final int REDIRECT_RESPONSE = 4;
 
     /**
      * The HTTP request. 
@@ -91,6 +98,11 @@ public class Request {
      * response object has been modified.
      */
     private int responseType = NO_RESPONSE;
+
+    /**
+     * The response MIME type.
+     */
+    private String responseMimeType = null;
 
     /**
      * The response data. 
@@ -314,6 +326,18 @@ public class Request {
     }
 
     /**
+     * Sends the specified data as the request response.
+     * 
+     * @param mimeType       the data MIME type
+     * @param data           the data to send
+     */
+    public void sendData(String mimeType, String data) {
+        responseType = DATA_RESPONSE;
+        responseMimeType = mimeType;
+        responseData = data;
+    }
+
+    /**
      * Sends the contents of a file as the request response. The file
      * name extension will be used for determining the MIME type for
      * the file contents.
@@ -322,6 +346,7 @@ public class Request {
      */
     public void sendFile(File file) {
         responseType = FILE_RESPONSE;
+        responseMimeType = null;
         responseData = file.toString();
     }
     
@@ -340,14 +365,17 @@ public class Request {
         throws IOException, ServletException {
 
         switch (responseType) {
+        case DATA_RESPONSE:
+            commitData();
+            break;
+        case FILE_RESPONSE:
+            commitFile(context);
+            break;
         case FORWARD_RESPONSE:
             commitForward(context);
             break;
         case REDIRECT_RESPONSE:
             commitRedirect();
-            break;
-        case FILE_RESPONSE:
-            commitFile(context);
             break;
         default:
             throw new ServletException("No request response available: " + 
@@ -392,6 +420,21 @@ public class Request {
         response.sendRedirect(responseData);
     }
     
+    /**
+     * Sends the data response to the underlying HTTP response object. 
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             commit the response
+     */
+    private void commitData() throws IOException {
+        PrintWriter  out;
+
+        response.setContentType(responseMimeType);
+        out = new PrintWriter(response.getOutputStream());
+        out.write(responseData);
+        out.close();
+    }
+
     /**
      * Sends the file response to the underlying HTTP response object. 
      * 
