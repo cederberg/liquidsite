@@ -149,7 +149,7 @@ public class DocumentBean implements TemplateHashModel {
             if (type == DocumentProperty.TAGGED_TYPE) {
                 str = processTaggedText(str);
             } else if (type == DocumentProperty.HTML_TYPE) {
-                // Do nothing
+                str = processHtmlText(str);
             } else {
                 str = processPlainText(str);
             }
@@ -226,6 +226,74 @@ public class DocumentBean implements TemplateHashModel {
             }
         }
         return buffer.toString();
+    }
+
+    /**
+     * Processes an HTML text string. This method will adjust any
+     * links and image sources.
+     *
+     * @param text           the HTML text to process
+     *
+     * @return the HTML encoded string
+     */
+    private String processHtmlText(String text) {
+        StringBuffer  buffer = new StringBuffer();
+        int           start;
+        int           end;
+
+        while ((start = text.indexOf("<")) >= 0) {
+            end = text.indexOf(">", start);
+            buffer.append(text.substring(0, start));
+            buffer.append(processHtmlTag(text.substring(start, end)));
+            text = text.substring(end);
+        }
+        buffer.append(text);
+        return buffer.toString();
+    }
+
+    /**
+     * Processes an HTML tag. This method will adjust any links and
+     * image sources.
+     *
+     * @param tag            the HTML tag
+     *
+     * @return the modified HTML tag
+     */
+    private String processHtmlTag(String tag) {
+        int  start = 0;
+        int  end;
+
+        // Find link start position
+        if (tag.startsWith("<a ")) {
+            start = tag.indexOf(" href=");
+            if (start > 0) {
+                start += 6;
+            }
+        } else if (tag.startsWith("<img ")) {
+            start = tag.indexOf(" src=");
+            if (start > 0) {
+                start += 5;
+            }
+        }
+
+        // Adjust link
+        if (start > 0) {
+            end = tag.indexOf(" ", start);
+            if (end <= 0) {
+                end = tag.length() - 1;
+            }
+            if (tag.charAt(start) == '"') {
+                start++;
+            }
+            if (tag.charAt(end - 1) == '"') {
+                end--;
+            }
+            return tag.substring(0, start) +
+                   linkTo(tag.substring(start, end)) +
+                   tag.substring(end);
+        } else {
+            return tag;
+        }
     }
 
     /**
