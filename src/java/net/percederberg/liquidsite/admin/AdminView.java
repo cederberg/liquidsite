@@ -28,6 +28,7 @@ import java.util.Iterator;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.DialogView;
 import net.percederberg.liquidsite.admin.view.HomeView;
+import net.percederberg.liquidsite.admin.view.ScriptView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -63,12 +64,12 @@ public class AdminView {
     /**
      * The home view helper.
      */
-    protected static final HomeView HOME = new HomeView();
+    public static final HomeView HOME = new HomeView();
 
     /**
-     * The admin script helper.
+     * The script view helper.
      */
-    private AdminScript script = new AdminScript();
+    public static final ScriptView SCRIPT = new ScriptView();
 
     /**
      * Creates a new admin view helper.
@@ -113,7 +114,7 @@ public class AdminView {
         String          str;
         
         domains = manager.getDomains(user);
-        buffer.append(script.getTreeView(domains));
+        buffer.append(SCRIPT.getTreeView(domains));
         if (focus != null && focus instanceof Content) {
             content = manager.getContent(user, ((Content) focus).getId());
             if (content != null) {
@@ -122,12 +123,12 @@ public class AdminView {
                                      content.getParent(),
                                      true);
                 buffer.append(str);
-                buffer.append(script.getTreeViewSelect(content));
+                buffer.append(SCRIPT.getTreeViewSelect(content));
             }
         } else if (focus != null && focus instanceof Domain) {
-            buffer.append(script.getTreeViewSelect((Domain) focus));
+            buffer.append(SCRIPT.getTreeViewSelect((Domain) focus));
         } else if (focus == null && domains.length > 0) {
-            buffer.append(script.getTreeViewSelect(domains[0]));
+            buffer.append(SCRIPT.getTreeViewSelect(domains[0]));
         }
         request.setAttribute("initialize", buffer.toString());
         request.sendTemplate("admin/site.ftl");
@@ -534,11 +535,11 @@ public class AdminView {
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = script.getObjectView(user, (Domain) obj);
+            buffer = SCRIPT.getObjectView(user, (Domain) obj);
             setSiteTreeFocus(request, obj);
         } else {
             content = (Content) obj;
-            buffer = script.getObjectView(user, content);
+            buffer = SCRIPT.getObjectView(user, content);
             setSiteTreeFocus(request, content);
         }
         request.sendData("text/javascript", buffer);
@@ -560,7 +561,7 @@ public class AdminView {
         String   buffer;
 
         // TODO: show work revision elements
-        buffer = script.getTemplateElements(template);
+        buffer = SCRIPT.getTemplateElements(template);
         request.sendData("text/javascript", buffer);
     }
 
@@ -590,14 +591,14 @@ public class AdminView {
 
         if (content == null) {
             children = manager.getContentChildren(user, domain);
-            return script.getTreeView(domain, children);
+            return SCRIPT.getTreeView(domain, children);
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
             return scriptSiteTree(user, domain, content.getParent(), true) 
-                 + script.getTreeView(content, children);
+                 + SCRIPT.getTreeView(content, children);
         } else {
             children = manager.getContentChildren(user, content);
-            return script.getTreeView(content, children);
+            return SCRIPT.getTreeView(content, children);
         }
     }
     

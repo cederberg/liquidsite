@@ -1,5 +1,5 @@
 /*
- * AdminScript.java
+ * ScriptView.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,10 +19,11 @@
  * Copyright (c) 2003 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package net.percederberg.liquidsite.admin.view;
 
 import java.util.Iterator;
 
+import net.percederberg.liquidsite.admin.AdminUtils;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -43,12 +44,12 @@ import net.percederberg.liquidsite.content.User;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class AdminScript {
+public class ScriptView {
 
     /**
      * Creates a new admin script helper.
      */
-    public AdminScript() {
+    public ScriptView() {
     }
 
     /**
@@ -381,7 +382,6 @@ class AdminScript {
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 }
-                // TODO: improve efficiency of this, already queried
                 if (content.getAllRevisions().length > 1) {
                     buffer.append("objectAddRevertButton('revert.html");
                     buffer.append(getLinkParameters(content));
