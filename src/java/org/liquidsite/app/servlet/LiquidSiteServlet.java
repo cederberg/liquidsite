@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package org.liquidsite.app.servlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,11 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.liquidsite.app.install.InstallRequestProcessor;
-import org.liquidsite.app.servlet.Application;
-import org.liquidsite.app.servlet.Configuration;
-import org.liquidsite.app.servlet.ConfigurationException;
-import org.liquidsite.app.servlet.RequestException;
-import org.liquidsite.app.servlet.RequestProcessor;
 import org.liquidsite.app.template.TemplateException;
 import org.liquidsite.app.template.TemplateManager;
 import org.liquidsite.core.content.ContentManager;

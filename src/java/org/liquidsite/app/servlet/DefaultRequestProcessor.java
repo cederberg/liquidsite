@@ -19,13 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package org.liquidsite.app.servlet;
 
 import org.liquidsite.app.admin.AdminRequestProcessor;
 import org.liquidsite.app.legacy.ForumRequestProcessor;
-import org.liquidsite.app.servlet.Application;
-import org.liquidsite.app.servlet.RequestException;
-import org.liquidsite.app.servlet.RequestProcessor;
 import org.liquidsite.app.template.TemplateException;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
