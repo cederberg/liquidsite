@@ -181,8 +181,8 @@ public class DefaultRequestProcessor extends RequestProcessor {
             processLogin(request);
         } else if (action.equals("logout")) {
             processLogout(request);
-        } else if (action.equals("forumpost")) {
-            forum.processPost(request);
+        } else if (action.startsWith("forum.")) {
+            forum.process(request);
         } else {
             LOG.warning(request + ": request action '" + action +
                         "' is undefined");

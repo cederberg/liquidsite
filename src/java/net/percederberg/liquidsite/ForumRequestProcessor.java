@@ -21,6 +21,8 @@
 
 package net.percederberg.liquidsite;
 
+import java.util.Date;
+
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentForum;
 import net.percederberg.liquidsite.content.ContentException;
@@ -62,24 +64,34 @@ public class ForumRequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Processes a request.
-     *
-     * @param request        the request object
-     */
-    public void process(Request request) {
-    }
-
-    /**
-     * Processes a forum post request action. The processing of the
-     * posting may produce a response to the request object, which
-     * must be checked before contining processing after calling this
-     * method.
+     * Processes a forum request.
      *
      * @param request        the request object
      *
      * @throws RequestException if the action couldn't be processed
      */
-    public void processPost(Request request) throws RequestException {
+    public void process(Request request) throws RequestException {
+        String  action = request.getParameter("liquidsite.action");
+
+        if (action.equals("forum.post")) {
+            processPost(request);
+        } else if (action.equals("forum.delete")) {
+            processDelete(request);
+        } else {
+            LOG.warning(request + ": forum request action '" + 
+                        action + "' is undefined");
+            throw RequestException.INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Processes a forum post request action.
+     *
+     * @param request        the request object
+     *
+     * @throws RequestException if the action couldn't be processed
+     */
+    private void processPost(Request request) throws RequestException {
         ContentForum    forum;
         ContentTopic    topic;
         ContentPost     post;
@@ -124,6 +136,35 @@ public class ForumRequestProcessor extends RequestProcessor {
             post(forum, topic, subject, text, request.getUser());
             request.setAttribute("result", "posted");
         }
+    }
+
+    /**
+     * Processes a forum delete request action.
+     *
+     * @param request        the request object
+     *
+     * @throws RequestException if the action couldn't be processed
+     */
+    private void processDelete(Request request) throws RequestException {
+        ContentForum    forum;
+        ContentTopic    topic;
+        ContentPost     post;
+        String          subject;
+        String          text;
+        String          preview;
+        String          str;
+
+        // Find request parameters
+        forum = findForum(request);
+        topic = findTopic(request, forum);
+        if (topic == null) {
+            LOG.warning(request + ": no topic in forum delete request");
+            throw RequestException.INTERNAL_ERROR;
+        }
+        post = findPost(request, topic);
+
+        // Delete forum message
+        delete(forum, topic, post, request.getUser());
     }
 
     /**
@@ -223,6 +264,60 @@ public class ForumRequestProcessor extends RequestProcessor {
     }
 
     /**
+     * Finds the content post referenced in the request.
+     *
+     * @param request        the request object
+     * @param topic          the content topic
+     *
+     * @return the content post referenced in the request, or
+     *         null if no post was referenced
+     *
+     * @throws RequestException if the post refererenced was invalid
+     */
+    private ContentPost findPost(Request request, ContentTopic topic)
+        throws RequestException {
+
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        Content         content;
+        String          post;
+        int             id;
+
+        // Find content object
+        post = request.getParameter("liquidsite.post", "0");
+        try {
+            id = Integer.parseInt(post);
+            if (id == 0) {
+                return null;
+            }
+            content = manager.getContent(user, id);
+        } catch (NumberFormatException e) {
+            LOG.warning(request + ": post id '" + post +
+                        "' is not a number");
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.debug(e.getMessage());
+            throw RequestException.FORBIDDEN;
+        }
+
+        // Check content post
+        if (!(content instanceof ContentPost)) {
+            LOG.warning(request + ": content id '" + post +
+                        "' is not a post");
+            throw RequestException.INTERNAL_ERROR;
+        } else if (content.getParentId() != topic.getId()) {
+            LOG.warning(request + ": content post '" + post +
+                        "' does not belong to topic " + topic.getId());
+            throw RequestException.INTERNAL_ERROR;
+        }
+
+        return (ContentPost) content;
+    }
+
+    /**
      * Posts a message to the specified forum and topic.
      *
      * @param forum          the content forum
@@ -246,6 +341,7 @@ public class ForumRequestProcessor extends RequestProcessor {
                 topic = new ContentTopic(manager, forum);
                 topic.setSubject(subject);
                 topic.setRevisionNumber(1);
+                topic.setOnlineDate(new Date());
                 topic.setComment("Forum post");
                 topic.save(user);
             }
@@ -254,8 +350,63 @@ public class ForumRequestProcessor extends RequestProcessor {
             post.setTextType(ContentPost.PLAIN_TEXT_TYPE);
             post.setText(text);
             post.setRevisionNumber(1);
+            post.setOnlineDate(new Date());
             post.setComment("Forum post");
             post.save(user);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.debug(e.getMessage());
+            throw RequestException.FORBIDDEN;
+        }
+    }
+
+    /**
+     * Deletes a message from the specified forum and topic.
+     *
+     * @param forum          the content forum
+     * @param topic          the content topic
+     * @param post           the content post
+     * @param user           the user deleting the message
+     */
+    private void delete(ContentForum forum,
+                        ContentTopic topic,
+                        ContentPost  post,
+                        User user)
+        throws RequestException {
+
+        ContentManager   manager = getContentManager();
+        Content[]        posts;
+        boolean          moderator;
+
+        try {
+            if (user == null) {
+                LOG.debug("anonymous user cannot delete posts");
+                throw RequestException.FORBIDDEN;
+            }
+            moderator = user.isSuperUser() || forum.isModerator(user);
+            if (post == null) {
+                if (!moderator) {
+                    LOG.debug("user '" + user + "' cannot delete topic " +
+                              topic);
+                    throw RequestException.FORBIDDEN;
+                }
+                topic.delete(user);
+            } else {
+                if (!moderator && !user.equals(post.getAuthor())) {
+                    LOG.debug("user '" + user + "' cannot delete post " + 
+                              post + " in topic " + topic);
+                    throw RequestException.FORBIDDEN;
+                }
+                post.delete(user);
+                posts = manager.getContentChildren(user,
+                                                   topic,
+                                                   Content.POST_CATEGORY);
+                if (posts.length == 0) {
+                    topic.delete(user);
+                }
+            }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
