@@ -237,7 +237,9 @@ public class DocumentBean implements TemplateHashModel {
             paragraphs.add(str.substring(0, str.indexOf("\n\n")));
             str = str.substring(str.indexOf("\n\n") + 2);
         }
-        paragraphs.add(str);
+        if (str.length() > 0) {
+            paragraphs.add(str);
+        }
 
         // Process paragraphs
         buffer = new StringBuffer();
@@ -291,6 +293,7 @@ public class DocumentBean implements TemplateHashModel {
                 buffer.append("\" />");
                 str = str.substring(pos + 1);
             } else if (str.startsWith("<")) {
+                // TODO: filter out illegal tags and errors
                 buffer.append(str.substring(0, pos + 1));
                 str = str.substring(pos + 1);
             }
