@@ -48,16 +48,6 @@ public class AdminController extends Controller {
     private static final Log LOG = new Log(AdminController.class);
 
     /**
-     * The admin view helper.
-     */
-    private AdminView view = new AdminView();
-
-    /**
-     * The home view helper.
-     */
-    private HomeView homeView = new HomeView();
-
-    /**
      * The admin form handlers (workflows).
      */
     private ArrayList workflows = new ArrayList();
@@ -114,17 +104,17 @@ public class AdminController extends Controller {
         } else if (path.startsWith("script/")) {
             request.sendFile(getFile(path));
         } else if (path.equals("") || path.equals("index.html")) {
-            homeView.viewHome(request);
+            AdminView.HOME.viewHome(request);
         } else if (path.equals("home.html")) {
-            homeView.viewHome(request);
+            AdminView.HOME.viewHome(request);
         } else if (path.equals("site.html")) {
             processViewSite(request);
         } else if (path.equals("content.html")) {
-            view.pageContent(request);
+            AdminView.BASE.pageContent(request);
         } else if (path.equals("users.html")) {
-            view.pageUsers(request);
+            AdminView.BASE.pageUsers(request);
         } else if (path.equals("system.html")) {
-            view.pageSystem(request);
+            AdminView.BASE.pageSystem(request);
         } else if (path.equals("logout.html")) {
             processLogout(request);
         } else if (path.equals("view.html")) {
@@ -206,13 +196,13 @@ public class AdminController extends Controller {
         throws RequestException {
 
         try {
-            view.pageSite(request);
+            AdminView.BASE.pageSite(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            view.viewError(request, e.getMessage(), "site.html");
+            AdminView.BASE.viewError(request, e.getMessage(), "site.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            view.viewError(request, e.getMessage(), "site.html");
+            AdminView.BASE.viewError(request, e.getMessage(), "site.html");
         }
     }
 
@@ -237,9 +227,9 @@ public class AdminController extends Controller {
             if (content instanceof ContentFile) {
                 request.sendFile(((ContentFile) content).getFile());
             } else {
-                view.viewError(request, 
-                               "Cannot preview this object", 
-                               "site.html");
+                AdminView.BASE.viewError(request, 
+                                         "Cannot preview this object", 
+                                         "site.html");
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -262,7 +252,7 @@ public class AdminController extends Controller {
 
         try {
             obj = AdminUtils.getReference(request);
-            view.scriptLoadSite(request, obj);
+            AdminView.BASE.scriptLoadSite(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
@@ -284,7 +274,7 @@ public class AdminController extends Controller {
 
         try {
             obj = AdminUtils.getReference(request);
-            view.scriptOpenSite(request, obj);
+            AdminView.BASE.scriptOpenSite(request, obj);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
@@ -309,10 +299,10 @@ public class AdminController extends Controller {
             id = Integer.parseInt(request.getParameter("id", "0"));
             content = getContentManager().getContent(request.getUser(), id);
             if (content instanceof ContentTemplate) {
-                view.scriptOpenTemplate(request, 
-                                        (ContentTemplate) content);
+                AdminView.BASE.scriptOpenTemplate(request, 
+                                                  (ContentTemplate) content);
             } else {
-                view.scriptOpenTemplate(request, null);
+                AdminView.BASE.scriptOpenTemplate(request, null);
             }
         } catch (NumberFormatException e) {
             throw RequestException.FORBIDDEN;

@@ -52,9 +52,9 @@ class HomeEditFormHandler extends AdminFormHandler {
      */
     protected void displayStep(Request request, int step) {
         if (request.getParameter("edituser", "").equals("true")) {
-            HOME_VIEW.viewEditUser(request);
+            AdminView.HOME.viewEditUser(request);
         } else {
-            HOME_VIEW.viewEditPassword(request);
+            AdminView.HOME.viewEditPassword(request);
         }
     }
 

@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.admin.view.DialogView;
+import net.percederberg.liquidsite.admin.view.HomeView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -58,6 +59,11 @@ public class AdminView {
      * The dialog view helper.
      */
     public static final DialogView DIALOG = new DialogView();
+
+    /**
+     * The home view helper.
+     */
+    protected static final HomeView HOME = new HomeView();
 
     /**
      * The admin script helper.

@@ -47,11 +47,6 @@ abstract class AdminFormHandler extends FormHandler {
     private static final Log LOG = new Log(AdminFormHandler.class);
 
     /**
-     * The home view helper.
-     */
-    protected static final HomeView HOME_VIEW = new HomeView();
-
-    /**
      * The site view helper.
      */
     protected static final AdminView SITE_VIEW = new AdminView();
