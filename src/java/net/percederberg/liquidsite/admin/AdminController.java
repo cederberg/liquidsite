@@ -21,18 +21,22 @@
 
 package net.percederberg.liquidsite.admin;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.MultiPartRequest;
+import net.percederberg.liquidsite.MultiPartRequest.FileParameter;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Site;
@@ -235,6 +239,12 @@ public class AdminController extends Controller {
                 } else {
                     processAddSite(request, parent);
                 }
+            } else if (category.equals("file")) {
+                if (step.equals("1")) {
+                    view.pageAddFile(request, parent);
+                } else {
+                    processAddFile(request, parent);
+                }
             } else {
                 view.pageAddObject(request, parent);
             }
@@ -317,6 +327,56 @@ public class AdminController extends Controller {
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
             view.pageAddSite(request, parent);
+        }
+    }
+
+    /**
+     * Processes the add file requests for the site view.
+     * 
+     * @param request        the request object
+     * @param parent         the parent domain object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processAddFile(Request request, Object parent) 
+        throws ContentException, ContentSecurityException {
+
+        MultiPartRequest  multi;
+        FileParameter     param;
+        User              user = request.getUser();
+        Content           content;
+        FileContent       file;
+        
+        try {
+            validator.validateFile(request);
+            if (request instanceof MultiPartRequest) {
+                multi = (MultiPartRequest) request;
+            } else {
+                throw new FormException("content", 
+                                        "No file content specified");
+            }
+            param = multi.getFileParameter("content");
+            if (param == null || param.getSize() <= 0) {
+                throw new FormException("content", 
+                                        "No file content specified");
+            }
+            content = (Content) parent;
+            file = new FileContent(content, param.getName());
+            file.setName(request.getParameter("name"));
+            file.setComment(request.getParameter("comment"));
+            file.save(user);
+            LOG.warning("Content file: " + file.getFile());
+            param.write(file.getFile());
+            view.setSiteTreeFocus(request, file);
+            request.sendRedirect("site.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.pageAddFile(request, parent);
+        } catch (IOException e) {
+            throw new ContentException(e.getMessage());
         }
     }
 

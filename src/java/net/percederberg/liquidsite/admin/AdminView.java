@@ -331,6 +331,7 @@ class AdminView {
 
         User     user = request.getUser();
         Domain   domain;
+        Content  content;
 
         setRequestReference(request, parent);
         if (parent instanceof Domain) {
@@ -340,6 +341,12 @@ class AdminView {
             }
             if (domain.hasWriteAccess(user)) {
                 request.setAttribute("enableSite", true);
+            }
+        }
+        if (parent instanceof Site) {
+            content = (Content) parent;
+            if (content.hasWriteAccess(user)) {
+                request.setAttribute("enableFile", true);
             }
         }
         request.sendTemplate("admin/add-object.ftl");
@@ -404,6 +411,20 @@ class AdminView {
         request.sendTemplate("admin/add-site.ftl");
     }
 
+    /**
+     * Shows the add file page.
+     * 
+     * @param request        the request object
+     * @param parent         the parent object
+     */
+    public void pageAddFile(Request request, Object parent) {
+        setRequestReference(request, parent);
+        request.setAttribute("name", request.getParameter("name", ""));
+        request.setAttribute("comment", 
+                             request.getParameter("comment", "Created"));
+        request.sendTemplate("admin/add-file.ftl");
+    }
+    
     /**
      * Shows the edit site page.
      * 

@@ -578,6 +578,8 @@ class AdminScript {
         switch (content.getCategory()) {
         case Content.SITE_CATEGORY:
             return "site";
+        case Content.FILE_CATEGORY:
+            return "file";
         default:
             return "";
         }

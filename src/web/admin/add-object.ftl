@@ -44,7 +44,7 @@
 </#if>
 <#if enableSite?exists>
         <tr>
-          <th>
+          <th style="width: 7em;">
             <input type="radio" name="category" value="site" />
             Site
           </th>
@@ -53,6 +53,19 @@
             files available from a single location on the world wide
             web. A web site is identified by protocol, host name, 
             port number, and base directory.
+          </td>
+        </tr>
+</#if>
+<#if enableFile?exists>
+        <tr>
+          <th style="width: 7em;">
+            <input type="radio" name="category" value="file" />
+            File
+          </th>
+          <td>
+            A file contains static data. The file contents may be any
+            kind of data, including HTML, text, images, or binary 
+            data.
           </td>
         </tr>
 </#if>

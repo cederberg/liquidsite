@@ -68,6 +68,11 @@ public class AdminValidator {
     private FormValidator site = new FormValidator();
 
     /**
+     * The file form validator.
+     */
+    private FormValidator file = new FormValidator();
+
+    /**
      * The publish and unpublish form validator.
      */
     private FormValidator publish = new FormValidator();
@@ -112,6 +117,10 @@ public class AdminValidator {
         error = "No revision comment specified";
         site.addRequiredConstraint("comment", error);
 
+        // Add and edit file validator
+        file.addRequiredConstraint("name", "No file name specified");
+        file.addRequiredConstraint("comment", "No comment specified");
+
         // Add publish validator
         publish.addRequiredConstraint("date", "No publish date specified");
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
@@ -139,6 +148,17 @@ public class AdminValidator {
      */
     public void validateSite(Request request) throws FormException {
         site.validate(request);
+    }
+
+    /**
+     * Validates the parameters in an add and edit file request.
+     * 
+     * @param request        the add or edit file request
+     * 
+     * @throws FormException if the form validation failed
+     */
+    public void validateFile(Request request) throws FormException {
+        file.validate(request);
     }
 
     /**
