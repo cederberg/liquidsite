@@ -22,6 +22,7 @@
 package net.percederberg.liquidsite.db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -152,5 +153,27 @@ public class DatabaseConnection {
         } catch (SQLException ignore) {
             // Ignore this error
         }
+    }
+
+
+    /*
+     * Creates a PreparedStatement object for sending parameterized
+     * SQL statements to the database.
+     *
+     * @param sql            an SQL statement that may contain one 
+     *                       or more '?' IN parameter placeholders
+     *
+     * @return a new PreparedStatement object, containing the
+     *         pre-compiled SQL statement, that will have the capability 
+     *         of returning auto-generated keys
+     *
+     * @throws SQLException if a database access error occurs or the
+     *             given parameter is not a Statement constant indicating 
+     *             whether auto-generated keys should be returned
+     */
+    public PreparedStatement prepareStatement(String sql) 
+	throws SQLException {
+
+	return con.prepareStatement(sql);
     }
 }
