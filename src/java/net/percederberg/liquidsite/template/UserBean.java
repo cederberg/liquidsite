@@ -21,6 +21,9 @@
 
 package net.percederberg.liquidsite.template;
 
+import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -31,6 +34,11 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 public class UserBean {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(UserBean.class);
 
     /**
      * The request user.
@@ -82,6 +90,29 @@ public class UserBean {
             return "";
         } else {
             return user.getEmail();
+        }
+    }
+
+    /**
+     * Checks if the users has administration privileges in the
+     * domain. For superusers, this method will always return true.
+     * 
+     * @return true if the user is a domain admin, or
+     *         false otherwise
+     */    
+    public boolean getDomainadmin() {
+        Domain  domain;
+        
+        try {
+            domain = user.getDomain();
+            if (domain == null) {
+                return true;
+            } else {
+                return domain.hasAdminAccess(user);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            return false;
         }
     }
 

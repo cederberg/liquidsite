@@ -69,8 +69,12 @@
   <@menutab name="Home" page="home.html" isindex=true />
   <@menutab name="Site" page="site.html" />
   <@menutab name="Content" page="content.html" />
-  <@menutab name="Users" page="users.html" />
-  <@menutab name="System" page="system.html" />
+  <#if liquidsite.user.domainadmin>
+    <@menutab name="Users" page="users.html" />
+  </#if>
+  <#if liquidsite.user.superuser>
+    <@menutab name="System" page="system.html" />
+  </#if>
 <#else>
   <@menutab name="Login" page=liquidsite.page.path />
 </#if>
