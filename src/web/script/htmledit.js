@@ -80,7 +80,7 @@ function htmlEditSubmit() {
     var  html;
 
     for (var i = 0; i < HTMLEDIT_FRAMES.length; i++) {
-        html = htmlEditInternalGetFrameWindow(i).document.body.innerHTML;
+        html = htmlEditInternalGetHtml(i);
         HTMLEDIT_INPUTS[i].value = "" + html;
     }
 }
@@ -241,24 +241,16 @@ function htmlEditInternalAddImage(editor) {
  */
 function htmlEditInternalViewSource(editor) {
     var  doc = htmlEditInternalGetFrameWindow(editor).document;
-    var  div = document.getElementById("htmledit.toolbar." + editor);
+    var  div = htmlEditInternalGetToolbar(editor);
     var  html;
-    var  range;
     
+    html = htmlEditInternalGetHtml(editor);
     if (div.style.display == "block") {
         div.style.display = "none";
-        html = doc.body.innerHTML;
         doc.body.innerHTML = "";
         doc.body.appendChild(doc.createTextNode(html));
     } else {
         div.style.display = "block";
-        if (doc.body.innerText) {
-            html = doc.body.innerText;
-        } else {
-            range = doc.createRange();
-            range.selectNodeContents(doc.body);
-            html = range.toString();
-        }
         doc.body.innerHTML = html;
     }
 }
@@ -357,5 +349,40 @@ function htmlEditInternalGetFrameWindow(editor) {
         return HTMLEDIT_FRAMES[editor].contentWindow;
     } else {
         return HTMLEDIT_FRAMES[editor];
+    }
+}
+
+/**
+ * Returns the HTML editor toolbar.
+ *
+ * @param editor             the editor number
+ *
+ * @return the HTML editor toolbar element
+ */
+function htmlEditInternalGetToolbar(editor) {
+    return document.getElementById("htmledit.toolbar." + editor);
+}
+
+/**
+ * Returns the HTML source code in the editor. This function hides
+ * the differences between IE and Mozilla.
+ *
+ * @param editor             the editor number
+ *
+ * @return the HTML editor source code
+ */
+function htmlEditInternalGetHtml(editor) {
+    var  doc = htmlEditInternalGetFrameWindow(editor).document;
+    var  div = htmlEditInternalGetToolbar(editor);
+    var  range;
+    
+    if (div.style.display == "block") {
+        return doc.body.innerHTML;
+    } else if (doc.body.innerText) {
+        return doc.body.innerText;
+    } else {
+        range = doc.createRange();
+        range.selectNodeContents(doc.body);
+        return range.toString();
     }
 }
