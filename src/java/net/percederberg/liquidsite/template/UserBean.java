@@ -16,14 +16,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.template;
 
+import java.util.ArrayList;
+
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -47,7 +50,7 @@ public class UserBean {
 
     /**
      * Creates a new user template bean.
-     * 
+     *
      * @param user           the request user
      */
     UserBean(User user) {
@@ -56,7 +59,7 @@ public class UserBean {
 
     /**
      * Returns the user login name.
-     * 
+     *
      * @return the user login name
      */
     public String getLogin() {
@@ -66,10 +69,10 @@ public class UserBean {
             return user.getName();
         }
     }
-    
+
     /**
      * Returns the real user name.
-     * 
+     *
      * @return the real user name
      */
     public String getRealName() {
@@ -82,7 +85,7 @@ public class UserBean {
 
     /**
      * Returns the user email address.
-     * 
+     *
      * @return the user email address
      */
     public String getEmail() {
@@ -96,13 +99,13 @@ public class UserBean {
     /**
      * Checks if the users has administration privileges in the
      * domain. For superusers, this method will always return true.
-     * 
+     *
      * @return true if the user is a domain admin, or
      *         false otherwise
-     */    
+     */
     public boolean getDomainadmin() {
         Domain  domain;
-        
+
         try {
             domain = user.getDomain();
             if (domain == null) {
@@ -118,15 +121,49 @@ public class UserBean {
 
     /**
      * Returns the superuser flag for the user.
-     * 
+     *
      * @return true if the user is a superuser, or
      *         false otherwise
-     */    
+     */
     public boolean getSuperuser() {
         if (user == null) {
             return false;
         } else {
             return user.isSuperUser();
         }
+    }
+
+    /**
+     * Returns a list of the group names to which the user belong.
+     *
+     * @return a list of group names
+     */
+    public ArrayList getGroups() {
+        ArrayList  list = new ArrayList();
+        Group[]    groups;
+
+        try {
+            groups = user.getGroups();
+            for (int i = 0; i < groups.length; i++) {
+                list.add(groups[i].getName());
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
+        return list;
+    }
+
+    /**
+     * Checks if the user is member of a named group.
+     *
+     * @param name            the group name
+     *
+     * @return true if the user is a member of the group, or
+     *         false otherwise
+     */
+    public boolean inGroup(String name) {
+        ArrayList  groups = getGroups();
+
+        return groups.contains(name);
     }
 }
