@@ -56,7 +56,7 @@ public class LiquidSiteServlet extends HttpServlet
     /**
      * The class logger.
      */
-    private static final Log LOG = new Log(LiquidSiteServlet.class);
+    protected static final Log LOG = new Log(LiquidSiteServlet.class);
 
     /**
      * The application monitor thread.
@@ -441,7 +441,7 @@ public class LiquidSiteServlet extends HttpServlet
          */
         public synchronized void run() {
             while (alive) {
-                if (config == null || !config.isInitialized()) {
+                if (getConfig() == null || !getConfig().isInitialized()) {
                     // Do nothing
                 } else if (!isOnline()) {
                     restart();

@@ -23,11 +23,8 @@ package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseQuery;
-import net.percederberg.liquidsite.db.DatabaseResults;
 
 /**
  * A user preference database peer. This class contains static methods
@@ -37,11 +34,6 @@ import net.percederberg.liquidsite.db.DatabaseResults;
  * @version  1.0
  */
 public class PreferencePeer extends AbstractPeer {
-
-    /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(PreferencePeer.class);
 
     /**
      * The preference peer instance.

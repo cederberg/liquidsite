@@ -688,7 +688,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
             } catch (Exception e) {
                 error = "couldn't move session file " + data + " to " +
                         file.getFile() + ": " + e.getMessage();
-                throw new ContentException(name);
+                throw new ContentException(error);
             }
         }
         session.removeAllFiles();

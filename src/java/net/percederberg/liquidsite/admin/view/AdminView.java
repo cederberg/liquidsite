@@ -37,7 +37,6 @@ import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.ContentTranslator;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
-import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
 

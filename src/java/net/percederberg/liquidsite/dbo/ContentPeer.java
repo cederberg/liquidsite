@@ -496,48 +496,6 @@ public class ContentPeer extends AbstractPeer {
     }
 
     /**
-     * Appends a string to an SQL statement.
-     *
-     * @param sql            the SQL statement
-     * @param value          the value to append
-     */
-    private static void appendSql(StringBuffer sql, String value) {
-        char  c;
-
-        if (value == null) {
-            sql.append("null");
-        } else {
-            sql.append("'");
-            for (int i = 0; i < value.length(); i++) {
-                c = value.charAt(i);
-                if (c == '\'') {
-                    sql.append("\\'");
-                } else {
-                    sql.append(c);
-                }
-            }
-            sql.append("'");
-        }
-    }
-
-    /**
-     * Appends an array to an SQL statement.
-     *
-     * @param sql            the SQL statement
-     * @param values         the array of values to append
-     */
-    private static void appendSql(StringBuffer sql, int[] values) {
-        sql.append("(");
-        for (int i = 0; i < values.length; i++) {
-            if (i > 0) {
-                sql.append(",");
-            }
-            sql.append(values[i]);
-        }
-        sql.append(")");
-    }
-
-    /**
      * Creates a new content database peer.
      */
     private ContentPeer() {

@@ -35,7 +35,6 @@ import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.web.FormValidationException;
-import net.percederberg.liquidsite.web.FormValidator;
 import net.percederberg.liquidsite.web.Request;
 
 /**

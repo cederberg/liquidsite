@@ -192,6 +192,14 @@ public class MultiPartRequest extends Request {
         files = null;
     }
 
+    /**
+     * Returns the upload directory.
+     *
+     * @return the upload directory
+     */
+    protected String getUploadDir() {
+        return uploadDir; 
+    }
 
     /**
      * A request file parameter.
@@ -268,9 +276,9 @@ public class MultiPartRequest extends Request {
             String  name = getName();
             File    file;
 
-            file = new File(uploadDir, name);
+            file = new File(getUploadDir(), name);
             for (int i = 1; file.exists(); i++) {
-                file = new File(uploadDir, i + "." + name);
+                file = new File(getUploadDir(), i + "." + name);
             }
             write(file);
             return file;

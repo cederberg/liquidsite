@@ -21,8 +21,6 @@
 
 package net.percederberg.liquidsite.content;
 
-import java.util.ArrayList;
-
 import net.percederberg.liquidsite.dbo.PermissionData;
 
 /**

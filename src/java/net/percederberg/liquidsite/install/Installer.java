@@ -26,8 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.ConfigurationException;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
@@ -123,6 +121,15 @@ public class Installer {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the SQL file directory.
+     *
+     * @return the SQL file directory
+     */
+    public File getSqlDir() {
+        return sqlDir;
     }
 
     /**
@@ -240,7 +247,6 @@ public class Installer {
         }
     }
 
-
     /**
      * A database updater. This class handles a database update from
      * one version to another. Multiple database updaters can be
@@ -320,7 +326,7 @@ public class Installer {
         public void updateTables(Installer installer, DatabaseConnection con)
             throws DatabaseException, FileNotFoundException, IOException {
 
-            con.execute(new File(sqlDir, sqlFile));
+            con.execute(new File(getSqlDir(), sqlFile));
             updateTableContent(con);
             installer.updateTables(con, toVersion);
         }

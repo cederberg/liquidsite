@@ -396,7 +396,6 @@ public class SessionBean implements TemplateHashModel {
         public void remove() {
             Object     obj = parent.get(key);
             ArrayList  list;
-            String     message;
 
             if (index >= 0 && obj instanceof ArrayList) {
                 list = (ArrayList) obj;

@@ -96,7 +96,6 @@ public class ForumRequestProcessor extends RequestProcessor {
     private void processPost(Request request) throws RequestException {
         ContentForum    forum;
         ContentTopic    topic;
-        ContentPost     post;
         String          subject;
         String          text;
         String          preview;
@@ -214,10 +213,6 @@ public class ForumRequestProcessor extends RequestProcessor {
         ContentForum    forum;
         ContentTopic    topic;
         ContentPost     post;
-        String          subject;
-        String          text;
-        String          preview;
-        String          str;
 
         // Find request parameters
         forum = findForum(request);
@@ -440,8 +435,6 @@ public class ForumRequestProcessor extends RequestProcessor {
                       String text,
                       User user)
         throws RequestException {
-
-        ContentManager  manager = getContentManager();
 
         if (user == null) {
             LOG.info("anonymous user cannot delete posts");
