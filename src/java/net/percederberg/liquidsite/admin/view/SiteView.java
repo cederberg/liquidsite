@@ -288,7 +288,9 @@ public class SiteView extends AdminView {
             parent = 0;
             template = "0";
             section = 0;
-            sections = findSections(request.getUser(), content.getDomain(), null); 
+            sections = findSections(request.getUser(),
+                                    content.getDomain(),
+                                    null); 
             comment = "Created";
         }
 
