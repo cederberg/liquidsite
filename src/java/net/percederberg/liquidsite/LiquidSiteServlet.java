@@ -79,9 +79,9 @@ public class LiquidSiteServlet extends HttpServlet
     private ContentManager contentManager = null;
 
     /**
-     * The currently active controller.
+     * The main request processor.
      */
-    private Controller controller = null;
+    private RequestProcessor processor = null;
     
     /**
      * The application online flag.
@@ -122,7 +122,8 @@ public class LiquidSiteServlet extends HttpServlet
 
     /**
      * Starts up the application. This will initialize the 
-     * configuration, the database, and all the relevant controllers.
+     * configuration, the database, and the relevant request
+     * processor.
      */
     public void startup() {
         int     errors = 0;
@@ -197,11 +198,11 @@ public class LiquidSiteServlet extends HttpServlet
             LOG.error(e.getMessage());
         }
 
-        // Initialize controllers
+        // Initialize request processor
         if (!config.isInitialized()) {
-            controller = new InstallController(this);
+            processor = new InstallController(this);
         } else {
-            controller = new DefaultController(this);
+            processor = new DefaultController(this);
         }
         
         // Set the online status
@@ -209,11 +210,11 @@ public class LiquidSiteServlet extends HttpServlet
     }
     
     /**
-     * Shuts down the application. This will deinitialize all 
-     * controllers and the database.
+     * Shuts down the application. This will deinitialize the request
+     * processor and the database connector.
      */
     public void shutdown() {
-        controller.destroy();
+        processor.destroy();
         contentManager.close();
         database.setPoolSize(0);
         try {
@@ -267,7 +268,7 @@ public class LiquidSiteServlet extends HttpServlet
         // Process request
         LOG.debug("Incoming request: " + r);
         try {
-            controller.process(r);
+            processor.process(r);
             if (r.hasResponse()) {
                 r.commit(getServletContext());
             } else {

@@ -36,12 +36,12 @@ import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
- * A controller for normal requests.
+ * The default request processor for normal requests.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DefaultController extends Controller {
+public class DefaultController extends RequestProcessor {
 
     /**
      * The class logger.
@@ -54,12 +54,12 @@ public class DefaultController extends Controller {
     private static final int FAILED_LOGIN_DELAY = 5000;
 
     /**
-     * The admin controller.
+     * The admin request processor.
      */
     private AdminController admin;
 
     /**
-     * Creates a new default controller. 
+     * Creates a new default request processor. 
      *
      * @param app            the application context
      */
@@ -69,8 +69,8 @@ public class DefaultController extends Controller {
     }
 
     /**
-     * Destroys this request controller. This method frees all
-     * internal resources used by this controller.
+     * Destroys this request processor. This method frees all
+     * internal resources used by this processor.
      */
     public void destroy() {
         admin.destroy();

@@ -1,5 +1,5 @@
 /*
- * Controller.java
+ * RequestProcessor.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -26,12 +26,12 @@ import java.io.File;
 import net.percederberg.liquidsite.content.ContentManager;
 
 /**
- * A request controller.
+ * A request processor.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public abstract class Controller {
+public abstract class RequestProcessor {
 
     /**
      * The application context.
@@ -39,17 +39,17 @@ public abstract class Controller {
     private Application application;
 
     /**
-     * Creates a new request controller.
+     * Creates a new request processor.
      * 
      * @param app            the application context
      */
-    public Controller(Application app) {
+    public RequestProcessor(Application app) {
         this.application = app;
     }
     
     /**
-     * Destroys this request controller. This method frees all
-     * internal resources used by this controller.
+     * Destroys this request processor. This method frees all
+     * internal resources used by this processor.
      */
     public abstract void destroy();
 

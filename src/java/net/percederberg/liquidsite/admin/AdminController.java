@@ -25,10 +25,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.Controller;
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.RequestException;
+import net.percederberg.liquidsite.RequestProcessor;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
@@ -46,12 +46,12 @@ import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 
 /**
- * A controller for requests to the administration site(s).
+ * The request processor for the administration site(s).
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class AdminController extends Controller {
+public class AdminController extends RequestProcessor {
 
     /**
      * The class logger.
@@ -69,7 +69,7 @@ public class AdminController extends Controller {
     private ArrayList workflows = new ArrayList();
 
     /**
-     * Creates a new administration controller. 
+     * Creates a new administration request processor. 
      *
      * @param app            the application context
      */
@@ -90,8 +90,8 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Destroys this request controller. This method frees all
-     * internal resources used by this controller.
+     * Destroys this request processor. This method frees all
+     * internal resources used by this processor.
      */
     public void destroy() {
     }

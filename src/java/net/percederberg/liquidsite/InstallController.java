@@ -40,9 +40,9 @@ import net.percederberg.liquidsite.db.DatabaseException;
 import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 
 /**
- * A controller for the installation process. This controller differs
- * from normal controllers in that it uses instance variables to keep
- * session information. This makes this controller impossible to use
+ * The installation request processor. This processor differs from
+ * the other processors in that it uses instance variables to keep
+ * session information. This makes this processor impossible to use
  * in a multi-user scenario, but the installation process is supposed
  * to be run by a single user. 
  *
@@ -50,7 +50,7 @@ import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class InstallController extends Controller {
+public class InstallController extends RequestProcessor {
 
     /**
      * The class logger.
@@ -125,7 +125,7 @@ public class InstallController extends Controller {
     private boolean createDatabaseUser = false;
 
     /**
-     * Creates a new install controller. 
+     * Creates a new install request processor. 
      *
      * @param app            the application context
      */
@@ -134,8 +134,8 @@ public class InstallController extends Controller {
     }
 
     /**
-     * Destroys this request controller. This method frees all
-     * internal resources used by this controller.
+     * Destroys this request processor. This method frees all
+     * internal resources used by this processor.
      */
     public void destroy() {
         closeConnector();
