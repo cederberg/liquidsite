@@ -1,13 +1,5 @@
-<%@ include file="header.jsp" %>
-<% 
-String    error = (String) request.getAttribute("error");
-String[]  userNames = (String[]) request.getAttribute("userNames");
-Boolean   enableCreate = (Boolean) request.getAttribute("enableCreate");
-String    user = (String) request.getAttribute("user");
-String    password = (String) request.getAttribute("password");
-String    options;
-boolean   found = false;
-%>
+<#include "header.ftl">
+
     <script type="text/javascript">
         function initialize() {
             var  user1 = document.getElementsByName("user1").item(0);
@@ -37,9 +29,9 @@ boolean   found = false;
             <p>Select the database user to use when running Liquid 
             Site normally. It is highly recommended to create a new
             user with minimal privileges.</p>
-<% if (error != null) { %>
-            <p class="incorrect">Error: <%=error%></p>
-<% } %>  
+<#if error?has_content>
+            <p class="incorrect">Error: ${error}</p>
+</#if>  
           </td>
         </tr>
         <tr>
@@ -48,24 +40,25 @@ boolean   found = false;
           </th>
           <td class="field">
             <select name="user1" onchange="initialize()">
-<%
-   for (int i = 0; i < userNames.length; i++) {
-       options = "";
-       if (userNames[i].equals(user)) {
-           options = " selected=\"selected\"";
-           found = true;
-       }
-%>
-              <option value="<%=userNames[i]%>"<%=options%>><%=userNames[i]%></option>
-<% 
-   }
-   options = (found) ? "" : " selected=\"selected\"";
-   if (enableCreate.booleanValue()) {
-%>
-              <option value=""<%=options%>>Create New --&gt;</option>
-<% } %>
+<#list userNames as name>
+  <#if name = user>
+    <#assign options = " selected=\"selected\"">
+    <#assign found = true>
+  <#else>
+    <#assign options = "">
+  </#if>
+              <option value="${name}" ${options}>${name}</option>
+</#list>
+<#if found?exists>
+  <#assign options = "">
+<#else>
+  <#assign options = " selected=\"selected\"">
+</#if>
+<#if enableCreate>
+              <option value="" ${options}>Create New --&gt;</option>
+</#if>
             </select>
-            <input type="text" name="user2" value="<%=user%>" size="20" />
+            <input type="text" name="user2" value="${user}" size="20" />
             <p>This is the database user name to use for accessing 
             the Liquid Site database.</p>
           </td>
@@ -76,7 +69,7 @@ boolean   found = false;
           </th>
           <td class="field">
             <input type="password" name="password1" 
-                   value="<%=password%>" size="12" />
+                   value="${password}" size="12" />
             <p>The password for the database user above.</p>
           </td>
         </tr>
@@ -86,7 +79,7 @@ boolean   found = false;
           </th>
           <td class="field">
             <input type="password" name="password2" 
-                   value="<%=password%>" size="12" />
+                   value="${password}" size="12" />
             <p>Verify the password for the database user. This field 
             is only used when creating new users.</p>
           </td>
@@ -106,4 +99,4 @@ boolean   found = false;
       </table>
     </form>
 
-<%@ include file="footer.jsp" %>
+<#include "footer.ftl">

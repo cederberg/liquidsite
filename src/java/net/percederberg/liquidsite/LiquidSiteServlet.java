@@ -187,10 +187,16 @@ public class LiquidSiteServlet extends HttpServlet
             LOG.error(e.getMessage());
         }
 
-        // Initialize content manager
+        // Initialize content and template managers
         try {
             contentManager = new ContentManager(this);
         } catch (ContentException e) {
+            errors++;
+            LOG.error(e.getMessage());
+        }
+        try {
+            TemplateManager.initialize(getBaseDir());
+        } catch (IOException e) {
             errors++;
             LOG.error(e.getMessage());
         }
@@ -257,9 +263,8 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             controller.process(r);
             if (r.hasResponse()) {
-                r.setAttribute("liquidsite.build.version", 
-                               getBuildVersion());
-                r.setAttribute("liquidsite.build.date", getBuildDate());
+                r.setAttribute("liquidSiteVersion", getBuildVersion());
+                r.setAttribute("liquidSiteDate", getBuildDate());
                 r.commit(getServletContext());
             } else {
                 LOG.debug("Unhandled request: " + r);

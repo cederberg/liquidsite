@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -34,6 +36,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 
 import net.percederberg.liquidsite.content.User;
 
@@ -70,18 +76,26 @@ public class Request {
     private static final int FILE_RESPONSE = 2;
 
     /**
+     * The template response type. This type is used when a template
+     * has been set as the request response. The response data 
+     * contains the template file name (relative to the web context 
+     * directory) when this type is set.
+     */
+    private static final int TEMPLATE_RESPONSE = 3;
+     
+    /**
      * The forward response type. This type is used when a request
      * forward has been issued. The response data contains the 
      * forwarding location when this type is set.
      */
-    private static final int FORWARD_RESPONSE = 3;
+    private static final int FORWARD_RESPONSE = 5;
      
     /**
      * The redirect response type. This type is used when a request
      * redirect has been issued. The response data contains the 
      * redirect URI (absolute or relative) when this type is set.
      */
-    private static final int REDIRECT_RESPONSE = 4;
+    private static final int REDIRECT_RESPONSE = 6;
 
     /**
      * The HTTP request. 
@@ -245,6 +259,24 @@ public class Request {
     }
 
     /**
+     * Returns all the request attributes in a map.
+     * 
+     * @return the map with request attribute names and values
+     */
+    public HashMap getAllAttributes() {
+        HashMap      map = new HashMap();
+        Enumeration  names;
+        String       name;
+
+        names = request.getAttributeNames();
+        while (names.hasMoreElements()) {
+            name = names.nextElement().toString();
+            map.put(name, request.getAttribute(name));
+        }
+        return map;
+    }
+
+    /**
      * Sets a request attribute value.
      *
      * @param name           the attribute name
@@ -351,6 +383,20 @@ public class Request {
     }
     
     /**
+     * Sends the results from processing a template as the request 
+     * response. The template file name is relative to the web 
+     * context directory, and the output MIME type will always be set
+     * to "text/html".
+     * 
+     * @param template       the template file name
+     */
+    public void sendTemplate(String template) {
+        responseType = TEMPLATE_RESPONSE;
+        responseMimeType = null;
+        responseData = template;
+    }
+    
+    /**
      * Sends the request response to the underlying HTTP response 
      * object. 
      * 
@@ -370,6 +416,9 @@ public class Request {
             break;
         case FILE_RESPONSE:
             commitFile(context);
+            break;
+        case TEMPLATE_RESPONSE:
+            commitTemplate();
             break;
         case FORWARD_RESPONSE:
             commitForward(context);
@@ -429,6 +478,7 @@ public class Request {
     private void commitData() throws IOException {
         PrintWriter  out;
 
+        LOG.debug("Handling request for " + this + " with string data");
         response.setContentType(responseMimeType);
         out = new PrintWriter(response.getOutputStream());
         out.write(responseData);
@@ -469,6 +519,34 @@ public class Request {
         output.close();
     }
 
+    /**
+     * Sends the processed template response to the underlying HTTP 
+     * response object. 
+     * 
+     * @throws IOException if an IO error occured while attempting to
+     *             commit the response
+     */
+    private void commitTemplate() throws IOException {
+        PrintWriter               out;
+        Template                  template;
+        TemplateExceptionHandler  handler;
+
+        LOG.debug("Handling request for " + this + " with template " +
+                  responseData);
+        template = TemplateManager.getFileTemplate(responseData);
+        response.setContentType("text/html");
+        out = new PrintWriter(response.getOutputStream());
+        try {
+            handler = TemplateExceptionHandler.RETHROW_HANDLER;
+            template.setTemplateExceptionHandler(handler);
+            template.process(getAllAttributes(), out);
+        } catch (TemplateException e) {
+            LOG.error("while processing " + responseData + "template", e);
+            throw new IOException(e.getMessage());
+        } finally {
+            out.close();
+        }
+    }
 
     /**
      * An HTTP forwarding request. This request wrapper is used to 

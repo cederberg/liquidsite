@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -388,7 +389,7 @@ public class InstallController extends Controller {
         request.setAttribute("host", host);
         request.setAttribute("user", installUser);
         request.setAttribute("password", installPassword);
-        request.forward("/install/install1.jsp");
+        request.sendTemplate("install/install1.ftl");
     }
 
     /**
@@ -398,39 +399,36 @@ public class InstallController extends Controller {
      */
     private void displayStep2(Request request) {
         String     originalError = lastError;
-        ArrayList  list;
-        String[]   databaseNames;
-        int[]      databaseStatus;
-        int[]      databaseTables;
-        String[]   databaseInfo;
+        ArrayList  databaseInfo = new ArrayList();
         boolean    enableNext = false;
+        ArrayList  databases;
+        ArrayList  tables;
+        HashMap    info;
+        String     str;
 
-        // Find database list
-        list = listDatabases();
-        databaseNames = new String[list.size()];
-        databaseStatus = new int[list.size()];
-        databaseTables = new int[list.size()];
-        databaseInfo = new String[list.size()];
-        list.toArray(databaseNames);
-
-        // Find database details
-        for (int i = 0; i < databaseNames.length; i++) {
+        // Find database information
+        databases = listDatabases();
+        for (int i = 0; i < databases.size(); i++) {
+            info = new HashMap();
+            databaseInfo.add(info);
             lastError = null;
-            list = listTables(databaseNames[i]);
-            databaseStatus[i] = 1;
-            databaseTables[i] = list.size();
-            databaseInfo[i] = "";
+            tables = listTables(databases.get(i).toString());
+            info.put("name", databases.get(i));
+            info.put("tables", new Integer(tables.size()));
             if (lastError != null) {
-                databaseStatus[i] = 0;
-                databaseInfo[i] = "Couldn't read database";
-            } else if (databaseNames[i].equals("mysql")) {
-                databaseStatus[i] = 0;
-                databaseInfo[i] = "MySQL administration database";
-            } else if (getTableConflicts(list) > 0) {
-                databaseStatus[i] = 0;
-                databaseInfo[i] = getTableConflicts(list) + 
-                                  " conflicting tables found";
+                info.put("status", new Integer(0));
+                info.put("info", "Couldn't read database");
+            } else if (databases.get(i).equals("mysql")) {
+                info.put("status", new Integer(0));
+                info.put("info", "MySQL administration database");
+            } else if (getTableConflicts(tables) > 0) {
+                str = getTableConflicts(tables) + 
+                      " conflicting tables found";
+                info.put("status", new Integer(0));
+                info.put("info", str);
             } else {
+                info.put("status", new Integer(1));
+                info.put("info", "");
                 enableNext = true;
             }
         }
@@ -446,13 +444,10 @@ public class InstallController extends Controller {
         // Display database list
         request.setAttribute("error", lastError);
         request.setAttribute("database", database);
-        request.setAttribute("databaseNames", databaseNames);
-        request.setAttribute("databaseStatus", databaseStatus);
-        request.setAttribute("databaseTables", databaseTables);
         request.setAttribute("databaseInfo", databaseInfo);
         request.setAttribute("enableCreate", isAdministrator());
         request.setAttribute("enableNext", enableNext);
-        request.forward("/install/install2.jsp");
+        request.sendTemplate("install/install2.ftl");
     }
 
     /**
@@ -461,21 +456,12 @@ public class InstallController extends Controller {
      * @param request        the request object
      */
     private void displayStep3(Request request) {
-        ArrayList  list;
-        String[]   userNames;
-
-        // Find user list
-        list = listUsers();
-        userNames = new String[list.size()];
-        list.toArray(userNames);
-
-        // Display user list
         request.setAttribute("error", lastError);
         request.setAttribute("user", databaseUser);
         request.setAttribute("password", databasePassword);
-        request.setAttribute("userNames", userNames);
+        request.setAttribute("userNames", listUsers());
         request.setAttribute("enableCreate", isAdministrator());
-        request.forward("/install/install3.jsp");
+        request.sendTemplate("install/install3.ftl");
     }
 
     /**
@@ -488,7 +474,7 @@ public class InstallController extends Controller {
         request.setAttribute("dir", dataDir);
         request.setAttribute("user", adminUser);
         request.setAttribute("password", adminPassword);
-        request.forward("/install/install4.jsp");
+        request.sendTemplate("install/install4.ftl");
     }
 
     /**
@@ -500,12 +486,12 @@ public class InstallController extends Controller {
         request.setAttribute("error", lastError);
         request.setAttribute("host", host);
         request.setAttribute("database", database);
-        request.setAttribute("databaseuser", databaseUser);
-        request.setAttribute("datadir", dataDir);
-        request.setAttribute("adminuser", adminUser);
-        request.setAttribute("createdatabase", createDatabase);
-        request.setAttribute("createuser", createDatabaseUser);
-        request.forward("/install/install5.jsp");
+        request.setAttribute("databaseUser", databaseUser);
+        request.setAttribute("dataDir", dataDir);
+        request.setAttribute("adminUser", adminUser);
+        request.setAttribute("createDatabase", createDatabase);
+        request.setAttribute("createDatabaseUser", createDatabaseUser);
+        request.sendTemplate("install/install5.ftl");
     }
 
     /**

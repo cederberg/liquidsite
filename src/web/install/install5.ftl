@@ -1,14 +1,5 @@
-<%@ include file="header.jsp" %>
-<% 
-String   error = (String) request.getAttribute("error");
-String   host = (String) request.getAttribute("host");
-String   database = (String) request.getAttribute("database");
-String   databaseUser = (String) request.getAttribute("databaseuser");
-String   dataDir = (String) request.getAttribute("datadir");
-String   adminUser = (String) request.getAttribute("adminuser");
-Boolean  createDatabase = (Boolean) request.getAttribute("createdatabase");
-Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
-%>
+<#include "header.ftl">
+
     <script type="text/javascript">
         function initialize() {
         }
@@ -26,9 +17,9 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
 
             <p>Please verify that all the information presented below
             is correct.</p>
-<% if (error != null) { %>
-            <p class="incorrect">Error: <%=error%></p>
-<% } %>  
+<#if error?has_content>
+            <p class="incorrect">Error: ${error}</p>
+</#if>  
           </td>
         </tr>
         <tr>
@@ -36,7 +27,7 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
             Database&nbsp;Host:
           </th>
           <td>
-            <%=host%>
+            ${host}
           </td>
         </tr>
         <tr>
@@ -44,12 +35,12 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
             Database:
           </th>
           <td>
-            <%=database%>
-<% if (createDatabase.booleanValue()) { %>
+            ${database}
+<#if createDatabase>
             (create database)
-<% } else { %>
+<#else>
             (existing database)
-<% } %>
+</#if>
           </td>
         </tr>
         <tr>
@@ -57,12 +48,12 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
             Database&nbsp;User:
           </th>
           <td>
-            <%=databaseUser%>
-<% if (createDatabaseUser.booleanValue()) { %>
+            ${databaseUser}
+<#if createDatabaseUser>
             (create user)
-<% } else { %>
+<#else>
             (existing user)
-<% } %>
+</#if>
           </td>
         </tr>
         <tr>
@@ -70,7 +61,7 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
             Data&nbsp;Directory:
           </th>
           <td>
-            <%=dataDir%>
+            ${dataDir}
           </td>
         </tr>
         <tr>
@@ -78,7 +69,7 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
             Admin&nbsp;User:
           </th>
           <td>
-            <%=adminUser%>
+            ${adminUser}
           </td>
         </tr>
         <tr>
@@ -96,4 +87,4 @@ Boolean  createDatabaseUser = (Boolean) request.getAttribute("createuser");
       </table>
     </form>
 
-<%@ include file="footer.jsp" %>
+<#include "footer.ftl">

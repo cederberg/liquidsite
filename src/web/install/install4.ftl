@@ -1,10 +1,5 @@
-<%@ include file="header.jsp" %>
-<% 
-String  error = (String) request.getAttribute("error");
-String  dir = (String) request.getAttribute("dir");
-String  user = (String) request.getAttribute("user");
-String  password = (String) request.getAttribute("password");
-%>
+<#include "header.ftl">
+
     <script type="text/javascript">
         function initialize() {
             document.getElementsByName("dir").item(0).focus();
@@ -23,9 +18,9 @@ String  password = (String) request.getAttribute("password");
 
             <p>Please enter the default configuration information for
             Liquid Site.</p>
-<% if (error != null) { %>
-            <p class="incorrect">Error: <%=error%></p>
-<% } %>  
+<#if error?has_content>
+            <p class="incorrect">Error: ${error}</p>
+</#if>  
           </td>
         </tr>
         <tr>
@@ -33,7 +28,7 @@ String  password = (String) request.getAttribute("password");
             Data&nbsp;Directory:
           </th>
           <td class="field">
-            <input type="text" name="dir" value="<%=dir%>" size="40" />
+            <input type="text" name="dir" value="${dir}" size="40" />
             <p>This is the directory on the web server machine 
             containing binary data files.</p>
           </td>
@@ -43,7 +38,7 @@ String  password = (String) request.getAttribute("password");
             Admin&nbsp;User:
           </th>
           <td class="field">
-            <input type="text" name="user" value="<%=user%>" size="12" />
+            <input type="text" name="user" value="${user}" size="12" />
             <p>This is the default Liquid Site administrator user. 
             This user cannot be removed unless a new Liquid Site 
             administrator is created.</p>
@@ -55,7 +50,7 @@ String  password = (String) request.getAttribute("password");
           </th>
           <td class="field">
             <input type="password" name="password1" 
-                   value="<%=password%>" size="12" />
+                   value="${password}" size="12" />
             <p>The password for the admin user above.</p>
           </td>
         </tr>
@@ -65,7 +60,7 @@ String  password = (String) request.getAttribute("password");
           </th>
           <td class="field">
             <input type="password" name="password2" 
-                   value="<%=password%>" size="12" />
+                   value="${password}" size="12" />
             <p>Password verification for the admin user above.</p>
           </td>
         </tr>
@@ -84,4 +79,4 @@ String  password = (String) request.getAttribute("password");
       </table>
     </form>
 
-<%@ include file="footer.jsp" %>
+<#include "footer.ftl">

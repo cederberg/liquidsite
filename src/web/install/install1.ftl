@@ -1,10 +1,5 @@
-<%@ include file="header.jsp" %>
-<% 
-String  error = (String) request.getAttribute("error");
-String  host = (String) request.getAttribute("host");
-String  user = (String) request.getAttribute("user");
-String  password = (String) request.getAttribute("password");
-%>
+<#include "header.ftl">
+
     <script type="text/javascript">
         function initialize() {
             document.getElementsByName("host").item(0).focus();
@@ -24,9 +19,9 @@ String  password = (String) request.getAttribute("password");
             <p>Welcome to Liquid Site! By following the steps in this 
             installation guide, you will create a Liquid Site data
             repository and perform the basic setup.</p>
-<% if (error != null) { %>
-            <p class="incorrect">Error: <%=error%></p>
-<% } %>  
+<#if error?has_content>
+            <p class="incorrect">Error: ${error}</p>
+</#if>  
           </td>
         </tr>
         <tr>
@@ -34,7 +29,7 @@ String  password = (String) request.getAttribute("password");
             Database&nbsp;Host:
           </th>
           <td class="field">
-            <input type="text" name="host" value="<%=host%>" size="20" />
+            <input type="text" name="host" value="${host}" size="20" />
             <p>This is the machine name or IP address of the database
             to use for the Liquid Site repository.</p>
           </td>
@@ -44,7 +39,7 @@ String  password = (String) request.getAttribute("password");
             User&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" name="user" value="<%=user%>" size="12" />
+            <input type="text" name="user" value="${user}" size="12" />
             <p>This database user is ONLY used during the 
             installation. If you wish to create a new database, use 
             a user with full administration privileges here. The 
@@ -58,7 +53,7 @@ String  password = (String) request.getAttribute("password");
           </th>
           <td class="field">
             <input type="password" name="password" 
-                   value="<%=password%>" size="12" />
+                   value="${password}" size="12" />
             <p>The password for the database user above.</p>
           </td>
         </tr>
@@ -77,4 +72,4 @@ String  password = (String) request.getAttribute("password");
       </table>
     </form>
 
-<%@ include file="footer.jsp" %>
+<#include "footer.ftl">
