@@ -125,11 +125,11 @@
         </tr>
   <#if domain = "">
         <tr>
-          <td colspan="4">Superusers cannot belong to groups</td>
+          <td colspan="5">Superusers cannot belong to groups</td>
         </tr>
   <#elseif groups?size = 0>
         <tr>
-          <td colspan="4">No groups found</td>
+          <td colspan="5">No groups found</td>
         </tr>
   </#if>
   <#list groups as group>
