@@ -14,7 +14,70 @@
     important of these terms.</p>
 
     <list>
-      <item>
+      <item id="css">
+        <title>CSS</title>
+        <text>The <ref url="http://www.w3.org/TR/REC-CSS2">Cascading
+        Style Sheet (CSS)</ref> format is the most common layout and
+        styling langugage used on the world wide web. The CSS format
+        is text-based and readable by both humans and machines. A CSS
+        file contains detailed layout and formatting instructions for
+        <ref id="html">HTML</ref> documents, allowing a single style
+        sheet to be used for several documents. A working knowledge of
+        CSS is required in order to modify the layout of web
+        pages.</text>
+      </item>
+
+      <item id="directory" style="draft">
+        <title>Directory</title>
+        <text></text>
+      </item>
+
+      <item id="html">
+        <title>HTML</title>
+        <text>The <ref url="http://www.w3.org/TR/html4/">HyperText
+        Markup Language (HTML)</ref> is the most common document
+        format used on the world wide web. The HTML format is
+        text-based and readable by both humans and machines. An HTML
+        document normally only contains the text and overall structure
+        of a web page, using external <ref id="css">CSS</ref> style
+        sheets and image files for specifying the layout. A working
+        knowledge of HTML is required in order to modify the layout of
+        web pages.</text>
+      </item>
+
+      <item id="page">
+        <title>Page</title>
+        <text>A web page contains <ref id="html">HTML</ref> code
+        presenting the web content. The HTML code for each page is
+        split into one or more <ref id="page_element">Page
+        Elements</ref> allowing individual elements to be reused
+        across different pages. Pages can inherit the page elements
+        from other pages, typically <ref id="template">Template</ref>
+        pages.</text>
+      </item>
+
+      <item id="page_element">
+        <title>Page Element</title>
+        <text>A page element is a piece of <ref id="html">HTML</ref>
+        code for a part of a document. A page element may also contain
+        references to other page elements, thereby creating an element
+        hierarchy. Such a page element hierarchy can be inherited
+        between <ref id="page">Pages</ref>, allowing overriding a
+        single page element in the hierarchy. A page element is
+        identified by it's name.</text>
+      </item>
+
+      <item id="request" style="draft">
+        <title>Request</title>
+        <text></text>
+      </item>
+
+      <item id="response" style="draft">
+        <title>Response</title>
+        <text></text>
+      </item>
+
+      <item id="site">
         <title>Site</title>
         <text>A web site consists of a collection of documents and
         files available from a single location on the world wide web.
@@ -26,39 +89,29 @@
         public resources on other sites).</text>
       </item>
 
-      <item>
-        <title>Directory</title>
-        <text></text>
+      <item id="template">
+        <title>Template</title>
+        <text>A template is a <ref id="page">Page</ref> that is only
+        used as a parent for other pages. A template page consists of
+        <ref id="page_element">Page Elements</ref> with HTML code just
+        as normal pages. Templates can inherit the page elements from
+        other templates, creating a hierarchy of more refined
+        templates.</text>
       </item>
 
-      <item>
-        <title>Page</title>
-        <text></text>
+      <item id="web_page">
+        <title>Web Page</title>
+        <text>See <ref id="page">Page</ref>.</text>
       </item>
 
-      <item>
-        <title>Page Element</title>
-        <text></text>
+      <item id="web_site">
+        <title>Web Site</title>
+        <text>See <ref id="site">Site</ref>.</text>
       </item>
 
-      <item>
-        <title>Request</title>
-        <text></text>
-      </item>
-
-      <item>
-        <title>Response</title>
-        <text></text>
-      </item>
-
-      <item>
+      <item id="web_transaction" style="draft">
         <title>Web Transaction</title>
         <text></text>
-      </item>
-
-      <item>
-        <title>Web Site</title>
-        <text>See <ref>Site</ref>.</text>
       </item>
     </list>
 
