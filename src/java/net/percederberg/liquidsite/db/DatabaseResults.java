@@ -203,6 +203,62 @@ public class DatabaseResults {
         }
         
         /**
+         * Returns the row boolean value in the specified column. 
+         * 
+         * @param column     the column number, 0 <= column < count
+         * 
+         * @return the row boolean value in the specified column, or
+         *         false if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column number was out
+         *             of bounds, or if the value wasn't a boolean 
+         *             value
+         */
+        public boolean getBoolean(int column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return false;
+            } else if (obj instanceof Boolean) {
+                return ((Boolean) obj).booleanValue();
+            } else if (obj instanceof Number) {
+                return ((Number) obj).intValue() != 0;
+            } else {
+                throw new DatabaseDataException(
+                    "column " + column + " didn't contain a " +
+                    "boolean value: " + obj);
+            }
+        }
+
+        /**
+         * Returns the row boolean value in the specified column. 
+         * 
+         * @param column     the column name
+         * 
+         * @return the row boolean value in the specified column, or
+         *         false if the column contained a NULL value
+         * 
+         * @throws DatabaseDataException if the column name wasn't
+         *             present in the results, or if the value wasn't
+         *             a boolean value
+         */
+        public boolean getBoolean(String column) throws DatabaseDataException {
+            Object  obj = get(column);
+            
+            if (obj == null) {
+                return false;
+            } else if (obj instanceof Boolean) {
+                return ((Boolean) obj).booleanValue();
+            } else if (obj instanceof Number) {
+                return ((Number) obj).intValue() != 0;
+            } else {
+                throw new DatabaseDataException(
+                    "column '" + column + "' didn't contain a " +
+                    "boolean value: " + obj);
+            }
+        }
+
+        /**
          * Returns the row date value in the specified column. 
          * 
          * @param column     the column number, 0 <= column < count

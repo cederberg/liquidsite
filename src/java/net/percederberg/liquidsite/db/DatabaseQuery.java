@@ -167,6 +167,21 @@ public class DatabaseQuery {
     }
     
     /**
+     * Adds a boolean query parameter. This method converts the 
+     * boolean value to an integer before adding it, using zero (0) 
+     * for false and one (1) for true.
+     * 
+     * @param value          the query parameter value
+     */
+    public void addParameter(boolean value) {
+        if (value) {
+            addParameter(1);
+        } else {
+            addParameter(0);
+        }
+    }
+    
+    /**
      * Returns a string representation of this object.
      * 
      * @return a string representation of this object
