@@ -24,6 +24,8 @@ package net.percederberg.liquidsite.admin;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
@@ -503,27 +505,67 @@ class AdminView {
      * @param request        the request object
      * @param parent         the parent object, or null
      * @param template       the template object, or null
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     public void pageEditTemplate(Request request, 
                                  Object parent, 
-                                 ContentTemplate template) {
+                                 ContentTemplate template) 
+        throws ContentException {
 
-        String  name;
-        String  comment;
+        String    name;
+        String    comment;
+        HashMap   locals = new HashMap();
+        int       inherited;
+        Iterator  iter;
+        String    value;
+        String    str;
 
-        // TODO: forward local / previously sent parameters...
+        // Find default values
         if (parent != null) {
             setRequestReference(request, parent);
             name = "";
             comment = "Created";
+            if (parent instanceof Domain) {
+                locals.put("root", script.getString(""));
+                inherited = 0;
+            } else {
+                inherited = ((Content) parent).getId();
+            }
         } else {
             setRequestReference(request, template);
             name = template.getName();
             comment = "";
+            iter = template.getLocalElementNames().iterator();
+            while (iter.hasNext()) {
+                str = iter.next().toString();
+                value = template.getElement(str);
+                locals.put(str, script.getString(value));
+            }
+            inherited = template.getParentId();
         }
-        request.setAttribute("name", request.getParameter("name", name));
-        request.setAttribute("comment", 
-                             request.getParameter("comment", comment));
+
+        // Adjust for incoming request
+        if (request.getParameter("name") != null) {
+            name = request.getParameter("name", "");
+            comment = request.getParameter("comment", "");
+            locals.clear();
+            iter = request.getAllParameters().keySet().iterator();
+            while (iter.hasNext()) {
+                str = iter.next().toString();
+                if (str.startsWith("element.")) {
+                    value = request.getParameter(str);
+                    locals.put(str.substring(8), script.getString(value));
+                }
+            }
+        }
+
+        // Set request parameters
+        request.setAttribute("name", name);
+        request.setAttribute("comment", comment);
+        request.setAttribute("locals", locals);
+        request.setAttribute("parent", inherited);
         request.sendTemplate("admin/edit-template.ftl");
     }
     

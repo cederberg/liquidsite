@@ -93,15 +93,15 @@ public class ContentTemplate extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public Collection getAllElements() throws ContentException {
+    public Collection getAllElementNames() throws ContentException {
         ContentTemplate  parent;
-        Collection       res = getLocalElements();
+        Collection       res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
         
         if (getParentId() > 0) {
             parent = (ContentTemplate) getParent();
-            iter = parent.getAllElements().iterator();
+            iter = parent.getAllElementNames().iterator();
             while (iter.hasNext()) {
                 obj = iter.next();
                 if (!res.contains(obj)) {
@@ -120,7 +120,7 @@ public class ContentTemplate extends Content {
      * 
      * @return a collection of page element names
      */
-    public Collection getLocalElements() {
+    public Collection getLocalElementNames() {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
         String     name;
@@ -180,7 +180,7 @@ public class ContentTemplate extends Content {
      */
     public void validate() throws ContentException {
         Content[]  children;
-        Iterator   iter = getLocalElements().iterator();
+        Iterator   iter = getLocalElementNames().iterator();
         String     str;
         char       c;
 

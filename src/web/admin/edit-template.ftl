@@ -7,7 +7,9 @@
     <script type="text/javascript">
     function initialize() {
         templateInitialize("elementedit");
-        templateAddLocal('root', '');
+<#list locals.keySet() as elem>
+        templateAddLocal('${elem}', ${locals[elem]});
+</#list>        
         templateDisplay();
         document.getElementsByName("name").item(0).focus();
     }
