@@ -55,6 +55,18 @@ public class TopicBean {
     private ContentTopic topic;
 
     /**
+     * The first post in the forum. This variable is set upon the
+     * first request.
+     */
+    private PostBean first = null;
+
+    /**
+     * The last post in the forum. This variable is set upon the first
+     * request.
+     */
+    private PostBean last = null;
+
+    /**
      * Creates a new empty topic template bean.
      */
     TopicBean() {
@@ -121,6 +133,76 @@ public class TopicBean {
     }
 
     /**
+     * Returns the first post in this topic. The posts are ordered in
+     * creation date order.
+     *
+     * @return the first post in this topic
+     */
+    public PostBean getFirst() {
+        ContentSelector  selector;
+
+        if (first == null) {
+            if (topic != null) {
+                try {
+                    selector = createPostSelector();
+                    selector.sortById(true);
+                    selector.limitResults(0, 1);
+                    first = createPost(selector);
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+            if (first == null) {
+                first = new PostBean();
+            }
+        }
+        return first;
+    }
+
+    /**
+     * Returns the last post in this topic. The posts are ordered in
+     * creation date order.
+     *
+     * @return the last post in this topic
+     */
+    public PostBean getLast() {
+        ContentSelector  selector;
+
+        if (last == null) {
+            if (topic != null) {
+                try {
+                    selector = createPostSelector();
+                    selector.sortById(false);
+                    selector.limitResults(0, 1);
+                    last = createPost(selector);
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+            if (last == null) {
+                last = new PostBean();
+            }
+        }
+        return last;
+    }
+
+    /**
+     * Returns the number of posts in this topic.
+     *
+     * @return the number of posts in this topic
+     */
+    public int getPostCount() {
+        if (topic != null) {
+            try {
+                return baseBean.countContent(createPostSelector());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Returns all posts in this topic. At most the specified number
      * of posts will be returned. The posts will be ordered by
      * creation date.
@@ -131,11 +213,20 @@ public class TopicBean {
      * @return a list of the posts found (as post beans)
      */
     public ArrayList findPosts(int offset, int count) {
-        ArrayList  results = new ArrayList();
+        ArrayList        results = new ArrayList();
+        ContentSelector  selector;
+        Content[]        content;
 
         if (topic != null) {
             try {
-                findPosts(offset, count, results);
+                selector = createPostSelector();
+                selector.sortById(true);
+                selector.limitResults(offset, count);
+                content = baseBean.selectContent(selector);
+                for (int i = 0; i < content.length; i++) {
+                    results.add(new PostBean(baseBean,
+                                             (ContentPost) content[i]));
+                }
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -144,29 +235,42 @@ public class TopicBean {
     }
 
     /**
-     * Finds all posts in this topic. At most the specified number of
-     * posts will be added to the result list. The posts will be
-     * ordered by creation date.
+     * Creates a content selector for finding all posts in this topic.
      *
-     * @param offset         the number of post to skip
-     * @param count          the maximum number of posts
+     * @return a content post selector
      *
-     * @return a list of the posts found (as post beans)
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    private void findPosts(int offset, int count, ArrayList results)
+    private ContentSelector createPostSelector()
         throws ContentException {
 
         ContentSelector  selector;
-        Content[]        content;
 
         selector = new ContentSelector(topic.getDomain());
         selector.requireParent(topic);
         selector.requireCategory(Content.POST_CATEGORY);
-        selector.sortById(true);
-        selector.limitResults(offset, count);
+        return selector;
+    }
+
+    /**
+     * Returns the first content post matching the specified selector.
+     *
+     * @param selector       the content selector to use
+     *
+     * @return the post bean for the found post, or
+     *         null if no matching posts were found
+     */
+    private PostBean createPost(ContentSelector selector)
+        throws ContentException {
+
+        Content[]  content;
+
         content = baseBean.selectContent(selector);
-        for (int i = 0; i < content.length; i++) {
-            results.add(new PostBean(baseBean, (ContentPost) content[i]));
+        if (content.length > 0) {
+            return new PostBean(baseBean, (ContentPost) content[0]);
+        } else {
+            return null;
         }
     }
 }

@@ -634,6 +634,22 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Counts the number of content objects matching a content selector.
+     *
+     * @param selector       the content selector
+     *
+     * @return the number of matching content objects
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    int countContent(ContentSelector selector)
+        throws ContentException {
+
+        return manager.getContentCount(selector);
+    }
+
+    /**
      * Selects a set of content objects with a content selector.
      *
      * @param selector       the content selector

@@ -55,6 +55,18 @@ public class ForumBean {
     private ContentForum forum;
 
     /**
+     * The first topic in the forum. This variable is set upon the
+     * first request.
+     */
+    private TopicBean first = null;
+
+    /**
+     * The last topic in the forum. This variable is set upon the
+     * first request.
+     */
+    private TopicBean last = null;
+
+    /**
      * Creates a new empty forum template bean.
      */
     ForumBean() {
@@ -121,6 +133,76 @@ public class ForumBean {
     }
 
     /**
+     * Returns the first topic in this forum. The topics are ordered
+     * in modification date order.
+     *
+     * @return the first topic in this forum
+     */
+    public TopicBean getFirst() {
+        ContentSelector  selector;
+
+        if (first == null) {
+            if (forum != null) {
+                try {
+                    selector = createTopicSelector();
+                    selector.sortByModified(true);
+                    selector.limitResults(0, 1);
+                    first = createTopic(selector);
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+            if (first == null) {
+                first = new TopicBean();
+            }
+        }
+        return first;
+    }
+
+    /**
+     * Returns the last topic in this forum. The topics are ordered in
+     * modification date order.
+     *
+     * @return the last topic in this forum
+     */
+    public TopicBean getLast() {
+        ContentSelector  selector;
+
+        if (last == null) {
+            if (forum != null) {
+                try {
+                    selector = createTopicSelector();
+                    selector.sortByModified(false);
+                    selector.limitResults(0, 1);
+                    last = createTopic(selector);
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+            if (last == null) {
+                last = new TopicBean();
+            }
+        }
+        return last;
+    }
+
+    /**
+     * Returns the number of topics in this forum.
+     *
+     * @return the number of topics in this forum
+     */
+    public int getTopicCount() {
+        if (forum != null) {
+            try {
+                return baseBean.countContent(createTopicSelector());
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Returns all topics in this forum. At most the specified number
      * of topics will be returned. The topics will be ordered by last
      * modification date.
@@ -131,11 +213,20 @@ public class ForumBean {
      * @return a list of the topics found (as topic beans)
      */
     public ArrayList findTopics(int offset, int count) {
-        ArrayList  results = new ArrayList();
+        ArrayList        results = new ArrayList();
+        ContentSelector  selector;
+        Content[]        content;
 
         if (forum != null) {
             try {
-                findTopics(offset, count, results);
+                selector = createTopicSelector();
+                selector.sortByModified(false);
+                selector.limitResults(offset, count);
+                content = baseBean.selectContent(selector);
+                for (int i = 0; i < content.length; i++) {
+                    results.add(new TopicBean(baseBean,
+                                              (ContentTopic) content[i]));
+                }
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -144,29 +235,44 @@ public class ForumBean {
     }
 
     /**
-     * Finds all topics in this forum. At most the specified number of
-     * topics will be added to the result list. The topics will be
-     * ordered by last modification date.
+     * Creates a content selector for finding all topics in this
+     * forum.
      *
-     * @param offset         the number of topics to skip
-     * @param count          the maximum number of topics
+     * @return a content topic selector
      *
-     * @return a list of the topics found (as topic beans)
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    private void findTopics(int offset, int count, ArrayList results)
+    private ContentSelector createTopicSelector()
         throws ContentException {
 
         ContentSelector  selector;
-        Content[]        content;
 
         selector = new ContentSelector(forum.getDomain());
         selector.requireParent(forum);
         selector.requireCategory(Content.TOPIC_CATEGORY);
-        selector.sortByModified(false);
-        selector.limitResults(offset, count);
+        return selector;
+    }
+
+    /**
+     * Returns the first content topic matching the specified
+     * selector.
+     *
+     * @param selector       the content selector to use
+     *
+     * @return the topic bean for the found topic, or
+     *         null if no matching topics were found
+     */
+    private TopicBean createTopic(ContentSelector selector)
+        throws ContentException {
+
+        Content[]  content;
+
         content = baseBean.selectContent(selector);
-        for (int i = 0; i < content.length; i++) {
-            results.add(new TopicBean(baseBean, (ContentTopic) content[i]));
+        if (content.length > 0) {
+            return new TopicBean(baseBean, (ContentTopic) content[0]);
+        } else {
+            return null;
         }
     }
 }
