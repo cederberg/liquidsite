@@ -282,6 +282,20 @@ public class User extends PersistentObject {
     }
     
     /**
+     * Verifies the user password. This method will hash and encode 
+     * the specified password, and compare the result with the real 
+     * password. This method can be used to verify user logins.
+     * 
+     * @param password       the new user password
+     * 
+     * @return true if the passwords are identical, or
+     *         false otherwise
+     */
+    public boolean verifyPassword(String password) {
+        return getPassword().equals(createHash(getName() + password));
+    }
+
+    /**
      * Returns the real user name.
      * 
      * @return the real user name
