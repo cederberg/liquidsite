@@ -461,6 +461,8 @@ public class AdminRequestProcessor extends RequestProcessor {
                 processPreview(request, (ContentDocument) content, path);
             } else if (content instanceof ContentSection) {
                 processPreview(request, (ContentSection) content);
+            } else if (content instanceof ContentFile) {
+                processPreview(request, (ContentFile) content);
             } else {
                 throw RequestException.FORBIDDEN;
             }
@@ -514,6 +516,35 @@ public class AdminRequestProcessor extends RequestProcessor {
         site.setDirectory(dir);
         request.getEnvironment().setSite(site);
         sendContent(request, content);
+    }
+
+    /**
+     * Processes a preview request for a specific file.
+     *
+     * @param request        the request object
+     * @param file           the content file object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the request referred to an
+     *             object that wasn't readable by the user
+     * @throws TemplateException if the page template couldn't be
+     *             processed correctly
+     */
+    private void processPreview(Request request,
+                                ContentFile file)
+        throws RequestException, ContentException,
+               ContentSecurityException, TemplateException {
+
+        String  revision;
+
+        revision = request.getParameter("revision");
+        if (revision != null) {
+            file = (ContentFile) file.getRevision(Integer.parseInt(revision));
+        }
+        sendContent(request, file);
     }
 
     /**

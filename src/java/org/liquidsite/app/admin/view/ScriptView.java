@@ -741,7 +741,7 @@ public class ScriptView {
             if (str != null) {
                 return str + content.toString();
             } else {
-                return null;
+                return "preview/" + content.getId() + "/";
             }
         } else if (content instanceof ContentTemplate) {
             return "preview/" + content.getId() + "/";
