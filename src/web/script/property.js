@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 
@@ -33,7 +33,7 @@ var PROPERTY_ROOT = null;
 
 /**
  * The property values object. All local elements are present as
- * properties in this object. This object will be updated while the 
+ * properties in this object. This object will be updated while the
  * user edits the template.
  */
 var PROPERTY_VALUES = new Array();
@@ -59,7 +59,7 @@ function propertyInitialize(id) {
 /**
  * Displays the property editor. This will clear and redraw all
  * properties.
- */ 
+ */
 function propertyDisplay() {
     var  tr;
     var  td;
@@ -109,7 +109,7 @@ function propertyAdd(id, name, type, description) {
 }
 
 /**
- * Adds a property to the list. All property values will be 
+ * Adds a property to the list. All property values will be
  * initialized with empty values.
  *
  * @param id                 the property identifier
@@ -178,7 +178,7 @@ function propertyInternalMoveDown(position) {
  *
  * @param position           the property position
  * @param property           the property object
- */ 
+ */
 function propertyInternalDisplayProperty(position, property) {
     var  tr = utilAddElement(PROPERTY_ROOT, "tr");
     var  td;
@@ -220,14 +220,14 @@ function propertyInternalDisplayProperty(position, property) {
     input.tabIndex = "10";
     input.name = "property." + property.id + ".name";
     input.value = property.name;
-    input.onchange = new Function("PROPERTY_VALUES[" + position + 
+    input.onchange = new Function("PROPERTY_VALUES[" + position +
                                   "].name = this.value");
     span = utilAddElement(td, "span", " Type: ");
     span.title = "The property type controls how property data is entered.";
     select = utilAddElement(td, "select")
     select.tabIndex = "10";
     select.name = "property." + property.id + ".type";
-    select.onchange = new Function("PROPERTY_VALUES[" + position + 
+    select.onchange = new Function("PROPERTY_VALUES[" + position +
                                    "].type = this.value");
 	option = utilAddElement(select, "option", "Plain Text");
 	option.value = 1;
@@ -253,7 +253,7 @@ function propertyInternalDisplayProperty(position, property) {
     textarea.tabIndex = "10";
     textarea.name = "property." + property.id + ".description";
     textarea.value = property.description;
-    textarea.onchange = new Function("PROPERTY_VALUES[" + position + 
+    textarea.onchange = new Function("PROPERTY_VALUES[" + position +
                                      "].description = this.value");
 }
 

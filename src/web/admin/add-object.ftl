@@ -35,16 +35,16 @@
 <#if enableDomain?exists>
         <tr>
           <th style="width: 7em;">
-            <input type="radio" tabindex="1" 
+            <input type="radio" tabindex="1"
                    name="category" value="domain" />
             Domain
           </th>
           <td>
             A domain consists of a set of related resources,
             normally belonging to a single organization or entity.
-            Users, groups and content objects can only be shared 
-            within a domain. Note that a domain does not have to 
-            correlate to an Intenet domain name, although that 
+            Users, groups and content objects can only be shared
+            within a domain. Note that a domain does not have to
+            correlate to an Intenet domain name, although that
             often is the case.
           </td>
         </tr>
@@ -59,7 +59,7 @@
           <td>
             A web site consists of a collection of documents and
             files available from a single location on the world wide
-            web. A web site is identified by protocol, host name, 
+            web. A web site is identified by protocol, host name,
             port number, and base directory.
           </td>
         </tr>
@@ -73,7 +73,7 @@
           </th>
           <td>
             A folder contains other objects. All object in the folder
-            must have unique names. The special names 'index.html' 
+            must have unique names. The special names 'index.html'
             and 'index.htm' are used to identify default objects.
           </td>
         </tr>
@@ -81,14 +81,14 @@
 <#if enablePage?exists>
         <tr>
           <th style="width: 8em;">
-            <input type="radio" tabindex="4" 
+            <input type="radio" tabindex="4"
                    name="category" value="page" />
             Page
           </th>
           <td>
-            A web page contains static or dynamic content. The page 
-            consists of page elements with HTML code. Each page 
-            element can be defined in the page or inherited from a 
+            A web page contains static or dynamic content. The page
+            consists of page elements with HTML code. Each page
+            element can be defined in the page or inherited from a
             template.
           </td>
         </tr>
@@ -96,13 +96,13 @@
 <#if enableFile?exists>
         <tr>
           <th style="width: 8em;">
-            <input type="radio" tabindex="5" 
+            <input type="radio" tabindex="5"
                    name="category" value="file" />
             File
           </th>
           <td>
             A file contains static data. The file contents may be any
-            kind of data, including HTML, text, images, or binary 
+            kind of data, including HTML, text, images, or binary
             data.
           </td>
         </tr>
@@ -116,8 +116,8 @@
           </th>
           <td>
             A web page template is used as a basis for creating web
-            pages. The template consists of page elements with HTML 
-            code. Each page element can be defined in the template 
+            pages. The template consists of page elements with HTML
+            code. Each page element can be defined in the template
             or inherited from a parent template.
           </td>
         </tr>
@@ -130,8 +130,8 @@
             Section
           </th>
           <td>
-            A document section is used for grouping similar documents. 
-            The section also defines the document properties 
+            A document section is used for grouping similar documents.
+            The section also defines the document properties
             available for each document.
           </td>
         </tr>
@@ -145,7 +145,7 @@
           </th>
           <td>
             A document can store any type of text content, such as
-            articles, news and similar. The containing section 
+            articles, news and similar. The containing section
             defines the document properties available.
           </td>
         </tr>

@@ -3,7 +3,7 @@
     <div style="margin-left: 10%">
 
       <h1>Group Members</h2>
-      
+
       <table class="compact">
         <tr>
           <th>Domain:</th>

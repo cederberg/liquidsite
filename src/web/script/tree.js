@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 
@@ -101,7 +101,7 @@ function treeAddItem(parent, id, type, name, desc, status) {
 
 /**
  * Adds an item container to the tree. This function must be called
- * before adding any child item to a parent item. It it used to 
+ * before adding any child item to a parent item. It it used to
  * verify that the contents of the parent has been loaded.
  *
  * @param id                  the container item id
@@ -140,7 +140,7 @@ function treeSelect(type, id) {
 }
 
 /**
- * Toggles showing and hiding contents of a container in the tree. If 
+ * Toggles showing and hiding contents of a container in the tree. If
  * the specified item is not a container, the item will be selected.
  *
  * @param type                the item type
@@ -201,11 +201,11 @@ function treeClose(type, id) {
  *
  * @param type                the item type
  *
- * @return true if the type is a container, or 
+ * @return true if the type is a container, or
  *         false otherwise
  */
 function treeInternalIsContainer(type) {
-    return type == "domain" 
+    return type == "domain"
         || type == "site"
         || type == "folder"
         || type == "template"

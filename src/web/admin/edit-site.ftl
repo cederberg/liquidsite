@@ -72,7 +72,7 @@
 </#if>
             </select>
             <p>The protocol to accept for the site. Note that using
-            secure HTTP, requires certificates to be installed in 
+            secure HTTP, requires certificates to be installed in
             order to work.</p>
           </td>
         </tr>
@@ -102,8 +102,8 @@
           <td class="field">
             <input type="text" tabindex="4" size="10"
                    name="port" value="${port}" />
-            <p>The site port number. The web server must be 
-            configured for listening on this port. Normal HTTP 
+            <p>The site port number. The web server must be
+            configured for listening on this port. Normal HTTP
             traffic uses port 80, and secure HTTP uses port 443.
             Use 0 to specify any port number.</p>
           </td>
@@ -115,7 +115,7 @@
           <td class="field">
             <input type="text" tabindex="5" size="40"
                    name="dir" value="${dir}" />
-            <p>The site base directory. If several sites are run on 
+            <p>The site base directory. If several sites are run on
             the same protocol, host and port, the base directory must
             be used to distinguish between them.</p>
           </td>
@@ -127,7 +127,7 @@
           </th>
           <td class="field">
             <input type="checkbox" tabindex="6"
-                   name="admin" value="true" /> 
+                   name="admin" value="true" />
             <strong>Administration Site</strong>
             <p>The special site flags. Note that these flags cannot
             be changed after creation, as they determine the site

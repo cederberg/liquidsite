@@ -30,7 +30,7 @@ var TAGEDIT_ICON_PATH = "images/icons/24x24/";
 var TAGEDIT_TEXTAREAS = new Array();
 
 /**
- * The tag editor undo information. Each editor may contain an array 
+ * The tag editor undo information. Each editor may contain an array
  * of up to 10 stored states. This array contains the undo object for
  * each editor.
  */
@@ -109,7 +109,7 @@ function tagEditInternalAddStyleSelector(parent, editor) {
 
     select = utilAddElement(parent, "select");
     select.name = "tagedit.internal." + editor;
-    select.onchange = new Function("tagEditInternalStyleSelect(" + 
+    select.onchange = new Function("tagEditInternalStyleSelect(" +
                                    editor + ", this);");
     option = utilAddElement(select, "option", "< Select Style >");
     option.value = "";
@@ -221,14 +221,14 @@ function tagEditInternalUnformat(editor) {
         if (startPos >= 0) {
             endPos = text.indexOf(">");
             if (endPos > startPos) {
-                text = text.substring(0, startPos) + 
+                text = text.substring(0, startPos) +
                        text.substring(endPos + 1);
             } else {
                 text = text.substring(0, startPos);
             }
         }
     }
-    area.value = area.value.substring(0, selection.start) + text + 
+    area.value = area.value.substring(0, selection.start) + text +
                  area.value.substring(selection.end);
     selection.end = selection.start + text.length;
     tagEditInternalSetSelection(editor, selection);
@@ -268,7 +268,7 @@ function tagEditInternalAddImage(editor) {
 
 /**
  * Adjusts the tag editor current selection. This makes sure that the
- * selection does not exceed various paragraphs. It also enlarges 
+ * selection does not exceed various paragraphs. It also enlarges
  * selections to the whole paragraph if the paragraph flag is set.
  *
  * @param editor             the editor number
@@ -322,12 +322,12 @@ function tagEditInternalInsert(editor, start, end) {
 
     selection = tagEditInternalGetSelection(editor);
     if (end == null) {
-        area.value = value.substring(0, selection.start) + start + 
+        area.value = value.substring(0, selection.start) + start +
                      value.substring(selection.start);
         selection.end = selection.start + start.length;
     } else {
-        area.value = value.substring(0, selection.start) + start + 
-                     value.substring(selection.start, selection.end) + 
+        area.value = value.substring(0, selection.start) + start +
+                     value.substring(selection.start, selection.end) +
                      end + value.substring(selection.end);
         selection.end = selection.end + start.length + end.length;
     }
@@ -355,7 +355,7 @@ function tagEditInternalRemove(editor, start, end) {
 
         text = text.substring(0, text.length - end.length);
     }
-    area.value = value.substring(0, selection.start) + text + 
+    area.value = value.substring(0, selection.start) + text +
                  value.substring(selection.end);
     selection.end = selection.start + text.length;
     tagEditInternalSetSelection(editor, selection);

@@ -7,12 +7,12 @@
 
     <h1>Introduction</h1>
 
-    <p>This is the reference manual for Liquid Site version 
+    <p>This is the reference manual for Liquid Site version
     <param name="version" />.</p>
 
     <list>
       <item>
-        <title><ref file="terminology.xml">Concepts &amp; 
+        <title><ref file="terminology.xml">Concepts &amp;
         Definitions</ref></title>
         <text>Summary of the most important terminology used in this
         reference manual.</text>
@@ -20,7 +20,7 @@
 
       <item>
         <title><ref file="users.xml">Users &amp; Groups</ref></title>
-        <text>Details of the authentication and authorization 
+        <text>Details of the authentication and authorization
         process.</text>
       </item>
 

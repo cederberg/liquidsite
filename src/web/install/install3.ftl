@@ -32,12 +32,12 @@
           <td colspan="2">
             <h2>Select Database User (Step 3 of 5)</h2>
 
-            <p>Select the database user to use when running Liquid 
+            <p>Select the database user to use when running Liquid
             Site normally. It is highly recommended to create a new
             user with minimal privileges.</p>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
-</#if>  
+</#if>
           </td>
         </tr>
         <tr>
@@ -66,7 +66,7 @@
             </select>
             <input type="text" tabindex="2" size="20"
                    name="user2" value="${user}" />
-            <p>This is the database user name to use for accessing 
+            <p>This is the database user name to use for accessing
             the Liquid Site database.</p>
           </td>
         </tr>
@@ -87,7 +87,7 @@
           <td class="field">
             <input type="password" tabindex="4" size="12"
                    name="password2" value="${password}" />
-            <p>Verify the password for the database user. This field 
+            <p>Verify the password for the database user. This field
             is only used when creating new users.</p>
           </td>
         </tr>

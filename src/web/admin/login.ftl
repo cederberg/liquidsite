@@ -11,7 +11,7 @@
             <h2>Login</h2>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
-</#if>  
+</#if>
           </td>
         </tr>
         <tr>

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 
@@ -47,7 +47,7 @@ function objectInitialize(id) {
 
 /**
  * Clears the object view.
- */ 
+ */
 function objectClear() {
     while (OBJECT_ROOT.hasChildNodes()) {
         OBJECT_ROOT.removeChild(OBJECT_ROOT.lastChild);
@@ -137,7 +137,7 @@ function objectAddStatusProperty(status, lockUser, lockDate) {
     } else {
         text = "Offline";
         style = "offline";
-    }   
+    }
     if (lockUser != null) {
         text = text + " (Locked ";
         if (lockDate != null) {
@@ -315,7 +315,7 @@ function objectAddPermission(user, group, read, write, publish, admin, local) {
     var td2 = document.createElement("td");
     var img = document.createElement("img");
     var name;
-    
+
     if (user != null) {
         img.src = OBJECT_SMALL_ICON_PATH + "user.png";
         img.alt = "User";
@@ -415,7 +415,7 @@ function objectInternalAddElement(parent, name, child) {
     }
     parent.appendChild(elem);
     return elem;
-} 
+}
 
 /**
  * Adds an HTML table element to a parent node. An table title will
@@ -449,13 +449,13 @@ function objectInternalAddTable(parent, id, title) {
  *
  * @return the revision table body
  */
-function objectInternalGetRevisionTable() {    
+function objectInternalGetRevisionTable() {
     var tbody = document.getElementById("objectrevisions");
     var tr;
 
     if (tbody == null) {
-        tbody = objectInternalAddTable(OBJECT_ROOT, 
-                                       "objectrevisions", 
+        tbody = objectInternalAddTable(OBJECT_ROOT,
+                                       "objectrevisions",
                                        "Revision History");
         tr = objectInternalAddElement(tbody, "tr");
         objectInternalAddElement(tr, "th", "Revision");
@@ -478,8 +478,8 @@ function objectInternalGetPermissionTable() {
     var tr;
 
     if (tbody == null) {
-        tbody = objectInternalAddTable(OBJECT_ROOT, 
-                                       "objectpermissions", 
+        tbody = objectInternalAddTable(OBJECT_ROOT,
+                                       "objectpermissions",
                                        "Permissions");
         tr = objectInternalAddElement(tbody, "tr");
         objectInternalAddElement(tr, "th", "User/Group");
@@ -503,8 +503,8 @@ function objectInternalGetHostTable() {
     var tr;
 
     if (tbody == null) {
-        tbody = objectInternalAddTable(OBJECT_ROOT, 
-                                       "objecthosts", 
+        tbody = objectInternalAddTable(OBJECT_ROOT,
+                                       "objecthosts",
                                        "Host Names");
         tr = objectInternalAddElement(tbody, "tr");
         objectInternalAddElement(tr, "th", "Web Host");

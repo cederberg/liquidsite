@@ -58,8 +58,8 @@
             <input type="hidden" name="name" value="${name}" />
             <strong>${name}</strong>
 </#if>
-            <p>The login name uniquely identifies the user in the 
-            domain. It cannot be modified once the user has been 
+            <p>The login name uniquely identifies the user in the
+            domain. It cannot be modified once the user has been
             created.</p>
           </td>
         </tr>
@@ -112,7 +112,7 @@
           <td class="field">
             <input type="text" tabindex="5" size="30"
                    name="email" value="${email}" />
-            <p>The user email address. This field can be modified by 
+            <p>The user email address. This field can be modified by
             the user.</p>
           </td>
         </tr>
@@ -124,7 +124,7 @@
             <input type="text" tabindex="6" size="30"
                    name="comment" value="${comment}" />
             <p>The user comment. This annotation area is only visible
-            for the domain administrators and isn't shown for the 
+            for the domain administrators and isn't shown for the
             user.</p>
           </td>
         </tr>

@@ -54,9 +54,9 @@
           <td class="field">
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
-            <p>The folder name is part of the URL by which the user 
-            will access the folder contents. The folder name should 
-            use only English alphabet characters or numbers without 
+            <p>The folder name is part of the URL by which the user
+            will access the folder contents. The folder name should
+            use only English alphabet characters or numbers without
             any spaces.</p>
           </td>
         </tr>

@@ -26,7 +26,7 @@
             an existing database is chosen.</p>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
-</#if>  
+</#if>
           </td>
         </tr>
         <tr>
@@ -47,14 +47,14 @@
   <#elseif info.name = database>
     <#assign style = "">
     <#assign options = "checked=\"checked\"">
-  <#else>  
+  <#else>
     <#assign style = "">
     <#assign options = "">
   </#if>
               <tr ${style}>
                 <td>
                   <input type="radio" tabindex="1" ${options}
-                         name="database1" value="${info.name}" /> 
+                         name="database1" value="${info.name}" />
                   ${info.name}
                 </td>
                 <td>
@@ -80,7 +80,7 @@
 </#if>
               <tr ${style}>
                 <td>
-                  <input type="radio" tabindex="1" 
+                  <input type="radio" tabindex="1"
                          name="database1" value="" ${options} />
                   <input type="input" tabindex="2" size="15" ${options}
                          name="database2" value="${fieldvalue}" />

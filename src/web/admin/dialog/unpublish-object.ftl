@@ -36,7 +36,7 @@
             Date:
           </th>
           <td>
-            <input type="text" tabindex="1" 
+            <input type="text" tabindex="1"
                    name="date" value="${date}" />
           </td>
         </tr>

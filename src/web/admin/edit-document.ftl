@@ -71,7 +71,7 @@
                    name="name" value="${name}" />
             <p>The document name is used to identify the document.
             As the name may form part of a URL it may only contain
-            English alphabet characters or numbers without any 
+            English alphabet characters or numbers without any
             spaces.</p>
           </td>
         </tr>
@@ -101,7 +101,7 @@
             ${prop.name}:
           </th>
           <td class="field">
-          <input type="hidden" 
+          <input type="hidden"
                  name="propertytype.${prop.id}" value="${prop.type}" />
   <#if prop.type == 1>
             ${prop.description}<br/><br/>

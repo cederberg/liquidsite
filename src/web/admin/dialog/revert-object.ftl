@@ -24,10 +24,10 @@
         </tr>
         <tr>
           <td>
-            <strong>Are you sure you wish to delete this 
+            <strong>Are you sure you wish to delete this
             revision?</strong>
 
-            <p>Deleting the ${type} revision will remove it from the 
+            <p>Deleting the ${type} revision will remove it from the
             system, without possibility to recover at a later date.</p>
           </td>
         </tr>

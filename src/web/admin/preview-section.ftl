@@ -3,7 +3,7 @@
 <#include "header.ftl">
 
     <h2>Document Properties</h2>
-    
+
     <p>The properties for documents in this section.</p>
 
     <table class="border">
@@ -12,7 +12,7 @@
         <th>Name</th>
         <th>Type</th>
         <th>Description</th>
-      </tr>      
+      </tr>
 <#list properties as prop>
       <tr>
         <td>

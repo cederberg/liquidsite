@@ -7,9 +7,9 @@
 
     <h1>Authors</h1>
 
-    <p>This software package is the result of many hours of hard work. 
+    <p>This software package is the result of many hours of hard work.
     The persons involved as of this release are:</p>
-  
+
     <list>
       <item>
         <title>Per Cederberg &lt;per at percederberg dot net&gt;</title>
@@ -33,11 +33,11 @@
     (Information Coordinator at Swedish Committee), without whom this
     software would never have come into existence.</p>
 
-    <p>This product includes software developed by the Apache Software 
-    Foundation 
+    <p>This product includes software developed by the Apache Software
+    Foundation
     (<ref url="http://www.apache.org/">http://www.apache.org/</ref>),
     MySQL AB
-    (<ref url="http://www.mysql.com/">http://www.mysql.com/</ref>), 
+    (<ref url="http://www.mysql.com/">http://www.mysql.com/</ref>),
     and the FreeMarker Project
     (<ref url="http://freemarker.sourceforge.net/">http://freemarker.sourceforge.net/</ref>).</p>
 

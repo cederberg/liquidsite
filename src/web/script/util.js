@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 
@@ -27,10 +27,10 @@ var UTIL_ICON_PATH = "images/icons/24x24/";
 
 /**
  * The list of HTML nodes to be removed. This is used as IE 5.0 (at
- * least) require a short delay after removing a form element 
+ * least) require a short delay after removing a form element
  * (textarea or input). If all elements are removed instantly, the IE
  * browser will crash. So, elements are first flagged for removal and
- * added to this list, then they are removed in the background. To 
+ * added to this list, then they are removed in the background. To
  * make this process invisible to the user, a style="display: none;"
  * CSS can be added to the elements to be removed.
  */
@@ -46,8 +46,8 @@ var UTIL_REMOVE_LIST = new Array();
 function utilOpenDialog(url, width, height) {
     var top = (screen.height - height) / 2;
     var left = (screen.width - width) / 2;
-    var attr = "top=" + top + ",left=" + left + 
-               ",width=" + width + ",height=" + height + 
+    var attr = "top=" + top + ",left=" + left +
+               ",width=" + width + ",height=" + height +
                ",resizable=yes";
 
     window.open(url, "", attr);
@@ -55,14 +55,14 @@ function utilOpenDialog(url, width, height) {
 
 /**
  * Focuses a named HTML element. Note that the element must have a
- * name attribute with the specified name value. If several such 
+ * name attribute with the specified name value. If several such
  * elements exist, the first will be focused.
  *
  * @param name               the element name
  */
 function utilFocusElement(name) {
     var elems = document.getElementsByName(name);
-    
+
     if (elems != null && elems.length > 0) {
         elems.item(0).focus();
     }
@@ -152,14 +152,14 @@ function utilSetRemovalFlag(elem) {
 
 /**
  * Removes all elements flagged for removal. This function may return
- * prior to all elements being removed, due to processing some 
+ * prior to all elements being removed, due to processing some
  * removals after a delay. When removing form elements in IE, a delay
  * must be added to avoid a browser crash.
  */
 function utilRemoveElements() {
     var  elem;
     var  tag;
-    
+
     if (UTIL_REMOVE_LIST.length <= 0) {
         return;
     }

@@ -21,7 +21,7 @@
             ${type}?</strong>
 
             <p>Unlocking the ${type} will stop the current owner of the
-            lock from saving any changes. Make sure the other user is 
+            lock from saving any changes. Make sure the other user is
             aware of this before unlocking.</p>
           </td>
         </tr>

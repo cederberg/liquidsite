@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
- 
+
 <!-- ### ENTITY DECLARATIONS ### -->
 <!DOCTYPE stylesheet [
 <!ENTITY newline "<xsl:text>
@@ -128,7 +128,7 @@
       <hr/>
       &newline;&newline;&indent;&indent;
       <p class="footer">
-        <xsl:text disable-output-escaping="yes">Copyright &amp;copy; 2003 by</xsl:text>
+        <xsl:text disable-output-escaping="yes">Copyright &amp;copy; 2004 by</xsl:text>
         &newline;&indent;&indent;
         <a href="http://www.percederberg.net/software/">Per Cederberg</a>
         <xsl:text>.</xsl:text>
@@ -176,7 +176,7 @@
   <xsl:template match="code">
     <code><xsl:apply-templates select="@*|*|text()" /></code>
   </xsl:template>
-  
+
   <xsl:template match="ref">
     <xsl:choose>
       <xsl:when test="@id != '' and @file != ''">

@@ -8,13 +8,13 @@
     <h1>Known Issues</h1>
 
     <p>This is a list of the known issues as of the release of
-    version <param name="version" /> (<param name="date" />). Please 
-    verify that any new problem found is not in this list before 
+    version <param name="version" /> (<param name="date" />). Please
+    verify that any new problem found is not in this list before
     sending a bug report.</p>
 
     <list>
     </list>
-    
+
 
     <h1>Suggested Improvements</h1>
 

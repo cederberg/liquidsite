@@ -26,7 +26,7 @@
             Liquid Site.</p>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
-</#if>  
+</#if>
           </td>
         </tr>
         <tr>
@@ -36,7 +36,7 @@
           <td class="field">
             <input type="text" tabindex="1" size="40"
                    name="dir" value="${dir}" />
-            <p>This is the directory on the web server machine 
+            <p>This is the directory on the web server machine
             containing binary data files.</p>
           </td>
         </tr>
@@ -47,8 +47,8 @@
           <td class="field">
             <input type="text" tabindex="2" size="20"
                    name="user" value="${user}" />
-            <p>This is the default Liquid Site administrator user. 
-            This user cannot be removed unless a new Liquid Site 
+            <p>This is the default Liquid Site administrator user.
+            This user cannot be removed unless a new Liquid Site
             administrator is created.</p>
           </td>
         </tr>

@@ -28,7 +28,7 @@
             <strong>Are you sure you wish to delete this
             ${type}?</strong>
 
-            <p>Deleting the ${type} will remove it from the database, 
+            <p>Deleting the ${type} will remove it from the database,
             without possibility to recover at a later date.</p>
           </td>
         </tr>

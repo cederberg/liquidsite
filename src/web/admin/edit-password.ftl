@@ -34,7 +34,7 @@
             Current&nbsp;Password:
           </th>
           <td class="field">
-            <input type="password" tabindex="1" size="20" 
+            <input type="password" tabindex="1" size="20"
                    name="password0" />
             <p>Enter your current password.</p>
           </td>

@@ -7,57 +7,57 @@
 
     <h1>Users &amp; Groups</h1>
 
-    <p>All content in Liquid Site can be protected. This makes it 
+    <p>All content in Liquid Site can be protected. This makes it
     possible to only allow access or modifications from certain users
-    or groups of users. The authentication and authorization scheme 
+    or groups of users. The authentication and authorization scheme
     has been designed to work in as many configurations as possible,
-    while keeping complexity to a minimum. Below follows a list of 
+    while keeping complexity to a minimum. Below follows a list of
     the original requirements with a brief explanation of the current
     design.</p>
 
     <list>
       <item>
         <title>Control access for all content objects</title>
-        <text>All managed content requires authorization in order to 
+        <text>All managed content requires authorization in order to
         be accessed. Unauthenticated users may be allowed read or
         write access. This is achieved by checking every content read
-        or write operation with the corresponding 
+        or write operation with the corresponding
         <ref file="terminology.xml" id="acl">access control list</ref>.
         </text>
       </item>
 
       <item>
         <title>Allow access for single users or groups of users</title>
-        <text>Access to content objects can be granted either for 
-        single users, groups of users, or any user. The list of users 
+        <text>Access to content objects can be granted either for
+        single users, groups of users, or any user. The list of users
         and groups are be specified in the
         <ref file="terminology.xml" id="acl">access control list</ref>
         along with the permissions for each. If a user matches several
-        of the items in the access control list, the union of the 
+        of the items in the access control list, the union of the
         specified permissions are used.</text>
       </item>
 
       <item>
         <title>Separate permissions for read, write and publish</title>
-        <text>In a content management system, it makes sense to 
-        distinguish between read, write and publish operations. Read 
-        is any non-modifying access, write is the operation of 
+        <text>In a content management system, it makes sense to
+        distinguish between read, write and publish operations. Read
+        is any non-modifying access, write is the operation of
         updating offline content, and publish being the operation of
-        putting content online or offline. The system also has 
+        putting content online or offline. The system also has
         separate permissions for admin operations, required in order
-        to modify the content 
+        to modify the content
         <ref file="terminology.xml" id="acl">access control list</ref>.
         </text>
       </item>
 
       <item>
         <title>Allow user accounts to span related web sites</title>
-        <text>Multiple related web sites are typically hosted in the 
-        same installation, such as "www.domain.com" and 
-        "forum.domain.com". All such sites can share a single set of 
-        users and groups, making the user experience simpler while 
-        allowing more efficient administration. This is achieved by 
-        structuring user accounts into 
+        <text>Multiple related web sites are typically hosted in the
+        same installation, such as "www.domain.com" and
+        "forum.domain.com". All such sites can share a single set of
+        users and groups, making the user experience simpler while
+        allowing more efficient administration. This is achieved by
+        structuring user accounts into
         <ref file="terminology.xml" id="domain">domains</ref>, where
         each domain may contain several (related) web sites.</text>
       </item>
@@ -65,26 +65,26 @@
       <item>
         <title>Separate user accounts for unrelated web sites</title>
         <text>Multiple unrelated web sites may be hosted in the same
-        installation, allowing a hosting company to share the 
+        installation, allowing a hosting company to share the
         hardware and software setup between several customers. Full
-        separation between the different web sites can be guaranteed 
-        and a user account for one site will in that case not overlap 
-        or conflict with a similarly named user account for another 
+        separation between the different web sites can be guaranteed
+        and a user account for one site will in that case not overlap
+        or conflict with a similarly named user account for another
         site. This is also achieved by using
-        <ref file="terminology.xml" id="domain">domains</ref>. The 
-        user accounts in one domains are completely separated from 
+        <ref file="terminology.xml" id="domain">domains</ref>. The
+        user accounts in one domains are completely separated from
         the accounts in another, allowing the same user name to refer
         to different users depending on the domain.</text>
       </item>
 
       <item>
         <title>Allow any number of users and groups</title>
-        <text>User and group names have have no inherent meaning in 
-        the system. They are given meaning as they are added to the 
+        <text>User and group names have have no inherent meaning in
+        the system. They are given meaning as they are added to the
         <ref file="terminology.xml" id="acl">access control lists</ref>
         of content objects. Each user may be member in any number of
         groups, and each group may also have any number of users as
-        members. Users and groups must be in the same 
+        members. Users and groups must be in the same
         <ref file="terminology.xml" id="domain">domain</ref> to have
         a membership relation, though.</text>
       </item>
@@ -92,19 +92,19 @@
       <item>
         <title>Allow global administrators access everywhere</title>
         <text>System maintenance and configuration, requires at least
-        one global administrator user. These users do not belong to 
+        one global administrator user. These users do not belong to
         any <ref file="terminology.xml" id="domain">domain</ref>, and
-        have full access to everything in the system. Global 
+        have full access to everything in the system. Global
         administrator accounts are also useful when hosting multiple
-        domains in a single installation, such as a hosting company 
+        domains in a single installation, such as a hosting company
         would do. It is important, however, to protect these accounts
         as much as possible.</text>
       </item>
 
       <item>
         <title>User authentication by password and IP address</title>
-        <text>User authentication is done with passwords, while also 
-        allowing remote IP address checks for sensitive accounts. It 
+        <text>User authentication is done with passwords, while also
+        allowing remote IP address checks for sensitive accounts. It
         is possible to specify a single IP address or a range or IP
         addresses, thereby limiting the access for that user to those
         addresses.</text>
@@ -113,9 +113,9 @@
       <item>
         <title>Passwords only stored encrypted or hashed</title>
         <text>All passwords are protected in the database, making it
-        impossible to access them even for a system administrator. 
-        This is achieved by only storing an MD5 hash of the password 
-        in the database. This makes it impossible to retrieve the 
+        impossible to access them even for a system administrator.
+        This is achieved by only storing an MD5 hash of the password
+        in the database. This makes it impossible to retrieve the
         original password, and requires new passwords to be created
         if the user has forgotten the previous one.</text>
       </item>
@@ -124,8 +124,8 @@
         <title>Protection against password attacks</title>
         <text>Some protection is provided against password dictionary
         attacks. The database is protected by adding the user name to
-        the password hash, effectively making every hash value 
-        different. The web login is protected by delaying responses 
+        the password hash, effectively making every hash value
+        different. The web login is protected by delaying responses
         to invalid logins, slowing down dictionary attacks by several
         orders of magnitude.</text>
       </item>

@@ -58,8 +58,8 @@
             <input type="hidden" name="name" value="${name}" />
             <strong>${name}</strong>
 </#if>
-            <p>The group name uniquely identifies the group in the 
-            domain. It cannot be modified once the group has been 
+            <p>The group name uniquely identifies the group in the
+            domain. It cannot be modified once the group has been
             created.</p>
           </td>
         </tr>

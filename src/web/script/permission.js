@@ -70,7 +70,7 @@ function permissionInitialize(id) {
 /**
  * Displays the permission table. This will clear and redraw all
  * permissions.
- */ 
+ */
 function permissionDisplay() {
     var  tr;
     var  td;
@@ -214,13 +214,13 @@ function permissionInternalRemoveLocal(index) {
 }
 
 /**
- * Displays a permission. This will add a new row to the permission 
+ * Displays a permission. This will add a new row to the permission
  * table.
  *
  * @param index              the index of the permission
  * @param name               the permission object
  * @param inherited          the inherited flag
- */ 
+ */
 function permissionInternalDisplayPermission(index, perm, inherited) {
     var  tr = utilAddElement(PERMISSION_ROOT, "tr");
     var  td;
@@ -281,7 +281,7 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
         td.appendChild(input);
     }
     utilAddElement(td, "br");
-    
+
     input = document.createElement("input");
     input.type = "radio";
     input.tabIndex = 10;
@@ -343,7 +343,7 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
  * @param name               the permission flag name
  * @param flag               the permission flag initial value
  * @param inherited          the inherited flag
- */ 
+ */
 function permissionInternalAddFlag(parent, index, name, flag, inherited) {
     var  input;
     var  script;
@@ -358,7 +358,7 @@ function permissionInternalAddFlag(parent, index, name, flag, inherited) {
     if (inherited) {
         input.disabled = "disabled";
     } else {
-        script = "permissionInternalSetFlag(" + index + ", '" + name + 
+        script = "permissionInternalSetFlag(" + index + ", '" + name +
                                             "', this.checked);";
         input.onclick = new Function(script);
     }

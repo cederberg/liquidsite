@@ -50,8 +50,8 @@
         <ref id="user">Users</ref> and <ref id="group">Groups</ref>
         span all the <ref id="site">Sites</ref> in the domain. Note
         that a domain does not have to correlate to an Intenet domain
-        name, although often that is the case. A domain may be 
-        registered to have <ref id="host">Hosts</ref> from several 
+        name, although often that is the case. A domain may be
+        registered to have <ref id="host">Hosts</ref> from several
         Intenet domain names.</text>
       </item>
 
@@ -115,10 +115,10 @@
         <text>A web site consists of a collection of documents and
         files available from a single location on the world wide web.
         A web site is normally identified by a host name, for example
-        <code>www.liquidsite.org</code>. It is also possible to 
-        separate sites on protocol, port number or base directory. 
-        Web sites can only share information with other sites in the 
-        same <ref id="domain">Domain</ref>, but they can of course 
+        <code>www.liquidsite.org</code>. It is also possible to
+        separate sites on protocol, port number or base directory.
+        Web sites can only share information with other sites in the
+        same <ref id="domain">Domain</ref>, but they can of course
         link to public resources on other sites.</text>
       </item>
 

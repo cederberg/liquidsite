@@ -55,19 +55,19 @@
       </description>
       <column name="NAME">
         <description>
-          The unique domain name. The domain name is the primary key, 
-          and is used to identify the domain in most other tables. The 
+          The unique domain name. The domain name is the primary key,
+          and is used to identify the domain in most other tables. The
           domain name SHOULD NOT be modified after creation, unless all
-          referencing tables also are updated. If a domain is removed, 
-          care must be taken to also remove all rows in referencing 
+          referencing tables also are updated. If a domain is removed,
+          care must be taken to also remove all rows in referencing
           tables.
         </description>
         <type name="VARCHAR" size="30" required="true" />
       </column>
       <column name="DESCRIPTION">
         <description>
-          The domain description. The domain description normally 
-          contains the owner or organization name, complete with 
+          The domain description. The domain description normally
+          contains the owner or organization name, complete with
           correct spacing and case. The domain description is used by
           users to identify the domain. It is normally the domain name
           with correct casing, spacing and punctuation.
@@ -77,7 +77,7 @@
       <column name="OPTIONS">
         <description>
           The domain options. The domain options is a short list of
-          name-value pairs. Each entry is separated by a ':' 
+          name-value pairs. Each entry is separated by a ':'
           character, and the values are placed after a '=' character.
           An example option string could be "secure:transfer=255".
         </description>
@@ -112,19 +112,19 @@
         <description>
           The unique user name. The user name is only unique within
           the domain, and may overlap with other users in other
-          domains. The user name SHOULD NOT be modified after 
-          creation, unless all referencing tables also are updated. 
+          domains. The user name SHOULD NOT be modified after
+          creation, unless all referencing tables also are updated.
         </description>
         <type name="VARCHAR" size="30" required="true" />
       </column>
       <column name="PASSWORD">
         <description>
           The encoded user password. The password is not stored in
-          plain text in this column, rather a base-64 encoded MD5 
+          plain text in this column, rather a base-64 encoded MD5
           hash of the password is stored. This makes it impossible
-          to recover a lost password, but also provides more 
+          to recover a lost password, but also provides more
           security. The password MD5 hash is generated from both the
-          user name and password, making it impossible to find 
+          user name and password, making it impossible to find
           identical passwords by checking the hashed values.
         </description>
         <type name="VARCHAR" size="30" required="true" />
@@ -151,7 +151,7 @@
       </column>
       <column name="COMMENT">
         <description>
-          The user comment. The user comment can be used to add 
+          The user comment. The user comment can be used to add
           additional information about a user.
         </description>
         <type name="VARCHAR" size="200" required="true" />
@@ -221,9 +221,9 @@
 
     <table name="LS_GROUP">
       <description>
-        The group table. Each group belongs to a single domain and 
-        contains zero or more users (from the same domain). If a 
-        group is removed, care must be taken to also remove all 
+        The group table. Each group belongs to a single domain and
+        contains zero or more users (from the same domain). If a
+        group is removed, care must be taken to also remove all
         referencing rows in other tables.
       </description>
       <column name="DOMAIN">
@@ -236,9 +236,9 @@
       <column name="NAME">
         <description>
           The unique group name. The group name is only unique within
-          the domain, and may overlap with other groups in other 
-          domains. The group name SHOULD NOT be modified after 
-          creation, unless all referencing tables also are updated. 
+          the domain, and may overlap with other groups in other
+          domains. The group name SHOULD NOT be modified after
+          creation, unless all referencing tables also are updated.
         </description>
         <type name="VARCHAR" size="30" required="true" />
       </column>
@@ -250,7 +250,7 @@
       </column>
       <column name="COMMENT">
         <description>
-          The group comment. The comment can be used to add 
+          The group comment. The comment can be used to add
           additional information about a group.
         </description>
         <type name="VARCHAR" size="200" required="true" />
@@ -266,9 +266,9 @@
 
     <table name="LS_USER_GROUP">
       <description>
-        The group membership table. This table contains the 
+        The group membership table. This table contains the
         many-to-many relationship between users and groups. Each user
-        may belong to multiple groups, and each group may contain 
+        may belong to multiple groups, and each group may contain
         multiple users. Each row in this table corresponds to a user
         membership in a particular group.
       </description>
@@ -297,7 +297,7 @@
       </column>
       <primarykey>
         <description>
-          The group membership is uniquely indexed by domain, user 
+          The group membership is uniquely indexed by domain, user
           and group.
         </description>
         <ref column="DOMAIN" />
@@ -314,7 +314,7 @@
       </index>
       <index name="USER_GROUP_IDX2">
         <description>
-          This index facilitates searches for the users belonging to 
+          This index facilitates searches for the users belonging to
           a particular group.
         </description>
         <ref column="DOMAIN" />
@@ -326,7 +326,7 @@
       <description>
         The web host table. A web host is a fully qualified host name
         that is used on the web. Each host name can only pertain to a
-        single domain, limiting the possible sites that can be 
+        single domain, limiting the possible sites that can be
         created within that domain.
       </description>
       <column name="DOMAIN">
@@ -338,14 +338,14 @@
       </column>
       <column name="NAME">
         <description>
-          The host name. The host name is the fully qualified host 
+          The host name. The host name is the fully qualified host
           name, i.e. including any Internet domain name.
         </description>
         <type name="VARCHAR" size="100" required="true" />
       </column>
       <column name="DESCRIPTION">
         <description>
-          The host description. The host description may contain 
+          The host description. The host description may contain
           notes regarding the usage of the host.
         </description>
         <type name="VARCHAR" size="100" required="true" />
@@ -353,7 +353,7 @@
       <column name="OPTIONS">
         <description>
           The host options. The host options is a short list of
-          name-value pairs. Each entry is separated by a ':' 
+          name-value pairs. Each entry is separated by a ':'
           character, and the values are placed after a '=' character.
           An example option string could be "secure:transfer=255".
         </description>
@@ -370,7 +370,7 @@
     <table name="LS_CONTENT">
       <description>
         The content object table. The content objects are all sites,
-        pages, aliases, articles, events, and similar in the system. 
+        pages, aliases, articles, events, and similar in the system.
         In short, all objects with associated permissions and revision
         handling are content objects. The content data is stored as
         named attributes in the LS_ATTRIBUTE table. Binary data is
@@ -386,11 +386,11 @@
       </column>
       <column name="ID">
         <description>
-          The content object identifier. Each object may exist in 
+          The content object identifier. Each object may exist in
           several revisions, making it possible to revert to old
-          versions if needed. The content identifier SHOULD NOT be 
-          modified after creation, unless all referencing tables  also 
-          are updated. If a content object is removed, care must be 
+          versions if needed. The content identifier SHOULD NOT be
+          modified after creation, unless all referencing tables  also
+          are updated. If a content object is removed, care must be
           taken to also remove all rows in referencing tables.
         </description>
         <type name="INTEGER" required="true" />
@@ -400,7 +400,7 @@
           The content object revision. Each published version of an
           object is given a revision number, starting at one (1). The
           revision number zero (0) is used for working revisions, i.e.
-          content versions that have not yet been published. When 
+          content versions that have not yet been published. When
           editing a published object, a new work revision is created.
           When a work revision is published a new revision number is
           incrementally assigned.
@@ -409,12 +409,12 @@
       </column>
       <column name="CATEGORY">
         <description>
-          The content category (or class). All content objects belongs 
+          The content category (or class). All content objects belongs
           to a single class of objects, each having a minimum set of
-          attributes with a well-defined meaning. Examples of such 
+          attributes with a well-defined meaning. Examples of such
           categories are site, directory, page, article, etc. The
-          category number controls how the content object is 
-          interpreted by the system. The list of defined category 
+          category number controls how the content object is
+          interpreted by the system. The list of defined category
           numbers are present in the Content class.
         </description>
         <type name="SMALLINT" required="true" />
@@ -480,7 +480,7 @@
       </column>
       <column name="COMMENT">
         <description>
-          The content revision comment. The comment is used to add 
+          The content revision comment. The comment is used to add
           additional information about a content revision.
         </description>
         <type name="VARCHAR" size="200" required="true" />
@@ -495,7 +495,7 @@
       </primarykey>
       <index name="CONTEXT_IDX_1">
         <description>
-          The content is commonly searched by identifier. This is used 
+          The content is commonly searched by identifier. This is used
           to find all revisions of an object.
         </description>
         <ref column="ID" />
@@ -556,7 +556,7 @@
       </column>
       <primarykey>
         <description>
-          The content attribute is uniquely indexed by the object 
+          The content attribute is uniquely indexed by the object
           identifier, revision number, and attribute name.
         </description>
         <ref column="CONTENT" />
@@ -576,10 +576,10 @@
       <description>
         The object permission table. Each domain or content object may
         have an access control list associated with it, in the form of
-        one of more rows in this table. In the absence of an access 
-        control list, the content object inherits all permissions 
+        one of more rows in this table. In the absence of an access
+        control list, the content object inherits all permissions
         from its parent object. If no parent object exists to inherit
-        from, the empty access list is inherited which allows no 
+        from, the empty access list is inherited which allows no
         access for others than superusers.
       </description>
       <column name="DOMAIN">
@@ -657,7 +657,7 @@
       </column>
       <primarykey>
         <description>
-          The content permission is uniquely indexed by the domain, 
+          The content permission is uniquely indexed by the domain,
           content identifier, user name, and group name.
         </description>
         <ref column="DOMAIN" />
@@ -706,7 +706,7 @@
       </column>
       <primarykey>
         <description>
-          The content lock is uniquely indexed by the object 
+          The content lock is uniquely indexed by the object
           identifier.
         </description>
         <ref column="CONTENT" />

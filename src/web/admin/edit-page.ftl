@@ -73,9 +73,9 @@
           <td class="field">
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
-            <p>The page name is part of the URL by which the user 
+            <p>The page name is part of the URL by which the user
             will access the page contents. The page name should use
-            only English alphabet characters or numbers without any 
+            only English alphabet characters or numbers without any
             spaces.</p>
           </td>
         </tr>
@@ -95,7 +95,7 @@
   </#list>
             </select>
             <p>The parent folder controls the location of the page.
-            Note that changing folder will also modify the page 
+            Note that changing folder will also modify the page
             URL.</p>
           </td>
         </tr>
@@ -116,7 +116,7 @@
   </#if>
 </#list>
             </select>
-            <p>The template provides a set of inherited page 
+            <p>The template provides a set of inherited page
             elements. Note that changing base template will modify
             the inherited page elements below.</p>
           </td>
@@ -150,8 +150,8 @@
           </th>
           <td class="field">
             The page elements contain the HTML code for the web page.
-            The <strong>root</strong> element is the base from which 
-            other elements can be included with the 
+            The <strong>root</strong> element is the base from which
+            other elements can be included with the
             <code>&lt;#include&nbsp;"<em>name</em>"&gt;</code> syntax.
           </td>
         </tr>
@@ -172,7 +172,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" style="display: none;" 
+            <button type="submit" style="display: none;"
                     onclick="return false;">
               Mozilla Disable Enter Submit
             </button>

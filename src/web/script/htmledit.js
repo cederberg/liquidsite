@@ -146,7 +146,7 @@ function htmlEditInternalAddStyleSelector(parent, editor) {
 
     select = utilAddElement(parent, "select");
     select.name = "htmledit.internal." + editor;
-    select.onchange = new Function("htmlEditInternalStyleSelect(" + 
+    select.onchange = new Function("htmlEditInternalStyleSelect(" +
                                    editor + ", this);");
     option = utilAddElement(select, "option", "< Select Style >");
     option.value = "";
@@ -247,7 +247,7 @@ function htmlEditInternalViewSource(editor) {
     var  doc = htmlEditInternalGetFrameWindow(editor).document;
     var  div = htmlEditInternalGetToolbar(editor);
     var  html;
-    
+
     html = htmlEditInternalGetHtml(editor);
     if (div.style.display == "block") {
         div.style.display = "none";
@@ -379,7 +379,7 @@ function htmlEditInternalGetHtml(editor) {
     var  doc = htmlEditInternalGetFrameWindow(editor).document;
     var  div = htmlEditInternalGetToolbar(editor);
     var  range;
-    
+
     if (div.style.display == "block") {
         return doc.body.innerHTML;
     } else if (doc.body.innerText) {

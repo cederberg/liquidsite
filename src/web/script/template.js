@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 
@@ -34,7 +34,7 @@ var TEMPLATE_INHERITED = new Object();
 
 /**
  * The local page elements object. All local elements are present as
- * properties in this object. This object will be updated while the 
+ * properties in this object. This object will be updated while the
  * user edits the template.
  */
 var TEMPLATE_LOCAL = new Object();
@@ -60,7 +60,7 @@ function templateInitialize(id) {
 /**
  * Displays the template editor. This will clear and redraw all
  * page elements.
- */ 
+ */
 function templateDisplay() {
     var  tr;
     var  td;
@@ -97,7 +97,7 @@ function templateDisplay() {
 
 /**
  * Adds an inherited page element. This does NOT redraw the template
- * editor, so the templateDisplay() method MUST be called after 
+ * editor, so the templateDisplay() method MUST be called after
  * adding all the page elements.
  *
  * @param name               the page element name
@@ -108,8 +108,8 @@ function templateAddInherited(name, data) {
 }
 
 /**
- * Removes all inherited page elements. This does NOT redraw the 
- * template editor, so the templateDisplay() method MUST be called 
+ * Removes all inherited page elements. This does NOT redraw the
+ * template editor, so the templateDisplay() method MUST be called
  * after finishing with adding the new page elements.
  */
 function templateRemoveAllInherited() {
@@ -118,7 +118,7 @@ function templateRemoveAllInherited() {
 
 /**
  * Adds a local page element. This does NOT redraw the template
- * editor, so the templateDisplay() method MUST be called after 
+ * editor, so the templateDisplay() method MUST be called after
  * adding all the page elements.
  *
  * @param name               the page element name
@@ -130,7 +130,7 @@ function templateAddLocal(name, data) {
 
 /**
  * Removes a local page element. This does NOT redraw the template
- * editor, so the templateDisplay() method MUST be called after 
+ * editor, so the templateDisplay() method MUST be called after
  * removoving and adding the page elements.
  *
  * @param name               the page element name
@@ -148,7 +148,7 @@ function templateRemoveLocal(name) {
  */
 function templateInternalAddLocal(id) {
     var  name = document.getElementById(id).value.toLowerCase();
-    
+
     if (name.search(/^[a-z0-9]+$/) < 0) {
         alert("Invalid characters in element name.\n" +
               "Only the characters 'a-z' and '0-9' are accepted.");
@@ -164,11 +164,11 @@ function templateInternalAddLocal(id) {
 }
 
 /**
- * Displays an inherited page element in the template editor. This 
+ * Displays an inherited page element in the template editor. This
  * will add a new row to the template editor table node.
  *
  * @param name               the inherited element name
- */ 
+ */
 function templateInternalDisplayInherited(name) {
     var  tr = utilAddElement(TEMPLATE_ROOT, "tr");
     var  td;
@@ -180,7 +180,7 @@ function templateInternalDisplayInherited(name) {
     utilAddTextElement(td, "Inherited");
     utilAddElement(td, "br");
     utilAddElement(td, "br");
-    script = "templateAddLocal('" + name + "', TEMPLATE_INHERITED." + 
+    script = "templateAddLocal('" + name + "', TEMPLATE_INHERITED." +
              name + "); templateDisplay();";
     utilAddLinkElement(td, "Edit", "edit.png", "Edit", script);
     td = utilAddElement(tr, "td");
@@ -188,11 +188,11 @@ function templateInternalDisplayInherited(name) {
 }
 
 /**
- * Displays a local page element in the template editor. This will 
+ * Displays a local page element in the template editor. This will
  * add a new row to the template editor table node.
  *
  * @param name               the local element name
- */ 
+ */
 function templateInternalDisplayLocal(name) {
     var  tr = utilAddElement(TEMPLATE_ROOT, "tr");
     var  td;
@@ -224,7 +224,7 @@ function templateInternalDisplayLocal(name) {
 function templateInternalAddEditor(parent, name, data, local) {
     var  textarea = utilAddElement(parent, "textarea");
     var  rows = 3;
-    
+
     for (var i = 0; i <= data.indexOf("\n", i); ) {
         i = data.indexOf("\n", i) + 1;
         rows++;
@@ -239,7 +239,7 @@ function templateInternalAddEditor(parent, name, data, local) {
     if (local) {
         textarea.tabIndex = "10";
         textarea.name = "element." + name;
-        textarea.onchange = new Function("TEMPLATE_LOCAL." + name + 
+        textarea.onchange = new Function("TEMPLATE_LOCAL." + name +
                                          " = this.value");
     } else {
         textarea.name = "dummy." + name;

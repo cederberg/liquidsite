@@ -28,19 +28,19 @@
             ${type}?</strong>
 
 <#if type = "domain">
-            <p>Deleting the domain will 
-            <span class="important">remove all sites, pages and 
-            content in the domain</span> from the system, without 
-            possibility to recover at a later date. Use "Unpublish" 
+            <p>Deleting the domain will
+            <span class="important">remove all sites, pages and
+            content in the domain</span> from the system, without
+            possibility to recover at a later date. Use "Unpublish"
             to only take sites or content offline.</p>
 <#elseif type = "site" || type = "folder">
-            <p>Deleting the ${type} will remove it and all child 
+            <p>Deleting the ${type} will remove it and all child
             pages from the database, without possibility to recover
             at a later date. Use "Unpublish" to only take the ${type}
             offline.</p>
 <#else>
-            <p>Deleting the ${type} will remove it from the database, 
-            without possibility to recover at a later date. Use 
+            <p>Deleting the ${type} will remove it from the database,
+            without possibility to recover at a later date. Use
             "Unpublish" to only take the ${type} offline.</p>
 </#if>
           </td>

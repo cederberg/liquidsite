@@ -73,9 +73,9 @@
           <td class="field">
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
-            <p>The template name is used to identify the template 
+            <p>The template name is used to identify the template
             when creating web pages. The template name should use
-            only English alphabet characters or numbers without any 
+            only English alphabet characters or numbers without any
             spaces.</p>
           </td>
         </tr>
@@ -96,7 +96,7 @@
     </#if>
   </#list>
             </select>
-            <p>The base template provides a set of inherited page 
+            <p>The base template provides a set of inherited page
             elements. Note that changing base template will modify
             the inherited page elements below.</p>
           </td>
@@ -108,8 +108,8 @@
           </th>
           <td class="field">
             The page elements contain the HTML code for the web page.
-            The <strong>root</strong> element is the base from which 
-            other elements can be included with the 
+            The <strong>root</strong> element is the base from which
+            other elements can be included with the
             <code>&lt;#include&nbsp;"<em>name</em>"&gt;</code> syntax.
           </td>
         </tr>
@@ -130,7 +130,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" style="display: none;" 
+            <button type="submit" style="display: none;"
                     onclick="return false;">
               Mozilla Disable Enter Submit
             </button>

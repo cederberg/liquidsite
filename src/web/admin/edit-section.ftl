@@ -8,9 +8,9 @@
     function initialize() {
         propertyInitialize("propertyedit");
 <#list properties as prop>
-        propertyAdd('${prop.id}', 
-                    ${prop.name}, 
-                    ${prop.type}, 
+        propertyAdd('${prop.id}',
+                    ${prop.name},
+                    ${prop.type},
                     ${prop.description});
 </#list>
         propertyDisplay();
@@ -67,8 +67,8 @@
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
             <p>The section name is used to identify the section
-            when listing or searching for documents. The name may 
-            only contain English alphabet characters or numbers 
+            when listing or searching for documents. The name may
+            only contain English alphabet characters or numbers
             without any spaces.</p>
           </td>
         </tr>
@@ -88,7 +88,7 @@
     </#if>
   </#list>
             </select>
-            <p>The parent section controls the location of this 
+            <p>The parent section controls the location of this
             section in the content tree.</p>
           </td>
         </tr>
@@ -99,7 +99,7 @@
           </th>
           <td class="field">
             The document properties define the fields available in
-            the documents in this section. If no properties are 
+            the documents in this section. If no properties are
             specified here, the parent section properties will be
             inherited.
           </td>
@@ -121,7 +121,7 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="submit" style="display: none;" 
+            <button type="submit" style="display: none;"
                     onclick="return false;">
               Mozilla Disable Enter Submit
             </button>

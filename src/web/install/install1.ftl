@@ -16,12 +16,12 @@
           <td colspan="2">
             <h2>Select Database Server (Step 1 of 5)</h2>
 
-            <p>Welcome to Liquid Site! By following the steps in this 
+            <p>Welcome to Liquid Site! By following the steps in this
             installation guide, you will create a Liquid Site data
             repository and perform the basic setup.</p>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
-</#if>  
+</#if>
           </td>
         </tr>
         <tr>
@@ -40,11 +40,11 @@
             User&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" tabindex="2" size="12" 
+            <input type="text" tabindex="2" size="12"
                    name="user" value="${user}" />
-            <p>This database user is ONLY used during the 
-            installation. If you wish to create a new database, use 
-            a user with full administration privileges here. The 
+            <p>This database user is ONLY used during the
+            installation. If you wish to create a new database, use
+            a user with full administration privileges here. The
             database user for normal usage by Liquid Site is entered
             in a later step.</p>
           </td>
@@ -54,7 +54,7 @@
             Password:
           </th>
           <td class="field">
-            <input type="password" tabindex="3" size="12" 
+            <input type="password" tabindex="3" size="12"
                    name="password" value="${password}" />
             <p>The password for the database user above.</p>
           </td>

@@ -56,9 +56,9 @@
           <td class="field">
             <input type="text" tabindex="1" size="30"
                    name="name" value="${name}" />
-            <p>The file name is part of the URL by which the user 
+            <p>The file name is part of the URL by which the user
             will access the file contents. The file name should use
-            only English alphabet characters or numbers without any 
+            only English alphabet characters or numbers without any
             spaces.</p>
           </td>
         </tr>
