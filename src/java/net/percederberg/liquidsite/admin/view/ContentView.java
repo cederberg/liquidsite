@@ -38,6 +38,7 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
+import net.percederberg.liquidsite.web.Request.FileParameter;
 
 /**
  * A helper class for the content view. This class contains methods
@@ -354,11 +355,13 @@ public class ContentView extends AdminView {
     public void viewEditFile(Request request, PersistentObject reference)
         throws ContentException {
 
-        ContentFile  file;
-        String       name;
-        String       content = null;
-        String       comment;
-        boolean      publish;
+        ContentFile    file;
+        String         name;
+        String         upload = "";
+        String         content = null;
+        String         comment;
+        boolean        publish;
+        FileParameter  param;
 
         // Find default values
         AdminUtils.setReference(request, reference);
@@ -383,6 +386,10 @@ public class ContentView extends AdminView {
         // Adjust for incoming request
         if (request.getParameter("name") != null) {
             name = request.getParameter("name", "");
+            param = request.getFileParameter("upload");
+            if (param != null) {
+                upload = param.getPath();
+            }
             if (request.getParameter("content") != null) {
                 content = request.getParameter("content");
             }
@@ -391,6 +398,7 @@ public class ContentView extends AdminView {
 
         // Set request parameters
         request.setAttribute("name", name);
+        request.setAttribute("upload", upload);
         if (content != null) {
             request.setAttribute("content", content);
         }

@@ -662,6 +662,15 @@ public class Request {
         String getName();
 
         /**
+         * Returns the full file name including path and extension.
+         * The file name returned should be exactly the one sent by
+         * the browser.
+         *
+         * @return the full file path
+         */
+        String getPath();
+
+        /**
          * Returns the file size.
          *
          * @return the file size

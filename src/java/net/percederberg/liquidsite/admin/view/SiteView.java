@@ -40,6 +40,7 @@ import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.PersistentObject;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.web.Request;
+import net.percederberg.liquidsite.web.Request.FileParameter;
 
 /**
  * A helper class for the site view. This class contains methods for
@@ -354,15 +355,17 @@ public class SiteView extends AdminView {
     public void viewEditFile(Request request, Content reference)
         throws ContentException {
 
-        ContentFile  file;
-        ContentSite  site;
-        String       name;
-        int          parent;
-        ArrayList    folders = null;
-        String       content = null;
-        String       comment;
-        boolean      publish;
-        String       str;
+        ContentFile    file;
+        ContentSite    site;
+        String         name;
+        int            parent;
+        ArrayList      folders = null;
+        String         upload = "";
+        String         content = null;
+        String         comment;
+        boolean        publish;
+        FileParameter  param;
+        String         str;
 
         // Find default values
         AdminUtils.setReference(request, reference);
@@ -397,6 +400,10 @@ public class SiteView extends AdminView {
             } catch (NumberFormatException e) {
                 parent = 0;
             }
+            param = request.getFileParameter("upload");
+            if (param != null) {
+                upload = param.getPath();
+            }
             if (request.getParameter("content") != null) {
                 content = request.getParameter("content");
             }
@@ -407,6 +414,7 @@ public class SiteView extends AdminView {
         request.setAttribute("name", name);
         request.setAttribute("parent", String.valueOf(parent));
         request.setAttribute("folders", folders);
+        request.setAttribute("upload", upload);
         if (content != null) {
             request.setAttribute("content", content);
         }

@@ -101,7 +101,7 @@
           </th>
           <td class="field">
             <input type="file" tabindex="3"
-                   name="upload" />
+                   name="upload" value="${upload}" />
             <p>The file contents to upload. This is the local file
             that contains the data. The file will be uploaded and
             inserted into the system. Note that the file extension on
