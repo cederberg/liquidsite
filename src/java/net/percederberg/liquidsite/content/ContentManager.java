@@ -102,7 +102,7 @@ public class ContentManager {
 
         instance = this;
         this.app = app;
-        if (app.isInstalled()) {
+        if (app.getConfig().isInitialized()) {
             LOG.trace("initializing content manager cache...");
             domains = Domain.findAll();
             for (int i = 0; i < domains.length; i++) {
