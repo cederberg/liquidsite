@@ -81,7 +81,6 @@ function propertyDisplay() {
     td = utilAddElement(tr, "td");
     input = utilAddElement(td, "input");
     input.id = "internal.new";
-    input.type = "text";
     input.size = "20";
     input.tabIndex = "10";
     input.name = "internal.new";
@@ -210,10 +209,11 @@ function propertyInternalDisplayProperty(position, property) {
     propertyInternalAddAction(td, "Delete", "delete.png", script);
 
     td = utilAddElement(tr, "td");
-    input = utilAddElement(td, "input")
+    input = document.createElement("input");
     input.type = "hidden";
     input.name = "property." + property.id + ".position";
     input.value = position;
+    td.appendChild(input);
     span = utilAddElement(td, "span", "Name: ");
     span.title = "The property name is the only visible name of the property.";
     input = utilAddElement(td, "input")
