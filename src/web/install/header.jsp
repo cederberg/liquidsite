@@ -24,8 +24,8 @@
           <h1>Liquid Site Installation</h1>
         </td>
         <td class="extra">
-          Version&nbsp;0.1<br />
-          2003-09-08
+          Version&nbsp;<%=request.getAttribute("liquidsite.build.version")%><br />
+          <%=request.getAttribute("liquidsite.build.date")%>
         </td>
       </tr>
       <tr>

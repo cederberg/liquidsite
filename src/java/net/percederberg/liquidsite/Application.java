@@ -56,7 +56,21 @@ public interface Application {
      * and similar.
      */
     void restart();
-    
+
+    /**
+     * Returns the application build version number.
+     * 
+     * @return the application build version number
+     */
+    String getBuildVersion();
+
+    /**
+     * Returns the application build date.
+     * 
+     * @return the application build date
+     */
+    String getBuildDate();
+
     /**
      * Returns the base application directory. This is the directory
      * containing all the application files (i.e. the corresponding

@@ -719,8 +719,8 @@ public class InstallController extends Controller {
         
         // Write configuration
         config = getApplication().getConfig();
-        // TODO: version number should not be hardcoded (nor in header.jsp)
-        config.set(Configuration.VERSION, "1.0");
+        config.set(Configuration.VERSION, 
+                   getApplication().getBuildVersion());
         config.set(Configuration.DATABASE_HOSTNAME, host);
         config.set(Configuration.DATABASE_NAME, database);
         config.set(Configuration.DATABASE_USER, databaseUser);

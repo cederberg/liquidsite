@@ -23,6 +23,8 @@ package net.percederberg.liquidsite;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -54,6 +56,11 @@ public class LiquidSiteServlet extends HttpServlet
      * The application monitor thread.
      */
     private ApplicationMonitor monitor = null;
+
+    /**
+     * The application build and version properties.
+     */
+    private Properties build = new Properties();
 
     /**
      * The application configuration.
@@ -119,10 +126,12 @@ public class LiquidSiteServlet extends HttpServlet
     public void startup() {
         int     errors = 0;
         File    configDir;
+        URL     url;
         String  host;
         String  name;
         String  user;
         String  password;
+        String  str;
         int     size;
 
         // Initialize configuration
@@ -134,6 +143,16 @@ public class LiquidSiteServlet extends HttpServlet
             errors++;
             LOG.error("couldn't read logging configuration: " + 
                       e.getMessage());
+        }
+
+        // Initialize build information
+        str = "net/percederberg/liquidsite/build.properties";
+        url = getClass().getClassLoader().getResource(str);
+        try {
+            build.load(url.openStream());
+        } catch (IOException e) {
+            errors++;
+            LOG.error(e.getMessage());
         }
 
         // Initialize database
@@ -238,6 +257,9 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             controller.process(r);
             if (r.hasResponse()) {
+                r.setAttribute("liquidsite.build.version", 
+                               getBuildVersion());
+                r.setAttribute("liquidsite.build.date", getBuildDate());
                 r.commit(getServletContext());
             } else {
                 LOG.debug("Unhandled request: " + r);
@@ -266,6 +288,24 @@ public class LiquidSiteServlet extends HttpServlet
         throws ServletException, IOException {
 
         doGet(request, response);
+    }
+
+    /**
+     * Returns the application build version number.
+     * 
+     * @return the application build version number
+     */
+    public String getBuildVersion() {
+        return build.getProperty("build.version", "<unknown>");
+    }
+
+    /**
+     * Returns the application build date.
+     * 
+     * @return the application build date
+     */
+    public String getBuildDate() {
+        return build.getProperty("build.date", "<unknown>");
     }
 
     /**

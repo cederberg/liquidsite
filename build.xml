@@ -43,7 +43,6 @@
         <isset property="build.version" />
       </not>
     </condition>
-    <property name="build.date" value="${DSTAMP}" />
     <taskdef name="afterdoc"
              classname="net.percederberg.afterdoc.ant.AfterDocTask"
              classpathref="project.class.path" />
@@ -53,6 +52,10 @@
 <!-- COMPILATION TARGETS -->
   <target name="compile" 
           depends="init,compile-clean,compile-db,compile-java">
+    <echo file="${build.dir}/classes/net/percederberg/liquidsite/build.properties">
+build.version=${build.version}
+build.date=${build.printdate}
+    </echo>
     <jar jarfile="${build.dir}/lib/liquidsite-${build.version}.jar"
          includesfile="${build.dir}/LICENSE.txt">
       <fileset dir="${build.dir}" includes="*.txt" />
