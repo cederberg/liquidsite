@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite;
+package net.percederberg.liquidsite.install;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +28,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import net.percederberg.liquidsite.Application;
+import net.percederberg.liquidsite.Configuration;
+import net.percederberg.liquidsite.ConfigurationException;
+import net.percederberg.liquidsite.Log;
+import net.percederberg.liquidsite.RequestProcessor;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
