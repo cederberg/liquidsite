@@ -24,6 +24,9 @@ package org.liquidsite.app.servlet;
 import java.io.File;
 import java.io.StringWriter;
 
+import org.liquidsite.app.template.Template;
+import org.liquidsite.app.template.TemplateException;
+import org.liquidsite.app.template.TemplateManager;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;
@@ -38,9 +41,6 @@ import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.User;
-import org.liquidsite.core.template.Template;
-import org.liquidsite.core.template.TemplateException;
-import org.liquidsite.core.template.TemplateManager;
 import org.liquidsite.core.web.Request;
 
 /**

@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package org.liquidsite.core.template;
+package org.liquidsite.app.template;
 
 /**
  * A template processing exception. This is thrown when a template
