@@ -31,7 +31,7 @@
           Version&nbsp;${liquidsite.version}<br />
           ${liquidsite.date}<br />
           <br />
-<#if liquidsite.user?has_content>
+<#if liquidsite.user.login?has_content>
           <a href="logout.html">Logout</a>
 <#else>
           &nbsp;
@@ -65,7 +65,7 @@
         </td>
   </#if>
 </#macro>
-<#if liquidsite.user?has_content>
+<#if liquidsite.user.login?has_content>
   <@menutab name="Home" page="home.html" isindex=true />
   <@menutab name="Site" page="site.html" />
   <@menutab name="Content" page="content.html" />

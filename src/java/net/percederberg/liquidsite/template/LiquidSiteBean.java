@@ -38,9 +38,19 @@ public class LiquidSiteBean {
     private Request request;
 
     /**
+     * The site bean.
+     */
+    private SiteBean site;
+
+    /**
      * The page bean.
      */
     private PageBean page;
+
+    /**
+     * The user bean.
+     */
+    private UserBean user;
 
     /**
      * Creates a new LiquidSite template bean.
@@ -49,7 +59,9 @@ public class LiquidSiteBean {
      */
     LiquidSiteBean(Request request) {
         this.request = request;
+        this.site = new SiteBean(request);
         this.page = new PageBean(request);
+        this.user = new UserBean(request.getUser());
     }
 
     /**
@@ -71,16 +83,12 @@ public class LiquidSiteBean {
     }
     
     /**
-     * Returns the user name for the currently logged in user. 
+     * Returns the site bean for the current site. 
      * 
-     * @return the user name for the currently logged in user
+     * @return the site bean for the current site
      */
-    public String getUser() {
-        if (request.getUser() == null) {
-            return "";
-        } else {
-            return request.getUser().getName(); 
-        }
+    public SiteBean getSite() {
+        return site;
     }
     
     /**
@@ -90,5 +98,14 @@ public class LiquidSiteBean {
      */
     public PageBean getPage() {
         return page;
+    }
+
+    /**
+     * Returns the user bean for the currently logged in user. 
+     * 
+     * @return the user bean for the currently logged in user
+     */
+    public UserBean getUser() {
+        return user;
     }
 }
