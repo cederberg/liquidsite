@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.mail;
+package org.liquidsite.util.mail;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,8 +31,6 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
-
-import net.percederberg.liquidsite.Configuration;
 
 import org.liquidsite.util.log.Log;
 
@@ -58,6 +56,11 @@ public class MailQueue {
      * The maximum mail queue size.
      */
     private static final int MAX_QUEUE_SIZE = 1000;
+
+    /**
+     * The default mail message header.
+     */
+    private static final String DEFAULT_HEADER = "";
 
     /**
      * The default mail message footer.
@@ -122,32 +125,73 @@ public class MailQueue {
     }
 
     /**
-     * Configures this mail queue. This method falls back to default
-     * values for all parameters if not present in the specified
-     * configuration.
+     * Initializes this mail queue.
      *
-     * @param config         the configuration values to use
+     * @param host           the mail host, or null for "localhost"
+     * @param user           the mail user, or null for none
+     * @param from           the mail from address, or null for none
      */
-    public void configure(Configuration config) {
+    public void initialize(String host, String user, String from) {
         Properties  props = new Properties();
-        String      str;
 
         props.setProperty("mail.transport.protocol", "smtp");
-        str = config.get(Configuration.MAIL_HOST, "localhost");
-        props.setProperty("mail.host", str);
-        str = config.get(Configuration.MAIL_USER, null);
-        if (str != null) {
-            props.setProperty("mail.user", str);
+        if (host == null) {
+            host = "localhost";
         }
-        str = config.get(Configuration.MAIL_FROM, null);
-        if (str != null) {
-            props.setProperty("mail.from", str);
+        props.setProperty("mail.host", host);
+        if (user != null) {
+            props.setProperty("mail.user", user);
+        }
+        if (from != null) {
+            props.setProperty("mail.from", from);
         }
         props.setProperty("mail.smtp.connectiontimeout", "60000");
         props.setProperty("mail.smtp.timeout", "60000");
         session = Session.getInstance(props);
-        header = config.get(Configuration.MAIL_HEADER, null);
-        footer = config.get(Configuration.MAIL_FOOTER, null);
+    }
+
+    /**
+     * Returns the current mail header.
+     * 
+     * @return the current mail header
+     */
+    public String getHeader() {
+        if (header == null) {
+            return DEFAULT_HEADER;
+        } else  {
+            return header;
+        }
+    }
+
+    /**
+     * Sets the mail header.
+     *
+     * @param header         the new header, or null for default
+     */
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    /**
+     * Returns the current mail footer.
+     * 
+     * @return the current mail footer
+     */
+    public String getFooter() {
+        if (footer == null) {
+            return DEFAULT_FOOTER;
+        } else {
+            return footer;
+        }
+    }
+
+    /**
+     * Sets the mail footer.
+     *
+     * @param footer         the new footer, or null for default
+     */
+    public void setFooter(String footer) {
+        this.footer = footer;
     }
 
     /**
@@ -174,7 +218,7 @@ public class MailQueue {
             throw new MailException(error);
         }
         if (session == null) {
-            error = "mail not configured, message to '" +
+            error = "mail not initialized, message to '" +
                     message.getRecipients() + "' rejected";
             LOG.error(error);
             throw new MailException(error);
@@ -194,25 +238,17 @@ public class MailQueue {
         Iterator      iter;
         String        str;
 
-        if (header != null && header.length() > 0) {
-            buffer.append(header);
-        }
+        buffer.append(getHeader());
         buffer.append(message.getText());
-        if (footer == null || footer.length() > 0) {
-            if (footer == null) {
-                buffer.append(DEFAULT_FOOTER);
-            } else {
-                buffer.append(footer);
-            }
+        buffer.append(getFooter());
+        buffer.append("\n");
+        iter = message.getAttributeNames().iterator();
+        while (iter.hasNext()) {
+            str = iter.next().toString();
+            buffer.append(str);
+            buffer.append(": ");
+            buffer.append(message.getAttribute(str));
             buffer.append("\n");
-            iter = message.getAttributeNames().iterator();
-            while (iter.hasNext()) {
-                str = iter.next().toString();
-                buffer.append(str);
-                buffer.append(": ");
-                buffer.append(message.getAttribute(str));
-                buffer.append("\n");
-            }
         }
         message.setText(buffer.toString());
     }

@@ -37,12 +37,12 @@ import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.ContentTopic;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.mail.MailException;
-import net.percederberg.liquidsite.mail.MailMessage;
-import net.percederberg.liquidsite.mail.MailQueue;
 import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.util.log.Log;
+import org.liquidsite.util.mail.MailException;
+import org.liquidsite.util.mail.MailMessage;
+import org.liquidsite.util.mail.MailQueue;
 
 /**
  * A template bean context. This class holds contains references to

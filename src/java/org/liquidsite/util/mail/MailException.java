@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.mail;
+package org.liquidsite.util.mail;
 
 /**
  * A mail exception. This exception is thrown when a mail operation

@@ -35,8 +35,6 @@ import org.liquidsite.util.log.Log;
 
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.install.InstallRequestProcessor;
-import net.percederberg.liquidsite.mail.MailException;
-import net.percederberg.liquidsite.mail.MailQueue;
 import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 import net.percederberg.liquidsite.web.MultiPartRequest;
@@ -45,6 +43,8 @@ import net.percederberg.liquidsite.web.Request;
 import org.liquidsite.util.db.DatabaseConnectionException;
 import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.db.MySQLDatabaseConnector;
+import org.liquidsite.util.mail.MailException;
+import org.liquidsite.util.mail.MailQueue;
 
 /**
  * A front controller servlet. This class handles all incoming HTTP
@@ -198,7 +198,14 @@ public class LiquidSiteServlet extends HttpServlet
         }
 
         // Initialize mail queue
-        MailQueue.getInstance().configure(config);
+        host = config.get(Configuration.MAIL_HOST, "localhost");
+        user = config.get(Configuration.MAIL_USER, null);
+        str = config.get(Configuration.MAIL_FROM, null);
+        MailQueue.getInstance().initialize(host, user, str);
+        str = config.get(Configuration.MAIL_HEADER, null);
+        MailQueue.getInstance().setHeader(str);
+        str = config.get(Configuration.MAIL_FOOTER, null);
+        MailQueue.getInstance().setFooter(str);
 
         // Initialize content and template managers
         contentManager = new ContentManager(this, false);
