@@ -71,7 +71,7 @@ public class User extends PersistentObject {
     /**
      * Returns an array of all users in a certain domain.
      * 
-     * @param domain         the domain
+     * @param domain         the domain, or null for superusers
      * 
      * @return an array of all users in the domain
      * 
@@ -84,9 +84,13 @@ public class User extends PersistentObject {
         DatabaseConnection  con = getDatabaseConnection();
         ArrayList           list;
         User[]              res;
+        String              domainName = "";
 
         try {
-            list = UserPeer.doSelectByDomain(domain.getName(), con);
+            if (domain != null) {
+                domainName = domain.getName();
+            }
+            list = UserPeer.doSelectByDomain(domainName, con);
             res = new User[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new User((UserData) list.get(i));
@@ -102,7 +106,7 @@ public class User extends PersistentObject {
     /**
      * Returns a user with a specified name.
      * 
-     * @param domain         the domain
+     * @param domain         the domain, or null for superusers
      * @param name           the user name
      * 
      * @return the user found, or
@@ -116,9 +120,13 @@ public class User extends PersistentObject {
 
         DatabaseConnection  con = getDatabaseConnection();
         UserData            data;
+        String              domainName = "";
 
         try {
-            data = UserPeer.doSelectByName(domain.getName(), name, con);
+            if (domain != null) {
+                domainName = domain.getName();
+            }
+            data = UserPeer.doSelectByName(domainName, name, con);
         } catch (DatabaseObjectException e) {
             throw new ContentException(e);
         } finally {
@@ -175,13 +183,17 @@ public class User extends PersistentObject {
     /**
      * Creates a new user with default values.
      * 
-     * @param domain         the domain
+     * @param domain         the domain, or null for a superuser
      * @param name           the user name
      */
     public User(Domain domain, String name) {
         super(false);
         this.data = new UserData();
-        this.data.setString(UserData.DOMAIN, domain.getName());
+        if (domain == null) {
+            this.data.setString(UserData.DOMAIN, "");
+        } else {
+            this.data.setString(UserData.DOMAIN, domain.getName());
+        }
         this.data.setString(UserData.NAME, name);
     }
 
@@ -240,12 +252,16 @@ public class User extends PersistentObject {
     /**
      * Returns the user domain.
      * 
-     * @return the user domain
+     * @return the user domain, or null if the user is a superuser
      * 
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
-        return getContentManager().getDomain(getDomainName());
+        if (getDomainName().equals("")) {
+            return null;
+        } else {
+            return getContentManager().getDomain(getDomainName());
+        }
     }
     
     /**
@@ -409,9 +425,7 @@ public class User extends PersistentObject {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        if (getDomainName().equals("")) {
-            throw new ContentException("no domain set for user object");
-        } else if (getDomain() == null) {
+        if (!getDomainName().equals("") && getDomain() == null) {
             throw new ContentException("domain '" + getDomainName() + 
                                        "' does not exist");
         } else if (getName().equals("")) {

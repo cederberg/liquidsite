@@ -135,9 +135,15 @@ public class AdminController extends Controller {
      * @param path           the request path
      */
     public void processUnauthorized(Request request, String path) {
-        if (path.equals("style.css") || path.startsWith("images/")) {
+        if (path.equals("style.css")) {
+            request.sendFile(getFile(path));
+        } else if (path.startsWith("images/")) {
             request.sendFile(getFile(path));
         } else {
+            if (request.getUser() != null) {
+                request.setAttribute("error", 
+                                     "Access denied for your current user."); 
+            }
             request.forward("/admin/login.jsp");
         }
     }
@@ -351,7 +357,7 @@ public class AdminController extends Controller {
 
         Domain  domain = getContentManager().getDomain(name);
 
-        if (domain == null || domain.getName().equals(user.getDomainName())) {
+        if (domain == null || domain.hasReadAccess(user)) {
             return domain;
         } else {
             throw RequestException.FORBIDDEN;

@@ -29,7 +29,6 @@ import java.util.Date;
 
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.Permission;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.db.DatabaseConnection;
@@ -739,9 +738,8 @@ public class InstallController extends Controller {
      */
     private void writeDefaultData(String path) {
         Domain      domain = new Domain("ROOT");
-        User        user = new User(domain, adminUser);
+        User        user = new User(null, adminUser);
         Site        site = new Site(domain);
-        Permission  perm;
 
         try {
             domain.setDescription("Root Domain");
@@ -760,12 +758,6 @@ public class InstallController extends Controller {
             site.setAuthor(user);
             site.setComment("Created");
             site.save();
-            perm = new Permission(site, user, null);
-            perm.setRead(true);
-            perm.setWrite(true);
-            perm.setPublish(true);
-            perm.setAdmin(true);
-            perm.save();
         } catch (ContentException e) {
             LOG.error(e.getMessage());
         }

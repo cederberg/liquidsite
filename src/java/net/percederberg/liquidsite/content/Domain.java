@@ -192,6 +192,25 @@ public class Domain extends PersistentObject {
     }
     
     /**
+     * Checks the read access for a user. All users in the same 
+     * domain have read access, in addition to superusers.
+     *
+     * @param user           the user to check, or null for none
+     * 
+     * @return true if the user has read access, or
+     *         false otherwise
+     */
+    public boolean hasReadAccess(User user) {
+        if (user == null) {
+            return false;
+        } else if (user.getDomainName().equals("")) {
+            return true;
+        } else {
+            return getName().equals(user.getDomainName());
+        }
+    }
+
+    /**
      * Validates this data object. This method checks that all 
      * required fields have been filled with suitable values.
      * 

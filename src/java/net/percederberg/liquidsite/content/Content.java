@@ -591,6 +591,9 @@ public abstract class Content extends PersistentObject {
         Permission[]  perms = getPermissions();
         Group[]       groups = null;
         
+        if (user != null && user.getDomainName().equals("")) {
+            return true;
+        }
         if (perms.length == 0) {
             return getParentId() > 0;
         }

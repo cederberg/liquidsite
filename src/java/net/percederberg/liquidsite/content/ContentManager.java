@@ -241,7 +241,9 @@ public class ContentManager {
     }
 
     /**
-     * Returns a user with a specified name.
+     * Returns a user with a specified name. If the user couldn't be
+     * found in the specified domain, this method also checks for 
+     * superusers with the specified name.
      * 
      * @param domain         the domain
      * @param name           the user name
@@ -255,7 +257,13 @@ public class ContentManager {
     public User getUser(Domain domain, String name) 
         throws ContentException {
 
-        return User.findByName(domain, name);
+        User  user;
+        
+        user = User.findByName(domain, name);
+        if (user == null) {
+            user = User.findByName(null, name);
+        }
+        return user;
     }
 
     /**
