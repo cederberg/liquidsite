@@ -184,12 +184,14 @@ public class ContentFile extends Content {
      * configured in the application servlet context.
      *
      * @return the MIME type of the file, or
-     *         null if unknown
+     *         a default binary MIME type if unknown
      */
     public String getMimeType() {
         Application  app = getContentManager().getApplication();
+        String       name = getFileName();
+        String       type = app.getServletContext().getMimeType(name);
 
-        return app.getServletContext().getMimeType(getFileName());
+        return (type == null) ? "application/octet-stream" : type;
     }
 
     /**
