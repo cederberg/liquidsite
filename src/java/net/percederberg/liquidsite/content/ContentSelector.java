@@ -206,6 +206,7 @@ public class ContentSelector {
      * @param manager        the content manager
      */
     ContentQuery getContentQuery(ContentManager manager) {
+        query.requirePublished(!manager.isAdmin());
         query.requireOnline(!manager.isAdmin());
         if (!query.isSorting()) {
             if (manager.isAdmin()) {

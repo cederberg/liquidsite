@@ -99,9 +99,15 @@ public class ContentQuery {
     private int category = 0;
 
     /**
-     * The online content flag. If this flag is set only published and
-     * online content will be returned. Otherwise the latest version
+     * The published content flag. If this flag is set only published
+     * and content will be returned. Otherwise the latest version
      * is accepted.
+     */
+    private boolean published = false;
+
+    /**
+     * The online content flag. If this flag is set only online
+     * content will be returned.
      */
     private boolean online = false;
 
@@ -178,9 +184,20 @@ public class ContentQuery {
     }
 
     /**
-     * Sets the online content requirement. By default the latest
+     * Sets the published content requirement. By default the latest
      * (work) revision will be accepted. When this flag is set, only
-     * published objects that are currently online will be returned.
+     * published objects will be returned.
+     *
+     * @param published      the published flag
+     */
+    public void requirePublished(boolean published) {
+        this.published = published;
+    }
+
+    /**
+     * Sets the online content requirement. By default no checks for
+     * online dates are made. When this flag is set, only objects
+     * that are currently online will be returned.
      *
      * @param online         the online flag
      */
@@ -332,7 +349,7 @@ public class ContentQuery {
             sql.append(category);
         }
         sql.append(" AND (c.STATUS & ");
-        if (online) {
+        if (published) {
             sql.append(ContentPeer.PUBLISHED_STATUS);
         } else {
             sql.append(ContentPeer.LATEST_STATUS);

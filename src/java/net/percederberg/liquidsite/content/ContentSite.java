@@ -21,8 +21,14 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
+
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
+import net.percederberg.liquidsite.dbo.ContentPeer;
+import net.percederberg.liquidsite.dbo.ContentQuery;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 
 /**
  * A web site.
@@ -31,6 +37,11 @@ import net.percederberg.liquidsite.dbo.ContentData;
  * @version  1.0
  */
 public class ContentSite extends Content {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(ContentSite.class);
 
     /**
      * The protocol content attribute.
@@ -61,6 +72,50 @@ public class ContentSite extends Content {
      * The administration site flag.
      */
     private static final int ADMIN_FLAG = 1;
+
+    /**
+     * Returns an array of content site in the specified domain. Only
+     * the latest revision of each content object will be returned.
+     * This method differs from the results returned by a search with
+     * findByCategory() in that offline objects can also be returned.
+     *
+     * @param manager        the content manager to use
+     * @param domain         the domain
+     *
+     * @return an array of content site objects found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    protected static ContentSite[] findByDomain(ContentManager manager,
+                                                Domain domain)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection(manager);
+        ContentQuery        query;
+        ArrayList           list;
+        ContentData         data;
+        ContentSite[]       res;
+
+        try {
+            query = new ContentQuery(domain.getName());
+            query.requireParent(0);
+            query.requireCategory(SITE_CATEGORY);
+            query.requirePublished(!manager.isAdmin());
+            list = ContentPeer.doSelectByQuery(query, con);
+            res = new ContentSite[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                data = (ContentData) list.get(i);
+                res[i] = new ContentSite(manager, data, con);
+            }
+            return res;
+        } catch (DatabaseObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(manager, con);
+        }
+    }
 
     /**
      * Creates a new site with default values.

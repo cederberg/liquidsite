@@ -229,7 +229,9 @@ class CacheManager {
      * @param domain         the domain to use for retrieval
      * @param content        the array of content sites
      */
-    public synchronized void addSites(Domain domain, Content[] content) {
+    public synchronized void addSites(Domain domain,
+                                      ContentSite[] content) {
+
         addAll(content);
         sites.put(domain.getName(), content);
         LOG.trace("cached site list for " + domain.getName());
@@ -348,8 +350,8 @@ class CacheManager {
      * @return the array of sites in the domain, or
      *         null if not present in the cache
      */
-    public Content[] getSites(Domain domain) {
-        return (Content[]) sites.get(domain.getName());
+    public ContentSite[] getSites(Domain domain) {
+        return (ContentSite[]) sites.get(domain.getName());
     }
 
     /**

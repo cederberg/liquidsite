@@ -276,14 +276,12 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    Content[] getSites(Domain domain) throws ContentException {
-        Content[]  res;
+    ContentSite[] getSites(Domain domain) throws ContentException {
+        ContentSite[]  res;
 
         res = CacheManager.getInstance().getSites(domain);
         if (res == null) {
-            res = InternalContent.findByCategory(this,
-                                                 domain,
-                                                 Content.SITE_CATEGORY);
+            res = ContentSite.findByDomain(this, domain);
             CacheManager.getInstance().addSites(domain, res);
         }
         return res;
@@ -742,8 +740,7 @@ public class ContentManager {
 
         Host           host;
         Domain         domain;
-        Content[]      sites;
-        ContentSite    site;
+        ContentSite[]  sites;
         ContentSite    res = null;
         int            max = 0;
         int            match;
@@ -756,13 +753,12 @@ public class ContentManager {
         }
         sites = getSites(domain);
         for (int i = 0; i < sites.length; i++) {
-            site = (ContentSite) sites[i];
-            match = site.match(protocol, hostname, port, path);
+            match = sites[i].match(protocol, hostname, port, path);
             if (sites[i].isOnline()
              && sites[i].getRevisionNumber() > 0
              && match > max) {
 
-                res = site;
+                res = sites[i];
                 max = match;
             }
         }
