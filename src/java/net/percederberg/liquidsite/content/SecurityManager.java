@@ -176,11 +176,11 @@ class SecurityManager {
             }
         } else if (obj instanceof Content) {
             return hasAccess(user, (Content) obj, access);
-        } else if (obj instanceof Permission) {
-            if (((Permission) obj).getContentId() > 0) {
-                obj = ((Permission) obj).getContent();
+        } else if (obj instanceof PermissionList) {
+            if (((PermissionList) obj).getContentId() > 0) {
+                obj = ((PermissionList) obj).getContent();
             } else {
-                obj = ((Permission) obj).getDomain();
+                obj = ((PermissionList) obj).getDomain();
             }
             if (access == READ) {
                 return hasAccess(user, obj, READ);
@@ -221,7 +221,7 @@ class SecurityManager {
     private boolean hasAccess(User user, Domain domain, int access)
         throws ContentException {
 
-        Permission[]  perms = domain.getPermissions();
+        Permission[]  perms = domain.getPermissions().getPermissions();
         Group[]       groups = null;
 
         // Check for superuser and empty permission list
@@ -233,7 +233,11 @@ class SecurityManager {
 
         // Check domain permissions
         if (user != null) {
-            groups = user.getGroups();
+            if (!user.getDomainName().equals(domain.getName())) {
+                user = null;
+            } else {
+                groups = user.getGroups();
+            }
         }
         for (int i = 0; i < perms.length; i++) {
             if (hasAccess(user, groups, perms[i], access)) {
@@ -263,7 +267,7 @@ class SecurityManager {
     private boolean hasAccess(User user, Content content, int access)
         throws ContentException {
 
-        Permission[]  perms = content.getPermissions();
+        Permission[]  perms = content.getPermissions().getPermissions();
         Group[]       groups = null;
 
         // Check for superuser or inherited permissions
@@ -277,7 +281,11 @@ class SecurityManager {
 
         // Check content permissions
         if (user != null) {
-            groups = user.getGroups();
+            if (!user.getDomainName().equals(content.getDomainName())) {
+                user = null;
+            } else {
+                groups = user.getGroups();
+            }
         }
         for (int i = 0; i < perms.length; i++) {
             if (hasAccess(user, groups, perms[i], access)) {
@@ -401,11 +409,11 @@ class SecurityManager {
             } else {
                 checkWriteAccess(user, (Content) obj);
             }
-        } else if (obj instanceof Permission) {
-            if (((Permission) obj).getContentId() > 0) {
-                checkAdminAccess(user, ((Permission) obj).getContent());
+        } else if (obj instanceof PermissionList) {
+            if (((PermissionList) obj).getContentId() > 0) {
+                checkAdminAccess(user, ((PermissionList) obj).getContent());
             } else {
-                checkAdminAccess(user, ((Permission) obj).getDomain());
+                checkAdminAccess(user, ((PermissionList) obj).getDomain());
             }
         } else if (obj instanceof Lock) {
             checkWriteAccess(user, ((Lock) obj).getContent());
@@ -444,11 +452,11 @@ class SecurityManager {
             } else {
                 checkWriteAccess(user, (Content) obj);
             }
-        } else if (obj instanceof Permission) {
-            if (((Permission) obj).getContentId() > 0) {
-                checkAdminAccess(user, ((Permission) obj).getContent());
+        } else if (obj instanceof PermissionList) {
+            if (((PermissionList) obj).getContentId() > 0) {
+                checkAdminAccess(user, ((PermissionList) obj).getContent());
             } else {
-                checkAdminAccess(user, ((Permission) obj).getDomain());
+                checkAdminAccess(user, ((PermissionList) obj).getDomain());
             }
         } else if (obj instanceof Lock) {
             throw new ContentSecurityException("content locks cannot " +
@@ -484,11 +492,11 @@ class SecurityManager {
             checkSuperUserAccess(user, ((Host) obj).getDomain());
         } else if (obj instanceof Content) {
             checkPublishAccess(user, (Content) obj);
-        } else if (obj instanceof Permission) {
-            if (((Permission) obj).getContentId() > 0) {
-                checkAdminAccess(user, ((Permission) obj).getContent());
+        } else if (obj instanceof PermissionList) {
+            if (((PermissionList) obj).getContentId() > 0) {
+                checkAdminAccess(user, ((PermissionList) obj).getContent());
             } else {
-                checkAdminAccess(user, ((Permission) obj).getDomain());
+                checkAdminAccess(user, ((PermissionList) obj).getDomain());
             }
         } else if (obj instanceof Lock) {
             checkWriteAccess(user, ((Lock) obj).getContent());

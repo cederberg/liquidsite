@@ -243,48 +243,15 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Returns the permissions applicable to this domain object.
+     * Returns the permission list applicable to this domain object.
      *
-     * @return an array of permissions for this object
+     * @return the permission list for this object
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public Permission[] getPermissions() throws ContentException {
-        return Permission.findByDomain(getContentManager(), this);
-    }
-
-    /**
-     * Sets the permissions applicable to this domain object. This
-     * will overwrite any previous permissions. To reset to default
-     * permissions, use an empty array of permissions.
-     *
-     * @param user            the user performing the operation
-     * @param permissions     the array of new permissions
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user specified didn't
-     *             have admin permissions
-     */
-    public void setPermissions(User user, Permission[] permissions)
-        throws ContentException, ContentSecurityException {
-
-        Permission[]        old = getPermissions();
-        DatabaseConnection  con;
-        int                 i;
-
-        con = getDatabaseConnection(getContentManager());
-        try {
-            for (i = 0; i < old.length; i++) {
-                old[i].delete(user, con);
-            }
-            for (i = 0; i < permissions.length; i++) {
-                permissions[i].save(user, con);
-            }
-        } finally {
-            returnDatabaseConnection(getContentManager(), con);
-        }
+    public PermissionList getPermissions() throws ContentException {
+        return PermissionList.findByDomain(getContentManager(), this);
     }
 
     /**

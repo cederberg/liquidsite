@@ -67,38 +67,6 @@ public class PermissionPeer extends AbstractPeer {
     }
 
     /**
-     * Returns the permission object with the specified domain,
-     * content id, user, and group.
-     *
-     * @param domain         the domain name
-     * @param id             the content id
-     * @param user           the permission user name
-     * @param group          the permission group name
-     * @param con            the database connection to use
-     *
-     * @return the permission found, or
-     *         null if no matching permission existed
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    public static PermissionData doSelectByUser(String domain,
-                                                int id,
-                                                String user,
-                                                String group,
-                                                DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("permission.select.user");
-
-        query.addParameter(domain);
-        query.addParameter(id);
-        query.addParameter(user);
-        query.addParameter(group);
-        return (PermissionData) PEER.select(query, con);
-    }
-
-    /**
      * Inserts a new permission object into the database.
      *
      * @param data           the permission data object
@@ -124,65 +92,23 @@ public class PermissionPeer extends AbstractPeer {
     }
 
     /**
-     * Updates a permission in the database.
-     *
-     * @param data           the permission data object
-     * @param con            the database connection to use
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    public static void doUpdate(PermissionData data, DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("permission.update");
-
-        query.addParameter(data.getBoolean(PermissionData.READ));
-        query.addParameter(data.getBoolean(PermissionData.WRITE));
-        query.addParameter(data.getBoolean(PermissionData.PUBLISH));
-        query.addParameter(data.getBoolean(PermissionData.ADMIN));
-        query.addParameter(data.getString(PermissionData.DOMAIN));
-        query.addParameter(data.getInt(PermissionData.CONTENT));
-        query.addParameter(data.getString(PermissionData.USER));
-        query.addParameter(data.getString(PermissionData.GROUP));
-        PEER.update(query, con);
-    }
-
-    /**
-     * Deletes a permission object from the database.
-     *
-     * @param data           the permission data object
-     * @param con            the database connection to use
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    public static void doDelete(PermissionData data, DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("permission.delete");
-
-        query.addParameter(data.getString(PermissionData.DOMAIN));
-        query.addParameter(data.getInt(PermissionData.CONTENT));
-        query.addParameter(data.getString(PermissionData.USER));
-        query.addParameter(data.getString(PermissionData.GROUP));
-        PEER.delete(query, con);
-    }
-
-    /**
      * Deletes all permissions for a content object from the database.
      *
+     * @param domain         the domain name
      * @param id             the content object id
      * @param con            the database connection to use
      *
      * @throws DatabaseObjectException if the database couldn't be
      *             accessed properly
      */
-    public static void doDeleteContent(int id, DatabaseConnection con)
+    public static void doDelete(String domain,
+                                int id,
+                                DatabaseConnection con)
         throws DatabaseObjectException {
 
-        DatabaseQuery  query = new DatabaseQuery("permission.delete.content");
+        DatabaseQuery  query = new DatabaseQuery("permission.delete");
 
+        query.addParameter(domain);
         query.addParameter(id);
         PEER.delete(query, con);
     }

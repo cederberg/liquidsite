@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Permission;
+import net.percederberg.liquidsite.content.PermissionList;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.form.FormValidationException;
@@ -92,6 +93,9 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
         Permission[]  permissions;
         User          user;
         Group[]       groups;
+        boolean       read = false;
+        boolean       write = false;
+        boolean       publish = false;
         boolean       admin = false;
         String        str;
 
@@ -112,13 +116,34 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
                 str = "Cannot set admin permission for anonymous user";
                 throw new FormValidationException("", str);
             }
-            if (permissions[i].isMatch(user, groups)
-             && permissions[i].getAdmin()) {
-
-                admin  = true;
+            if (permissions[i].isMatch(user, groups)) {
+                if (permissions[i].getRead()) {
+                    read  = true;
+                }
+                if (permissions[i].getWrite()) {
+                    write  = true;
+                }
+                if (permissions[i].getPublish()) {
+                    publish  = true;
+                }
+                if (permissions[i].getAdmin()) {
+                    admin  = true;
+                }
             }
         }
-        if (!admin) {
+        if (!user.isSuperUser() && !read) {
+            str = "Cannot remove read permission for current user";
+            throw new FormValidationException("", str);
+        }
+        if (!user.isSuperUser() && !write) {
+            str = "Cannot remove write permission for current user";
+            throw new FormValidationException("", str);
+        }
+        if (!user.isSuperUser() && !publish) {
+            str = "Cannot remove publish permission for current user";
+            throw new FormValidationException("", str);
+        }
+        if (!user.isSuperUser() && !admin) {
             str = "Cannot remove admin permission for current user";
             throw new FormValidationException("", str);
         }
@@ -149,16 +174,18 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object        ref = AdminUtils.getReference(request);
-        User          user = request.getUser();
-        Permission[]  permissions;
+        Object          ref = AdminUtils.getReference(request);
+        PermissionList  permissions;
+        Permission[]    perms;
 
-        permissions = getPermissions(request);
+        perms = getPermissions(request);
         if (ref instanceof Domain) {
-            ((Domain) ref).setPermissions(user, permissions);
+            permissions = ((Domain) ref).getPermissions();
         } else {
-            ((Content) ref).setPermissions(user, permissions);
+            permissions = ((Content) ref).getPermissions();
         }
+        permissions.setPermissions(perms);
+        permissions.save(request.getUser());
         return 0;
     }
 
@@ -248,9 +275,9 @@ public class PermissionsDialogHandler extends AdminDialogHandler {
             }
         }
         if (ref instanceof Domain) {
-            perm = new Permission(manager, domain, user, group);
+            perm = new Permission(user, group);
         } else {
-            perm = new Permission(manager, content, user, group);
+            perm = new Permission(user, group);
         }
         str = request.getParameter(prefix + "read");
         if (str != null) {

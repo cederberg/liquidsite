@@ -407,12 +407,13 @@ public class ContentPeer extends AbstractPeer {
         throws DatabaseObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete");
+        String         domain = data.getString(ContentData.DOMAIN);
         int            id = data.getInt(ContentData.ID);
 
         query.addParameter(id);
         PEER.delete(query, con);
         AttributePeer.doDeleteContent(id, con);
-        PermissionPeer.doDeleteContent(id, con);
+        PermissionPeer.doDelete(domain, id, con);
         LockPeer.doDeleteContent(id, con);
     }
 

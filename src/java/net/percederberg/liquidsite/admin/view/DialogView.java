@@ -33,6 +33,7 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Group;
 import net.percederberg.liquidsite.content.Permission;
+import net.percederberg.liquidsite.content.PermissionList;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -240,12 +241,14 @@ public class DialogView extends AdminView {
         if (obj instanceof Domain) {
             domain = (Domain) obj;
             inherited = getInheritedPermissions(domain);
-            local = getPermissions(domain.getPermissions(), false);
+            local = getPermissions(domain.getPermissions().getPermissions(),
+                                   false);
         } else {
             content = (Content) obj;
             domain = content.getDomain();
             inherited = getInheritedPermissions(content);
-            local = getPermissions(content.getPermissions(), false);
+            local = getPermissions(content.getPermissions().getPermissions(),
+                                   false);
         }
         if (request.getParameter("perm_0_type") != null) {
             local.clear();
@@ -314,8 +317,8 @@ public class DialogView extends AdminView {
     private ArrayList getInheritedPermissions(Content content)
         throws ContentException {
 
-        Permission[]  permissions;
-        Content       parent = content;
+        PermissionList  permissions;
+        Content         parent = content;
 
         do {
             parent = parent.getParent();
@@ -324,9 +327,9 @@ public class DialogView extends AdminView {
             } else {
                 permissions = parent.getPermissions();
             }
-        } while (permissions.length == 0 && parent != null);
+        } while (permissions.isEmpty() && parent != null);
 
-        return getPermissions(permissions, true);
+        return getPermissions(permissions.getPermissions(), true);
     }
 
     /**

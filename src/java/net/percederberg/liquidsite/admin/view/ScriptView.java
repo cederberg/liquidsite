@@ -38,6 +38,7 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.Permission;
+import net.percederberg.liquidsite.content.PermissionList;
 import net.percederberg.liquidsite.content.User;
 
 /**
@@ -612,12 +613,12 @@ public class ScriptView {
     private String getPermissions(Content content)
         throws ContentException {
 
-        Permission[]  permissions;
-        Content       parent = content;
-        boolean       inherited = false;
+        PermissionList  permissions;
+        Content         parent = content;
+        boolean         inherited = false;
 
         permissions = content.getPermissions();
-        while (permissions.length == 0 && parent != null) {
+        while (permissions.isEmpty() && parent != null) {
             inherited = true;
             parent = parent.getParent();
             if (parent == null) {
@@ -632,44 +633,45 @@ public class ScriptView {
     /**
      * Returns the JavaScript for presenting a list of permissions.
      *
-     * @param permissions     the array of permission objects
+     * @param permissions     the permission list
      * @param inherited       the inherited flag
      *
      * @return the JavaScript for presenting the permissions
      */
-    private String getPermissions(Permission[] permissions,
+    private String getPermissions(PermissionList permissions,
                                   boolean inherited) {
 
+        Permission[]  perms = permissions.getPermissions();
         StringBuffer  buffer = new StringBuffer();
         String        str;
 
-        if (permissions.length == 0) {
+        if (permissions.isEmpty()) {
             buffer.append("objectAddPermission(null, null, ");
             buffer.append("false, false, false, false, false);\n");
         }
-        for (int i = 0; i < permissions.length; i++) {
+        for (int i = 0; i < perms.length; i++) {
             buffer.append("objectAddPermission(");
-            if (permissions[i].getUserName().equals("")) {
+            if (perms[i].getUserName().equals("")) {
                 buffer.append("null");
             } else {
-                str = permissions[i].getUserName();
+                str = perms[i].getUserName();
                 buffer.append(AdminUtils.getScriptString(str));
             }
             buffer.append(", ");
-            if (permissions[i].getGroupName().equals("")) {
+            if (perms[i].getGroupName().equals("")) {
                 buffer.append("null");
             } else {
-                str = permissions[i].getGroupName();
+                str = perms[i].getGroupName();
                 buffer.append(AdminUtils.getScriptString(str));
             }
             buffer.append(", ");
-            buffer.append(permissions[i].getRead());
+            buffer.append(perms[i].getRead());
             buffer.append(", ");
-            buffer.append(permissions[i].getWrite());
+            buffer.append(perms[i].getWrite());
             buffer.append(", ");
-            buffer.append(permissions[i].getPublish());
+            buffer.append(perms[i].getPublish());
             buffer.append(", ");
-            buffer.append(permissions[i].getAdmin());
+            buffer.append(perms[i].getAdmin());
             buffer.append(", ");
             buffer.append(!inherited);
             buffer.append(");\n");

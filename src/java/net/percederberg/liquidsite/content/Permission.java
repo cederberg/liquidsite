@@ -23,11 +23,7 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.PermissionData;
-import net.percederberg.liquidsite.dbo.PermissionPeer;
 
 /**
  * A content object permission.
@@ -35,12 +31,7 @@ import net.percederberg.liquidsite.dbo.PermissionPeer;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Permission extends PersistentObject {
-
-    /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(Permission.class);
+public class Permission {
 
     /**
      * The permission data object.
@@ -48,174 +39,13 @@ public class Permission extends PersistentObject {
     private PermissionData data;
 
     /**
-     * Returns an array of all permission objects for the specified
-     * domain object. Note that this method only returns the list of
-     * permissions set on the domain object, not all the permissions
-     * for content objects in the domain.
-     *
-     * @param manager        the content manager to use
-     * @param domain         the domain
-     *
-     * @return an array of permission objects found, or
-     *         an empty array if no permissions were found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static Permission[] findByDomain(ContentManager manager, Domain domain)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Permission[]        res;
-        PermissionData      data;
-
-        try {
-            list = PermissionPeer.doSelectByContent(domain.getName(),
-                                                    0,
-                                                    con);
-            res = new Permission[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                data = (PermissionData) list.get(i);
-                res[i] = new Permission(manager, data);
-            }
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-        return res;
-    }
-
-    /**
-     * Returns an array of all permission objects for the specified
-     * content object. Note that this method only returns the list of
-     * permissions set on the content object, not any inherited
-     * permissions.
-     *
-     * @param manager        the content manager to use
-     * @param content        the content object
-     *
-     * @return an array of permission objects found, or
-     *         an empty array if no permissions were found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static Permission[] findByContent(ContentManager manager,
-                                      Content content)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Permission[]        res;
-        PermissionData      data;
-
-        try {
-            list = PermissionPeer.doSelectByContent(content.getDomainName(),
-                                                    content.getId(),
-                                                    con);
-            res = new Permission[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                data = (PermissionData) list.get(i);
-                res[i] = new Permission(manager, data);
-            }
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-        return res;
-    }
-
-    /**
-     * Returns the permission object with the specified content id,
-     * user, and group.
-     *
-     * @param manager        the content manager to use
-     * @param content        the content object
-     * @param user           the user
-     * @param group          the group
-     *
-     * @return the permission found, or
-     *         null if no matching permission existed
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static Permission findByUser(ContentManager manager,
-                                 Content content,
-                                 User user,
-                                 Group group)
-        throws ContentException {
-
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        PermissionData      data;
-
-        try {
-            data = PermissionPeer.doSelectByUser(content.getDomainName(),
-                                                 content.getId(),
-                                                 user.getName(),
-                                                 group.getName(),
-                                                 con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            returnDatabaseConnection(manager, con);
-        }
-        if (data == null) {
-            return null;
-        } else {
-            return new Permission(manager, data);
-        }
-    }
-
-    /**
-     * Creates a new permission with default values. This permission
-     * is valid for the domain root.
-     *
-     * @param manager        the content manager to use
-     * @param domain         the domain object
-     * @param user           the user, or null for any user
-     * @param group          the gruop, or null for any group
-     */
-    public Permission(ContentManager manager,
-                      Domain domain,
-                      User user,
-                      Group group) {
-
-        super(manager, false);
-        this.data = new PermissionData();
-        this.data.setString(PermissionData.DOMAIN, domain.getName());
-        this.data.setInt(PermissionData.CONTENT, 0);
-        if (user != null) {
-            this.data.setString(PermissionData.USER, user.getName());
-        }
-        if (group != null) {
-            this.data.setString(PermissionData.GROUP, group.getName());
-        }
-    }
-
-    /**
      * Creates a new permission with default values.
      *
-     * @param manager        the content manager to use
-     * @param content        the content object
      * @param user           the user, or null for any user
      * @param group          the gruop, or null for any group
      */
-    public Permission(ContentManager manager,
-                      Content content,
-                      User user,
-                      Group group) {
-
-        super(manager, false);
+    public Permission(User user, Group group) {
         this.data = new PermissionData();
-        this.data.setString(PermissionData.DOMAIN, content.getDomainName());
-        this.data.setInt(PermissionData.CONTENT, content.getId());
         if (user != null) {
             this.data.setString(PermissionData.USER, user.getName());
         }
@@ -227,18 +57,16 @@ public class Permission extends PersistentObject {
     /**
      * Creates a new permission from a data object.
      *
-     * @param manager        the content manager to use
      * @param data           the permission data object
      */
-    private Permission(ContentManager manager, PermissionData data) {
-        super(manager, true);
+    Permission(PermissionData data) {
         this.data = data;
     }
 
     /**
      * Checks if this permission equals another object. This method
      * will only return true if the other object is a permission with
-     * the same domain, content identifier, user and group.
+     * the same user and group.
      *
      * @param obj            the object to compare with
      *
@@ -256,7 +84,7 @@ public class Permission extends PersistentObject {
     /**
      * Checks if this permission equals another object. This method
      * will only return true if the other object is a permission with
-     * the same domain, content identifier, user and group.
+     * the same user and group.
      *
      * @param obj            the object to compare with
      *
@@ -264,9 +92,7 @@ public class Permission extends PersistentObject {
      *         false otherwise
      */
     public boolean equals(Permission obj) {
-        return getDomainName().equals(obj.getDomainName())
-            && getContentId() == obj.getContentId()
-            && getUserName().equals(obj.getUserName())
+        return getUserName().equals(obj.getUserName())
             && getGroupName().equals(obj.getGroupName());
     }
 
@@ -278,103 +104,38 @@ public class Permission extends PersistentObject {
     public String toString() {
         StringBuffer  buffer = new StringBuffer();
 
-        buffer.append("Domain: ");
-        buffer.append(getDomainName());
-        buffer.append(", Content: ");
-        buffer.append(getContentId());
-        buffer.append(", ");
         if (!getUserName().equals("")) {
-            buffer.append("User: ");
             buffer.append(getUserName());
+            buffer.append(" (user)");
         } else if (!getGroupName().equals("")) {
-            buffer.append("Group ");
             buffer.append(getGroupName());
+            buffer.append(" (group)");
         } else {
-            buffer.append("Any User");
+            buffer.append("<anonymous>");
         }
-        buffer.append(", Permissions: ");
-        buffer.append(toString(getRead(), "r"));
-        buffer.append(toString(getWrite(), "w"));
-        buffer.append(toString(getPublish(), "p"));
-        buffer.append(toString(getAdmin(), "a"));
+        buffer.append(": ");
+        buffer.append(getRead() ? "r" : "-");
+        buffer.append(getWrite() ? "w" : "-");
+        buffer.append(getPublish() ? "p" : "-");
+        buffer.append(getAdmin() ? "a" : "-");
 
         return buffer.toString();
     }
 
     /**
-     * Returns a string representation of a permission flag.
+     * Returns the internal permission data object. The permission
+     * data will be modified with the specified permission reference
+     * before being returned.
      *
-     * @param flag           the permission flag
-     * @param symbol         the flag symbol
+     * @param domain          the domain name
+     * @param content         the content identifier
      *
-     * @return the string representation fo the permission flag
+     * @return the internal permission data object
      */
-    private String toString(boolean flag, String symbol) {
-        if (flag) {
-            return symbol;
-        } else {
-            return "-";
-        }
-    }
-
-    /**
-     * Returns the content domain.
-     *
-     * @return the content domain
-     *
-     * @throws ContentException if no content manager is available
-     */
-    public Domain getDomain() throws ContentException {
-        return getContentManager().getDomain(getDomainName());
-    }
-
-    /**
-     * Returns the content domain name
-     *
-     * @return the content domain name
-     */
-    public String getDomainName() {
-        return data.getString(PermissionData.DOMAIN);
-    }
-
-    /**
-     * Returns the content object.
-     *
-     * @return the content object
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public Content getContent() throws ContentException {
-        return getContentManager().getContent(getContentId());
-    }
-
-    /**
-     * Returns the content identifier.
-     *
-     * @return the content identifier
-     */
-    public int getContentId() {
-        return data.getInt(PermissionData.CONTENT);
-    }
-
-    /**
-     * Returns the permission user.
-     *
-     * @return the permission user, or
-     *         null if any user matches this permission
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public User getUser() throws ContentException {
-        String  name = getUserName();
-
-        if (name.equals("")) {
-            return null;
-        } else {
-            return getContentManager().getUser(getDomain(), name);
-        }
+    PermissionData getData(String domain, int content) {
+        data.setString(PermissionData.DOMAIN, domain);
+        data.setInt(PermissionData.CONTENT, content);
+        return data;
     }
 
     /**
@@ -384,25 +145,6 @@ public class Permission extends PersistentObject {
      */
     public String getUserName() {
         return data.getString(PermissionData.USER);
-    }
-
-    /**
-     * Returns the permission group.
-     *
-     * @return the permission group, or
-     *         null if any group matches this permission
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public Group getGroup() throws ContentException {
-        String  name = getGroupName();
-
-        if (name.equals("")) {
-            return null;
-        } else {
-            return getContentManager().getGroup(getDomain(), name);
-        }
     }
 
     /**
@@ -488,7 +230,9 @@ public class Permission extends PersistentObject {
 
     /**
      * Checks if the specified user or group list matches this
-     * permission. The list of groups should be the user groups.
+     * permission. The list of groups should be the user groups, and
+     * both must be in the same domain as the permission reference
+     * object.
      *
      * @param user           the user to check, or null for none
      * @param groups         the group list to check, or null for none
@@ -501,96 +245,17 @@ public class Permission extends PersistentObject {
             return true;
         } else if (user == null) {
             return false;
-        } else if (!getDomainName().equals(user.getDomainName())) {
-            return false;
-        } else if (!getUserName().equals("")) {
+        } else if (getUserName().length() > 0) {
             return getUserName().equals(user.getName());
         } else if (groups == null) {
             return false;
         } else {
             for (int i = 0; i < groups.length; i++) {
-                if (groups[i].getName().equals(getGroupName())) {
+                if (getGroupName().equals(groups[i].getName())) {
                     return true;
                 }
             }
             return false;
-        }
-    }
-
-    /**
-     * Validates this data object. This method checks that all
-     * required fields have been filled with suitable values.
-     *
-     * @throws ContentException if the data object contained errors
-     */
-    public void validate() throws ContentException {
-        if (getDomainName().equals("")) {
-            throw new ContentException("no domain set for permission object");
-        } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() +
-                                       "'does not exist");
-        }
-    }
-
-    /**
-     * Inserts the object data into the database.
-     *
-     * @param user           the user performing the operation
-     * @param con            the database connection to use
-     *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
-     */
-    protected void doInsert(User user, DatabaseConnection con)
-        throws ContentException {
-
-        validate();
-        try {
-            PermissionPeer.doInsert(data, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        }
-    }
-
-    /**
-     * Updates the object data in the database.
-     *
-     * @param user           the user performing the operation
-     * @param con            the database connection to use
-     *
-     * @throws ContentException if the object data didn't validate or
-     *             if the database couldn't be accessed properly
-     */
-    protected void doUpdate(User user, DatabaseConnection con)
-        throws ContentException {
-
-        validate();
-        try {
-            PermissionPeer.doUpdate(data, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        }
-    }
-
-    /**
-     * Deletes the object data from the database.
-     *
-     * @param user           the user performing the operation
-     * @param con            the database connection to use
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    protected void doDelete(User user, DatabaseConnection con)
-        throws ContentException {
-
-        try {
-            PermissionPeer.doDelete(data, con);
-        } catch (DatabaseObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
         }
     }
 }
