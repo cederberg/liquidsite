@@ -60,6 +60,23 @@ public class FormValidator {
     }
     
     /**
+     * Adds a form field length constraint. This will check that 
+     * the length of the specified form field is in the range.
+     * 
+     * @param field          the field name
+     * @param min            the minimum length
+     * @param max            the maximum length, or -1 for infinite
+     * @param message        the message on error 
+     */
+    public void addLengthConstraint(String field,
+                                    int min,
+                                    int max,
+                                    String message) {
+
+        constraints.add(new LengthConstraint(field, min, max, message)); 
+    }
+    
+    /**
      * Adds a form field character constraint. This will check that 
      * the specified form field only contains characters from the 
      * specified set.
@@ -228,6 +245,65 @@ public class FormValidator {
         }
     }
     
+
+    /**
+     * A form field length constraint.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */    
+    private class LengthConstraint extends Constraint {
+
+        /**
+         * The minimum length to allow.
+         */
+        private int min;
+
+        /**
+         * The maximum length to allow.
+         */
+        private int max;
+
+        /**
+         * Creates a new form field length constraint.
+         * 
+         * @param field          the field name
+         * @param min            the minimum length
+         * @param max            the maximum length, or -1 for infinite
+         * @param message        the error message
+         */
+        public LengthConstraint(String field, 
+                                int min,
+                                int max, 
+                                String message) {
+            super(field, message);
+            this.min = min;
+            this.max = max;
+        }
+
+        /**
+         * Validates this constraint.
+         * 
+         * @param value          the form field value
+         * 
+         * @throws FormValidationException if the form validation 
+         *             failed
+         */
+        protected void validate(String value) 
+            throws FormValidationException {
+
+            if (value == null) {
+                return;
+            }
+            if (value.length() < min) {
+                error();
+            }
+            if (max > 0 && value.length() > max) {
+                error();
+            }
+        }
+    }
+
 
     /**
      * A character set form field constraint.

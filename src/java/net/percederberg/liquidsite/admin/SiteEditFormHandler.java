@@ -120,6 +120,8 @@ class SiteEditFormHandler extends AdminFormHandler {
         
         // Add and edit domain validator
         domain.addRequiredConstraint("name", "No domain name specified");
+        error = "Domain name cannot be longer than 30 characters";
+        domain.addLengthConstraint("name", 0, 30, error);
         error = "Domain name must be upper-case, invalid character";
         domain.addCharacterConstraint("name", domainChars, error);
         error = "No description specified";
