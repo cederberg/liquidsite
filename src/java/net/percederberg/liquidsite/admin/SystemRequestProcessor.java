@@ -25,13 +25,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.SAXException;
 
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.RequestException;
@@ -57,7 +66,7 @@ import net.percederberg.liquidsite.web.Request;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class SystemRequestProcessor {
+class SystemRequestProcessor {
 
     /**
      * The class logger.
@@ -206,17 +215,38 @@ public class SystemRequestProcessor {
      *             correctly
      */
     private void handleRestore(Request request) throws RequestException {
+        File     dir;
+        File     file;
+        String   domain;
+        int      mode;
+        String   str;
+
         try {
             if (!validateRestore(request)) {
                 AdminView.SYSTEM.viewRestore(request);
             } else {
+                dir = AdminUtils.getBackupDir();
+                file = new File(dir, request.getParameter("backup"));
+                domain = request.getParameter("domain");
+                str = request.getParameter("revisions", "");
+                if (str.equals("latest")) {
+                    mode = 1;
+                } else if (str.equals("work")) {
+                    mode = 2;
+                } else {
+                    mode = 0;
+                }
+                restore(file, domain, mode, request.getUser());
                 AdminView.BASE.viewInfo(request,
-                                        "Not implemented yet",
+                                        "Successfully restored backup",
                                         "system.html");
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            throw RequestException.FORBIDDEN;
         }
     }
 
@@ -249,10 +279,18 @@ public class SystemRequestProcessor {
      *
      * @return true if the form parameters validated correctly, or
      *         false otherwise
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if some object that wasn't
+     *             readable by the user
      */
-    private boolean validateRestore(Request request) {
-        String  message;
-        String  name;
+    private boolean validateRestore(Request request)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        String          message;
+        String          name;
 
         if (request.getParameter("backup") == null) {
             return false;
@@ -265,6 +303,11 @@ public class SystemRequestProcessor {
         name = request.getParameter("domain", "");
         if (name.equals("")) {
             message = "Please enter the name of a domain to create";
+            request.setAttribute("error", message);
+            return false;
+        }
+        if (manager.getDomain(request.getUser(), name) != null) {
+            message = "The domain specified already exists";
             request.setAttribute("error", message);
             return false;
         }
@@ -327,8 +370,8 @@ public class SystemRequestProcessor {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if some object that wasn't
-     *             readable by the user
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      */
     private void backupXml(PrintWriter out, Domain domain, User user)
         throws ContentException, ContentSecurityException {
@@ -411,6 +454,9 @@ public class SystemRequestProcessor {
         out.print(user.getName());
         out.print("\" password=\"");
         out.print(AdminUtils.getXmlString(user.getPassword()));
+        if (!user.getEnabled()) {
+            out.print("\" disabled=\"disabled");
+        }
         out.print("\" realname=\"");
         out.print(AdminUtils.getXmlString(user.getRealName()));
         out.print("\" email=\"");
@@ -609,6 +655,119 @@ public class SystemRequestProcessor {
             }
             in.close();
             out.closeEntry();
+        }
+    }
+
+    /**
+     * Restores a complete backup to the specified domain.
+     *
+     * @param file           the backup file
+     * @param domain         the name of the domain to create
+     * @param mode           the content revision policy 
+     * @param user           the user performing the operation
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    private void restore(File file, String domain, int mode, User user)
+        throws ContentException {
+
+        ZipFile            zip = null;
+        ZipEntry           entry;
+        SAXParser          parser;
+        XmlRestoreHandler  handler;
+        HashMap            files;
+        Iterator           iter;
+        String             name;
+        String             message;
+
+        try {
+            zip = new ZipFile(file);
+            entry = zip.getEntry(BACKUP_FILE);
+            if (entry == null) {
+                message = "failed to locate XML data file " + BACKUP_FILE;
+                LOG.error(message);
+                throw new ContentException(message);
+            }
+            handler = new XmlRestoreHandler(domain, mode, user);
+            parser = SAXParserFactory.newInstance().newSAXParser();
+            parser.parse(zip.getInputStream(entry), handler);
+            files = handler.getContentFiles();
+            iter = files.keySet().iterator();
+            while (iter.hasNext()) {
+                name = iter.next().toString();
+                entry = zip.getEntry(name);
+                restoreFile(zip, entry, (File) files.get(name));
+            }
+        } catch (IOException e) {
+            message = "IO error while reading " + file;
+            LOG.error(message, e);
+            throw new ContentException(message, e);
+        } catch (ParserConfigurationException e) {
+            message = "XML parser configuration error";
+            LOG.error(message, e);
+            throw new ContentException(message, e);
+        } catch (SAXException e) {
+            if (e.getException() == null) {
+                message = "XML parser error while reading " + file;
+                LOG.error(message, e);
+                throw new ContentException(message, e);
+            } else {
+                message = "error while reading " + file;
+                LOG.error(message, e.getException());
+                throw new ContentException(message, e.getException());
+            }
+        } finally {
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException ignore) {
+                    // Do nothing
+                }
+            }
+        }
+    }
+
+    /**
+     * Restores a file from a ZIP archive. The contents of the file
+     * will be saved in the specified file.
+     *
+     * @param zip            the ZIP archive
+     * @param entry          the ZIP archive entry to extract
+     * @param dest           the destination file
+     *
+     * @throws IOException if the file date couldn't be extracted or
+     *             written correctly
+     */
+    private void restoreFile(ZipFile zip, ZipEntry entry, File dest)
+        throws IOException {
+
+        InputStream       in;
+        FileOutputStream  out;
+        byte[]            buffer = new byte[4096];
+        int               size;
+
+        dest.getParentFile().mkdirs();
+        in = zip.getInputStream(entry);
+        out = new FileOutputStream(dest);
+        try {
+            do {
+                size = in.read(buffer);
+                if (size > 0) {
+                    out.write(buffer, 0, size);
+                }
+            } while (size > 0);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ignore) {
+                // Do nothing
+            }
+            try {
+                out.close();
+            } catch (IOException ignore) {
+                // Do nothing
+            }
         }
     }
 }
