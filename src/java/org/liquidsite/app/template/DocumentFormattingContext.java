@@ -86,7 +86,7 @@ class DocumentFormattingContext implements FormattingContext {
         } else {
             path = getDocEnvPath(document);
             if (path == null) {
-                path = context.getSitePath() + "liquidsite.obj/" +
+                path = context.getSitePath() + "liquidsite/content/" +
                        document.getId() + "/";
             }
             return path;

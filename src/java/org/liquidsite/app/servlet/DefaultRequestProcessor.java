@@ -23,10 +23,7 @@ package org.liquidsite.app.servlet;
 
 import org.liquidsite.app.admin.AdminRequestProcessor;
 import org.liquidsite.app.legacy.ForumRequestProcessor;
-import org.liquidsite.app.template.TemplateException;
-import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
-import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
@@ -91,7 +88,6 @@ public class DefaultRequestProcessor extends RequestProcessor {
         String       path = request.getPath();
         User         user;
         ContentSite  site;
-        Content      content;
 
         // Find domain & site
         try {
@@ -122,7 +118,9 @@ public class DefaultRequestProcessor extends RequestProcessor {
         // Find page and create response
         path = path.substring(site.getDirectory().length());
         try {
-            if (site.isAdmin()) {
+            if (path.startsWith("liquidsite/")) {
+                processLiquidSite(request, path.substring(11));
+            } else if (site.isAdmin()) {
                 user = request.getUser();
                 if (user != null && site.hasReadAccess(user)) {
                     admin.processAuthorized(request, path);
@@ -130,43 +128,14 @@ public class DefaultRequestProcessor extends RequestProcessor {
                     admin.processUnauthorized(request, path);
                 }
             } else {
-                content = locatePage(request, site, path);
-                processContent(request, content);
+                processNormal(request, site, path, false);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
-        } catch (ContentSecurityException e) {
-            LOG.info(e.getMessage());
-            throw RequestException.FORBIDDEN;
         }
     }
-
-    /**
-     * Processes a request for a content object.
-     *
-     * @param request        the request object
-     * @param content        the content object
-     *
-     * @throws RequestException if the request couldn't be processed
-     */
-    private void processContent(Request request, Content content)
-        throws RequestException {
-
-        try {
-            sendContent(request, content);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        } catch (ContentSecurityException e) {
-            LOG.info(e.getMessage());
-            throw RequestException.FORBIDDEN;
-        } catch (TemplateException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
-        }
-    }
-
+    
     /**
      * Processes a request action. The processing of the action may
      * produce a response to the request object, which must be checked

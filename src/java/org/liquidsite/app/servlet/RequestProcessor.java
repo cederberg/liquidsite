@@ -40,8 +40,10 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.ContentTranslator;
+import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
+import org.liquidsite.util.log.Log;
 
 /**
  * A request processor.
@@ -50,6 +52,11 @@ import org.liquidsite.core.web.Request;
  * @version  1.0
  */
 public abstract class RequestProcessor {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(RequestProcessor.class);
 
     /**
      * The content manager to use.
@@ -109,6 +116,142 @@ public abstract class RequestProcessor {
     public abstract void destroy();
 
     /**
+     * Processes a request for a normal resource in a content site.
+     * If the preview flag is set a special "revision" request
+     * parameter may be used to modify the content object to display.
+     *
+     * @param request        the request object
+     * @param site           the content site object
+     * @param path           the request path (inside the site)
+     * @param preview        the preview flag
+     *
+     * @throws RequestException if the request couldn't be processed
+     */
+    protected void processNormal(Request request,
+                                 ContentSite site,
+                                 String path,
+                                 boolean preview)
+        throws RequestException {
+
+        Content  content;
+        String   revision;
+
+        try {
+            content = locateContent(request, site, path);
+            if (preview) {
+                revision = request.getParameter("revision");
+                if (content != null && revision != null) {
+                    content = content.getRevision(Integer.parseInt(revision));
+                }
+            }
+            sendContent(request, content);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        } catch (ContentSecurityException e) {
+            LOG.info(e.getMessage());
+            throw RequestException.FORBIDDEN;
+        } catch (TemplateException e) {
+            LOG.error(e.getMessage());
+            throw RequestException.INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Processes a request for the special "/liquidsite" path at the
+     * root of each site.
+     *
+     * @param request        the request object
+     * @param path           the request path (inside the directory)
+     *
+     * @throws RequestException if the request couldn't be processed
+     */
+    protected void processLiquidSite(Request request, String path)
+        throws RequestException {
+
+        Content  content;
+
+        if (path.equals("system/style.css")) {
+            request.sendFile(getFile(path.substring(7)), false);
+        } else if (path.startsWith("system/images/")) {
+            request.sendFile(getFile(path.substring(7)), false);
+        } else if (path.startsWith("content/")) {
+            try {
+                content = locateContent(request, path.substring(8));
+                sendContent(request, content);
+            } catch (ContentException e) {
+                LOG.error(e.getMessage());
+                throw RequestException.INTERNAL_ERROR;
+            } catch (ContentSecurityException e) {
+                LOG.info(e.getMessage());
+                throw RequestException.FORBIDDEN;
+            } catch (TemplateException e) {
+                LOG.error(e.getMessage());
+                throw RequestException.INTERNAL_ERROR;
+            }
+        } else {
+            throw RequestException.RESOURCE_NOT_FOUND;
+        }
+    }
+
+    /**
+     * Finds the content object corresponding to an object request
+     * path. Note that this method may return any type of content
+     * object as long as it supports being presented by the
+     * sendContent() method. The object request path should start
+     * with a content id, optionally followed by a slash and the name
+     * of a child object. This method also checks the request domain
+     * to make sure that the content object returned belongs to the
+     * same domain as the site it is requested through.
+     *
+     * @param request        the request object
+     * @param path           the content request path
+     *
+     * @return the content object corresponding to the path, or
+     *         null if no matching content was found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
+     *             object wasn't readable by the user
+     */
+    private Content locateContent(Request request, String path)
+        throws ContentException, ContentSecurityException {
+
+        User     user = request.getUser();
+        String   number;
+        String   name;
+        Domain   domain;
+        Content  content;
+        int      id;
+        int      pos;
+
+        pos = path.indexOf("/");
+        if (pos < 0) {
+            number = path;
+            name = null;
+        } else {
+            number = path.substring(0, pos);
+            name = path.substring(pos + 1);
+        }
+        try {
+            id = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        domain = request.getEnvironment().getDomain();
+        content = manager.getContent(user, id);
+        if (content == null || !domain.equals(content.getDomain())) {
+            return null;
+        }
+        if (name == null || name.equals("")) {
+            return content;
+        } else {
+            return locateChild(request, content, name);
+        }
+    }
+
+    /**
      * Finds the content page corresponding to a request path. Note
      * that this method may return any type of content object as long
      * as it supports being presented by the sendContent() method.
@@ -127,18 +270,15 @@ public abstract class RequestProcessor {
      * @throws ContentSecurityException if the specified content
      *             object wasn't readable by the user
      */
-    protected Content locatePage(Request request,
-                                 ContentSite site,
-                                 String path)
+    private Content locateContent(Request request,
+                                  ContentSite site,
+                                  String path)
         throws ContentException, ContentSecurityException {
 
         Content  content = site;
         String   name;
         int      pos;
 
-        if (path.startsWith("liquidsite.obj/")) {
-            return locateObject(request, path.substring(15));
-        }
         while (content != null && path.length() > 0) {
             pos = path.indexOf('/');
             if (pos <= 0) {
@@ -267,50 +407,6 @@ public abstract class RequestProcessor {
             }
         }
         return content;
-    }
-
-    /**
-     * Finds the content object corresponding to an object request
-     * path. Note that this method may return any type of content
-     * object as long as it supports being presented by the
-     * sendContent() method. The object request path should start with
-     * a content id, followed by the name of a child object.
-     *
-     * @param request        the request object
-     * @param path           the object request path
-     *
-     * @return the content object corresponding to the path, or
-     *         null if no matching content was found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the specified content
-     *             object wasn't readable by the user
-     */
-    private Content locateObject(Request request, String path)
-        throws ContentException, ContentSecurityException {
-
-        User     user = request.getUser();
-        Content  content;
-        int      id;
-        String   name;
-        int      pos;
-
-        pos = path.indexOf("/");
-        if (pos <= 0) {
-            return null;
-        }
-        try {
-            id = Integer.parseInt(path.substring(0, pos));
-            name = path.substring(pos + 1);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        content = manager.getContent(user, id);
-        if (content == null) {
-            return null;
-        }
-        return locateChild(request, content, name);
     }
 
     /**

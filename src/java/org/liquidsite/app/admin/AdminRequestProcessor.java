@@ -506,21 +506,21 @@ public class AdminRequestProcessor extends RequestProcessor {
         throws RequestException, ContentException,
                ContentSecurityException, TemplateException {
 
-        Content  content;
-        String   revision;
-        String   dir;
+        String  dir;
 
-        content = locatePage(request, site, path);
-        revision = request.getParameter("revision");
-        if (content != null && revision != null) {
-            content = content.getRevision(Integer.parseInt(revision));
-        }
+        // Adjust the request environment
         request.getEnvironment().setDomain(site.getDomain());
         dir = request.getEnvironment().getSite().getDirectory() +
               "preview/" + site.getId() + "/";
         site.setDirectory(dir);
         request.getEnvironment().setSite(site);
-        sendContent(request, content);
+
+        // Process preview request
+        if (path.startsWith("liquidsite/")) {
+            processLiquidSite(request, path.substring(11));
+        } else {
+            processNormal(request, site, path, true);
+        }
     }
 
     /**
