@@ -564,6 +564,9 @@ class SiteAddFormHandler extends AdminFormHandler {
         int             pos;
 
         name = entry.getName();
+        if (name.endsWith("/")) {
+            name = name.substring(0, name.length() - 1);
+        }
         while (name.indexOf('/') >= 0) {
             pos = name.indexOf('/');
             if (pos == 0) {
