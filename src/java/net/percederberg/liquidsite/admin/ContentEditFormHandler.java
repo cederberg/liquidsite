@@ -268,6 +268,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         ContentDocument  doc;
         Content          content;
         String           message;
+        int              id;
 
         if (request.getParameter("action", "").equals("upload")) {
             param = request.getFileParameter("upload");
@@ -284,7 +285,12 @@ public class ContentEditFormHandler extends AdminFormHandler {
             ref = AdminUtils.getReference(request);
             if (ref instanceof ContentDocument) {
                 doc = (ContentDocument) ref;
-                content = doc.getParent();
+                try {
+                    id = Integer.parseInt(request.getParameter("section"));
+                    content = manager.getContent(request.getUser(), id);
+                } catch (NumberFormatException ignore) {
+                    content = doc.getParent();
+                }
             } else {
                 doc = null;
                 content = (Content) ref;
