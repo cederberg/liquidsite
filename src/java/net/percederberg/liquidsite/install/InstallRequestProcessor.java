@@ -416,6 +416,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         boolean    enableNext = false;
         ArrayList  databases;
         ArrayList  tables;
+        String     version;
         HashMap    info;
         String     str;
 
@@ -426,6 +427,7 @@ public class InstallRequestProcessor extends RequestProcessor {
             databaseInfo.add(info);
             lastError = null;
             tables = listTables(databases.get(i).toString());
+            version = getVersion(databases.get(i).toString());
             info.put("name", databases.get(i));
             info.put("tables", new Integer(tables.size()));
             if (lastError != null) {
@@ -434,6 +436,10 @@ public class InstallRequestProcessor extends RequestProcessor {
             } else if (databases.get(i).equals("mysql")) {
                 info.put("status", new Integer(0));
                 info.put("info", "MySQL administration database");
+            } else if (version != null) {
+                str = "Liquid Site version " + version;
+                info.put("status", new Integer(0));
+                info.put("info", str);
             } else if (getTableConflicts(tables) > 0) {
                 str = getTableConflicts(tables) +
                       " conflicting tables found";
@@ -638,6 +644,39 @@ public class InstallRequestProcessor extends RequestProcessor {
         users = new ArrayList();
         users.add(installUser);
         return users;
+    }
+
+    /**
+     * Returns the Liquid Site version of the specified database.
+     *
+     * @param database       the database to check
+     *
+     * @return the Liquid Site version number of the database, or
+     *         null if no number could be found
+     */
+    private String getVersion(String database) {
+        Configuration       config = new Configuration();
+        DatabaseConnection  con = null;
+
+        try {
+            con = connector.getConnection();
+            con.setCatalog(database);
+            config.read(con);
+            return config.get(Configuration.VERSION, null);
+        } catch (DatabaseConnectionException e) {
+            LOG.error("couldn't read database version", e);
+            lastError = e.getMessage();
+        } catch (DatabaseException e) {
+            LOG.error("couldn't read database version", e);
+            lastError = e.getMessage();
+        } catch (ConfigurationException ignore) {
+            // Ignore
+        } finally {
+            if (con != null) {
+                connector.returnConnection(con);
+            }
+        }
+        return null;
     }
 
     /**
