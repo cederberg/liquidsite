@@ -59,7 +59,7 @@ class UnlockDialogHandler extends AdminDialogHandler {
 
         Content  content = (Content) AdminUtils.getReference(request);
 
-        DIALOG_VIEW.viewUnlock(request, content);
+        AdminView.DIALOG.viewUnlock(request, content);
     }
 
     /**

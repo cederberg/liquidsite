@@ -59,7 +59,7 @@ class RevertDialogHandler extends AdminDialogHandler {
 
         Content  content = (Content) AdminUtils.getReference(request);
 
-        DIALOG_VIEW.viewRevert(request, content);
+        AdminView.DIALOG.viewRevert(request, content);
     }
 
     /**

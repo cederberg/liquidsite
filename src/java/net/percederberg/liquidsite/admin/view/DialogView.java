@@ -19,11 +19,13 @@
  * Copyright (c) 2003 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package net.percederberg.liquidsite.admin.view;
 
 import java.util.Date;
 
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.admin.AdminUtils;
+import net.percederberg.liquidsite.admin.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentSecurityException;
@@ -36,7 +38,7 @@ import net.percederberg.liquidsite.content.Domain;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class DialogView extends AdminView {
+public class DialogView extends AdminView {
 
     /**
      * Creates a new dialog view helper.

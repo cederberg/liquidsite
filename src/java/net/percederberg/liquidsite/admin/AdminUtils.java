@@ -40,7 +40,7 @@ import net.percederberg.liquidsite.content.User;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class AdminUtils {
+public class AdminUtils {
 
     /**
      * The date format used by this class.
@@ -55,7 +55,9 @@ class AdminUtils {
      * 
      * @throws ContentException if no content manager exists
      */
-    static ContentManager getContentManager() throws ContentException {
+    public static ContentManager getContentManager() 
+        throws ContentException {
+
         return ContentManager.getInstance();
     }
 
@@ -66,7 +68,7 @@ class AdminUtils {
      * 
      * @return a printable string with the date
      */
-    static String formatDate(Date date) {
+    public static String formatDate(Date date) {
         if (date == null) {
             return "";
         } else {
@@ -84,7 +86,7 @@ class AdminUtils {
      * @throws ParseException if the string didn't contain a valid 
      *             date
      */
-    static Date parseDate(String str) throws ParseException {
+    public static Date parseDate(String str) throws ParseException {
         Date  date = DATE_FORMAT.parse(str);
         
         if (str.equals(formatDate(date))) {
@@ -103,7 +105,7 @@ class AdminUtils {
      * @return the category name, or 
      *         null if unknown
      */
-    static String getCategory(Object obj) {
+    public static String getCategory(Object obj) {
         if (obj instanceof Domain) {
             return "domain";
         } else if (obj instanceof Content) {
@@ -141,7 +143,7 @@ class AdminUtils {
      * @throws ContentSecurityException if the user didn't have the 
      *             required permissions 
      */
-    static Object getReference(Request request) 
+    public static Object getReference(Request request) 
         throws ContentException, ContentSecurityException {
 
         User     user = request.getUser();
@@ -177,7 +179,7 @@ class AdminUtils {
      * @param request        the request
      * @param obj            the domain or content object
      */
-    static void setReference(Request request, Object obj) {
+    public static void setReference(Request request, Object obj) {
         Content  content;
 
         if (obj instanceof Domain) {

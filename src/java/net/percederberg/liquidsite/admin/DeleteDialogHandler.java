@@ -58,7 +58,9 @@ class DeleteDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        DIALOG_VIEW.viewDelete(request, AdminUtils.getReference(request));
+        Object  ref = AdminUtils.getReference(request);
+
+        AdminView.DIALOG.viewDelete(request, ref);
     }
 
     /**
@@ -111,7 +113,7 @@ class DeleteDialogHandler extends AdminDialogHandler {
                     "currently being used");
             }
             domain.delete(request.getUser());
-            DIALOG_VIEW.setSiteTreeFocus(request, null);
+            AdminView.BASE.setSiteTreeFocus(request, null);
         } else if (ref instanceof Content) {
             content = (Content) ref;
             if (content.equals(request.getSite())) {
@@ -121,9 +123,9 @@ class DeleteDialogHandler extends AdminDialogHandler {
             content.delete(request.getUser());
             parent = content.getParent();
             if (parent == null) {
-                DIALOG_VIEW.setSiteTreeFocus(request, content.getDomain());
+                AdminView.BASE.setSiteTreeFocus(request, content.getDomain());
             } else {
-                DIALOG_VIEW.setSiteTreeFocus(request, parent);
+                AdminView.BASE.setSiteTreeFocus(request, parent);
             }
         }
         return 0;

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import net.percederberg.liquidsite.Request;
+import net.percederberg.liquidsite.admin.view.DialogView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -46,7 +47,17 @@ import net.percederberg.liquidsite.content.User;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class AdminView {
+public class AdminView {
+
+    /**
+     * The dialog view helper.
+     */
+    public static final AdminView BASE = new AdminView();
+
+    /**
+     * The dialog view helper.
+     */
+    public static final DialogView DIALOG = new DialogView();
 
     /**
      * The admin script helper.
