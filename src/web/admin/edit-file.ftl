@@ -1,3 +1,4 @@
+<#assign isadd = liquidsite.page.path?ends_with("add-site.html")>
 <#assign onload = "initialize()">
 <#include "header.ftl">
 
@@ -15,12 +16,22 @@
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">
+<#if isadd>
             <img src="images/icons/48x48/edit.png" alt="Add" />
+<#else>
+            <img src="images/icons/48x48/edit.png" alt="Edit" />
+</#if>
           </td>
           <td colspan="2">
+<#if isadd>
             <h2>Enter File Details (Step 2 of 2)</h2>
 
             <p>Enter the details of the file you wish to add.</p>
+<#else>
+            <h2>Enter File Details (Step 1 of 1)</h2>
+
+            <p>Edit the details of the file.</p>
+</#if>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
 </#if>
@@ -47,7 +58,12 @@
             <p>The file content. This is the local file that contains
             the data. The file will be uploaded and inserted into the 
             system. Note that the file extension on the uploaded file
-            determines the file type seen by the user.</p>
+            determines the file type seen by the user.
+<#if !isadd>
+            If you leave this field blank, the previous file data will
+            be reused.
+</#if>
+            </p>
           </td>
         </tr>
         <tr>

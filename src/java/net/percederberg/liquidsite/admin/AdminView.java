@@ -31,6 +31,7 @@ import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
+import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
@@ -407,20 +408,6 @@ class AdminView {
     }
 
     /**
-     * Shows the add file page.
-     * 
-     * @param request        the request object
-     * @param parent         the parent object
-     */
-    public void pageAddFile(Request request, Object parent) {
-        setRequestReference(request, parent);
-        request.setAttribute("name", request.getParameter("name", ""));
-        request.setAttribute("comment", 
-                             request.getParameter("comment", "Created"));
-        request.sendTemplate("admin/add-file.ftl");
-    }
-    
-    /**
      * Shows the edit site page.
      * 
      * @param request        the request object
@@ -457,6 +444,30 @@ class AdminView {
         request.sendTemplate("admin/edit-site.ftl");
     }
 
+    /**
+     * Shows the add or edit file page.
+     * 
+     * @param request        the request object
+     * @param reference      the reference object (parent or file)
+     */
+    public void pageEditFile(Request request, Object reference) {
+        String  name;
+        String  comment;
+
+        setRequestReference(request, reference);
+        if (reference instanceof FileContent) {
+            name = ((FileContent) reference).getName();
+            comment = "";
+        } else {
+            name = "";
+            comment = "Created";
+        }
+        request.setAttribute("name", request.getParameter("name", name));
+        request.setAttribute("comment", 
+                             request.getParameter("comment", comment));
+        request.sendTemplate("admin/edit-file.ftl");
+    }
+    
     /**
      * Shows the load site object JavaScript code.
      * 
