@@ -1,0 +1,225 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1>Sections</h1>
+
+    <h2>Hierachical Web Content</h2>
+
+    <p>In order to ripe the full benefits of Liquid Site, the web
+    content should be separated from the web design to the largest
+    extent possible. Such a separation makes it much easier to update
+    and publish new content, while also leaving the door open for
+    later radical changes to the site design. Having the web content
+    structured and categorized also makes it much easier to search,
+    process and filter before presenting on a web page.</p>
+
+    <p>The fundamental building block for structuring web content in
+    Liquid Site in the <ref file="terminology.xml"
+    id="section">Section</ref>. A section can contain any number of
+    objects, normally <ref file="terminology.xml"
+    id="document">Documents</ref> or other sections, grouping objects
+    into groups and subgroups. By using sections a hierarchical
+    structure of web content can be created, allowing for easier
+    navigation among the information. See the figure below for an
+    example of a hierarchy of sections.</p>
+
+    <figure>
+      <caption>A hierarchy of sections. By splitting the web content
+      into meaningful hierarchies it becomes easier to manage.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="section-tree.png"
+                  description="A hierarchy of sections" />
+        </p>
+      </content>
+    </figure>
+
+    <p>An important limitation with sections when compared to some
+    systems of categorization is that each object may only belong to a
+    single section. Normally this is not a problem and may also be
+    alleviated by other means, such as keywords or by placing such
+    objects in a common parent section instead.</p>
+
+    <h2>Document Properties</h2>
+
+    <p>Apart from grouping objects, sections also define the content
+    contained within them. Each section may hold a list of <ref
+    file="terminology.xml" id="document_property">Document
+    Property</ref> definitions, i.e. a list of named fields that
+    documents inside the section can contain. Each document property
+    defines the property identifier, name, data type and description,
+    all used when editing or creating a document. See the figure below
+    for an example of how document properties are defined in a
+    section.</p>
+
+    <figure>
+      <caption>Defining document properties in a section. Each
+      property has a unique identifier and is presented when editing a
+      document with a title, description and an editing control that
+      depends on the type.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="section-properties.png"
+                  description="Defining document properties in a section" />
+        </p>
+      </content>
+    </figure>
+
+    <p>A section without any document properties always inherits the
+    properties from its parent section. A common way to combine
+    section properties with a meaningful hierarchical structure is to
+    define document properties only in the top-level sections. Any
+    other sections would then inherit the properties from it's
+    respective top-level section.</p>
+
+    <p>The document properties can be ordered in any way desired. The
+    order is only used when editing documents, as the properties are
+    presented in the same order as specified in the section. The
+    property name and description are used for presenting the property
+    in the form, whereas the property type defines the type of input
+    allowed (and the control used). In the next <ref
+    file="document.xml">Documents</ref> section, the effect of the
+    document properties is explained in detail.</p>
+
+    <h2>Creating &amp; Editing Sections</h2>
+
+    <p>Sections are created and editing just like any other objects in
+    the <ref file="admin.xml">Administration Application</ref>, i.e.
+    by choosing the "<strong>Add</strong>" and "<strong>Edit</strong>"
+    buttons respectively. Both eventually lead to the same section
+    editing form, except for minor differences. In the figure below an
+    example of the section editing form is shown.</p>
+
+    <figure>
+      <caption>The section editing form. This section inherits all the
+      document properties from its parent, so none are shown
+      here.</caption>
+
+      <content>
+        <p style="illustration">
+          <object type="image"
+                  url="section-edit.png"
+                  description="The section editing form" />
+        </p>
+      </content>
+    </figure>
+
+    <p>One of the more important fields in when editing a section is
+    the <strong>Name</strong> field. It identifies the section and is
+    used inside the web pages to retrieve documents. When mapping
+    sections to a web site with a <ref file="terminology.xml"
+    id="translator">Translator</ref>, the section name will also be
+    used as a folder name inside the URLs. It is desireable to choose
+    section names that are meaningful and convey information about
+    their content, but they should also be relatively short and
+    written using only the English alphabet and numbers. As a rule of
+    thumb, top-level sections should be named with an initial Capital
+    letter, while subsections should be named with all lower-case
+    letters.</p>
+
+    <p>Other fields available when editing sections are the parent
+    section, the description, and the revision comment. By changing
+    the <strong>Parent Section</strong>, a section can be moved around
+    in the content tree. Doing so may break pages and/or URLs
+    depending on the structure so it should be used with care. The
+    section <strong>Description</strong> is available as an
+    alternative to the section name, containing a more complete
+    description of the intended section contents. Additionally a
+    revision <strong>Comment</strong> must be specified when modifying
+    a section, as for all other objects.</p>
+
+    <p>By choosing the "<strong>Save</strong>" action when editing or
+    creating a section, a work revision of the section is created.
+    That work revision can later be edited further or published.
+    Choosing "<strong>Publish</strong>" will instead save and publish
+    the section directly. Finally, the "<strong>Previous</strong>"
+    button will cancel the editing discarding any changes made.</p>
+
+    <h2>Structuring Content</h2>
+
+    <p>So how do we structure the web content into a hierarchy of
+    sections? There is no quick or easy way to do this that will suit
+    all web sites. Instead, the content of each web site must be
+    analyzed and understood before a good structure can be created. It
+    is of course possible to change the content structure at a later
+    date, but doing so might require excessive changes to already
+    published documents and pages. It is therefore a good idea to get
+    the content structure right (or almost right) from the start.</p>
+
+    <p>The fundamental part for creating a good structure is
+    understanding what types of information are published on the site.
+    This is usually more than initially imagined, including things
+    like articles, newsletters, products, events and so on. Splitting
+    into too many fine grained groups may cause confusion. Too few
+    groups makes it difficult to display the content separately on the
+    web pages. In general, each fundamental group of information
+    should correspond to a top-level section.</p>
+
+    <p>The second step is to define the document properties needed for
+    each of the fundamental groups of information. Having too many
+    properties makes it tedious to create documents and will surely
+    lead to many blank fields. Having too few properties may make
+    searching and presentation more complex. In general, it is a good
+    idea to look at a number of example documents to create the right
+    set of properties. The properties found should be assigned to the
+    corresponding top-level sections.</p>
+
+    <p>The last step involves creating the full section hierarchy,
+    depending on the type of content and the need for further
+    structure. Several things should be considered while doing this,
+    see the list below for the most common ones.</p>
+
+    <list>
+      <item>
+        <title>Semantical Meaning</title>
+        <text>If two sets of documents requires different sets of
+        properties they should correspond to different top-level
+        sections. But in some cases, two sets of documents share the
+        same set of properties but are still semantically different.
+        For example, it might be a good idea to separate articles from
+        opinion columns, although they mostly share the same
+        properties.</text>
+      </item>
+
+      <item>
+        <title>Permissions</title>
+        <text>If there are subgroups of content within a section that
+        is restricted, internal or otherwise have another set of
+        permissions, that implies that different sections should be
+        used. A practical way to do this is to create one subsection
+        under the top-level for each group of permissions required,
+        for example "Public", "Members", and "Internal".</text>
+      </item>
+
+      <item>
+        <title>Categories</title>
+        <text>If the content within one of the top-level sections can
+        be cleanly categorized into different groups, it might be a
+        good idea to add a separate section for each category. This
+        will make searching in a single category easier, but is
+        unsuitable if only a few documents ever appear in each
+        category. Add the sections as subsections under the top-level
+        and any permission sections.</text>
+      </item>
+
+      <item>
+        <title>Archiving by Date</title>
+        <text>If large amounts of content is created within some
+        section, it is probably a good idea to create subsections for
+        year and possibly also month. That way no single section will
+        become too large to be manageable in the tree. Create these
+        archiving sections at the lowest level, i.e. under any
+        top-level, permission or category sections.</text>
+      </item>
+    </list>
+
+  </body>
+</doc>

@@ -22,8 +22,8 @@
         <title><ref file="introduction.xml">What's This All
         About?</ref></title>
         <text>A little bit of history and reasoning behind Liquid
-        Site. Also outlines the major advantages to using a CMS and
-        Liquid Site in particular.</text>
+        Site. Also outlines the major advantages to using a content
+        management system (CMS) and Liquid Site in particular.</text>
       </item>
 
       <item>
@@ -50,30 +50,25 @@
     content for web sites, you can skip ahead to the next chapter.</p>
 
     <list>
-      <item>
-        <title><ref file="sites.xml">Sites &amp; Folders</ref></title>
+      <item style="draft">
+        <title><ref file="site.xml">Sites &amp; Folders</ref></title>
         <text>Explains how web sites are created, structured and
         matched to requests.</text>
       </item>
 
       <item style="draft">
-        <title><ref file="pages.xml">Pages &amp; Templates</ref></title>
+        <title><ref file="page.xml">Pages &amp; Templates</ref></title>
         <text>Details how to create web sites, pages, templates and
         other objects in the site view. This chapter also explains the
         basic request processing.</text>
       </item>
 
       <item style="draft">
-        <title><ref file="revisions.xml">Working with Revisions</ref></title>
+        <title><ref file="translator.xml">Translators</ref></title>
         <text></text>
       </item>
 
       <item style="draft">
-        <title><ref file="translators.xml">Translators</ref></title>
-        <text></text>
-      </item>
-
-      <item>
         <title><ref file="requests.xml">Form &amp; Request
         Processing</ref></title>
         <text>Detailed description of the request processing flow.</text>
@@ -89,8 +84,14 @@
     other.</p>
 
     <list>
+      <item>
+        <title><ref file="section.xml">Sections</ref></title>
+        <text>Describes how sections work and how web content is
+        structured and arranged in hierarchies.</text>
+      </item>
+
       <item style="draft">
-        <title><ref file="documents.xml">The Document Model</ref></title>
+        <title><ref file="document.xml">Documents</ref></title>
         <text></text>
       </item>
 
@@ -113,7 +114,7 @@
     publishing workflows, and how to secure web sites.</p>
 
     <list>
-      <item>
+      <item style="draft">
         <title><ref file="users.xml">Users, Groups &amp;
         Permissions</ref></title>
         <text>Details of the authentication and authorization
@@ -121,7 +122,8 @@
       </item>
 
       <item style="draft">
-        <title><ref file="publishing.xml">Publishing</ref></title>
+        <title><ref file="publishing.xml">Revisions &amp;
+        Publishing</ref></title>
         <text></text>
       </item>
 
