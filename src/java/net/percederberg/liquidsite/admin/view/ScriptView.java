@@ -204,13 +204,14 @@ public class ScriptView {
      * 
      * @param user           the current user
      * @param domain         the domain object
+     * @param view           the view name
      * 
      * @return the JavaScript for presenting an object view
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getObjectView(User user, Domain domain) 
+    public String getObjectView(User user, Domain domain, String view) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -225,7 +226,7 @@ public class ScriptView {
         str = domain.getDescription();
         buffer.append(AdminUtils.getScriptString(str));
         buffer.append(");\n");
-        buffer.append(getButtons(user, domain));
+        buffer.append(getButtons(user, domain, view));
         buffer.append(getHosts(domain));
         buffer.append(getPermissions(domain, false));
         return buffer.toString();
@@ -236,13 +237,14 @@ public class ScriptView {
      * 
      * @param user           the current user
      * @param content        the content object
+     * @param view           the view name
      * 
      * @return the JavaScript for presenting an object view
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getObjectView(User user, Content content) 
+    public String getObjectView(User user, Content content, String view) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
@@ -272,7 +274,7 @@ public class ScriptView {
         if (content instanceof ContentSite) {
             buffer.append(getSiteProperties((ContentSite) content));
         }
-        buffer.append(getButtons(user, content, status, lock));
+        buffer.append(getButtons(user, content, view, status, lock));
         buffer.append(getRevisions(content));
         buffer.append(getPermissions(content));
         return buffer.toString();
@@ -298,19 +300,22 @@ public class ScriptView {
      * 
      * @param user           the current user
      * @param domain         the domain object
+     * @param view           the view name
      * 
      * @return the JavaScript for presenting domain buttons
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getButtons(User user, Domain domain) 
+    private String getButtons(User user, Domain domain, String view) 
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
         
         if (domain.hasWriteAccess(user)) {
-            buffer.append("objectAddNewButton('add-site.html");
+            buffer.append("objectAddNewButton('add-");
+            buffer.append(view);
+            buffer.append(".html");
             buffer.append(getLinkParameters(domain));
             buffer.append("');\n");
         }
@@ -327,6 +332,7 @@ public class ScriptView {
      * 
      * @param user           the current user
      * @param content        the content object
+     * @param view           the view name
      * @param status         the content status
      * @param lock           the content lock
      * 
@@ -336,7 +342,8 @@ public class ScriptView {
      *             properly
      */
     private String getButtons(User user, 
-                              Content content, 
+                              Content content,
+                              String view, 
                               int status, 
                               Lock lock) 
         throws ContentException {
@@ -354,19 +361,27 @@ public class ScriptView {
                 if (content instanceof ContentSite 
                  && !((ContentSite) content).isAdmin()) { 
 
-                    buffer.append("objectAddNewButton('add-site.html");
+                    buffer.append("objectAddNewButton('add-");
+                    buffer.append(view);
+                    buffer.append(".html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 } else if (content instanceof ContentFolder) {
-                    buffer.append("objectAddNewButton('add-site.html");
+                    buffer.append("objectAddNewButton('add-");
+                    buffer.append(view);
+                    buffer.append(".html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 } else if (content instanceof ContentTemplate) {
-                    buffer.append("objectAddNewButton('add-site.html");
+                    buffer.append("objectAddNewButton('add-");
+                    buffer.append(view);
+                    buffer.append(".html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 }
-                buffer.append("objectAddEditButton('edit-site.html");
+                buffer.append("objectAddEditButton('edit-");
+                buffer.append(view);
+                buffer.append(".html");
                 buffer.append(getLinkParameters(content));
                 buffer.append("');\n");
             }

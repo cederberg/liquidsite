@@ -472,11 +472,11 @@ public class SiteView extends AdminView {
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = SCRIPT.getObjectView(user, (Domain) obj);
+            buffer = SCRIPT.getObjectView(user, (Domain) obj, "site");
             setSiteTreeFocus(request, obj);
         } else {
             content = (Content) obj;
-            buffer = SCRIPT.getObjectView(user, content);
+            buffer = SCRIPT.getObjectView(user, content, "site");
             setSiteTreeFocus(request, content);
         }
         request.sendData("text/javascript", buffer);

@@ -92,6 +92,38 @@ public class ContentView extends AdminView {
     }
 
     /**
+     * Shows the add object page.
+     * 
+     * @param request        the request object
+     * @param parent         the parent object
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewAddObject(Request request, Object parent) 
+        throws ContentException {
+
+        User     user = request.getUser();
+        Domain   domain;
+        Content  content;
+
+        AdminUtils.setReference(request, parent);
+        if (parent instanceof Domain) {
+            domain = (Domain) parent;
+            if (domain.hasWriteAccess(user)) {
+                request.setAttribute("enableSection", true);
+            }
+        }
+        if (parent instanceof ContentSection) {
+            content = (Content) parent;
+            if (content.hasWriteAccess(user)) {
+                request.setAttribute("enableSection", true);
+            }
+        }
+        request.sendTemplate("admin/add-object.ftl");
+    }
+
+    /**
      * Shows the load content object JavaScript code.
      * 
      * @param request        the request object
@@ -133,11 +165,11 @@ public class ContentView extends AdminView {
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = SCRIPT.getObjectView(user, (Domain) obj);
+            buffer = SCRIPT.getObjectView(user, (Domain) obj, "content");
             setContentTreeFocus(request, obj);
         } else {
             content = (Content) obj;
-            buffer = SCRIPT.getObjectView(user, content);
+            buffer = SCRIPT.getObjectView(user, content, "content");
             setContentTreeFocus(request, content);
         }
         request.sendData("text/javascript", buffer);

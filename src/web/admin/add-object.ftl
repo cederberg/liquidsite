@@ -122,6 +122,20 @@
           </td>
         </tr>
 </#if>
+<#if enableSection?exists>
+        <tr>
+          <th style="width: 7em;">
+            <input type="radio" tabindex="7"
+                   name="category" value="section" />
+            Section
+          </th>
+          <td>
+            A document section is used for grouping similar documents. 
+            The section also defines the document properties 
+            available for each document.
+          </td>
+        </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
             <button type="button" tabindex="11" onclick="previous()">
