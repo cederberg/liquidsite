@@ -357,7 +357,7 @@ public class ContentView extends AdminView {
             data.clear();
             for (i = 0; i < properties.size(); i++) {
                 property = (DocumentProperty) properties.get(i);
-                str = request.getParameter("property." + property.getId());;
+                str = request.getParameter("property." + property.getId(), "");
                 if (property.getType() == DocumentProperty.HTML_TYPE) {
                     str = AdminUtils.getScriptString(str);
                 }
