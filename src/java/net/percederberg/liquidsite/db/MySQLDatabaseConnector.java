@@ -233,7 +233,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         String           str;
         
         try {
-            query.setSql("SELECT DISTINCT user FROM mysql.user");
+            query.setSql("SELECT DISTINCT User FROM mysql.user");
             res = execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 str = res.getRow(i).getString(0);
@@ -332,22 +332,41 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     public void deleteUser(String user)
         throws DatabaseConnectionException, DatabaseException {
 
-        String         host = getDatabaseUser();
-        DatabaseQuery  query;
-        
-        host = host.substring(host.indexOf("@"));
+        DatabaseQuery    query;
+        DatabaseResults  res;
+        String           host = getDatabaseUser();
+        String           privilege;
+        int              pos;
         
         // Revoke user privileges
-        // TODO: privileges must be revoked by using SHOW PRIVILEGES
-        //       and then revoking every single statement
-        query = new DatabaseQuery();
-        query.setSql("REVOKE USAGE ON *.* FROM " + user + host);
-        execute(query);
+        host = host.substring(host.indexOf("@") + 1);
+        try {
+            query = new DatabaseQuery();
+            query.setSql("SHOW GRANTS FOR " + user + "@" + host);
+            res = execute(query);
+            for (int i = res.getRowCount() - 1; i >= 0; i--) {
+                privilege = res.getRow(i).getString(0);
+                if (privilege.startsWith("GRANT")) {
+                    privilege = privilege.substring(5);
+                    pos = privilege.indexOf("TO");
+                    if (pos > 0) {
+                        privilege = privilege.substring(0, pos) + "FROM" +
+                                    privilege.substring(pos + 2);
+                    }
+                    query = new DatabaseQuery();
+                    query.setSql("REVOKE" + privilege);
+                    execute(query);
+                }
+            }
+        } catch (DatabaseDataException e) {
+            LOG.debug("failed to read user privileges", e);
+            throw new DatabaseException("cannot determine privileges", e);
+        }
 
         // Delete user
         query = new DatabaseQuery();
-        query.setSql("DELETE FROM mysql.user WHERE user = '" + user + 
-                     "' AND host = '" + host + "'");
+        query.setSql("DELETE FROM mysql.user WHERE User = '" + user + 
+                     "' AND Host = '" + host + "'");
         execute(query);
         query = new DatabaseQuery();
         query.setSql("FLUSH PRIVILEGES");
