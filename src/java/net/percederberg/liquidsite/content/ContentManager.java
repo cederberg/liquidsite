@@ -546,6 +546,11 @@ public class ContentManager {
         }
         switch (page.getCategory()) {
         case Content.FOLDER_CATEGORY:
+            if (path.startsWith(page.getName() + "/")) {
+                return page.getName() + "/";
+            } else {
+                return "";
+            }
         case Content.FILE_CATEGORY:
             if (path.startsWith(page.getName())) {
                 return page.getName();
