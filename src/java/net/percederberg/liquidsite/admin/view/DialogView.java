@@ -149,16 +149,9 @@ public class DialogView extends AdminView {
         User       user = request.getUser();
         String     dateStr = request.getParameter("date");
         String     comment = request.getParameter("comment");
-        Content[]  revisions;
-        Date       date;
 
         if (dateStr == null) {
-            revisions = content.getAllRevisions();
-            date = revisions[0].getOnlineDate();
-            if (date == null || date.after(new Date())) {
-                date = new Date();
-            }
-            dateStr = AdminUtils.formatDate(user, date);
+            dateStr = AdminUtils.formatDate(user, new Date());
         }
         if (comment == null) {
             if (content.getRevisionNumber() == 0) {

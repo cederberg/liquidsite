@@ -505,6 +505,26 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
+     * Returns the highest content object revision number available.
+     * Note that this may not be the most recent revision, as a
+     * working revision (zero) may exist.
+     *
+     * @return the highest revision number in the database, or
+     *         -1 if no revisions are in the database
+     */
+    public int getMaxRevisionNumber() throws ContentException {
+        Content[]  revisions = getAllRevisions();
+        int        max = -1;
+
+        for (int i = 0; i < revisions.length; i++) {
+            if (max < revisions[i].getRevisionNumber()) {
+                max = revisions[i].getRevisionNumber();
+            }
+        }
+        return max;
+    }
+
+    /**
      * Returns the specified content object revision.
      *
      * @param revision       the content revision

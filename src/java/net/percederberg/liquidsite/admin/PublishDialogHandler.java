@@ -177,30 +177,23 @@ class PublishDialogHandler extends AdminDialogHandler {
         throws ContentException, ContentSecurityException {
 
         ContentManager  manager = AdminUtils.getContentManager();
-        Content[]       list;
-        int             max = content.getRevisionNumber();
+        Content[]       children;
 
-        if (content.getRevisionNumber() == 0) {
-            list = content.getAllRevisions();
-            for (int i = 0; i < list.length; i++) {
-                if (max < list[i].getRevisionNumber()) {
-                    max = list[i].getRevisionNumber();
-                }
+        if (!content.isOnline() || content.getRevisionNumber() == 0) {
+            if (content.getRevisionNumber() == 0) {
+                content.setRevisionNumber(content.getMaxRevisionNumber() + 1);
+            } else {
+                content.setRevisionNumber(content.getRevisionNumber() + 1);
+                content.setComment(comment);
             }
-            content.setRevisionNumber(max + 1);
-        } else {
-            content.setRevisionNumber(content.getRevisionNumber() + 1);
-            content.setComment(comment);
+            content.setOnlineDate(date);
+            content.setOfflineDate(null);
+            content.save(user);
         }
-        content.setOnlineDate(date);
-        content.setOfflineDate(null);
-        content.save(user);
         if (recursive) {
-            list = manager.getContentChildren(user, content);
-            for (int i = 0; i < list.length; i++) {
-                if (!list[i].isOnline() || list[i].getRevisionNumber() == 0) {
-                    publish(user, list[i], date, comment, recursive);
-                }
+            children = manager.getContentChildren(user, content);
+            for (int i = 0; i < children.length; i++) {
+                publish(user, children[i], date, comment, recursive);
             }
         }
     }
