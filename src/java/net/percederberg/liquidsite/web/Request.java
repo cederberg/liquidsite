@@ -146,6 +146,15 @@ public class Request {
     }
 
     /**
+     * Returns a string representation of this request.
+     *
+     * @return a string representation of this request
+     */
+    public String toString() {
+        return getUrl();
+    }
+
+    /**
      * Checks if this request contains a response.
      *
      * @return true if the request contains a response, or
@@ -424,15 +433,6 @@ public class Request {
             session = new RequestSession(request.getSession());
         }
         return session;
-    }
-
-    /**
-     * Returns a string representation of this request.
-     *
-     * @return a string representation of this request
-     */
-    public String toString() {
-        return getPath();
     }
 
     /**
