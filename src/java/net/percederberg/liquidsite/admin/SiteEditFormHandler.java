@@ -22,6 +22,8 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.Request.FileParameter;
@@ -30,6 +32,7 @@ import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.form.FormValidationException;
 
 /**
@@ -71,6 +74,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             SITE_VIEW.pageEditFolder(request, null, (ContentFolder) ref);
         } else if (ref instanceof ContentFile) {
             SITE_VIEW.pageEditFile(request, (ContentFile) ref);
+        } else if (ref instanceof ContentTemplate) {
+            SITE_VIEW.pageEditTemplate(request, null, (ContentTemplate) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -105,6 +110,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             VALIDATOR.validateFolder(request);
         } else if (ref instanceof ContentFile) {
             VALIDATOR.validateFile(request);
+        } else if (ref instanceof ContentTemplate) {
+            VALIDATOR.validateTemplate(request);
         } else {
             message = "Cannot edit this object";
             throw new FormValidationException("category", message);
@@ -144,6 +151,8 @@ class SiteEditFormHandler extends AdminFormHandler {
             handleEditFolder(request, (ContentFolder) ref);
         } else if (ref instanceof ContentFile) {
             handleEditFile(request, (ContentFile) ref);
+        } else if (ref instanceof ContentTemplate) {
+            handleEditTemplate(request, (ContentTemplate) ref);
         } else {
             throw new ContentException("cannot edit this object");
         }
@@ -223,5 +232,45 @@ class SiteEditFormHandler extends AdminFormHandler {
         } catch (IOException e) {
             throw new ContentException(e.getMessage());
         }
+    }
+
+    /**
+     * Handles the edit template form.
+     * 
+     * @param request        the request object
+     * @param template       the template content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleEditTemplate(Request request, 
+                                    ContentTemplate template) 
+        throws ContentException, ContentSecurityException {
+
+        Map              params = request.getAllParameters();
+        Iterator         iter = params.keySet().iterator();
+        String           name;
+        String           value;
+
+        template.setRevisionNumber(0);
+        template.setName(request.getParameter("name"));
+        template.setComment(request.getParameter("comment"));
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("element.")) {
+                value = params.get(name).toString();
+                template.setElement(name.substring(8), value);
+            }
+        }
+        iter = template.getLocalElementNames().iterator();
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (!params.containsKey("element." + name)) {
+                template.setElement(name, null);
+            }
+        }
+        template.save(request.getUser());
     }
 }
