@@ -45,7 +45,7 @@
             User&nbsp;Name:
           </th>
           <td class="field">
-            <select name="user1" onchange="initialize()">
+            <select name="user1" tabindex="1" onchange="initialize()">
 <#list userNames as name>
   <#if name = user>
     <#assign options = " selected=\"selected\"">
@@ -64,7 +64,8 @@
               <option value="" ${options}>Create New --&gt;</option>
 </#if>
             </select>
-            <input type="text" name="user2" value="${user}" size="20" />
+            <input type="text" tabindex="2" size="20"
+                   name="user2" value="${user}" />
             <p>This is the database user name to use for accessing 
             the Liquid Site database.</p>
           </td>
@@ -74,8 +75,8 @@
             Password:
           </th>
           <td class="field">
-            <input type="password" name="password1" 
-                   value="${password}" size="12" />
+            <input type="password" tabindex="3" size="12"
+                   name="password1" value="${password}" />
             <p>The password for the database user above.</p>
           </td>
         </tr>
@@ -84,19 +85,19 @@
             Verify&nbsp;Password:
           </th>
           <td class="field">
-            <input type="password" name="password2" 
-                   value="${password}" size="12" />
+            <input type="password" tabindex="4" size="12"
+                   name="password2" value="${password}" />
             <p>Verify the password for the database user. This field 
             is only used when creating new users.</p>
           </td>
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="6" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="5">
               Next
               <img src="images/icons/24x24/right_arrow.png" />
             </button>

@@ -29,7 +29,8 @@
             Database&nbsp;Host:
           </th>
           <td class="field">
-            <input type="text" name="host" value="${host}" size="20" />
+            <input type="text" tabindex="1" size="20"
+                   name="host" value="${host}" />
             <p>This is the machine name or IP address of the database
             to use for the Liquid Site repository.</p>
           </td>
@@ -39,7 +40,8 @@
             User&nbsp;Name:
           </th>
           <td class="field">
-            <input type="text" name="user" value="${user}" size="12" />
+            <input type="text" tabindex="2" size="12" 
+                   name="user" value="${user}" />
             <p>This database user is ONLY used during the 
             installation. If you wish to create a new database, use 
             a user with full administration privileges here. The 
@@ -52,8 +54,8 @@
             Password:
           </th>
           <td class="field">
-            <input type="password" name="password" 
-                   value="${password}" size="12" />
+            <input type="password" tabindex="3" size="12" 
+                   name="password" value="${password}" />
             <p>The password for the database user above.</p>
           </td>
         </tr>
@@ -63,7 +65,7 @@
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="4">
               Next
               <img src="images/icons/24x24/right_arrow.png" />
             </button>

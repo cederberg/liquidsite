@@ -80,11 +80,11 @@
         </tr>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="2" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit">
+            <button type="submit" tabindex="1">
               <img src="images/icons/24x24/save.png" />
               Install
             </button>

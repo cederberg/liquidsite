@@ -53,8 +53,8 @@
   </#if>
               <tr ${style}>
                 <td>
-                  <input type="radio" name="database1" ${options}
-                         value="${info.name}" /> 
+                  <input type="radio" tabindex="1" ${options}
+                         name="database1" value="${info.name}" /> 
                   ${info.name}
                 </td>
                 <td>
@@ -80,9 +80,10 @@
 </#if>
               <tr ${style}>
                 <td>
-                  <input type="radio" name="database1" value="" ${options} />
-                  <input type="input" name="database2" value="${fieldvalue}"
-                         size="15" ${options} />
+                  <input type="radio" tabindex="1" 
+                         name="database1" value="" ${options} />
+                  <input type="input" tabindex="2" size="15" ${options}
+                         name="database2" value="${fieldvalue}" />
                 </td>
                 <td colspan="2">
                   Creates a new database with the specified name.
@@ -98,11 +99,11 @@
 </#if>
         <tr>
           <td class="buttons">
-            <button type="button" onclick="previous()">
+            <button type="button" tabindex="4" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button type="submit" ${options}>
+            <button type="submit" tabindex="3" ${options}>
               Next
               <img src="images/icons/24x24/right_arrow.png" />
             </button>
