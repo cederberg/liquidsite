@@ -19,7 +19,7 @@
  * Copyright (c) 2003 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package net.percederberg.liquidsite.form;
 
 /**
  * A form validation exception. This exception is thrown when an 

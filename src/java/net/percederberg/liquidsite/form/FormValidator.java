@@ -19,7 +19,7 @@
  * Copyright (c) 2003 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.admin;
+package net.percederberg.liquidsite.form;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,7 +34,7 @@ import net.percederberg.liquidsite.Request;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class FormValidator {
+public class FormValidator {
 
     /**
      * The field constraints.

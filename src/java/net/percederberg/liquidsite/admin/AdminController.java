@@ -41,6 +41,7 @@ import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.User;
+import net.percederberg.liquidsite.form.FormException;
 
 /**
  * A controller for requests to the administration site(s).
