@@ -100,46 +100,58 @@
   </xsl:template>
 
   <xsl:template match="h1">
-    <h2><xsl:apply-templates /></h2>
+    <h2><xsl:apply-templates select="@*|*|text()" /></h2>
   </xsl:template>
 
   <xsl:template match="p">
-    <p><xsl:apply-templates /></p>
+    <p><xsl:apply-templates select="@*|*|text()" /></p>
   </xsl:template>
 
   <xsl:template match="pre">
-    <pre><xsl:apply-templates /></pre>
+    <pre><xsl:apply-templates select="@*|*|text()" /></pre>
   </xsl:template>
 
   <xsl:template match="list">
     <ul>
-      <xsl:apply-templates />
+      <xsl:apply-templates select="@*|*|text()" />
     </ul>
   </xsl:template>
 
   <xsl:template match="item">
-    <li><xsl:apply-templates /></li>
+    <li><xsl:apply-templates select="@*|*|text()" /></li>
   </xsl:template>
 
   <xsl:template match="item/title">
-    <strong><xsl:apply-templates /></strong>
+    <strong><xsl:apply-templates select="@*|*|text()" /></strong>
     <br/>
   </xsl:template>
 
   <xsl:template match="item/text">
-    <xsl:apply-templates />
+    <span><xsl:apply-templates select="@*|*|text()" /></span>
   </xsl:template>
 
   <xsl:template match="code">
-    <code><xsl:apply-templates /></code>
+    <code><xsl:apply-templates select="@*|*|text()" /></code>
   </xsl:template>
   
   <xsl:template match="ref">
     <xsl:choose>
-      <xsl:when test="@url != ''">
+      <xsl:when test="@id != '' and @file != ''">
         <a>
           <xsl:attribute name="href">
-            <xsl:value-of select="@url" />
+            <xsl:value-of select="substring-before(@file,'.')" />
+            <xsl:text>.html</xsl:text>
+            <xsl:text>#</xsl:text>
+            <xsl:value-of select="@id" />
+          </xsl:attribute>
+          <xsl:apply-templates />
+        </a>
+      </xsl:when>
+      <xsl:when test="@id != ''">
+        <a>
+          <xsl:attribute name="href">
+            <xsl:text>#</xsl:text>
+            <xsl:value-of select="@id" />
           </xsl:attribute>
           <xsl:apply-templates />
         </a>
@@ -153,8 +165,16 @@
           <xsl:apply-templates />
         </a>
       </xsl:when>
+      <xsl:when test="@url != ''">
+        <a>
+          <xsl:attribute name="href">
+            <xsl:value-of select="@url" />
+          </xsl:attribute>
+          <xsl:apply-templates />
+        </a>
+      </xsl:when>
       <xsl:otherwise>
-        <em><xsl:apply-templates /></em>
+        <em><xsl:apply-templates select="@*|*|text()" /></em>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -187,6 +207,21 @@
       </p>
       &newline;&indent;&indent;
     </div>
+  </xsl:template>
+
+  <xsl:template match="@id">
+    <xsl:attribute name="id">
+      <xsl:value-of select="." />
+    </xsl:attribute>
+  </xsl:template>
+
+  <xsl:template match="@style">
+    <xsl:attribute name="class">
+      <xsl:value-of select="." />
+    </xsl:attribute>
+  </xsl:template>
+
+  <xsl:template match="@*">
   </xsl:template>
 
 </xsl:stylesheet>
