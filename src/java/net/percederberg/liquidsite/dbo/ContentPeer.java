@@ -184,6 +184,7 @@ public class ContentPeer extends AbstractPeer {
      * number zero (0) as the highest one.
      * 
      * @param domain         the domain name
+     * @param parent         the parent content id
      * @param category       the category
      * @param maxIsZero      the revision zero is max flag
      * @param con            the database connection to use
@@ -194,6 +195,7 @@ public class ContentPeer extends AbstractPeer {
      *             accessed properly
      */
     public static ArrayList doSelectByCategory(String domain,
+                                               int parent,
                                                int category,
                                                boolean maxIsZero,
                                                DatabaseConnection con)
@@ -205,6 +207,7 @@ public class ContentPeer extends AbstractPeer {
         ContentData      data;
         
         query.addParameter(domain);
+        query.addParameter(parent);
         query.addParameter(category);
         res = PEER.execute("reading content list", query, con);
         try {

@@ -87,6 +87,7 @@ public class ContentSite extends Content {
 
         try {
             list = ContentPeer.doSelectByCategory(domain.getName(),
+                                                  0,
                                                   Content.SITE_CATEGORY,
                                                   manager.isAdmin(),
                                                   con);
