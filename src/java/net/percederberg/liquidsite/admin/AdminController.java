@@ -51,6 +51,11 @@ public class AdminController extends Controller {
     private static final Log LOG = new Log(AdminController.class);
 
     /**
+     * The admin view helper.
+     */
+    private AdminView view = new AdminView();
+
+    /**
      * The admin script helper.
      */
     private AdminScript script = new AdminScript();
@@ -290,13 +295,13 @@ public class AdminController extends Controller {
 
         if (type.equals("domain")) {
             if (request.getParameter("confirmed") == null) {
-                displayDialogDeleteDomain(request);
+                view.dialogDeleteDomain(request);
             } else {
                 processDeleteDomain(request);
             }
         } else if (type.equals("site")) {
             if (request.getParameter("confirmed") == null) {
-                displayDialogDeleteSite(request);
+                view.dialogDeleteSite(request);
             } else {
                 processDeleteContent(request);
             }
@@ -318,17 +323,17 @@ public class AdminController extends Controller {
             domain = getActiveDomain(request);
             domain.delete(request.getUser());
             setActiveDomain(request, null);
-            displayDialogClose(request);
+            view.dialogClose(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             error = "Failed to write to database, " + e.getMessage();
             request.setAttribute("error", error);
-            displayDialogError(request);
+            view.dialogError(request);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
             error = "You don't have permission for removing domain";
             request.setAttribute("error", error);
-            displayDialogError(request);
+            view.dialogError(request);
         }
     }
 
@@ -347,17 +352,17 @@ public class AdminController extends Controller {
             content = getActiveContent(request);
             content.delete(request.getUser());
             setActiveContent(request, content.getParent());
-            displayDialogClose(request);
+            view.dialogClose(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             error = "Failed to write to database, " + e.getMessage();
             request.setAttribute("error", error);
-            displayDialogError(request);
+            view.dialogError(request);
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
             error = "You don't have permission for removing this object";
             request.setAttribute("error", error);
-            displayDialogError(request);
+            view.dialogError(request);
         }
     }
 
@@ -601,42 +606,6 @@ public class AdminController extends Controller {
         request.sendTemplate("admin/add-site.ftl");
     }
     
-    /**
-     * Displays the delete domain confirmation dialog.
-     * 
-     * @param request        the request object
-     */
-    private void displayDialogDeleteDomain(Request request) {
-        request.sendTemplate("admin/dialog/delete-domain.ftl");
-    }
-
-    /**
-     * Displays the delete site confirmation dialog.
-     * 
-     * @param request        the request object
-     */
-    private void displayDialogDeleteSite(Request request) {
-        request.sendTemplate("admin/dialog/delete-site.ftl");
-    }
-
-    /**
-     * Displays the automatic close dialog.
-     * 
-     * @param request        the request object
-     */
-    private void displayDialogClose(Request request) {
-        request.sendTemplate("admin/dialog/close.ftl");
-    }
-
-    /**
-     * Displays the error message dialog.
-     * 
-     * @param request        the request object
-     */
-    private void displayDialogError(Request request) {
-        request.sendTemplate("admin/dialog/error.ftl");
-    }
-
     /**
      * Returns the active domain object. The active object is the 
      * one present in the session attributes "site.view.type" and
