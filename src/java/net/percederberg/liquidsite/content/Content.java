@@ -63,6 +63,36 @@ public abstract class Content extends PersistentObject {
     private ArrayList attributesAdded = new ArrayList();
 
     /**
+     * Returns an array of content object revisions with the 
+     * specified identifier.
+     * 
+     * @param id             the content identifier
+     * 
+     * @return an array of the content object revisions found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    protected static Content[] findById(int id) throws ContentException {
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Content[]           res;
+
+        try {
+            list = ContentPeer.doSelectById(id, con);
+            res = new Content[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = createContent((ContentData) list.get(i), false, con);
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
+    /**
      * Returns the content object with the specified identifier and 
      * highest revision.
      * 
@@ -74,7 +104,9 @@ public abstract class Content extends PersistentObject {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected static Content findById(int id) throws ContentException {
+    protected static Content findByMaxRevision(int id) 
+        throws ContentException {
+
         DatabaseConnection  con = getDatabaseConnection();
         ContentData         data;
 
@@ -269,7 +301,7 @@ public abstract class Content extends PersistentObject {
      */
     public boolean equals(Content obj) {
         return getId() == obj.getId()
-            && getRevision() == obj.getRevision();
+            && getRevisionNumber() == obj.getRevisionNumber();
     }
 
     /**
@@ -330,11 +362,11 @@ public abstract class Content extends PersistentObject {
     }
 
     /**
-     * Returns the content revision.
+     * Returns the content revision number.
      * 
-     * @return the content revision
+     * @return the content revision number
      */
-    public int getRevision() {
+    public int getRevisionNumber() {
         return data.getInt(ContentData.REVISION);
     }
 
@@ -557,7 +589,7 @@ public abstract class Content extends PersistentObject {
             attr = new AttributeData();
             attr.setString(AttributeData.DOMAIN, getDomainName());
             attr.setInt(AttributeData.CONTENT, getId());
-            attr.setInt(AttributeData.REVISION, getRevision());
+            attr.setInt(AttributeData.REVISION, getRevisionNumber());
             attr.setInt(AttributeData.CATEGORY, getCategory());
             attr.setString(AttributeData.NAME, name);
             attributes.put(name, attr);
@@ -565,6 +597,33 @@ public abstract class Content extends PersistentObject {
         }
         attr.setString(AttributeData.DATA, value);
         attr.setBoolean(AttributeData.SEARCHABLE, searchable);
+    }
+
+    /**
+     * Returns the specified content object revision.
+     * 
+     * @param revision       the content revision
+     * 
+     * @return the content object revision found, or
+     *         null if no matching content existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Content getRevision(int revision) throws ContentException {
+        return findByRevision(getId(), revision);
+    }
+
+    /**
+     * Returns an array of all content object revisions.
+     * 
+     * @return an array of the content object revisions found
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    public Content[] getAllRevisions() throws ContentException {
+        return findById(getId());
     }
 
     /**

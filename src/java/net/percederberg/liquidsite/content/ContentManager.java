@@ -272,7 +272,7 @@ public class ContentManager {
      *             properly
      */
     Content getContent(int id) throws ContentException {
-        return Content.findById(id);
+        return Content.findByMaxRevision(id);
     }
     
     /**
