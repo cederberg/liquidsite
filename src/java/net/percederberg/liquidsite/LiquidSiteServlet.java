@@ -320,9 +320,17 @@ public class LiquidSiteServlet extends HttpServlet
 
         // Create request object
         if (contentType != null && contentType.startsWith("multipart")) {
-            r = new MultiPartRequest(request,
-                                     response,
-                                     getConfig());
+            try {
+                r = new MultiPartRequest(request,
+                                         response,
+                                         getConfig());
+            } catch (ServletException e) {
+                LOG.warning("parse error on multi-part request", e);
+                response.sendError(
+                    HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE,
+                    e.getMessage());
+                return;
+            }
         } else {
             r = new Request(request, response);
         }
@@ -344,6 +352,9 @@ public class LiquidSiteServlet extends HttpServlet
             LOG.info("Erroneous request: " + r + ", Message: " +
                      e.getMessage());
             response.sendError(e.getCode(), e.getMessage());
+        } catch (IOException e) {
+            LOG.info("IO error when processing request: " + r +
+                     ", Message: " + e.getMessage());
         }
         r.dispose();
     }
