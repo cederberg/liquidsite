@@ -54,7 +54,8 @@ public class FormHandlingException extends Exception {
      * @param cause          the root cause to the error
      */
     public FormHandlingException(Exception cause) {
-        this("error processing form", cause);
+        super(cause.getMessage());
+        this.rootCause = cause;
     }
     
     /**

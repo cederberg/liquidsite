@@ -200,14 +200,17 @@ class AdminView {
     }
 
     /**
-     * Shows the error message page.
+     * Shows the error message page. When the user presses the 
+     * confirmation button on the error page, the browser will be
+     * redirected to the specified page.
      * 
      * @param request        the request object
      * @param message        the error message
+     * @param page           the redirect page
      */
-    public void pageError(Request request, String message) {
+    public void pageError(Request request, String message, String page) {
         request.setAttribute("error", message);
-        request.setAttribute("page", "index.html");
+        request.setAttribute("page", page);
         request.sendTemplate("admin/error.ftl");
     }
 
@@ -218,7 +221,10 @@ class AdminView {
      * @param e              the content database error
      */
     public void pageError(Request request, ContentException e) {
-        pageError(request, "Database access error, " + e.getMessage());
+        // TODO: remove this method
+        pageError(request, 
+                  "Database access error, " + e.getMessage(), 
+                  "index.html");
     }
 
     /**
@@ -228,7 +234,10 @@ class AdminView {
      * @param e              the content security error
      */
     public void pageError(Request request, ContentSecurityException e) {
-        pageError(request, "Security violation, " + e.getMessage());
+        // TODO: remove this method
+        pageError(request, 
+                  "Security violation, " + e.getMessage(), 
+                  "index.html");
     }
 
     /**

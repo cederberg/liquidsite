@@ -23,6 +23,7 @@ package net.percederberg.liquidsite.admin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
 import net.percederberg.liquidsite.Controller;
@@ -69,14 +70,9 @@ public class AdminController extends Controller {
     private AdminValidator validator = new AdminValidator();
 
     /**
-     * The temporary site add handler.
+     * The admin form handlers (workflows).
      */
-    private SiteAddFormHandler siteAdd = new SiteAddFormHandler();
-
-    /**
-     * The temporary site edit handler.
-     */
-    private SiteEditFormHandler siteEdit = new SiteEditFormHandler();
+    private ArrayList workflows = new ArrayList();
 
     /**
      * Creates a new administration controller. 
@@ -85,6 +81,8 @@ public class AdminController extends Controller {
      */
     public AdminController(Application app) {
         super(app);
+        workflows.add(new SiteAddFormHandler());
+        workflows.add(new SiteEditFormHandler());
     }
 
     /**
@@ -137,20 +135,6 @@ public class AdminController extends Controller {
             processLogout(request);
         } else if (path.equals("edit-home.html")) {
             processEditUser(request);
-        } else if (path.equals("add-site.html")) {
-            try {
-                siteAdd.process(request);
-            } catch (FormHandlingException e) {
-                // TODO: redirect to siteAdd.getStartPage()
-                view.pageError(request, e.getMessage());
-            }
-        } else if (path.equals("edit-site.html")) {
-            try {
-                siteEdit.process(request);
-            } catch (FormHandlingException e) {
-                // TODO: redirect to siteEdit.getStartPage()
-                view.pageError(request, e.getMessage());
-            }
         } else if (path.equals("delete-site.html")) {
             processDeleteObject(request);
         } else if (path.equals("publish-site.html")) {
@@ -167,6 +151,8 @@ public class AdminController extends Controller {
             processLoadSite(request);
         } else if (path.equals("opensite.js")) {
             processOpenSite(request);
+        } else {
+            processWorkflow(request, path);
         }
     }
 
@@ -202,6 +188,31 @@ public class AdminController extends Controller {
     private void processLogout(Request request) {
         request.setUser(null);
         request.sendRedirect("index.html");
+    }
+
+    /**
+     * Processes a form workflow request. This method will check the
+     * specified page for a matching workflow. If no workflow is 
+     * found, no processing takes place.
+     * 
+     * @param request        the request object
+     * @param page           the request page
+     */
+    private void processWorkflow(Request request, String page) {
+        AdminFormHandler  formHandler;
+        
+        for (int i = 0; i < workflows.size(); i++) {
+            formHandler = (AdminFormHandler) workflows.get(i);
+            if (formHandler.getFormPage().equals(page)) {
+                try {
+                    formHandler.process(request);
+                } catch (FormHandlingException e) {
+                    page = formHandler.getStartPage();
+                    view.pageError(request, e.getMessage(), page);
+                }
+                return;
+            }
+        }
     }
 
     /**
@@ -646,7 +657,9 @@ public class AdminController extends Controller {
             if (content instanceof ContentFile) {
                 request.sendFile(((ContentFile) content).getFile());
             } else {
-                view.pageError(request, "Cannot preview this object");
+                view.pageError(request, 
+                               "Cannot preview this object", 
+                               "site.html");
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
