@@ -246,8 +246,6 @@ public class ContentView extends AdminView {
         ArrayList         properties = new ArrayList();
         HashMap           data = new HashMap();
         DocumentProperty  property;
-        Iterator          iter;
-        String            param;
         String            str;
         int               i;
 
@@ -281,7 +279,11 @@ public class ContentView extends AdminView {
             properties = findSectionProperties(reference);
             for (i = 0; i < properties.size(); i++) {
                 property = (DocumentProperty) properties.get(i);
-                data.put(property.getId(), "");
+                str = "";
+                if (property.getType() == DocumentProperty.HTML_TYPE) {
+                    str = AdminUtils.getScriptString(str);
+                }
+                data.put(property.getId(), str);
             }
             comment = "Created";
         }
@@ -297,13 +299,13 @@ public class ContentView extends AdminView {
             }
             comment = request.getParameter("comment", "");
             data.clear();
-            iter = request.getAllParameters().keySet().iterator();
-            while (iter.hasNext()) {
-                param = iter.next().toString();
-                if (param.startsWith("property.")) {
-                    data.put(param.substring(9), 
-                             request.getParameter(param));
+            for (i = 0; i < properties.size(); i++) {
+                property = (DocumentProperty) properties.get(i);
+                str = request.getParameter("property." + property.getId());;
+                if (property.getType() == DocumentProperty.HTML_TYPE) {
+                    str = AdminUtils.getScriptString(str);
                 }
+                data.put(property.getId(), str);
             }
         }
 
