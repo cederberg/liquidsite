@@ -123,15 +123,14 @@ ol,
 dl {
         margin-top: 6px;
         margin-bottom: 6px;
+        padding-left: 30px;
 }
 dt {
         margin-top: 8px;
         margin-bottom: 0px;
-        margin-left: 30px;
 }
 dd {
         font-size: smaller;
-        margin-left: 30px;
         margin-top: 4px;
         margin-bottom: 16px;
 }
@@ -390,6 +389,23 @@ table.border td {
         border-color: darkgray;
 }
 
+/* Compact list styles */
+ul.compact,
+ol.compact,
+dl.compact {
+        margin-bottom: 16px;
+}
+ul.compact li,
+ol.compact li {
+        margin-bottom: 6px;
+}
+dl.compact dt {
+        margin-top: 6px;
+}
+dl.compact dd {
+        margin-bottom: 6px;
+}
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -406,6 +422,9 @@ table.border td {
 .first {
         margin-top: 0px;
 }
+.inner {
+        margin-top: 20px;
+}
 .header {
         margin-top: 0px;
         font-size: smaller;
@@ -419,6 +438,9 @@ table.border td {
         font-weight: bold;
         color: rgb(80, 150, 120);
 }
+.indent {
+        padding-left: 30px;
+}
 div.figure {
         background: white;
         margin: 6px;
@@ -426,11 +448,14 @@ div.figure {
         padding-bottom: 10px;
         padding-left: 20px;
         padding-right: 20px;
-        border-style: solid;
-        border-width: 1px;
+        border: 1px solid rgb(220, 210, 200);
 }
 div.example {
         padding-left: 20px;
+        padding-top: 1px; 
+        padding-bottom: 1px; 
+        background-color: rgb(255, 250, 240); 
+        border: 1px solid rgb(220, 210, 200);
 }
 div.illustration, p.illustration {
         text-align: center;
