@@ -87,10 +87,10 @@ public class SiteView extends AdminView {
         if (focus != null && focus instanceof Content) {
             content = manager.getContent(user, ((Content) focus).getId());
             if (content != null) {
-                str = getSiteTreeScript(user,
-                                        content.getDomain(),
-                                        content.getParent(),
-                                        true);
+                str = getTreeScript(user,
+                                    content.getDomain(),
+                                    content.getParent(),
+                                    true);
                 buffer.append(str);
                 buffer.append(SCRIPT.getTreeViewSelect(content));
             }
@@ -771,10 +771,10 @@ public class SiteView extends AdminView {
         String   buffer;
 
         if (obj instanceof Domain) {
-            buffer = getSiteTreeScript(user, (Domain) obj, null, false);
+            buffer = getTreeScript(user, (Domain) obj, null, false);
         } else {
             content = (Content) obj;
-            buffer = getSiteTreeScript(user, null, content, false);
+            buffer = getTreeScript(user, null, content, false);
         }
         request.sendData("text/javascript", buffer);
     }
@@ -857,15 +857,18 @@ public class SiteView extends AdminView {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private String getSiteTreeScript(User user,
-                                     Domain domain,
-                                     Content content,
-                                     boolean recursive)
+    private String getTreeScript(User user,
+                                 Domain domain,
+                                 Content content,
+                                 boolean recursive)
         throws ContentException {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children;
+        Content[]       temp;
         ArrayList       list = new ArrayList();
+        StringBuffer    buffer = new StringBuffer();
+        String          str;
 
         if (content == null) {
             children = manager.getContentChildren(user, domain);
@@ -876,15 +879,26 @@ public class SiteView extends AdminView {
             }
             children = new Content[list.size()];
             list.toArray(children);
-            return SCRIPT.getTreeView(domain, children);
+            buffer.append(SCRIPT.getTreeView(domain, children, true));
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
-            return getSiteTreeScript(user, domain, content.getParent(), true)
-                 + SCRIPT.getTreeView(content, children);
+            str = getTreeScript(user, domain, content.getParent(), true);
+            buffer.append(str);
+            buffer.append(SCRIPT.getTreeView(content, children, true));
         } else {
             children = manager.getContentChildren(user, content);
-            return SCRIPT.getTreeView(content, children);
+            buffer.append(SCRIPT.getTreeView(content, children, true));
         }
+        if (!recursive) {
+            for (int i = 0; i < children.length; i++) {
+                if (SCRIPT.isContainer(children[i])) {
+                    temp = manager.getContentChildren(user, children[i]);
+                    str = SCRIPT.getTreeView(children[i], temp, false);
+                    buffer.append(str);
+                }
+            }
+        }
+        return buffer.toString();
     }
 
     /**
