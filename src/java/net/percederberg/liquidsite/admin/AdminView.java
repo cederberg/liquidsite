@@ -364,82 +364,62 @@ class AdminView {
     }
     
     /**
-     * Shows the add site page.
+     * Shows the add or edit site page.
      * 
      * @param request        the request object
-     * @param parent         the parent object
+     * @param reference      the reference object (domain or site)
      * 
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public void pageAddSite(Request request, Object parent) 
+    public void pageEditSite(Request request, Object reference) 
         throws ContentException {
 
         Domain     domain;
         Host[]     hosts;
         ArrayList  list = new ArrayList();
-        String     defaultHost = "*";
-        
-        if (parent instanceof Domain) {
-            domain = (Domain) parent;
-            hosts = domain.getHosts();
-            for (int i = 0; i < hosts.length; i++) {
-                if (i == 0) {
-                    defaultHost = hosts[i].getName();
-                }
-                list.add(hosts[i].getName());
-            }
-        }
-        setRequestReference(request, parent);
-        request.setAttribute("hostnames", list);
-        request.setAttribute("name", 
-                             request.getParameter("name", ""));
-        request.setAttribute("protocol", 
-                             request.getParameter("protcol", ""));
-        request.setAttribute("host", 
-                             request.getParameter("host", defaultHost));
-        request.setAttribute("port", 
-                             request.getParameter("port", "80"));
-        request.setAttribute("dir", 
-                             request.getParameter("dir", "/"));
-        request.setAttribute("comment", 
-                             request.getParameter("comment", "Created"));
-        request.sendTemplate("admin/add-site.ftl");
-    }
-
-    /**
-     * Shows the edit site page.
-     * 
-     * @param request        the request object
-     * @param site           the site to edit
-     * 
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    public void pageEditSite(Request request, Site site) 
-        throws ContentException {
-
-        Domain     domain = site.getDomain();
-        Host[]     hosts = domain.getHosts();
-        ArrayList  list = new ArrayList();
+        String     defaultName;
+        String     defaultProtocol;
+        String     defaultHost;
+        String     defaultPort;
+        String     defaultDir;
+        String     defaultComment;
         String     str;
         
+        if (reference instanceof Domain) {
+            domain = (Domain) reference;
+            defaultName = "";
+            defaultProtocol = "";
+            defaultHost = "*";
+            defaultPort = "80";
+            defaultDir = "/";
+            defaultComment = "Created";
+        } else {
+            domain = ((Site) reference).getDomain();
+            defaultName = ((Site) reference).getName();
+            defaultProtocol = ((Site) reference).getProtocol();
+            defaultHost = ((Site) reference).getHost();
+            defaultPort = String.valueOf(((Site) reference).getPort());
+            defaultDir = ((Site) reference).getDirectory();
+            defaultComment = "";
+        }
+        hosts = domain.getHosts();
         for (int i = 0; i < hosts.length; i++) {
             list.add(hosts[i].getName());
         }
-        setRequestReference(request, site);
+        setRequestReference(request, reference);
         request.setAttribute("hostnames", list);
-        str = request.getParameter("name", site.getName());
+        str = request.getParameter("name", defaultName);
         request.setAttribute("name", str);
-        str = request.getParameter("protcol", site.getProtocol());
+        str = request.getParameter("protcol", defaultProtocol);
         request.setAttribute("protocol", str);
-        str = request.getParameter("host", site.getHost());
+        str = request.getParameter("host", defaultHost);
         request.setAttribute("host", str);
-        str = request.getParameter("port", String.valueOf(site.getPort()));
+        str = request.getParameter("port", defaultPort);
         request.setAttribute("port", str);
-        str = request.getParameter("dir", site.getDirectory());
+        str = request.getParameter("dir", defaultDir);
         request.setAttribute("dir", str);
-        str = request.getParameter("comment", "");
+        str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
         request.sendTemplate("admin/edit-site.ftl");
     }

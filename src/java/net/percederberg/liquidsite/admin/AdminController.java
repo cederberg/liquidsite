@@ -234,7 +234,7 @@ public class AdminController extends Controller {
                 }
             } else if (category.equals("site")) {
                 if (step.equals("1")) {
-                    view.pageAddSite(request, parent);
+                    view.pageEditSite(request, parent);
                 } else {
                     processAddSite(request, parent);
                 }
@@ -325,7 +325,7 @@ public class AdminController extends Controller {
             request.sendRedirect("site.html");
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
-            view.pageAddSite(request, parent);
+            view.pageEditSite(request, parent);
         }
     }
 

@@ -1,3 +1,4 @@
+<#assign isadd = liquidsite.page.path?ends_with("add-site.html")>
 <#assign onload = "initialize()">
 <#include "header.ftl">
 
@@ -10,16 +11,27 @@
     <form method="post">
       <input type="hidden" name="type" value="${type}" />
       <input type="hidden" name="id" value="${id}" />
-      <input type="hidden" name="step" value="1" />
+      <input type="hidden" name="step" value="2" />
+      <input type="hidden" name="category" value="site" />
       <table class="form">
         <tr>
           <td class="decoration" rowspan="10">
+<#if isadd>
+            <img src="images/icons/48x48/edit.png" alt="Add" />
+<#else>
             <img src="images/icons/48x48/edit.png" alt="Edit" />
+</#if>
           </td>
           <td colspan="2">
+<#if isadd>
+            <h2>Enter Site Details (Step 2 of 2)</h2>
+
+            <p>Enter the details of the site you wish to add.</p>
+<#else>
             <h2>Edit Site Details (Step 1 of 1)</h2>
 
             <p>Edit the details of the site.</p>
+</#if>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
 </#if>
@@ -95,6 +107,20 @@
             be used to distinguish between them.</p>
           </td>
         </tr>
+<#if isadd>
+        <tr>
+          <th>
+            Special&nbsp;Sites:
+          </th>
+          <td class="field">
+            <input type="checkbox" name="admin" value="true" /> 
+            <strong>Administration Site</strong>
+            <p>The special site flags. Note that these flags cannot
+            be changed after creation, as they determine the site
+            type.</p>
+          </td>
+        </tr>
+</#if>
         <tr>
           <th>
             Comment:
