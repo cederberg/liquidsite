@@ -119,24 +119,6 @@ public class ContentManager {
     }
 
     /**
-     * Checks if a content object is online and readable by a user.
-     *
-     * @param user           the user
-     * @param content        the content object
-     *
-     * @return true if the object is online and readable, or
-     *         false otherwise
-     *
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
-     */
-    private boolean isReadableOnline(User user, Content content)
-        throws ContentException {
-
-        return isOnline(content) && isReadable(user, content);
-    }
-
-    /**
      * Returns the application context for this content manager.
      * 
      * @return the application context for this content manager
@@ -315,15 +297,7 @@ public class ContentManager {
     public Content getContent(User user, int id) 
         throws ContentException, ContentSecurityException {
 
-        Content  content = getContent(id);
-
-        if (content != null && !isReadable(user, content)) {
-            throw new ContentSecurityException(user, "read", content);
-        } else if (content != null && !isOnline(content)) {
-            return null;
-        } else {
-            return content;
-        }
+        return postProcess(user, getContent(id));
     }
     
     /**
@@ -366,13 +340,7 @@ public class ContentManager {
 
         Content  content = InternalContent.findByName(this, domain, name);
 
-        if (content != null && !isReadable(user, content)) {
-            throw new ContentSecurityException(user, "read", content);
-        } else if (content != null && !isOnline(content)) {
-            return null;
-        } else {
-            return content;
-        }
+        return postProcess(user, content);
     }
     
     /**
@@ -396,13 +364,7 @@ public class ContentManager {
 
         Content  content = InternalContent.findByName(this, parent, name);
 
-        if (content != null && !isReadable(user, content)) {
-            throw new ContentSecurityException(user, "read", content);
-        } else if (content != null && !isOnline(content)) {
-            return null;
-        } else {
-            return content;
-        }
+        return postProcess(user, content);
     }
     
     /**
@@ -421,18 +383,8 @@ public class ContentManager {
         throws ContentException {
 
         Content[]  children = InternalContent.findByParent(this, domain);
-        ArrayList  list = new ArrayList(children.length);
-        Content[]  res;
 
-        for (int i = 0; i < children.length; i++) {
-            if (isReadableOnline(user, children[i])) {
-                list.add(children[i]);
-            }
-        }
-        Collections.sort(list);
-        res = new Content[list.size()];
-        list.toArray(res);
-        return res;                    
+        return postProcess(user, children);
     }
 
     /**
@@ -451,18 +403,8 @@ public class ContentManager {
         throws ContentException {
 
         Content[]  children = InternalContent.findByParent(this, parent);
-        ArrayList  list = new ArrayList(children.length);
-        Content[]  res;
 
-        for (int i = 0; i < children.length; i++) {
-            if (isReadableOnline(user, children[i])) {
-                list.add(children[i]);
-            }
-        } 
-        Collections.sort(list);
-        res = new Content[list.size()];
-        list.toArray(res);
-        return res;                    
+        return postProcess(user, children);                    
     }
 
     /**
@@ -481,18 +423,8 @@ public class ContentManager {
         throws ContentException {
 
         Content[]  children = InternalContent.findByParents(this, parents);
-        ArrayList  list = new ArrayList(children.length);
-        Content[]  res;
 
-        for (int i = 0; i < children.length; i++) {
-            if (isReadableOnline(user, children[i])) {
-                list.add(children[i]);
-            }
-        } 
-        Collections.sort(list);
-        res = new Content[list.size()];
-        list.toArray(res);
-        return res;                    
+        return postProcess(user, children);                    
     }
 
     /**
@@ -598,5 +530,63 @@ public class ContentManager {
     public void close() {
         CacheManager.getInstance().removeAll();
         LOG.trace("closed content manager");
+    }
+
+    /**
+     * Post-processes a retrieved content object. This method checks
+     * that the object is safe to return to the specified user.
+     *
+     * @param user           the user requesting the object
+     * @param content        the content object found, or null
+     *
+     * @return the content object found, or
+     *         null if the object isn't visible for the user
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     * @throws ContentSecurityException if the specified content 
+     *             object wasn't readable by the user
+     */
+    private Content postProcess(User user, Content content)
+        throws ContentException, ContentSecurityException {
+
+        if (content != null && !isReadable(user, content)) {
+            throw new ContentSecurityException(user, "read", content);
+        } else if (content != null && !isOnline(content)) {
+            return null;
+        } else {
+            return content;
+        }
+    }
+
+    /**
+     * Post-processes an array of retrieved content objects. This
+     * method checks that the objects are safe to return to the
+     * specified user, filtering out the ones that are not. This 
+     * method will also sort the content objects.
+     *
+     * @param user           the user requesting the object
+     * @param content        the content objects found
+     *
+     * @return the readable and sorted content objects
+     *
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
+     */
+    private Content[] postProcess(User user, Content[] content)
+        throws ContentException {
+
+        ArrayList  list = new ArrayList(content.length);
+        Content[]  res;
+
+        for (int i = 0; i < content.length; i++) {
+            if (isOnline(content[i]) && isReadable(user, content[i])) {
+                list.add(content[i]);
+            }
+        } 
+        Collections.sort(list);
+        res = new Content[list.size()];
+        list.toArray(res);
+        return res;                    
     }
 }
