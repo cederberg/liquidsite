@@ -111,7 +111,7 @@ public abstract class RequestProcessor {
      * as it supports being presented by the sendContent() method.
      *
      * @param request        the request object
-     * @param parent         the content parent
+     * @param site           the content site
      * @param path           the request path after the parent
      *
      * @return the content object corresponding to the path, or
@@ -122,13 +122,18 @@ public abstract class RequestProcessor {
      * @throws ContentSecurityException if the specified content
      *             object wasn't readable by the user
      */
-    protected Content locatePage(Request request, Content parent, String path)
+    protected Content locatePage(Request request,
+                                 ContentSite site,
+                                 String path)
         throws ContentException, ContentSecurityException {
 
-        Content  content = parent;
+        Content  content = site;
         String   name;
         int      pos;
 
+        if (path.startsWith("liquidsite.obj/")) {
+            return locateObject(request, path.substring(15));
+        }
         while (content != null && path.length() > 0) {
             pos = path.indexOf('/');
             if (pos <= 0) {
@@ -136,7 +141,7 @@ public abstract class RequestProcessor {
             } else {
                 name = path.substring(0, pos);
             }
-            content = locateChild(request, parent, name);
+            content = locateChild(request, content, name);
             path = path.substring(name.length());
             if (path.startsWith("/")) {
                 if (content instanceof ContentSite
@@ -147,7 +152,6 @@ public abstract class RequestProcessor {
                     path = path.substring(1);
                 }
             }
-            parent = content;
         }
         return content;
     }
@@ -239,6 +243,51 @@ public abstract class RequestProcessor {
     }
 
     /**
+     * Finds the content object corresponding to an object request
+     * path. Note that this method may return any type of content
+     * object as long as it supports being presented by the
+     * sendContent() method. The object request path should start with
+     * a content id, followed by the name of a child object.
+     *
+     * @param request        the request object
+     * @param path           the object request path
+     *
+     * @return the content object corresponding to the path, or
+     *         null if no matching content was found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the specified content
+     *             object wasn't readable by the user
+     */
+    private Content locateObject(Request request, String path)
+        throws ContentException, ContentSecurityException {
+
+        ContentManager  manager = getContentManager();
+        User            user = request.getUser();
+        Content         content;
+        int             id;
+        String          name;
+        int             pos;
+
+        pos = path.indexOf("/");
+        if (pos <= 0) {
+            return null;
+        }
+        try {
+            id = Integer.parseInt(path.substring(0, pos));
+            name = path.substring(pos + 1);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        content = manager.getContent(user, id);
+        if (content == null) {
+            return null;
+        }
+        return locateChild(request, content, name);
+    }
+
+    /**
      * Finds the index page for a content parent. This method does
      * NOT control access permissions and should thus ONLY be used
      * internally in the request processing.
@@ -261,7 +310,7 @@ public abstract class RequestProcessor {
         Content   page;
 
         for (int i = 0; i < index.length; i++) {
-            page = locatePage(request, parent, index[i]);
+            page = locateChild(request, parent, index[i]);
             if (page != null) {
                 return page;
             }
