@@ -89,13 +89,13 @@
             &newline;&indent;&indent;&indent;&indent;
           </td>
           &newline;&indent;&indent;&indent;&indent;
-          <td clsss="title">
+          <td class="title">
             &newline;&indent;&indent;&indent;&indent;&indent;
             <h1><xsl:value-of select="/doc/head/title" /></h1>
             &newline;&indent;&indent;&indent;&indent;
           </td>
           &newline;&indent;&indent;&indent;&indent;
-          <td class="extra">
+          <td class="end">
             &newline;&indent;&indent;&indent;&indent;&indent;
             <xsl:text>Version</xsl:text>
             &nbsp;
@@ -103,6 +103,11 @@
             <br />
             &newline;&indent;&indent;&indent;&indent;&indent;
             <xsl:value-of select="$date" />
+            <br />
+            &newline;&indent;&indent;&indent;&indent;&indent;
+            <br />
+            &newline;&indent;&indent;&indent;&indent;&indent;
+            &nbsp;
             &newline;&indent;&indent;&indent;&indent;
           </td>
           &newline;&indent;&indent;&indent;
@@ -111,8 +116,6 @@
         <tr>
           &newline;&indent;&indent;&indent;&indent;
           <td class="filler"></td>
-          &newline;&indent;&indent;&indent;&indent;
-          <td class="end"></td>
           &newline;&indent;&indent;&indent;
         </tr>
         &newline;&indent;&indent;
