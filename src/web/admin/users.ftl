@@ -14,7 +14,7 @@
     </script>
 
 
-    <form method="post" accept-charset="UTF-8" 
+    <form method="get" accept-charset="UTF-8" 
           onsubmit="refresh(); return false;">
       <table class="form">
         <tr>
@@ -96,8 +96,10 @@
         </tr>
   </#if>
   <#list users as user>
+    <#assign link = "edit-users.html?type=user&domain=" + domain + 
+                    "&name=" + user.name>
         <tr>
-          <td>${user.name?xml}</td>
+          <td><a href="${link}">${user.name?xml}</a></td>
           <td>${user.realName?xml}</td>
           <td>${user.email?xml}</td>
           <td>${user.comment?xml}</td>
@@ -119,8 +121,10 @@
         </tr>
   </#if>
   <#list groups as group>
+    <#assign link = "edit-users.html?type=group&domain=" + domain + 
+                    "&name=" + group.name>
         <tr>
-          <td>${group.name?xml}</td>
+          <td><a href="${link}">${group.name?xml}</a></td>
           <td>${group.description?xml}</td>
           <td>${group.comment?xml}</td>
           <td>
@@ -132,12 +136,24 @@
       </table>
 
 
-      <p>
-        <button type="button">
-          <img src="images/icons/24x24/add.png" />
-          Add New
-        </button>
-      </p>
+      <form method="post" action="add-users.html">
+<#if users?exists>
+        <input type="hidden" name="type" value="user" />
+<#else>
+        <input type="hidden" name="type" value="group" />
+</#if>
+        <input type="hidden" name="domain" value="${domain}" />
+        <p>
+<#if !users?exists && domain = "">
+          <button type="button" disabled="disabled">
+<#else>
+          <button type="submit">
+</#if>
+            <img src="images/icons/24x24/add.png" />
+            Add New
+          </button>
+        </p>
+      </form>
 
     </div>
 

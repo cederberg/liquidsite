@@ -120,6 +120,97 @@ public class UserView extends AdminView {
     }
 
     /**
+     * Shows the add or edit user page.
+     *
+     * @param request        the request object
+     * @param user           the user to edit, or null to add new
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    public void viewEditUser(Request request, User user) 
+        throws ContentException, ContentSecurityException {
+
+        String  defaultName;
+        String  defaultRealName;
+        String  defaultEmail;
+        String  defaultComment;
+        String  str;
+
+        // Find default values
+        if (user != null) {
+            defaultName = user.getName();
+            defaultRealName = user.getRealName();
+            defaultEmail = user.getEmail();
+            defaultComment = user.getComment();
+        } else {
+            defaultName = "";
+            defaultRealName = "";
+            defaultEmail = "";
+            defaultComment = "";
+        }
+
+        // Set request parameters
+        str = request.getParameter("domain", ""); 
+        request.setAttribute("domain", str);
+        str = request.getParameter("name", defaultName); 
+        request.setAttribute("name", str);
+        str = request.getParameter("password", ""); 
+        request.setAttribute("password", str);
+        str = request.getParameter("realname", defaultRealName); 
+        request.setAttribute("realname", str);
+        str = request.getParameter("email", defaultEmail); 
+        request.setAttribute("email", str);
+        str = request.getParameter("comment", defaultComment); 
+        request.setAttribute("comment", str);
+        request.sendTemplate("admin/edit-user.ftl");
+    }
+
+    /**
+     * Shows the add or edit group page.
+     *
+     * @param request        the request object
+     * @param group          the group to edit, or null to add new
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    public void viewEditGroup(Request request, Group group) 
+        throws ContentException, ContentSecurityException {
+
+        String  defaultName;
+        String  defaultDescription;
+        String  defaultComment;
+        String  str;
+
+        // Find default values
+        if (group != null) {
+            defaultName = group.getName();
+            defaultDescription = group.getDescription();
+            defaultComment = group.getComment();
+        } else {
+            defaultName = "";
+            defaultDescription = "";
+            defaultComment = "";
+        }
+
+        // Set request parameters
+        str = request.getParameter("domain", ""); 
+        request.setAttribute("domain", str);
+        str = request.getParameter("name", defaultName); 
+        request.setAttribute("name", str);
+        str = request.getParameter("description", defaultDescription); 
+        request.setAttribute("description", str);
+        str = request.getParameter("comment", defaultComment); 
+        request.setAttribute("comment", str);
+        request.sendTemplate("admin/edit-group.ftl");
+    }
+
+    /**
      * Finds all domains readable by a user. The domains will not be
      * added directly to the result list, but rather the domain 
      * names.

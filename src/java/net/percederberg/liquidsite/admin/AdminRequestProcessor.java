@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
 package net.percederberg.liquidsite.admin;
@@ -75,6 +75,8 @@ public class AdminRequestProcessor extends RequestProcessor {
         workflows.add(new SiteEditFormHandler());
         workflows.add(new ContentAddFormHandler());
         workflows.add(new ContentEditFormHandler());
+        workflows.add(new UsersAddFormHandler());
+        workflows.add(new UsersEditFormHandler());
         workflows.add(new PublishDialogHandler());
         workflows.add(new UnpublishDialogHandler());
         workflows.add(new RevertDialogHandler());
