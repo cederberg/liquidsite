@@ -116,11 +116,13 @@ public class ContentManager {
     }
 
     /**
-     * Checks if a content object is readable by a user. This method
-     * will check the read permissions in the database.
+     * Checks if a persistent object is readable by a user. This 
+     * method will check the read permissions in the database. If the
+     * admin flag is set, the user must also be in the same domain as
+     * the object requested.
      *
      * @param user           the user
-     * @param content        the content object
+     * @param obj            the persistent object
      *
      * @return true if the object is readable, or
      *         false otherwise
@@ -128,10 +130,32 @@ public class ContentManager {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    private boolean isReadable(User user, Content content)
+    private boolean isReadable(User user, PersistentObject obj)
         throws ContentException {
 
-        return content.hasReadAccess(user);
+        String   domain = "";
+        boolean  sameDomain;
+
+        // Find domain name
+        if (obj instanceof Domain) {
+            domain = ((Domain) obj).getName();
+        } else if (obj instanceof Content) {
+            domain = ((Content) obj).getDomainName();
+        }
+
+        // Compare to user domain name
+        if (user == null) {
+            sameDomain = false;
+        } else {
+            sameDomain = user.getDomainName().equals(domain);
+        }
+
+        // Check read access if not admin or same domain
+        if (!admin || sameDomain) {
+            return obj.hasReadAccess(user);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -172,7 +196,7 @@ public class ContentManager {
         iter = domains.iterator();
         for (int i = 0; iter.hasNext(); i++) {
             domain = (Domain) iter.next();
-            if (domain.hasReadAccess(user)) {
+            if (isReadable(user, domain)) {
                 list.add(domain);
             }
         }
@@ -228,7 +252,7 @@ public class ContentManager {
 
         Domain  domain = getDomain(name);
         
-        if (domain != null && !domain.hasReadAccess(user)) {
+        if (domain != null && !isReadable(user, domain)) {
             throw new ContentSecurityException(user, "read", domain);
         }
         return domain;
