@@ -202,33 +202,24 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * @param request        the request object
      * @param step           the workflow step
      *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
-        throws FormValidationException {
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
 
-        RequestSession  session = request.getSession();
         String          category = request.getParameter("category", "");
-        FileParameter   param;
         String          message;
 
         if (category.equals("section")) {
             section.validate(request);
         } else if (category.equals("document")) {
-            if (request.getParameter("action", "").equals("upload")) {
-                param = request.getFileParameter("upload");
-                if (param == null || param.getSize() <= 0) {
-                    message = "No file to add specified";
-                    throw new FormValidationException("upload", message);
-                } else if (session.getFile(param.getName()) != null) {
-                    message = "Another file named '" + param.getName() +
-                              "' already exists";
-                    throw new FormValidationException("upload", message);
-                }
-            } else {
-                document.validate(request);
-            }
+            validateDocument(request);
         } else if (category.equals("file")) {
             SiteEditFormHandler.getInstance().validateStep(request, step);
         } else if (category.equals("forum")) {
@@ -240,6 +231,66 @@ public class ContentEditFormHandler extends AdminFormHandler {
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
+        }
+    }
+
+    /**
+     * Validates a document form posting. If the form validation fails
+     * in this step, the form page for the workflow step will be
+     * displayed again with an 'error' attribute containing the
+     * message in the validation exception.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateDocument(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager   manager = AdminUtils.getContentManager();
+        RequestSession   session = request.getSession();
+        FileParameter    param;
+        Object           ref;
+        ContentDocument  doc;
+        Content          content;
+        String           message;
+
+        if (request.getParameter("action", "").equals("upload")) {
+            param = request.getFileParameter("upload");
+            if (param == null || param.getSize() <= 0) {
+                message = "No file to add specified";
+                throw new FormValidationException("upload", message);
+            } else if (session.getFile(param.getName()) != null) {
+                message = "Another file named '" + param.getName() +
+                          "' already exists";
+                throw new FormValidationException("upload", message);
+            }
+        } else {
+            document.validate(request);
+            ref = AdminUtils.getReference(request);
+            if (ref instanceof ContentDocument) {
+                doc = (ContentDocument) ref;
+                content = doc.getParent();
+            } else {
+                doc = null;
+                content = (Content) ref;
+            }
+            content = manager.getContentChild(request.getUser(),
+                                              content,
+                                              request.getParameter("name"));
+            if (content != null
+             && (doc == null || doc.getId() != content.getId())) {
+
+                message = "Another document with the same name is " +
+                          "already present in the parent section";
+                throw new FormValidationException("name", message);
+            }
         }
     }
 
