@@ -674,7 +674,7 @@ public abstract class Content extends PersistentObject {
         Group[]       groups = null;
         
         // Check for superuser or inherited permissions
-        if (user != null && user.getDomainName().equals("")) {
+        if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0 && getParentId() <= 0) {
             return getDomain().hasReadAccess(user);
@@ -716,7 +716,7 @@ public abstract class Content extends PersistentObject {
         Group[]       groups = null;
         
         // Check for superuser or inherited permissions
-        if (user != null && user.getDomainName().equals("")) {
+        if (user != null && user.isSuperUser()) {
             return true;
         } else if (perms.length == 0 && getParentId() <= 0) {
             return getDomain().hasReadAccess(user);
