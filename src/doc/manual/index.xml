@@ -19,16 +19,15 @@
       </item>
 
       <item>
+        <title><ref file="users.xml">Users &amp; Groups</ref></title>
+        <text>Details of the authentication and authorization 
+        process.</text>
+      </item>
+
+      <item>
         <title><ref file="requests.xml">Request Processing</ref></title>
         <text>Detailed description of the request processing
         flow.</text>
-      </item>
-
-      <item style="draft">
-        <title><ref file="security.xml">Security &amp;
-        Permissions</ref></title>
-        <text>Security considerations and handling of users and
-        permissions.</text>
       </item>
     </list>
 
