@@ -121,11 +121,11 @@ public class AdminRequestProcessor extends RequestProcessor {
         throws RequestException {
 
         if (path.equals("style.css")) {
-            request.sendFile(getFile(path));
+            request.sendFile(getFile(path), false);
         } else if (path.startsWith("images/")) {
-            request.sendFile(getFile(path));
+            request.sendFile(getFile(path), false);
         } else if (path.startsWith("script/")) {
-            request.sendFile(getFile(path));
+            request.sendFile(getFile(path), false);
         } else if (path.equals("") || path.equals("index.html")) {
             AdminView.HOME.viewHome(request);
         } else if (path.equals("home.html")) {
@@ -174,9 +174,9 @@ public class AdminRequestProcessor extends RequestProcessor {
         String  str;
 
         if (path.equals("style.css")) {
-            request.sendFile(getFile(path));
+            request.sendFile(getFile(path), false);
         } else if (path.startsWith("images/")) {
-            request.sendFile(getFile(path));
+            request.sendFile(getFile(path), false);
         } else if (path.endsWith(".js")) {
             request.sendData("text/javascript",
                              "window.location.reload(1);\n");
@@ -598,7 +598,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             AdminView.CONTENT.viewDocumentPreview(request,
                                                   (ContentDocument) content);
         } else if (content instanceof ContentFile) {
-            request.sendFile(((ContentFile) content).getFile());
+            request.sendFile(((ContentFile) content).getFile(),
+                             !content.hasReadAccess(null));
         } else {
             throw RequestException.RESOURCE_NOT_FOUND;
         }
@@ -666,7 +667,7 @@ public class AdminRequestProcessor extends RequestProcessor {
             }
             file = new File(file, path);
             if (file.canRead()) {
-                request.sendFile(file);
+                request.sendFile(file, true);
             } else {
                 throw RequestException.RESOURCE_NOT_FOUND;
             }

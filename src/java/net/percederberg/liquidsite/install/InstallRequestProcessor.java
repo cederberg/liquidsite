@@ -177,7 +177,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         path = path.substring(request.getServletPath().length());
         lastError = null;
         if (path.equals("/style.css") || path.startsWith("/images")) {
-            request.sendFile(getFile(path));
+            request.sendFile(getFile(path), false);
         } else if (!path.equals("/") && !path.equals("/install.html")) {
             // Do nothing for unrecognized pages
         } else if (request.getParameter("prev", "").equals("true")) {

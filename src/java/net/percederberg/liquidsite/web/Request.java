@@ -116,6 +116,11 @@ public class Request {
     private String responseData = null;
 
     /**
+     * The response limited cache flag.
+     */
+    private boolean responseLimitCache = false;
+
+    /**
      * The request environment.
      */
     private RequestEnvironment environment = new RequestEnvironment();
@@ -450,14 +455,17 @@ public class Request {
     /**
      * Sends the contents of a file as the request response. The file
      * name extension will be used for determining the MIME type for
-     * the file contents.
+     * the file contents. The cache header for the file may be
+     * limited to private by setting the limit cache header.
      *
      * @param file           the file containing the response
+     * @param limitCache     the limited cache flag
      */
-    public void sendFile(File file) {
+    public void sendFile(File file, boolean limitCache) {
         responseType = FILE_RESPONSE;
         responseMimeType = null;
         responseData = file.toString();
+        responseLimitCache = limitCache;
     }
 
     /**
@@ -556,7 +564,11 @@ public class Request {
      *                       zero (0) for the current system time
      */
     private void commitStaticHeaders(long lastModified) {
-        response.setHeader("Cache-Control", "private");
+        if (responseLimitCache) {
+            response.setHeader("Cache-Control", "private");
+        } else {
+            response.setHeader("Cache-Control", "public");
+        }
         if (lastModified > 0) {
             response.setDateHeader("Last-Modified", lastModified);
         } else {

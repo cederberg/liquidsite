@@ -375,7 +375,8 @@ public abstract class RequestProcessor {
             request.getEnvironment().setPage((ContentPage) content);
             sendContentPage(request, (ContentPage) content);
         } else if (content instanceof ContentFile) {
-            request.sendFile(((ContentFile) content).getFile());
+            request.sendFile(((ContentFile) content).getFile(),
+                             !content.hasReadAccess(null));
         } else if (content instanceof ContentSection) {
             if (request.getEnvironment().getTranslator() != null) {
                 content = request.getEnvironment().getTranslator();
