@@ -42,6 +42,9 @@ var UTIL_REMOVE_LIST = new Array();
  * @param url                 the URL to visit
  * @param width               the dialog width
  * @param height              the dialog height
+ *
+ * @return the dialog window opened, or
+ *         null if no window could be opened
  */
 function utilOpenDialog(url, width, height) {
     var top = (screen.height - height) / 2;
@@ -50,7 +53,7 @@ function utilOpenDialog(url, width, height) {
                ",width=" + width + ",height=" + height +
                ",resizable=yes";
 
-    window.open(url, "", attr);
+    return window.open(url, "", attr);
 }
 
 /**

@@ -30,6 +30,11 @@ var TAGEDIT_ICON_PATH = "images/icons/24x24/";
 var TAGEDIT_TEXTAREAS = new Array();
 
 /**
+ * The tag editor images array.
+ */
+var TAGEDIT_IMAGES = new Array();
+
+/**
  * The tag editor undo information. Each editor may contain an array
  * of up to 10 stored states. This array contains the undo object for
  * each editor.
@@ -53,6 +58,16 @@ function tagEditInitialize(id) {
     editor.onchange = new Function(script);
     TAGEDIT_TEXTAREAS[count] = editor;
     tagEditInternalStoreUndo(count);
+}
+
+/**
+ * Adds an image to all the tag editors. The images are shared between
+ * all the editors on a single page.
+ *
+ * @param name               the image file name
+ */
+function tagEditAddImage(name) {
+    TAGEDIT_IMAGES[TAGEDIT_IMAGES.length] = name;
 }
 
 /**
@@ -241,12 +256,51 @@ function tagEditInternalUnformat(editor) {
  * @param editor             the editor number
  */
 function tagEditInternalAddLink(editor) {
-    var  url;
+    var  html;
+    var  js;
 
-    url = prompt("Enter the link (URL) for the selection:", "");
-    if (url != null) {
-        tagEditInternalAdjustSelection(editor, false);
-        tagEditInternalInsert(editor, "<link url=" + url + ">", "</link>");
+    html = "<tr>\n" +
+           "<th width='30%'>URL:</th>\n" +
+           "<td width='70%'>\n" +
+           "<input name='url' size='30' />\n" + 
+           "</td>\n" +
+           "</tr>\n" +
+           "<tr>\n" +
+           "<th>Type:</th>\n" +
+           "<td>\n" +
+           "<select name='window'>\n" +
+           "<option value=''>Normal</option>\n" +
+           "<option value='new'>New Window</option>\n" +
+           "</select>\n" +
+           "</td>\n" +
+           "</tr>\n";
+    js = "var url = document.getElementsByName('url').item(0).value;\n" +
+         "var win = document.getElementsByName('window').item(0).value;\n" +
+         "opener.tagEditInternalInsertLink(" + editor + ", url, win);\n" +
+         "window.close();\n";
+    tagEditInternalCreateDialog("Insert Link",
+                                "Enter link URL and type.",
+                                html,
+                                js);
+}
+
+/**
+ * Inserts a link.
+ *
+ * @param editor             the editor number
+ * @param url                the URL
+ * @param window             the link window
+ */
+function tagEditInternalInsertLink(editor, url, window) {
+    var  tag;
+
+    if (window != "") {
+        tag = "<link url=" + url + " window=" + window + ">";
+    } else {
+        tag = "<link url=" + url + ">";
+    }
+    if (url != "") {
+        tagEditInternalInsert(editor, tag, "</link>");
         tagEditInternalStoreUndo(editor);
     }
 }
@@ -257,13 +311,59 @@ function tagEditInternalAddLink(editor) {
  * @param editor             the editor number
  */
 function tagEditInternalAddImage(editor) {
-    var  url;
+    var  html;
+    var  js;
 
-    url = prompt("Enter image location (URL):", "");
-    if (url != null) {
-        tagEditInternalInsert(editor, "<image url=" + url + ">", null);
-        tagEditInternalStoreUndo(editor);
+    html = "<tr>\n" +
+           "<th width='50%'>Image:</th>\n" +
+           "<td width='50%'><select name='url'>\n";
+    for (var i = 0; i < TAGEDIT_IMAGES.length; i++) {
+        html += "<option>" + TAGEDIT_IMAGES[i] + "</option>\n";
     }
+    html += "</select>\n" +
+            "</td>\n" +
+            "</tr>\n" +
+            "<tr>\n" +
+            "<th>Layout:</th>\n" +
+            "<td>\n" +
+            "<select name='layout'>\n" +
+            "<option value=''>Normal</option>\n" +
+            "<option value='left'>Floating Left</option>\n" +
+            "<option value='right'>Floating Right</option>\n" +
+            "</select>\n" +
+            "</td>\n" +
+            "</tr>\n";
+    js = "var url = document.getElementsByName('url').item(0).value;\n" +
+         "var layout = document.getElementsByName('layout').item(0).value;\n" +
+         "opener.tagEditInternalInsertImage(" + editor + ", url, layout);\n" +
+         "window.close();\n";
+    if (TAGEDIT_IMAGES.length > 0) {
+        tagEditInternalCreateDialog("Insert Image",
+                                    "Choose image to insert and it's layout.",
+                                    html,
+                                    js);
+    } else {
+        alert("No images available for insertion.");
+    }
+}
+
+/**
+ * Inserts an image.
+ *
+ * @param editor             the editor number
+ * @param url                the URL
+ * @param layout             the layout style
+ */
+function tagEditInternalInsertImage(editor, url, layout) {
+    var  tag;
+
+    if (layout != "") {
+        tag = "<image url=" + url + " layout=" + layout + ">";
+    } else {
+        tag = "<image url=" + url + ">";
+    }
+    tagEditInternalInsert(editor, tag, null);
+    tagEditInternalStoreUndo(editor);
 }
 
 /**
@@ -551,4 +651,66 @@ function tagEditInternalMouseDown(event) {
  */
 function tagEditInternalMouseUp(event) {
     this.className = "buttonup";
+}
+
+/**
+ * Creates a dialog.
+ *
+ * @param title              the dialog title
+ * @param text               the dialog help text
+ * @param form               the form HTML
+ * @param script             the JavaScript for the insert button
+ */
+function tagEditInternalCreateDialog(title, text, form, script) {
+    var  win;
+    var  html;
+
+    html = "<html>\n" +
+           "<head>\n" +
+           "<title>" + title + "</title>\n" +
+           "<style type='text/css'>\n" +
+           "h1     { margin-bottom: 0.5em; padding-left: 5px;\n" +
+           "         font-size: 12pt; background: rgb(160,160,160);\n" +
+           "         color: white; }\n" +
+           "p      { margin-top: 0.5em; margin-bottom: 0.5em; }\n" +
+           "table  { font-size: 10pt; }\n" +
+           "th     { text-align: left; }\n" +
+           "button { margin: 7px; font-weight: bold; }\n" +
+           "</style>\n" +
+           "<script type='text/javascript'>\n" +
+           "function doCancel() {\n" +
+           "window.close();\n" +
+           "}\n" +
+           "function doInsert() {\n" +
+           script +
+           "}\n" +
+           "</script>\n" +
+           "</head>\n" +
+           "<body>\n" +
+           "<form method='post' accept-charset='UTF-8'>\n" +
+           "<table width='100%'>\n" +
+           "<tr>\n" +
+           "<td colspan='2'>\n" +
+           "<h1>" + title + "</h1>\n" +
+           "<p>" + text + "</p>\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           form +
+           "<tr>\n" +
+           "<td colspan='2' style='text-align: right;'>\n" +
+           "<button type='button' onclick='doCancel();'>\n" +
+           "Cancel\n" +
+           "</button>\n" +
+           "<button type='button' onclick='doInsert()'>\n" +
+           "Insert\n" +
+           "</button>\n" +
+           "</td>\n" +
+           "</tr>\n" +
+           "</table>\n" +
+           "</form>\n" +
+           "</body>\n" +
+           "</html>\n";
+    win = utilOpenDialog("", 320, 170);
+    win.document.write(html);
+    win.document.close();
 }

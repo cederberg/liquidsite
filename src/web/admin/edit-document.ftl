@@ -7,6 +7,11 @@
     <script type="text/javascript" src="script/tagedit.js"></script>
     <script type="text/javascript">
     function initialize() {
+<#list files as file>
+  <#if file.mimeType?index_of("image/") = 0>
+        tagEditAddImage("${file.name}");
+  </#if>
+</#list>
         utilGetElement("name").focus();
         utilSessionKeepAlive();
     }
