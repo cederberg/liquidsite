@@ -23,13 +23,13 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.GroupData;
 import net.percederberg.liquidsite.dbo.GroupPeer;
 import net.percederberg.liquidsite.dbo.UserGroupData;
 import net.percederberg.liquidsite.dbo.UserGroupPeer;
 
+import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.log.Log;
 
 /**

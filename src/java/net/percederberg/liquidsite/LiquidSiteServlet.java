@@ -34,9 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.liquidsite.util.log.Log;
 
 import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.db.DatabaseConnectionException;
-import net.percederberg.liquidsite.db.DatabaseConnector;
-import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.install.InstallRequestProcessor;
 import net.percederberg.liquidsite.mail.MailException;
 import net.percederberg.liquidsite.mail.MailQueue;
@@ -44,6 +41,10 @@ import net.percederberg.liquidsite.template.TemplateException;
 import net.percederberg.liquidsite.template.TemplateManager;
 import net.percederberg.liquidsite.web.MultiPartRequest;
 import net.percederberg.liquidsite.web.Request;
+
+import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseConnector;
+import org.liquidsite.util.db.MySQLDatabaseConnector;
 
 /**
  * A front controller servlet. This class handles all incoming HTTP

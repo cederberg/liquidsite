@@ -21,8 +21,9 @@
 
 package net.percederberg.liquidsite.content;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
+
+import org.liquidsite.util.db.DatabaseConnection;
 
 /**
  * A web site folder.

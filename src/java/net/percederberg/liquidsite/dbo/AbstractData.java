@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.db.DatabaseDataException;
-import net.percederberg.liquidsite.db.DatabaseResults;
+import org.liquidsite.util.db.DatabaseDataException;
+import org.liquidsite.util.db.DatabaseResults;
 
 /**
  * An abstract data object. This is the base class for all the data

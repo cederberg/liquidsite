@@ -24,10 +24,9 @@ package net.percederberg.liquidsite.content;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseConnectionException;
-import net.percederberg.liquidsite.db.DatabaseConnector;
-
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.log.Log;
 
 /**

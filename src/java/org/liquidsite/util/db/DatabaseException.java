@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.db;
+package org.liquidsite.util.db;
 
 /**
  * A database exception. This exception is thrown when a database

@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.DomainData;
 import net.percederberg.liquidsite.dbo.DomainPeer;
 
+import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.log.Log;
 
 /**

@@ -30,12 +30,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseConnectionException;
-import net.percederberg.liquidsite.db.DatabaseConnector;
 import net.percederberg.liquidsite.dbo.ConfigurationData;
 import net.percederberg.liquidsite.dbo.ConfigurationPeer;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseConnector;
 
 /**
  * The application configuration. This class contains support for

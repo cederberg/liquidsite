@@ -19,7 +19,7 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.db;
+package org.liquidsite.util.db;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

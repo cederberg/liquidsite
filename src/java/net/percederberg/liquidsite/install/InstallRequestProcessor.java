@@ -38,12 +38,12 @@ import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.User;
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseConnectionException;
-import net.percederberg.liquidsite.db.DatabaseException;
-import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.web.Request;
 
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseException;
+import org.liquidsite.util.db.MySQLDatabaseConnector;
 import org.liquidsite.util.log.Log;
 
 /**

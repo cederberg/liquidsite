@@ -1,5 +1,5 @@
 /*
- * DatabaseDataException.java
+ * DatabaseConnectionException.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,26 +19,42 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.db;
+package org.liquidsite.util.db;
 
 /**
- * A database data exception. This exception is thrown when the
- * results of a database query or statement didn't match the expected
- * results. This is normally due to references to an invalid column
- * name, an incompatible data type, or a row or column index being
- * out of bounds.
+ * A database connection exception. This exception is thrown when a
+ * connection to the database couldn't be established.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DatabaseDataException extends Exception {
+public class DatabaseConnectionException extends Exception {
 
     /**
-     * Creates a new database data exception.
+     * Creates a new database connection exception.
      *
      * @param message        the error message
      */
-    public DatabaseDataException(String message) {
+    public DatabaseConnectionException(String message) {
         super(message);
+    }
+
+    /**
+     * Creates a new database connection exception.
+     *
+     * @param cause          the root cause to the error
+     */
+    public DatabaseConnectionException(Exception cause) {
+        this("couldn't connect to database", cause);
+    }
+
+    /**
+     * Creates a new database connection exception.
+     *
+     * @param message        the error message
+     * @param cause          the root cause to the error
+     */
+    public DatabaseConnectionException(String message, Exception cause) {
+        super(message + ": " + cause.getMessage());
     }
 }

@@ -26,7 +26,8 @@ import java.io.File;
 import javax.servlet.ServletContext;
 
 import net.percederberg.liquidsite.content.ContentManager;
-import net.percederberg.liquidsite.db.DatabaseConnector;
+
+import org.liquidsite.util.db.DatabaseConnector;
 
 /**
  * The application context. This interface provides the basic

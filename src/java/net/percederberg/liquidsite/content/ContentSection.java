@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
+
+import org.liquidsite.util.db.DatabaseConnection;
 
 /**
  * A content section.

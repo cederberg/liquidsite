@@ -26,17 +26,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseConnectionException;
-import net.percederberg.liquidsite.db.DatabaseDataException;
-import net.percederberg.liquidsite.db.DatabaseException;
-import net.percederberg.liquidsite.db.DatabaseQuery;
-import net.percederberg.liquidsite.db.DatabaseResults;
-import net.percederberg.liquidsite.db.MySQLDatabaseConnector;
 import net.percederberg.liquidsite.dbo.ContentPeer;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.PermissionPeer;
 
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseDataException;
+import org.liquidsite.util.db.DatabaseException;
+import org.liquidsite.util.db.DatabaseQuery;
+import org.liquidsite.util.db.DatabaseResults;
+import org.liquidsite.util.db.MySQLDatabaseConnector;
 import org.liquidsite.util.log.Log;
 
 /**

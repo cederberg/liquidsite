@@ -28,13 +28,13 @@ import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.DatabaseObjectException;
 import net.percederberg.liquidsite.dbo.UserData;
 import net.percederberg.liquidsite.dbo.UserGroupData;
 import net.percederberg.liquidsite.dbo.UserGroupPeer;
 import net.percederberg.liquidsite.dbo.UserPeer;
 
+import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.log.Log;
 
 /**

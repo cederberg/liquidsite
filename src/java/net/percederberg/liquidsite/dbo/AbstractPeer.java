@@ -23,12 +23,11 @@ package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseDataException;
-import net.percederberg.liquidsite.db.DatabaseException;
-import net.percederberg.liquidsite.db.DatabaseQuery;
-import net.percederberg.liquidsite.db.DatabaseResults;
-
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseDataException;
+import org.liquidsite.util.db.DatabaseException;
+import org.liquidsite.util.db.DatabaseQuery;
+import org.liquidsite.util.db.DatabaseResults;
 import org.liquidsite.util.log.Log;
 
 /**

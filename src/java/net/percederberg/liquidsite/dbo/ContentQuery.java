@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.db.DatabaseQuery;
+import org.liquidsite.util.db.DatabaseQuery;
 
 /**
  * A content database query. This class is used to compose complex

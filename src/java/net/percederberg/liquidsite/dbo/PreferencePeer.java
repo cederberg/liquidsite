@@ -23,8 +23,8 @@ package net.percederberg.liquidsite.dbo;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseQuery;
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseQuery;
 
 /**
  * A user preference database peer. This class contains static methods

@@ -28,8 +28,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.dbo.ContentData;
+
+import org.liquidsite.util.db.DatabaseConnection;
 
 /**
  * A web site file.

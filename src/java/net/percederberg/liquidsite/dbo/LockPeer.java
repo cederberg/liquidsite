@@ -21,8 +21,8 @@
 
 package net.percederberg.liquidsite.dbo;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
-import net.percederberg.liquidsite.db.DatabaseQuery;
+import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.util.db.DatabaseQuery;
 
 /**
  * A content lock database peer. This class contains static methods
