@@ -38,12 +38,18 @@ public class LiquidSiteBean {
     private Request request;
 
     /**
+     * The page bean.
+     */
+    private PageBean page;
+
+    /**
      * Creates a new LiquidSite template bean.
      * 
      * @param request        the request object
      */
     LiquidSiteBean(Request request) {
         this.request = request;
+        this.page = new PageBean(request);
     }
 
     /**
@@ -75,5 +81,14 @@ public class LiquidSiteBean {
         } else {
             return request.getUser().getName(); 
         }
+    }
+    
+    /**
+     * Returns the page bean for the current page. 
+     * 
+     * @return the page bean for the current page
+     */
+    public PageBean getPage() {
+        return page;
     }
 }

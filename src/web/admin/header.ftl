@@ -40,49 +40,38 @@
       </tr>
       <tr>
         <td class="space">&nbsp;</td>
+<#macro menutab name page isindex=false>
+        <td class="space">&nbsp;</td>
+  <#if liquidsite.page.path?ends_with(page)>
+        <td class="active"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='active'">
+          <strong>${name}</strong>
+        </td>
+  <#elseif isindex && liquidsite.page.path?ends_with("/")>
+        <td class="active"
+            onclick="window.location='${page}'"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='active'">
+          <strong>${name}</strong>
+        </td>
+  <#else>
+        <td class="inactive"
+            onclick="window.location='${page}'"
+            onmouseover="this.className='hoover'"
+            onmouseout="this.className='active'">
+          <a href="${page}">${name}</a>
+        </td>
+  </#if>
+</#macro>
 <#if liquidsite.user?has_content>
-        <td class="space">&nbsp;</td>
-        <td class="active"
-            onclick="window.location='home.html'"
-            onmouseover="this.className='hoover'"
-            onmouseout="this.className='active'">
-          <a href="home.html">Home</a>
-        </td>
-        <td class="space">&nbsp;</td>
-        <td class="inactive"
-            onclick="window.location='site.html'"
-            onmouseover="this.className='hoover'"
-            onmouseout="this.className='inactive'">
-          <a href="site.html">Site</a>
-        </td>
-        <td class="space">&nbsp;</td>
-        <td class="inactive"
-            onclick="window.location='content.html'"
-            onmouseover="this.className='hoover'"
-            onmouseout="this.className='inactive'">
-          <a href="content.html">Content</a>
-        </td>
-        <td class="space">&nbsp;</td>
-        <td class="inactive"
-            onclick="window.location='users.html'"
-            onmouseover="this.className='hoover'"
-            onmouseout="this.className='inactive'">
-          <a href="users.html">Users</a>
-        </td>
-        <td class="space">&nbsp;</td>
-        <td class="inactive"
-            onclick="window.location='system.html'"
-            onmouseover="this.className='hoover'"
-            onmouseout="this.className='inactive'">
-          <a href="system.html">System</a>
-        </td>
+  <@menutab name="Home" page="home.html" isindex=true />
+  <@menutab name="Site" page="site.html" />
+  <@menutab name="Content" page="content.html" />
+  <@menutab name="Users" page="users.html" />
+  <@menutab name="System" page="system.html" />
 <#else>
-        <td class="space">&nbsp;</td>
-        <td class="active"
-            onmouseover="this.className='hoover'"
-            onmouseout="this.className='active'">
-          <strong>Login</strong>
-        </td>
+  <@menutab name="Login" page=liquidsite.page.path />
 </#if>
         <td class="filler">&nbsp;</td>
       </tr>
