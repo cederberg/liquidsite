@@ -53,6 +53,7 @@ public class UserView extends AdminView {
      * Creates a new user view helper.
      */
     UserView() {
+        // Nothing to initialize
     }
 
     /**
@@ -191,11 +192,9 @@ public class UserView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
      */
     public void viewEditUser(Request request, Domain domain, User user)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
         String     defaultName;
         boolean    defaultEnabled;
@@ -272,15 +271,8 @@ public class UserView extends AdminView {
      *
      * @param request        the request object
      * @param group          the group to edit, or null to add new
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
      */
-    public void viewEditGroup(Request request, Group group)
-        throws ContentException, ContentSecurityException {
-
+    public void viewEditGroup(Request request, Group group) {
         String  defaultName;
         String  defaultDescription;
         String  defaultComment;

@@ -57,6 +57,7 @@ public class ScriptView {
      * Creates a new admin script helper.
      */
     ScriptView() {
+        // Nothing to initialize
     }
 
     /**

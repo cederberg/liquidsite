@@ -63,27 +63,27 @@ public class ContentEditFormHandler extends AdminFormHandler {
     /**
      * The section form validator.
      */
-    private FormValidator section = new FormValidator();
+    private FormValidator sectionValidator = new FormValidator();
 
     /**
      * The document form validator.
      */
-    private FormValidator document = new FormValidator();
+    private FormValidator documentValidator = new FormValidator();
 
     /**
      * The forum form validator.
      */
-    private FormValidator forum = new FormValidator();
+    private FormValidator forumValidator = new FormValidator();
 
     /**
      * The topic form validator.
      */
-    private FormValidator topic = new FormValidator();
+    private FormValidator topicValidator = new FormValidator();
 
     /**
      * The post form validator.
      */
-    private FormValidator post = new FormValidator();
+    private FormValidator postValidator = new FormValidator();
 
     /**
      * Returns an instance of this class. If a prior instance has
@@ -116,40 +116,52 @@ public class ContentEditFormHandler extends AdminFormHandler {
         String  error;
 
         // Add and edit section validator
-        section.addRequiredConstraint("name", "No section name specified");
+        error = "No section name specified";
+        sectionValidator.addRequiredConstraint("name", error);
         error = "Section name contains invalid character";
-        section.addCharacterConstraint("name", CONTENT_CHARS, error);
+        sectionValidator.addCharacterConstraint("name",
+                                                CONTENT_CHARS,
+                                                error);
         error = "No revision comment specified";
-        section.addRequiredConstraint("comment", error);
+        sectionValidator.addRequiredConstraint("comment", error);
 
         // Add and edit document validator
-        document.addRequiredConstraint("name", "No document name specified");
+        error = "No document name specified";
+        documentValidator.addRequiredConstraint("name", error);
         error = "Document name contains invalid character";
-        document.addCharacterConstraint("name", CONTENT_CHARS, error);
+        documentValidator.addCharacterConstraint("name",
+                                                 CONTENT_CHARS,
+                                                 error);
         error = "No revision comment specified";
-        document.addRequiredConstraint("comment", error);
+        documentValidator.addRequiredConstraint("comment", error);
 
         // Add and edit forum validator
-        forum.addRequiredConstraint("name", "No forum name specified");
+        error = "No forum name specified";
+        forumValidator.addRequiredConstraint("name", error);
         error = "Forum name contains invalid character";
-        forum.addCharacterConstraint("name", CONTENT_CHARS, error);
-        forum.addRequiredConstraint("realname",
-                                    "No real forum name specified");
-        forum.addRequiredConstraint("description",
-                                    "No forum description specified");
+        forumValidator.addCharacterConstraint("name",
+                                              CONTENT_CHARS,
+                                              error);
+        error = "No real forum name specified";
+        forumValidator.addRequiredConstraint("realname", error);
+        error = "No forum description specified";
+        forumValidator.addRequiredConstraint("description", error);
         error = "No revision comment specified";
-        forum.addRequiredConstraint("comment", error);
+        forumValidator.addRequiredConstraint("comment", error);
 
         // Add and edit topic validator
-        topic.addRequiredConstraint("subject", "No topic subject specified");
+        error = "No topic subject specified";
+        topicValidator.addRequiredConstraint("subject", error);
         error = "No revision comment specified";
-        topic.addRequiredConstraint("comment", error);
+        topicValidator.addRequiredConstraint("comment", error);
 
         // Add and edit post validator
-        post.addRequiredConstraint("subject", "No post subject specified");
-        post.addRequiredConstraint("text", "No post text specified");
+        error = "No post subject specified";
+        postValidator.addRequiredConstraint("subject", error);
+        error = "No post text specified";
+        postValidator.addRequiredConstraint("text", error);
         error = "No revision comment specified";
-        post.addRequiredConstraint("comment", error);
+        postValidator.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -213,17 +225,17 @@ public class ContentEditFormHandler extends AdminFormHandler {
         String          message;
 
         if (category.equals("section")) {
-            section.validate(request);
+            sectionValidator.validate(request);
         } else if (category.equals("document")) {
             validateDocument(request);
         } else if (category.equals("file")) {
             SiteEditFormHandler.getInstance().validateStep(request, step);
         } else if (category.equals("forum")) {
-            forum.validate(request);
+            forumValidator.validate(request);
         } else if (category.equals("topic")) {
-            topic.validate(request);
+            topicValidator.validate(request);
         } else if (category.equals("post")) {
-            post.validate(request);
+            postValidator.validate(request);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
@@ -268,7 +280,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
                 throw new FormValidationException("upload", message);
             }
         } else {
-            document.validate(request);
+            documentValidator.validate(request);
             ref = AdminUtils.getReference(request);
             if (ref instanceof ContentDocument) {
                 doc = (ContentDocument) ref;

@@ -64,7 +64,7 @@ public class MailQueue {
     private static final String DEFAULT_FOOTER = 
         "\n\n" +
         "-----------------------------------------------------------------\n" +
-        "Message created and sent through Liquid Site (www.liquidsite.org)\n" +
+        "Message created and sent through Liquid Site (www.liquidsite.net)\n" +
         "If you are not the intended recipient of this message, please\n" +
         "forward it to abuse@liquidsite.net for investigation. Be sure to\n" +
         "include the whole message, including the following lines.\n";
@@ -102,6 +102,8 @@ public class MailQueue {
 
     /**
      * Returns the mail queue instance.
+     *
+     * @return the mail queue instance 
      */
     public static MailQueue getInstance() {
         if (instance == null) {
@@ -115,6 +117,7 @@ public class MailQueue {
      * called once to avoid duplicate queues.
      */
     private MailQueue() {
+        // No further initialization needed
     }
 
     /**

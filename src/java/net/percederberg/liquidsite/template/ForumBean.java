@@ -257,6 +257,9 @@ public class ForumBean extends ContentBean {
      *
      * @return the topic bean for the found topic, or
      *         null if no matching topics were found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     private TopicBean createTopic(ContentSelector selector)
         throws ContentException {

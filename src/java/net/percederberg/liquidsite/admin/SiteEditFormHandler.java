@@ -61,37 +61,37 @@ class SiteEditFormHandler extends AdminFormHandler {
     /**
      * The domain form validator.
      */
-    private FormValidator domain = new FormValidator();
+    private FormValidator domainValidator = new FormValidator();
 
     /**
      * The site form validator.
      */
-    private FormValidator site = new FormValidator();
+    private FormValidator siteValidator = new FormValidator();
 
     /**
      * The folder form validator.
      */
-    private FormValidator folder = new FormValidator();
+    private FormValidator folderValidator = new FormValidator();
 
     /**
      * The page form validator.
      */
-    private FormValidator page = new FormValidator();
+    private FormValidator pageValidator = new FormValidator();
 
     /**
      * The file form validator.
      */
-    private FormValidator file = new FormValidator();
+    private FormValidator fileValidator = new FormValidator();
 
     /**
      * The translator form validator.
      */
-    private FormValidator translator = new FormValidator();
+    private FormValidator translatorValidator = new FormValidator();
 
     /**
      * The template form validator.
      */
-    private FormValidator template = new FormValidator();
+    private FormValidator templateValidator = new FormValidator();
 
     /**
      * Returns an instance of this class. If a prior instance has
@@ -124,68 +124,107 @@ class SiteEditFormHandler extends AdminFormHandler {
         String  error;
 
         // Add and edit domain validator
-        domain.addRequiredConstraint("name", "No domain name specified");
+        error = "No domain name specified";
+        domainValidator.addRequiredConstraint("name", error);
         error = "Domain name cannot be longer than 30 characters";
-        domain.addLengthConstraint("name", 0, 30, error);
+        domainValidator.addLengthConstraint("name", 0, 30, error);
         error = "Domain name must be upper-case, invalid character";
-        domain.addCharacterConstraint("name", DOMAIN_CHARS, error);
+        domainValidator.addCharacterConstraint("name", DOMAIN_CHARS, error);
         error = "No description specified";
-        domain.addRequiredConstraint("description", error);
+        domainValidator.addRequiredConstraint("description", error);
         error = "Host name must be lower-case, invalid character";
-        domain.addCharacterConstraint("host.0.name", HOST_CHARS, error);
-        domain.addCharacterConstraint("host.1.name", HOST_CHARS, error);
-        domain.addCharacterConstraint("host.2.name", HOST_CHARS, error);
-        domain.addCharacterConstraint("host.3.name", HOST_CHARS, error);
-        domain.addCharacterConstraint("host.4.name", HOST_CHARS, error);
+        domainValidator.addCharacterConstraint("host.0.name",
+                                               HOST_CHARS,
+                                               error);
+        domainValidator.addCharacterConstraint("host.1.name",
+                                               HOST_CHARS,
+                                               error);
+        domainValidator.addCharacterConstraint("host.2.name",
+                                               HOST_CHARS,
+                                               error);
+        domainValidator.addCharacterConstraint("host.3.name",
+                                               HOST_CHARS,
+                                               error);
+        domainValidator.addCharacterConstraint("host.4.name",
+                                               HOST_CHARS,
+                                               error);
 
         // Add and edit site validator
-        site.addRequiredConstraint("name", "No site name specified");
-        site.addRequiredConstraint("protocol", "No protocol specified");
+        error = "No site name specified";
+        siteValidator.addRequiredConstraint("name", error);
+        error = "No protocol specified";
+        siteValidator.addRequiredConstraint("protocol", error);
         error = "Protocol must be either 'http' or 'https', " +
                 "invalid character";
-        site.addCharacterConstraint("protocol", "https", error);
-        site.addRequiredConstraint("host", "No host name specified");
+        siteValidator.addCharacterConstraint("protocol", "https", error);
+        error = "No host name specified";
+        siteValidator.addRequiredConstraint("host", error);
         error = "Host name must be lower-case, invalid character";
-        site.addCharacterConstraint("host", HOST_CHARS + "*", error);
-        site.addRequiredConstraint("port", "No port number specified");
+        siteValidator.addCharacterConstraint("host",
+                                             HOST_CHARS + "*",
+                                             error);
+        error = "No port number specified";
+        siteValidator.addRequiredConstraint("port", error);
         error = "Port number must be numeric, invalid character";
-        site.addCharacterConstraint("port", NUMBERS, error);
-        site.addRequiredConstraint("dir", "No base directory specified");
+        siteValidator.addCharacterConstraint("port", NUMBERS, error);
+        error = "No base directory specified";
+        siteValidator.addRequiredConstraint("dir", error);
         error = "Base directory contains invalid character";
-        site.addCharacterConstraint("dir", CONTENT_CHARS + "/", error);
+        siteValidator.addCharacterConstraint("dir",
+                                             CONTENT_CHARS + "/",
+                                             error);
         error = "No revision comment specified";
-        site.addRequiredConstraint("comment", error);
+        siteValidator.addRequiredConstraint("comment", error);
 
         // Add and edit folder validator
-        folder.addRequiredConstraint("name", "No folder name specified");
+        error = "No folder name specified";
+        folderValidator.addRequiredConstraint("name", error);
         error = "Folder name contains invalid character";
-        folder.addCharacterConstraint("name", CONTENT_CHARS, error);
-        folder.addRequiredConstraint("comment", "No comment specified");
+        folderValidator.addCharacterConstraint("name",
+                                               CONTENT_CHARS,
+                                               error);
+        error = "No comment specified";
+        folderValidator.addRequiredConstraint("comment", error);
 
         // Add and edit page validator
-        page.addRequiredConstraint("name", "No page name specified");
+        error = "No page name specified";
+        pageValidator.addRequiredConstraint("name", error);
         error = "Page name contains invalid character";
-        page.addCharacterConstraint("name", CONTENT_CHARS, error);
-        page.addRequiredConstraint("comment", "No comment specified");
+        pageValidator.addCharacterConstraint("name",
+                                             CONTENT_CHARS,
+                                             error);
+        error = "No comment specified";
+        pageValidator.addRequiredConstraint("comment", error);
 
         // Add and edit file validator
-        file.addRequiredConstraint("name", "No file name specified");
+        error = "No file name specified";
+        fileValidator.addRequiredConstraint("name", error);
         error = "File name contains invalid character";
-        file.addCharacterConstraint("name", CONTENT_CHARS, error);
-        file.addRequiredConstraint("comment", "No comment specified");
+        fileValidator.addCharacterConstraint("name",
+                                             CONTENT_CHARS,
+                                             error);
+        error = "No comment specified";
+        fileValidator.addRequiredConstraint("comment", error);
 
         // Add and edit translator validator
         error = "No translator name specified";
-        translator.addRequiredConstraint("name", error);
+        translatorValidator.addRequiredConstraint("name", error);
         error = "File name contains invalid character";
-        translator.addCharacterConstraint("name", CONTENT_CHARS, error);
-        translator.addRequiredConstraint("comment", "No comment specified");
+        translatorValidator.addCharacterConstraint("name",
+                                                   CONTENT_CHARS,
+                                                   error);
+        error = "No comment specified";
+        translatorValidator.addRequiredConstraint("comment", error);
 
         // Add and edit template validator
-        template.addRequiredConstraint("name", "No template name specified");
+        error = "No template name specified";
+        templateValidator.addRequiredConstraint("name", error);
         error = "Template name contains invalid character";
-        template.addCharacterConstraint("name", CONTENT_CHARS, error);
-        template.addRequiredConstraint("comment", "No comment specified");
+        templateValidator.addCharacterConstraint("name",
+                                                 CONTENT_CHARS,
+                                                 error);
+        error = "No comment specified";
+        templateValidator.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -248,7 +287,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         String  message;
 
         if (category.equals("domain")) {
-            domain.validate(request);
+            domainValidator.validate(request);
             if (!request.getParameter("name").equals("ROOT")
              && request.getParameter("host.0.name", "").length() <= 0) {
 
@@ -256,17 +295,17 @@ class SiteEditFormHandler extends AdminFormHandler {
                 throw new FormValidationException("host.0.name", message);
             }
         } else if (category.equals("site")) {
-            site.validate(request);
+            siteValidator.validate(request);
         } else if (category.equals("folder")) {
-            folder.validate(request);
+            folderValidator.validate(request);
         } else if (category.equals("page")) {
-            page.validate(request);
+            pageValidator.validate(request);
         } else if (category.equals("file")) {
-            file.validate(request);
+            fileValidator.validate(request);
         } else if (category.equals("translator")) {
-            translator.validate(request);
+            translatorValidator.validate(request);
         } else if (category.equals("template")) {
-            template.validate(request);
+            templateValidator.validate(request);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);

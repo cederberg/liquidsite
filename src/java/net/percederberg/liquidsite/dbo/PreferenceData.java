@@ -58,5 +58,6 @@ public class PreferenceData extends AbstractData {
      * Creates a new preference data object with default values.
      */
     public PreferenceData() {
+        // No further initialization needed
     }
 }

@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.ArrayList;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
@@ -84,6 +85,7 @@ public class MailMessage {
      * Creates a new empty mail message.
      */
     public MailMessage() {
+        // No further initialization needed
     }
 
     /**
@@ -301,7 +303,7 @@ public class MailMessage {
                 }
                 addresses = new InternetAddress[1];
                 addresses[0] = (InternetAddress) recipients.get(i);
-                msgs[i].setRecipients(MimeMessage.RecipientType.TO, addresses);
+                msgs[i].setRecipients(Message.RecipientType.TO, addresses);
                 msgs[i].setSubject(subject, CHARACTER_SET);
                 msgs[i].setText(text, CHARACTER_SET);
                 msgs[i].saveChanges();

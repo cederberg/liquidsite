@@ -60,6 +60,7 @@ public class ContentView extends AdminView {
      * Creates a new content view helper.
      */
     ContentView() {
+        // Nothing to initialize
     }
 
     /**
@@ -897,6 +898,7 @@ public class ContentView extends AdminView {
      * method will not add the content files themselves, but rather a
      * hash map with selected attributes.
      *
+     * @param user           the current user
      * @param content        the content object
      *
      * @return the list of files found

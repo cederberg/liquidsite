@@ -37,6 +37,7 @@ public class HomeView {
      * Creates a new home view helper.
      */
     HomeView() {
+        // Nothing to initialize
     }
 
     /**

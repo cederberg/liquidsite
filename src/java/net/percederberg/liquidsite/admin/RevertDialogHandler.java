@@ -73,6 +73,7 @@ class RevertDialogHandler extends AdminDialogHandler {
      * @param step           the workflow step
      */
     protected void validateStep(Request request, int step) {
+        // Nothing to do here
     }
 
     /**

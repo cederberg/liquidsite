@@ -234,6 +234,8 @@ public class LiquidSiteBean {
      * Returns the number of documents in the specified section and
      * any subsections.
      *
+     * @param path           the section path
+     *
      * @return the number of documents found
      */
     public int countDocuments(String path) {

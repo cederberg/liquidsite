@@ -97,6 +97,7 @@ public class AdminRequestProcessor extends RequestProcessor {
      * internal resources used by this processor.
      */
     public void destroy() {
+        // Nothing to be done
     }
 
     /**
@@ -105,6 +106,8 @@ public class AdminRequestProcessor extends RequestProcessor {
      * @param request        the request object
      */
     public void process(Request request) {
+        // Requests must be either authorized or unauthorized,
+        // which is decided in the default request processor.
     }
 
     /**
@@ -233,13 +236,8 @@ public class AdminRequestProcessor extends RequestProcessor {
      * Processes a view site request.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void processViewSite(Request request)
-        throws RequestException {
-
+    private void processViewSite(Request request) {
         try {
             AdminView.SITE.viewSite(request);
         } catch (ContentException e) {
@@ -255,13 +253,8 @@ public class AdminRequestProcessor extends RequestProcessor {
      * Processes a view content request.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void processViewContent(Request request)
-        throws RequestException {
-
+    private void processViewContent(Request request) {
         try {
             AdminView.CONTENT.viewContent(request);
         } catch (ContentException e) {
@@ -277,13 +270,8 @@ public class AdminRequestProcessor extends RequestProcessor {
      * Processes a view users request.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void processViewUsers(Request request)
-        throws RequestException {
-
+    private void processViewUsers(Request request) {
         try {
             AdminView.USER.viewUsers(request);
         } catch (ContentException e) {
@@ -299,13 +287,8 @@ public class AdminRequestProcessor extends RequestProcessor {
      * Processes a view user or group detail request.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void processViewUserDetails(Request request)
-        throws RequestException {
-
+    private void processViewUserDetails(Request request) {
         try {
             AdminView.USER.viewGroup(request);
         } catch (ContentException e) {

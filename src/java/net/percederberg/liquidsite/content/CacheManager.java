@@ -106,6 +106,7 @@ class CacheManager {
      * Creates a new content cache manager.
      */
     private CacheManager() {
+        // No further initializations needed
     }
 
     /**

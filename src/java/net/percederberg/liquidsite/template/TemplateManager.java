@@ -186,18 +186,19 @@ public class TemplateManager {
          * The content pages to load. This is a thread local variable
          * as the loader needs to be thread-safe.
          */
-        private ThreadLocal page = new ThreadLocal();
+        private ThreadLocal pages = new ThreadLocal();
 
         /**
          * The user performing the operation. This is a thread local
          * variable as the loader needs to be thread-safe.
          */
-        private ThreadLocal user = new ThreadLocal();
+        private ThreadLocal users = new ThreadLocal();
 
         /**
          * Creates a new page template loader.
          */
         public PageLoader() {
+            // No further initialization needed
         }
 
         /**
@@ -206,7 +207,7 @@ public class TemplateManager {
          * @return the content page to load
          */
         public ContentPage getPage() {
-            return (ContentPage) page.get();
+            return (ContentPage) pages.get();
         }
 
         /**
@@ -217,7 +218,7 @@ public class TemplateManager {
          * @param page           the content page to load, or null
          */
         public void setPage(ContentPage page) {
-            this.page.set(page);
+            pages.set(page);
         }
 
         /**
@@ -227,7 +228,7 @@ public class TemplateManager {
          * @return the user performing the operation
          */
         public User getUser() {
-            return (User) user.get();
+            return (User) users.get();
         }
 
         /**
@@ -238,7 +239,7 @@ public class TemplateManager {
          * @param user           the user performing the operation
          */
         public void setUser(User user) {
-            this.user.set(user);
+            users.set(user);
         }
 
         /**
@@ -322,6 +323,7 @@ public class TemplateManager {
          * @param source         the template source
          */
         public void closeTemplateSource(Object source) {
+            // Nothing to do here
         }
     }
 }

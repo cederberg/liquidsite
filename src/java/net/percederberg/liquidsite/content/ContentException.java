@@ -31,11 +31,6 @@ package net.percederberg.liquidsite.content;
 public class ContentException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new content exception.
      *
      * @param message        the error message
@@ -61,6 +56,5 @@ public class ContentException extends Exception {
      */
     public ContentException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }

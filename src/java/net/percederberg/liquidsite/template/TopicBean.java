@@ -278,6 +278,9 @@ public class TopicBean extends ContentBean {
      *
      * @return the post bean for the found post, or
      *         null if no matching posts were found
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     private PostBean createPost(ContentSelector selector)
         throws ContentException {

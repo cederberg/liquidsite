@@ -70,6 +70,7 @@ class SecurityManager {
      * Creates a new content security manager.
      */
     private SecurityManager() {
+        // No initialization needed
     }
 
     /**
@@ -392,6 +393,8 @@ class SecurityManager {
      * permission lists (for performance reasons) and thus depend
      * purely on inherited permissions.
      *
+     * @param content        the content object to check
+     *
      * @return true if the object can have a permission list, or
      *         false otherwise
      *
@@ -625,7 +628,7 @@ class SecurityManager {
      * modified must also be specified.
      *
      * @param user           the user to check, or null for none
-     * @param group          the group object
+     * @param obj            the group object
      *
      * @throws ContentSecurityException if the user didn't have the
      *             specified access

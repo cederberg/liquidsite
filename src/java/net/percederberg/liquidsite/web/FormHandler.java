@@ -176,6 +176,8 @@ public abstract class FormHandler {
      */
     protected void workflowEntered(Request request)
         throws FormHandlingException {
+
+        // Nothing to do here, but subclasses may override this
     }
 
     /**
@@ -199,6 +201,8 @@ public abstract class FormHandler {
      */
     protected void workflowExited(Request request)
         throws FormHandlingException {
+
+        // Nothing to do here, but subclasses may override this
     }
 
     /**
@@ -211,5 +215,6 @@ public abstract class FormHandler {
      * @param e              the form handling exception
      */
     protected void workflowError(Request request, FormHandlingException e) {
+        // Nothing to do here, but subclasses may override this
     }
 }

@@ -92,11 +92,11 @@ abstract class AdminFormHandler extends FormHandler {
     private String formPage;
 
     /**
-     * The content object lock flag. When this flag is set, the
-     * content objects referenced will be locked and unlocked upon
-     * entering and exiting the workflow.
+     * The automatic content object lock flag. When this flag is set,
+     * the content objects referenced will be locked and unlocked
+     * upon entering and exiting the workflow.
      */
-    private boolean lock;
+    private boolean autoLock;
 
     /**
      * Creates a new administration form handler. If the content lock
@@ -112,7 +112,7 @@ abstract class AdminFormHandler extends FormHandler {
     protected AdminFormHandler(String start, String page, boolean lock) {
         this.startPage = start;
         this.formPage = page;
-        this.lock = lock;
+        this.autoLock = lock;
     }
 
     /**
@@ -229,7 +229,7 @@ abstract class AdminFormHandler extends FormHandler {
         Object  ref;
 
         try {
-            if (lock) {
+            if (autoLock) {
                 ref = AdminUtils.getReference(request);
                 if (ref instanceof Content) {
                     lock((Content) ref, request.getUser(), false);
@@ -339,7 +339,7 @@ abstract class AdminFormHandler extends FormHandler {
 
         Object  ref;
 
-        if (lock) {
+        if (autoLock) {
             try {
                 ref = AdminUtils.getReference(request);
                 if (ref instanceof Content) {
@@ -370,7 +370,7 @@ abstract class AdminFormHandler extends FormHandler {
 
         Object  ref;
 
-        if (lock) {
+        if (autoLock) {
             try {
                 ref = AdminUtils.getReference(request);
                 if (ref instanceof Content) {

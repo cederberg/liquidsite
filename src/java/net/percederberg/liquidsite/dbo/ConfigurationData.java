@@ -46,5 +46,6 @@ public class ConfigurationData extends AbstractData {
      * Creates a new configuration data object with default values.
      */
     public ConfigurationData() {
+        // No further initialization needed
     }
 }

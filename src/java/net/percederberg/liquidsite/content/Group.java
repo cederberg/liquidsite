@@ -468,17 +468,17 @@ public class Group extends PersistentObject {
     private void doUserGroups(DatabaseConnection con)
         throws DatabaseObjectException {
 
-        UserGroupData  data;
+        UserGroupData  userData;
 
         // Handle added users
         if (usersAdded != null) {
             for (int i = 0; i < usersAdded.size(); i++) {
-                data = new UserGroupData();
-                data.setString(UserGroupData.DOMAIN, getDomainName());
-                data.setString(UserGroupData.USER,
+                userData = new UserGroupData();
+                userData.setString(UserGroupData.DOMAIN, getDomainName());
+                userData.setString(UserGroupData.USER,
                                usersAdded.get(i).toString());
-                data.setString(UserGroupData.GROUP, getName());
-                UserGroupPeer.doInsert(data, con);
+                userData.setString(UserGroupData.GROUP, getName());
+                UserGroupPeer.doInsert(userData, con);
             }
             usersAdded = null;
         }
@@ -486,12 +486,12 @@ public class Group extends PersistentObject {
         // Handle removed users
         if (usersRemoved != null) {
             for (int i = 0; i < usersRemoved.size(); i++) {
-                data = new UserGroupData();
-                data.setString(UserGroupData.DOMAIN, getDomainName());
-                data.setString(UserGroupData.USER,
+                userData = new UserGroupData();
+                userData.setString(UserGroupData.DOMAIN, getDomainName());
+                userData.setString(UserGroupData.USER,
                                usersRemoved.get(i).toString());
-                data.setString(UserGroupData.GROUP, getName());
-                UserGroupPeer.doDelete(data, con);
+                userData.setString(UserGroupData.GROUP, getName());
+                UserGroupPeer.doDelete(userData, con);
             }
             usersRemoved = null;
         }

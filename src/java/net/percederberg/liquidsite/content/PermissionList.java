@@ -159,7 +159,7 @@ public class PermissionList extends PersistentObject {
      * @param manager        the content manager to use
      * @param domain         the permission reference domain
      * @param content        the permission reference content id
-     * @param dara           the list of permission data objects
+     * @param data           the list of permission data objects
      */
     private PermissionList(ContentManager manager,
                            String domain,

@@ -31,11 +31,6 @@ package net.percederberg.liquidsite.db;
 public class DatabaseConnectionException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new database connection exception.
      *
      * @param message        the error message
@@ -61,6 +56,5 @@ public class DatabaseConnectionException extends Exception {
      */
     public DatabaseConnectionException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }

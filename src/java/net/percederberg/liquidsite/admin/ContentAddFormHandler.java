@@ -86,7 +86,7 @@ public class ContentAddFormHandler extends AdminFormHandler {
         } else if (category.equals("document")) {
             AdminView.CONTENT.viewEditDocument(request, (Content) parent);
         } else if (category.equals("file")) {
-            AdminView.CONTENT.viewEditFile(request, (Content) parent);
+            AdminView.CONTENT.viewEditFile(request, parent);
         } else if (category.equals("forum")) {
             AdminView.CONTENT.viewEditForum(request, (Content) parent);
         } else if (category.equals("topic")) {

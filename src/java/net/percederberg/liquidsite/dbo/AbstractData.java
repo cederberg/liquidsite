@@ -243,6 +243,7 @@ public abstract class AbstractData {
          * Creates a new empty parameter set.
          */
         public ParameterSet() {
+            // No further initialization needed
         }
 
         /**

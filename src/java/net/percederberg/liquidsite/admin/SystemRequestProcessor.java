@@ -43,7 +43,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import net.percederberg.liquidsite.Log;
-import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.admin.view.AdminView;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
@@ -84,6 +83,7 @@ class SystemRequestProcessor {
      * Creates a new administration request processor.
      */
     public SystemRequestProcessor() {
+        // Nothing to initialize
     }
 
     /**
@@ -91,13 +91,8 @@ class SystemRequestProcessor {
      *
      * @param request        the request object
      * @param path           the request path
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    public void process(Request request, String path)
-        throws RequestException {
-
+    public void process(Request request, String path) {
         User  user = request.getUser();
 
         if (user != null && user.isSuperUser()) {
@@ -113,13 +108,8 @@ class SystemRequestProcessor {
      *
      * @param request        the request object
      * @param path           the request path
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void processAuthorized(Request request, String path)
-        throws RequestException {
-
+    private void processAuthorized(Request request, String path) {
         String  action = request.getParameter("action", "");
 
         if (action.equals("restart")) {
@@ -152,11 +142,8 @@ class SystemRequestProcessor {
      * Handles the system restart requests.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void handleRestart(Request request) throws RequestException {
+    private void handleRestart(Request request) {
         try {
             AdminUtils.getContentManager().getApplication().restart();
             AdminView.BASE.viewInfo(request,
@@ -174,11 +161,8 @@ class SystemRequestProcessor {
      * Handles the system backup requests.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void handleBackup(Request request) throws RequestException {
+    private void handleBackup(Request request) {
         SimpleDateFormat  df;
         String            domain;
         String            name;
@@ -216,11 +200,8 @@ class SystemRequestProcessor {
      * Handles the system restore requests.
      *
      * @param request        the request object
-     *
-     * @throws RequestException if the request couldn't be processed
-     *             correctly
      */
-    private void handleRestore(Request request) throws RequestException {
+    private void handleRestore(Request request) {
         File     dir;
         File     file;
         String   domain;
@@ -384,11 +365,9 @@ class SystemRequestProcessor {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
      */
     private void backupXml(PrintWriter out, Domain domain, User user)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
         ContentManager   manager = AdminUtils.getContentManager();
         Group[]          groups;
@@ -458,6 +437,9 @@ class SystemRequestProcessor {
      *
      * @param out            the output stream
      * @param user           the user to backup
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     private void backupXml(PrintWriter out, User user)
         throws ContentException {

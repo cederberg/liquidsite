@@ -61,6 +61,7 @@ public class ForumRequestProcessor extends RequestProcessor {
      * resources used by this processor.
      */
     public void destroy() {
+        // Nothing need to be done
     }
 
     /**
@@ -385,6 +386,9 @@ public class ForumRequestProcessor extends RequestProcessor {
      * @param subject        the message subject
      * @param text           the message text
      * @param user           the user posting the message
+     *
+     * @throws RequestException if an error occurred while storing
+     *             the message
      */
     private void post(ContentForum forum,
                       ContentTopic topic,
@@ -429,6 +433,9 @@ public class ForumRequestProcessor extends RequestProcessor {
      * @param subject        the message subject
      * @param text           the message text
      * @param user           the user posting the message
+     *
+     * @throws RequestException if an error occurred while storing
+     *             the message
      */
     private void edit(ContentPost post,
                       String subject,
@@ -467,6 +474,9 @@ public class ForumRequestProcessor extends RequestProcessor {
      * @param topic          the content topic
      * @param post           the content post
      * @param user           the user deleting the message
+     *
+     * @throws RequestException if an error occurred while deleting
+     *             the message
      */
     private void delete(ContentForum forum,
                         ContentTopic topic,

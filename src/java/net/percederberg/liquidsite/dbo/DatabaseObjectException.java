@@ -32,11 +32,6 @@ package net.percederberg.liquidsite.dbo;
 public class DatabaseObjectException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new database object exception.
      *
      * @param message        the error message
@@ -62,6 +57,5 @@ public class DatabaseObjectException extends Exception {
      */
     public DatabaseObjectException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }

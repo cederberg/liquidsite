@@ -76,5 +76,6 @@ public class UserData extends AbstractData {
      * Creates a new user data object with default values.
      */
     public UserData() {
+        // No further initialization needed
     }
 }

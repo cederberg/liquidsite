@@ -58,12 +58,12 @@ public class UsersEditFormHandler extends AdminFormHandler {
     /**
      * The user form validator.
      */
-    private FormValidator user = new FormValidator();
+    private FormValidator userValidator = new FormValidator();
 
     /**
      * The group form validator.
      */
-    private FormValidator group = new FormValidator();
+    private FormValidator groupValidator = new FormValidator();
 
     /**
      * Returns an instance of this class. If a prior instance has
@@ -96,14 +96,16 @@ public class UsersEditFormHandler extends AdminFormHandler {
         String  error;
 
         // Add and edit user validator
-        user.addRequiredConstraint("name", "No login name specified");
+        error = "No login name specified";
+        userValidator.addRequiredConstraint("name", error);
         error = "Login name contains invalid character";
-        user.addCharacterConstraint("name", USER_CHARS, error);
+        userValidator.addCharacterConstraint("name", USER_CHARS, error);
 
         // Add and edit group validator
-        group.addRequiredConstraint("name", "No group name specified");
+        error = "No group name specified";
+        groupValidator.addRequiredConstraint("name", error);
         error = "Group name contains invalid character";
-        group.addCharacterConstraint("name", USER_CHARS, error);
+        groupValidator.addCharacterConstraint("name", USER_CHARS, error);
     }
 
     /**
@@ -156,7 +158,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
         String  enabled;
 
         if (type.equals("user")) {
-            user.validate(request);
+            userValidator.validate(request);
             domain = request.getParameter("domain", "");
             name = request.getParameter("name");
             enabled = request.getParameter("enabled", "");
@@ -168,7 +170,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
                 throw new FormValidationException("enabled", message);
             }
         } else if (type.equals("group")) {
-            group.validate(request);
+            groupValidator.validate(request);
         } else {
             message = "Unknown object type specified";
             throw new FormValidationException("type", message);

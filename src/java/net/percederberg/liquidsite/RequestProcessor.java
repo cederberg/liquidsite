@@ -182,10 +182,9 @@ public abstract class RequestProcessor {
                                 String name)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = getContentManager();
-        User            user = request.getUser();
-        Content         content;
-        Content[]       children;
+        User       user = request.getUser();
+        Content    content;
+        Content[]  children;
 
         // Check translator children
         content = request.getEnvironment().getTranslator();
@@ -245,7 +244,6 @@ public abstract class RequestProcessor {
                                      String name)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = getContentManager();
         User            user = request.getUser();
         ContentSection  section;
         Content         content = null;
@@ -292,12 +290,11 @@ public abstract class RequestProcessor {
     private Content locateObject(Request request, String path)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = getContentManager();
-        User            user = request.getUser();
-        Content         content;
-        int             id;
-        String          name;
-        int             pos;
+        User     user = request.getUser();
+        Content  content;
+        int      id;
+        String   name;
+        int      pos;
 
         pos = path.indexOf("/");
         if (pos <= 0) {

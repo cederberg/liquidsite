@@ -93,6 +93,7 @@ public class AdminView {
      * Creates a new admin view helper.
      */
     AdminView() {
+        // Nothing to initialize
     }
 
     /**

@@ -36,6 +36,7 @@ public class UtilBean {
      * Creates a new utility bean.
      */
     UtilBean() {
+        // No initialization needed
     }
 
     /**

@@ -251,6 +251,8 @@ public class RequestSession {
 
         /**
          * Returns the session counter instance.
+         *
+         * @return the session counter instance
          */
         public static SessionCounter getInstance() {
             return instance;
@@ -260,6 +262,7 @@ public class RequestSession {
          * Creates a new session counter.
          */
         private SessionCounter() {
+            // No further initialization needed
         }
 
         /**
@@ -301,6 +304,7 @@ public class RequestSession {
          * Creates a new session file manager.
          */
         public SessionFiles() {
+            // No further initialization needed
         }
 
         /**
@@ -377,6 +381,7 @@ public class RequestSession {
          * @param event          the binding event
          */
         public void valueBound(HttpSessionBindingEvent event) {
+            // No need to do anything
         }
 
         /**

@@ -57,6 +57,7 @@ public class SiteView extends AdminView {
      * Creates a new site view helper.
      */
     SiteView() {
+        // Nothing to initialize
     }
 
     /**
@@ -305,11 +306,9 @@ public class SiteView extends AdminView {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the user didn't have the
-     *             required permissions
      */
     public void viewEditTranslator(Request request, Content reference)
-        throws ContentException, ContentSecurityException {
+        throws ContentException {
 
         User               user = request.getUser();
         ContentTranslator  translator;

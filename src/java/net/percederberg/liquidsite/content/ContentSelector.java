@@ -204,6 +204,8 @@ public class ContentSelector {
      * requirements of the content manager.
      *
      * @param manager        the content manager
+     *
+     * @return the content query
      */
     ContentQuery getContentQuery(ContentManager manager) {
         query.requirePublished(!manager.isAdmin());

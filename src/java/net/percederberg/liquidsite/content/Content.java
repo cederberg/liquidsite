@@ -623,6 +623,9 @@ public class Content extends PersistentObject {
      *
      * @return the highest revision number in the database, or
      *         -1 if no revisions are in the database
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     public int getMaxRevisionNumber() throws ContentException {
         Content[]  revisions = getAllRevisions();

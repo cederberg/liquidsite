@@ -57,6 +57,7 @@ public class DatabaseQuery {
      * @see #setSql
      */
     public DatabaseQuery() {
+        // No further initialization here, call the setSql() method
     }
 
     /**

@@ -83,6 +83,7 @@ public class RequestEnvironment {
      * Creates a new request environment.
      */
     public RequestEnvironment() {
+        // No further initialization needed
     }
 
     /**

@@ -35,11 +35,6 @@ package net.percederberg.liquidsite.web;
 public class FormHandlingException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new form handling exception.
      *
      * @param message        the error message
@@ -55,7 +50,6 @@ public class FormHandlingException extends Exception {
      */
     public FormHandlingException(Exception cause) {
         super(cause.getMessage());
-        this.rootCause = cause;
     }
 
     /**
@@ -66,6 +60,5 @@ public class FormHandlingException extends Exception {
      */
     public FormHandlingException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }

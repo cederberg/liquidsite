@@ -669,17 +669,17 @@ public class User extends PersistentObject {
     private void doUserGroups(DatabaseConnection con)
         throws DatabaseObjectException {
 
-        UserGroupData  data;
+        UserGroupData  groupData;
 
         // Handle added groups
         if (groupsAdded != null) {
             for (int i = 0; i < groupsAdded.size(); i++) {
-                data = new UserGroupData();
-                data.setString(UserGroupData.DOMAIN, getDomainName());
-                data.setString(UserGroupData.USER, getName());
-                data.setString(UserGroupData.GROUP,
+                groupData = new UserGroupData();
+                groupData.setString(UserGroupData.DOMAIN, getDomainName());
+                groupData.setString(UserGroupData.USER, getName());
+                groupData.setString(UserGroupData.GROUP,
                                groupsAdded.get(i).toString());
-                UserGroupPeer.doInsert(data, con);
+                UserGroupPeer.doInsert(groupData, con);
             }
             groupsAdded = null;
         }
@@ -687,12 +687,12 @@ public class User extends PersistentObject {
         // Handle removed groups
         if (groupsRemoved != null) {
             for (int i = 0; i < groupsRemoved.size(); i++) {
-                data = new UserGroupData();
-                data.setString(UserGroupData.DOMAIN, getDomainName());
-                data.setString(UserGroupData.USER, getName());
-                data.setString(UserGroupData.GROUP,
+                groupData = new UserGroupData();
+                groupData.setString(UserGroupData.DOMAIN, getDomainName());
+                groupData.setString(UserGroupData.USER, getName());
+                groupData.setString(UserGroupData.GROUP,
                                groupsRemoved.get(i).toString());
-                UserGroupPeer.doDelete(data, con);
+                UserGroupPeer.doDelete(groupData, con);
             }
             groupsRemoved = null;
         }
@@ -703,11 +703,11 @@ public class User extends PersistentObject {
      * calculation is irreversible, and is calculated with the MD5
      * algorithm and encoded with base-64.
      *
-     * @param data           the input string data
+     * @param input           the input string data
      *
      * @return the encoded hash value
      */
-    private String createHash(String data) {
+    private String createHash(String input) {
         MessageDigest  digest;
         byte           bytes[];
 
@@ -715,7 +715,7 @@ public class User extends PersistentObject {
         try {
             digest = MessageDigest.getInstance("MD5");
             digest.reset();
-            digest.update(data.getBytes());
+            digest.update(input.getBytes());
             bytes = digest.digest();
         } catch (NoSuchAlgorithmException e) {
             LOG.error(e.getMessage());

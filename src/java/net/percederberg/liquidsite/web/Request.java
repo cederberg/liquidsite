@@ -432,6 +432,8 @@ public class Request {
     /**
      * Returns the request session. If no session existed a new one
      * will be created.
+     *
+     * @return the new or existing request session 
      */
     public RequestSession getSession() {
         if (session == null) {

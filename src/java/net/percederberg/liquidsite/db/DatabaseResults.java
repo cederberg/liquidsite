@@ -52,6 +52,7 @@ public class DatabaseResults {
      * Creates a new empty database results container.
      */
     DatabaseResults() {
+        // No further initialization needed
     }
 
     /**
@@ -159,6 +160,7 @@ public class DatabaseResults {
          * Creates a new empty row.
          */
         Row() {
+            // No further initialization needed
         }
 
         /**

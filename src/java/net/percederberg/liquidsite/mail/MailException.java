@@ -32,11 +32,6 @@ package net.percederberg.liquidsite.mail;
 public class MailException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new mail exception.
      *
      * @param message        the error message
@@ -53,6 +48,5 @@ public class MailException extends Exception {
      */
     public MailException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }

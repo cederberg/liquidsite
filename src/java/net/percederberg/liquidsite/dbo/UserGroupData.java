@@ -52,5 +52,6 @@ public class UserGroupData extends AbstractData {
      * Creates a new user group data object with default values.
      */
     public UserGroupData() {
+        // No further initialization needed
     }
 }

@@ -392,8 +392,6 @@ class BeanContext {
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
-     * @throws ContentSecurityException if the object couldn't be
-     *             read by the current user
      */
     public Content[] findContent(ContentSelector selector)
         throws ContentException {

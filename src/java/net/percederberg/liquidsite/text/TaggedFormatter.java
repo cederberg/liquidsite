@@ -281,6 +281,8 @@ public class TaggedFormatter {
     /**
      * Checks if a string starts with an HTML block tag.
      *
+     * @param str            the string to check
+     *
      * @return true if the string starts with a block tag, or
      *         false otherwise
      */

@@ -50,6 +50,7 @@ public class DialogView extends AdminView {
      * Creates a new dialog view helper.
      */
     DialogView() {
+        // Nothing to initialize
     }
 
     /**
@@ -139,13 +140,8 @@ public class DialogView extends AdminView {
      *
      * @param request        the request object
      * @param content        the content object to publish
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
      */
-    public void viewPublish(Request request, Content content)
-        throws ContentException {
-
+    public void viewPublish(Request request, Content content) {
         User       user = request.getUser();
         String     dateStr = request.getParameter("date");
         String     comment = request.getParameter("comment");

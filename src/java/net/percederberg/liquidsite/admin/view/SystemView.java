@@ -44,6 +44,7 @@ public class SystemView {
      * Creates a new system view helper.
      */
     SystemView() {
+        // Nothing to initialize
     }
 
     /**
@@ -81,6 +82,9 @@ public class SystemView {
      * Shows the system restore form.
      *
      * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
     public void viewRestore(Request request) throws ContentException {
         File        backupDir;

@@ -32,11 +32,6 @@ package net.percederberg.liquidsite;
 public class ConfigurationException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new configuration exception.
      *
      * @param message        the error message
@@ -62,6 +57,5 @@ public class ConfigurationException extends Exception {
      */
     public ConfigurationException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }

@@ -308,6 +308,9 @@ public class Installer {
          *
          * @param installer      the installer to use
          * @param from           the version to update from
+         *
+         * @return true if the specified version can be handled, or
+         *         false otherwise
          */
         public boolean canUpdate(Installer installer, String from) {
             return this.from.equals(from)

@@ -51,13 +51,8 @@ public class ContentSection extends Content {
      *
      * @param manager        the content manager to use
      * @param domain         the domain
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
      */
-    public ContentSection(ContentManager manager, Domain domain)
-        throws ContentException {
-
+    public ContentSection(ContentManager manager, Domain domain) {
         super(manager, domain, Content.SECTION_CATEGORY);
         setParent(null);
         setAttribute(DESCRIPTION_ATTRIBUTE, "");

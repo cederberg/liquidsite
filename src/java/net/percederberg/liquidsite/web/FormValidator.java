@@ -46,6 +46,7 @@ public class FormValidator {
      * Creates a new form field validator.
      */
     public FormValidator() {
+        // No further initialization needed
     }
 
     /**

@@ -31,11 +31,6 @@ package net.percederberg.liquidsite.install;
 public class InstallException extends Exception {
 
     /**
-     * The root cause to the error.
-     */
-    private Exception rootCause = null;
-
-    /**
      * Creates a new install exception.
      *
      * @param message        the error message
@@ -61,6 +56,5 @@ public class InstallException extends Exception {
      */
     public InstallException(String message, Exception cause) {
         super(message + ": " + cause.getMessage());
-        this.rootCause = cause;
     }
 }
