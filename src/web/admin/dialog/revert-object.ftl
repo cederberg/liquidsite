@@ -25,7 +25,8 @@
         </tr>
         <tr>
           <td class="buttons">
-            <button onclick="window.close();">
+<#assign cancel>revert-site.html?type=${type}&id=${id}&cancel=true</#assign>
+            <button type="button" onclick="window.location='${cancel}'">
               <img src="images/icons/24x24/cancel.png" />
               Cancel
             </button>

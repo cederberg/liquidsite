@@ -650,6 +650,7 @@ public class AdminController extends Controller {
     private void processRevertObject(Request request) 
         throws RequestException {
 
+        User     user = request.getUser();
         Content  content;
         Content  revision;
         
@@ -659,10 +660,16 @@ public class AdminController extends Controller {
             if (revision != null) {
                 content = revision;
             }
-            if (request.getParameter("confirmed") == null) {
+            if (request.getParameter("cancel") != null) {
+                removeLock(content, user, false);
+                view.dialogClose(request);
+            } else if (request.getParameter("confirmed") == null) {
+                checkLock(content, user, true);
                 view.dialogRevert(request, content);
             } else {
-                content.deleteRevision(request.getUser());
+                checkLock(content, user, false);
+                content.deleteRevision(user);
+                removeLock(content, user, false);
                 view.dialogClose(request);
             }
         } catch (ContentException e) {
