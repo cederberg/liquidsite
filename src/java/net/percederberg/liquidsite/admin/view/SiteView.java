@@ -344,8 +344,6 @@ public class SiteView extends AdminView {
         ArrayList    folders = null;
         String       template;
         ArrayList    templates;
-        int          section;
-        ArrayList    sections;
         String       comment;
         boolean      publish;
         HashMap      locals = new HashMap();
@@ -363,8 +361,6 @@ public class SiteView extends AdminView {
             folders = findFolders(user, site, null, true);
             template = String.valueOf(page.getTemplateId());
             templates = findTemplates(user, page.getDomain(), null);
-            section = page.getSectionId();
-            sections = findSections(user, page.getDomain(), null);
             if (page.getRevisionNumber() == 0) {
                 comment = page.getComment();
             } else {
@@ -383,8 +379,6 @@ public class SiteView extends AdminView {
             parent = 0;
             template = "0";
             templates = findTemplates(user, reference.getDomain(), null);
-            section = 0;
-            sections = findSections(user, reference.getDomain(), null);
             comment = "Created";
             publish = reference.hasPublishAccess(request.getUser()) &&
                       AdminUtils.isOnline(reference);
@@ -400,12 +394,6 @@ public class SiteView extends AdminView {
                 parent = 0;
             }
             template = request.getParameter("template", "0");
-            try {
-                str = request.getParameter("section", "0");
-                section = Integer.parseInt(str);
-            } catch (NumberFormatException e) {
-                section = 0;
-            }
             comment = request.getParameter("comment", "");
             locals.clear();
             iter = request.getAllParameters().keySet().iterator();
@@ -425,8 +413,6 @@ public class SiteView extends AdminView {
         request.setAttribute("folders", folders);
         request.setAttribute("template", template);
         request.setAttribute("templates", templates);
-        request.setAttribute("section", String.valueOf(section));
-        request.setAttribute("sections", sections);
         request.setAttribute("comment", comment);
         request.setAttribute("locals", locals);
         request.setAttribute("publish", String.valueOf(publish));

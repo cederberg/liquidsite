@@ -134,29 +134,6 @@
         </tr>
         <tr>
           <th>
-            Section:
-          </th>
-          <td class="field">
-            <select tabindex="4" name="section">
-              <option value="0">&lt; None &gt;</option>
-  <#list sections as item>
-    <#if section == item.id>
-              <option value="${item.id}" selected="selected">${item.name?xml}</option>
-    <#else>
-              <option value="${item.id}">${item.name?xml}</option>
-    </#if>
-  </#list>
-            </select>
-            <p>The section field links this page to the contents of
-            the specified section. This makes it possible to create
-            URL:s containing the document names instead of the page
-            name. Any document retrieved this way can be accessed by
-            the page through the <code>liquidsite.doc</code>
-            variable.</p>
-          </td>
-        </tr>
-        <tr>
-          <th>
             Elements:
           </th>
           <td class="field">

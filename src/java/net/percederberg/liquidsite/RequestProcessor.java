@@ -216,19 +216,6 @@ public abstract class RequestProcessor {
             }
         }
 
-        // Check linked pages (TODO: remove!)
-        children = manager.getContentChildren(user,
-                                              parent,
-                                              Content.PAGE_CATEGORY);
-        for (int i = 0; i < children.length; i++) {
-            content = locateDocument(request,
-                                     (ContentPage) children[i],
-                                     name);
-            if (content != null) {
-                updateRequestEnvironment(request, content);
-                return content;
-            }
-        }
         return null;
     }
 
@@ -280,45 +267,6 @@ public abstract class RequestProcessor {
             }
         }
         return content;
-    }
-
-    /**
-     * Finds the content section or document object corresponding to
-     * a name. This will search through a section linked to the page
-     * for a matching section or document.
-     *
-     * @param request        the request object
-     * @param page           the content page
-     * @param name           the child name
-     *
-     * @return the content document corresponding to the name, or
-     *         null if no matching content was found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the specified content
-     *             object wasn't readable by the user
-     */
-    private Content locateDocument(Request request,
-                                   ContentPage page,
-                                   String name)
-        throws ContentException, ContentSecurityException {
-
-        // TODO: remove this method (eventually)
-        ContentManager  manager = getContentManager();
-        User            user = request.getUser();
-        ContentSection  section;
-        Content         document;
-
-        section = page.getSection(user);
-        if (section == null) {
-            return null;
-        }
-        document = manager.getContentChild(user, section, name);
-        if (document != null) {
-            request.getEnvironment().setPage(page);
-        }
-        return document;
     }
 
     /**

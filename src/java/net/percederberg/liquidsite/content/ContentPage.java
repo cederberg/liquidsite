@@ -45,11 +45,6 @@ public class ContentPage extends Content {
     private static final String TEMPLATE_ATTRIBUTE = "TEMPLATE";
 
     /**
-     * The section content attribute.
-     */
-    private static final String SECTION_ATTRIBUTE = "SECTION";
-
-    /**
      * The page element content attribute prefix.
      */
     private static final String ELEMENT_PREFIX = "ELEMENT.";
@@ -147,67 +142,6 @@ public class ContentPage extends Content {
      */
     public void setTemplateId(int template) {
         setAttribute(TEMPLATE_ATTRIBUTE, String.valueOf(template));
-    }
-
-    /**
-     * Returns the page section.
-     *
-     * @param user           the user performing the operation
-     *
-     * @return the page section, or null for none
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have read
-     *             access to the section
-     */
-    public ContentSection getSection(User user)
-        throws ContentException, ContentSecurityException {
-
-        int  id = getSectionId();
-
-        if (id <= 0) {
-            return null;
-        } else {
-            return (ContentSection) getContentManager().getContent(user, id);
-        }
-    }
-
-    /**
-     * Sets the page section.
-     *
-     * @param section        the new section, or null for none
-     */
-    public void setSection(ContentSection section) {
-        if (section == null) {
-            setSectionId(0);
-        } else {
-            setSectionId(section.getId());
-        }
-    }
-
-    /**
-     * Returns the section content identifier.
-     *
-     * @return the section content identifier
-     */
-    public int getSectionId() {
-        String  value = getAttribute(SECTION_ATTRIBUTE);
-
-        if (value == null) {
-            return 0;
-        } else {
-            return Integer.parseInt(value);
-        }
-    }
-
-    /**
-     * Sets the section content identifier.
-     *
-     * @param section        the new section identifier
-     */
-    public void setSectionId(int section) {
-        setAttribute(SECTION_ATTRIBUTE, String.valueOf(section));
     }
 
     /**
