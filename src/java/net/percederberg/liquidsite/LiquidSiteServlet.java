@@ -75,6 +75,39 @@ public class LiquidSiteServlet extends HttpServlet
      * The installation controller.
      */
     private ArrayList controllers = null;
+    
+    /**
+     * The application online flag.
+     */
+    private boolean online = false;
+
+    /**
+     * Checks if the application has been properly installed. This 
+     * method will return true if the configuration files written
+     * during the installation exists. This method returning true is
+     * no guarantee for the application functioning properly.
+     * 
+     * @return true if the application has been installed, or
+     *         false otherwise
+     */
+    public boolean isInstalled() {
+        return config != null && config.isInitialized();        
+    }
+
+    /**
+     * Checks if the application is running correctly. This method 
+     * will return true if no major errors have been encountered, 
+     * such as database connections are not working or similar. Note
+     * that this method may return true even if the application is
+     * not installed, assuming that the installed has been properly 
+     * launched.  
+     * 
+     * @return true if the application is online and working, or
+     *         false otherwise
+     */    
+    public boolean isOnline() {
+        return online;
+    }
 
     /**
      * Initializes this servlet.
@@ -98,6 +131,7 @@ public class LiquidSiteServlet extends HttpServlet
      * configuration, the database, and all the relevant controllers.
      */
     public void startup() {
+        int     errors = 0;
         File    configDir;
         String  host;
         String  name;
@@ -111,6 +145,7 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             Log.initialize(new File(configDir, "logging.properties"));
         } catch (IOException e) {
+            errors++;
             LOG.error("couldn't read logging configuration: " + 
                       e.getMessage());
         }
@@ -119,6 +154,7 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             MySQLDatabaseConnector.loadDriver();
         } catch (DatabaseConnectionException e) {
+            errors++;
             LOG.error(e.getMessage());
         }
         host = config.get(Configuration.DATABASE_HOSTNAME, "");
@@ -131,14 +167,18 @@ public class LiquidSiteServlet extends HttpServlet
         try {
             database.loadFunctions(new File(configDir, "database.properties"));
         } catch (IOException e) {
+            errors++;
             LOG.error("couldn't read database configuration: " + 
                       e.getMessage());
         }
         
         // Read configuration table
         try {
-            config.read(database);
+            if (config.isInitialized()) {
+                config.read(database);
+            }
         } catch (ConfigurationException e) {
+            errors++;
             LOG.error(e.getMessage());
         }
 
@@ -152,6 +192,9 @@ public class LiquidSiteServlet extends HttpServlet
         } else {
             // TODO: add default controller
         }
+        
+        // Set the online status
+        online = (errors == 0);
     }
     
     /**
@@ -201,6 +244,7 @@ public class LiquidSiteServlet extends HttpServlet
         RequestDispatcher  disp;
         String             str;
         
+        // TODO: handle offline state gracefully
         
         // Process request
         process(r);
@@ -336,8 +380,15 @@ public class LiquidSiteServlet extends HttpServlet
                 if (databaseCounter >= DATABASE_UPDATE_THRESHOLD) {
                     databaseCounter = 0;
                     try {
-                        getDatabase().update();
+                        if (!isInstalled()) {
+                            // Do nothing
+                        } else if (!isOnline()) {
+                            restart();
+                        } else {
+                            getDatabase().update();
+                        }
                     } catch (DatabaseConnectionException e) {
+                        // TODO: restart() if repeated various times
                         LOG.error(e.getMessage());
                     }
                 }

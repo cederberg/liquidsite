@@ -36,6 +36,30 @@ import net.percederberg.liquidsite.db.DatabaseConnector;
 public interface Application {
 
     /**
+     * Checks if the application has been properly installed. This 
+     * method will return true if the configuration files written
+     * during the installation exists. This method returning true is
+     * no guarantee for the application functioning properly.
+     * 
+     * @return true if the application has been installed, or
+     *         false otherwise
+     */
+    boolean isInstalled();
+
+    /**
+     * Checks if the application is running correctly. This method 
+     * will return true if no major errors have been encountered, 
+     * such as database connections are not working or similar. Note
+     * that this method may return true even if the application is
+     * not installed, assuming that the installed has been properly 
+     * launched.  
+     * 
+     * @return true if the application is online and working, or
+     *         false otherwise
+     */    
+    boolean isOnline();
+
+    /**
      * Restarts the application. This will perform a partial shutdown 
      * followed by a startup, flushing and rereading all 
      * datastructures, such as configuration, database connections,
