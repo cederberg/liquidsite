@@ -23,6 +23,7 @@ package org.liquidsite.app.admin.view;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.liquidsite.app.admin.AdminUtils;
 import org.liquidsite.core.content.ContentException;
@@ -102,6 +103,7 @@ public class SystemView {
         for (int i = 0; i < files.length; i++) {
             backups.add(files[i]);
         }
+        Collections.sort(backups);
         backup = request.getParameter("backup", "");
         domain = request.getParameter("domain", "");
         revisions = request.getParameter("revisions", "");
