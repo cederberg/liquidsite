@@ -130,6 +130,8 @@ public class AdminController extends Controller {
             processDeleteObject(request);
         } else if (path.equals("publish-site.html")) {
             processPublishObject(request);
+        } else if (path.equals("unpublish-site.html")) {
+            processUnpublishObject(request);
         } else if (path.equals("loadsite.js")) {
             processLoadSite(request);
         } else if (path.equals("opensite.js")) {
@@ -458,6 +460,73 @@ public class AdminController extends Controller {
                 content.setRevisionNumber(content.getRevisionNumber() + 1);
             }
             content.setOnlineDate(DATE_FORMAT.parse(date));
+            content.setOfflineDate(null);
+            content.setComment(comment);
+            content.save(request.getUser());
+            // TODO: unlock content
+            view.dialogClose(request);
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.dialogPublish(request, content);
+        } catch (ParseException e) {
+            comment = "Date format error, " + e.getMessage();
+            request.setAttribute("error", comment);
+            view.dialogPublish(request, content);
+        }
+    }
+
+    /**
+     * Processes the unpublish object requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processUnpublishObject(Request request) 
+        throws RequestException {
+
+        Content  content;
+        
+        try {
+            content = (Content) view.getRequestReference(request);
+            if (request.getParameter("date") == null) {
+                // TODO: acquire lock
+                view.dialogUnpublish(request, content);
+            } else {
+                processUnpublishContent(request, content);
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            view.dialogError(request, e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            view.dialogError(request, e);
+        }
+    }
+
+    /**
+     * Processes the confirmed unpublish requests for the site view.
+     * 
+     * @param request        the request object
+     * @param content        the content object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processUnpublishContent(Request request, Content content) 
+        throws ContentException, ContentSecurityException {
+
+        String   date = request.getParameter("date");
+        String   comment = request.getParameter("comment");
+
+        try {
+            // TODO: check for acquired lock
+            validator.validatePublish(request);
+            content.setRevisionNumber(content.getRevisionNumber() + 1);
+            content.setOfflineDate(DATE_FORMAT.parse(date));
             content.setComment(comment);
             content.save(request.getUser());
             // TODO: unlock content

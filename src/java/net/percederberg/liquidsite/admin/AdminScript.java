@@ -320,7 +320,9 @@ class AdminScript {
         }
         if (content.hasPublishAccess(user)) {
             if (status == 1) {
-                // TODO: buffer.append("objectAddUnpublishButton");
+                buffer.append("objectAddUnpublishButton('unpublish-site.html");
+                buffer.append(getLinkParameters(content));
+                buffer.append("');\n");
             } else {
                 buffer.append("objectAddPublishButton('publish-site.html");
                 buffer.append(getLinkParameters(content));

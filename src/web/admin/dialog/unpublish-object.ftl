@@ -1,4 +1,4 @@
-<#assign title = "Publish ${type?cap_first}">
+<#assign title = "Unublish ${type?cap_first}">
 <#include "header.ftl">
 
   <body>
@@ -9,10 +9,10 @@
       <table class="dialog">
         <tr>
           <td class="decoration" rowspan="4">
-            <img src="images/icons/48x48/onoff.png" alt="Publish" />
+            <img src="images/icons/48x48/onoff.png" alt="Unpublish" />
           </td>
           <td colspan="2">
-            <h2>Publish  ${type?cap_first}</h2>
+            <h2>Unpublish  ${type?cap_first}</h2>
 <#if error?has_content>
             <p class="incorrect">Error: ${error}</p>
 </#if>
@@ -41,8 +41,8 @@
               Cancel
             </button>
             <button type="submit">
-              <img src="images/icons/24x24/online.png" />
-              Publish
+              <img src="images/icons/24x24/offline.png" />
+              Unpublish
             </button>
           </td>
         </tr>

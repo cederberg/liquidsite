@@ -144,21 +144,40 @@ class AdminView {
         String comment = request.getParameter("comment");
 
         if (dateStr == null) {
-            dateStr = formatDate(content.getOnlineDate());
-        }
-        if (dateStr.equals("")) {
             dateStr = formatDate(new Date());
         }
         if (comment == null) {
-            comment = content.getComment();
-        }
-        if (comment.equals("")) {
             comment = "Published";
         }
         setRequestReference(request, content);
         request.setAttribute("date", dateStr);
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/dialog/publish-object.ftl");
+    }
+
+    /**
+     * Shows the content unpublish dialog.
+     * 
+     * @param request        the request object
+     * @param content        the content object to unpublish
+     */
+    public void dialogUnpublish(Request request, Content content) {
+        String dateStr = request.getParameter("date");
+        String comment = request.getParameter("comment");
+
+        if (dateStr == null) {
+            dateStr = formatDate(content.getOfflineDate());
+        }
+        if (dateStr.equals("")) {
+            dateStr = formatDate(new Date());
+        }
+        if (comment == null) {
+            comment = "Unpublished";
+        }
+        setRequestReference(request, content);
+        request.setAttribute("date", dateStr);
+        request.setAttribute("comment", comment);
+        request.sendTemplate("admin/dialog/unpublish-object.ftl");
     }
 
     /**
