@@ -21,6 +21,11 @@
 
 package net.percederberg.liquidsite.db;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 
 import net.percederberg.liquidsite.Log;
@@ -78,6 +83,13 @@ public class DatabaseConnector {
      * @see #DEFAULT_CONNECTION_TIMEOUT
      */
     private long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+
+    /**
+     * The map of database functions. This maps a name to an SQL 
+     * query or statement. The SQL may contain optional parameters 
+     * with the '?' character. 
+     */
+    private HashMap functions = new HashMap();
 
     /**
      * Loads the specified JDBC database driver. This method must be
@@ -246,6 +258,18 @@ public class DatabaseConnector {
     }
 
     /**
+     * Returns the database function with the specified name.
+     * 
+     * @param name           the database function name
+     * 
+     * @return the database function SQL, or
+     *         null if not found
+     */
+    String getFunction(String name) {
+        return (String) functions.get(name);
+    }
+
+    /**
      * Returns a database connection. This method will either create 
      * a new connection, or return a previous connection from the
      * connection pool (if one exists). All connections returned by
@@ -289,6 +313,24 @@ public class DatabaseConnector {
     }
 
     /**
+     * Loads a set of database functions. The functions are stored in
+     * a normal properties file, with the value being the SQL code.
+     * 
+     * @param file           the file containing the functions
+     * 
+     * @throws IOException if the file couldn't be read properly
+     */
+    public void loadFunctions(File file) throws IOException {
+        Properties       props = new Properties();
+        FileInputStream  input;
+        
+        input = new FileInputStream(file);
+        props.load(input);
+        input.close();
+        functions.putAll(props);
+    }
+
+    /**
      * Updates the connection pool. This method will step through all
      * available database connections in the pool, removing all 
      * broken or timed out connections. The connection pool size may 
@@ -307,6 +349,53 @@ public class DatabaseConnector {
         }
     }
     
+    /**
+     * Executes a database function with no parameters. 
+     * 
+     * @param name           the database function name
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseConnectionException if a database connection 
+     *             couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    public DatabaseResults execute(String name)
+        throws DatabaseConnectionException, DatabaseException { 
+
+        return execute(name, new ArrayList(0));
+    }
+
+    /**
+     * Executes a database function with parameters. 
+     * 
+     * @param name           the database function name
+     * @param params         the database function parameters
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseConnectionException if a database connection 
+     *             couldn't be established
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    public DatabaseResults execute(String name, ArrayList params)
+        throws DatabaseConnectionException, DatabaseException { 
+
+        DatabaseConnection  con;
+        DatabaseResults     res;
+        
+        con = getConnection();
+        try {
+            res = con.execute(name, params);
+        } finally {
+            returnConnection(con);
+        }
+
+        return res;
+    }
+
     /**
      * Executes an SQL query or statement. 
      * 

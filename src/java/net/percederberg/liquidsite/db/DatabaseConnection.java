@@ -23,9 +23,11 @@ package net.percederberg.liquidsite.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Log;
 
@@ -110,6 +112,9 @@ public class DatabaseConnection {
             con = DriverManager.getConnection(db.getUrl(), 
                                               db.getProperties());
             catalog = con.getCatalog();
+            if (catalog.equals("")) {
+                catalog = null;
+            }
             reset();
             LOG.trace("created connection to " + db);
         } catch (SQLException e) {
@@ -206,7 +211,9 @@ public class DatabaseConnection {
     public void reset() throws DatabaseConnectionException {
         this.queryTimeout = DatabaseConnector.DEFAULT_QUERY_TIMEOUT;
         try {
-            con.setCatalog(catalog);
+            if (catalog != null) {
+                con.setCatalog(catalog);
+            }
             con.setAutoCommit(true);
             con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         } catch (SQLException e) {
@@ -214,6 +221,67 @@ public class DatabaseConnection {
             LOG.debug("failed to reset connection to " + db, e);
             throw new DatabaseConnectionException(e);
         }
+    }
+
+    /**
+     * Executes a database function with no parameters. 
+     * 
+     * @param name           the database function name
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    public DatabaseResults execute(String name)
+        throws DatabaseException {
+
+        return execute(name, new ArrayList(0));
+    }
+
+    /**
+     * Executes a database function with parameters. 
+     * 
+     * @param name           the database function name
+     * @param params         the database function parameters
+     * 
+     * @return the database results
+     * 
+     * @throws DatabaseException if the query or statement couldn't 
+     *             be executed correctly
+     */
+    public DatabaseResults execute(String name, ArrayList params)
+        throws DatabaseException {
+
+        PreparedStatement  stmt;
+        ResultSet          set;
+        String             sql;
+        
+        try {
+            LOG.trace("executing query '" + name + "'...");
+            sql = db.getFunction(name);
+            if (sql == null) {
+                sql = "no database function '" + name + "'";
+                LOG.debug(sql);
+                throw new DatabaseException(sql);
+            }
+            stmt = con.prepareStatement(sql,
+                                        ResultSet.TYPE_FORWARD_ONLY,
+                                        ResultSet.CONCUR_READ_ONLY,
+                                        ResultSet.CLOSE_CURSORS_AT_COMMIT);
+            stmt.setQueryTimeout(queryTimeout);
+            stmt.clearParameters();
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            set = stmt.executeQuery();
+            LOG.trace("executed query '" + name + "'");
+        } catch (SQLException e) {
+            LOG.debug("failed to execute query '" + name + "'", e);
+            throw new DatabaseException(e);
+        }
+
+        return extractResults(set);
     }
 
     /**

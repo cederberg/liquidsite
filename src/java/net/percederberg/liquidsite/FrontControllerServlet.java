@@ -22,10 +22,8 @@
 package net.percederberg.liquidsite;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.LogManager;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -94,24 +92,22 @@ public class FrontControllerServlet extends HttpServlet
      * configuration, the database, and all the relevant controllers.
      */
     public void startup() {
-        File    file;
+        File    configDir;
         String  host;
         String  name;
         String  user;
         String  password;
         int     size;
         
-        // Initialize logging
-        file = new File(getBaseDir(), "WEB-INF/logging.properties");
-        try {
-            Log.initialize(file);
-        } catch (IOException e) {
-            LOG.error("logging configuration: " + e.getMessage());
-        }
-
         // Initialize configuration
-        file = new File(getBaseDir(), "WEB-INF/config.properties");
-        config = new Configuration(file);
+        configDir = new File(getBaseDir(), "WEB-INF");
+        config = new Configuration(new File(configDir, "config.properties"));
+        try {
+            Log.initialize(new File(configDir, "logging.properties"));
+        } catch (IOException e) {
+            LOG.error("couldn't read logging configuration: " + 
+                      e.getMessage());
+        }
 
         // Initialize database
         try {
@@ -126,22 +122,26 @@ public class FrontControllerServlet extends HttpServlet
         size = config.getInt(Configuration.DATABASE_POOL_SIZE, 0);
         database = new MySQLDatabaseConnector(host, name, user, password);
         database.setPoolSize(size);
+        try {
+            database.loadFunctions(new File(configDir, "database.properties"));
+        } catch (IOException e) {
+            LOG.error("couldn't read database configuration: " + 
+                      e.getMessage());
+        }
         
         // Read configuration table
         try {
             config.read(database);
         } catch (ConfigurationException e) {
-            if (file.exists()) {
-                LOG.error(e.getMessage());
-            }
+            LOG.error(e.getMessage());
         }
 
         // Initialize controllers
         controllers = new ArrayList();
-        if (file.exists()) {
-            // TODO: add default controller
-        } else {
+        if (!config.isInitialized()) {
             controllers.add(new InstallController(this));
+        } else {
+            // TODO: add default controller
         }
     }
     

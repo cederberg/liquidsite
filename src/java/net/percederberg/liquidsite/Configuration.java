@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -107,6 +108,12 @@ public class Configuration {
     private Properties databaseProperties;
 
     /**
+     * The initialized flag. This flag is set to true once the 
+     * configuration file has been read correctly.
+     */
+    private boolean initialized = false;
+
+    /**
      * Creates a new configuration.
      * 
      * @param file           the configuration file to use
@@ -120,6 +127,18 @@ public class Configuration {
         } catch (ConfigurationException ignore) {
             // Do nothing
         }
+    }
+
+    /**
+     * Checks if this configuration has been properly initialized. 
+     * The configuration is considered initialized if the config file
+     * could be read properly.  
+     * 
+     * @return true if this configuration was properly initialized, or
+     *         false otherwise
+     */
+    public boolean isInitialized() {
+        return initialized;
     }
 
     /**
@@ -217,6 +236,7 @@ public class Configuration {
         try {
             fileProperties.load(input);
             input.close();
+            initialized = true; 
         } catch (IOException e) {
             try {
                 input.close();
@@ -244,9 +264,8 @@ public class Configuration {
         String           value;
         String           message;
 
-        // TODO: change to use a database query pool
         try {
-            res = database.executeSql("SELECT * FROM CONFIGURATION");
+            res = database.execute("config.list");
             for (int i = 0; i < res.getRowCount(); i++) {
                 name = res.getRow(i).getString("NAME");
                 value = res.getRow(i).getString("VALUE");
@@ -319,6 +338,7 @@ public class Configuration {
         try {
             fileProperties.store(output, FILE_HEADER);
             output.close();
+            initialized = true; 
         } catch (IOException e) {
             try {
                 output.close();
@@ -344,17 +364,17 @@ public class Configuration {
         throws DatabaseException {
 
         Enumeration  e;
-        String       sql;
+        ArrayList    params;
         String       name;
 
-        // TODO: change to use a database query pool
-        con.executeSql("DELETE FROM CONFIGURATION");
+        con.execute("config.delete");
         e = databaseProperties.propertyNames();
         while (e.hasMoreElements()) {
             name = (String) e.nextElement();
-            sql = "INSERT INTO CONFIGURATION (NAME, VALUE) VALUES ('" +
-                  name + "', '" + get(name, "") + "')";
-            con.executeSql(sql);
+            params = new ArrayList(2);
+            params.add(name);
+            params.add(get(name, ""));
+            con.execute("config.insert", params);
         }
     }
 }
