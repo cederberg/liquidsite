@@ -28,10 +28,10 @@ import java.util.Date;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Site;
@@ -464,8 +464,8 @@ class AdminView {
         String  comment;
 
         setRequestReference(request, reference);
-        if (reference instanceof FileContent) {
-            name = ((FileContent) reference).getName();
+        if (reference instanceof ContentFile) {
+            name = ((ContentFile) reference).getName();
             comment = "";
         } else {
             name = "";

@@ -26,8 +26,8 @@ import java.util.Date;
 
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
@@ -471,7 +471,7 @@ class AdminScript {
         buffer.append(", ");
         buffer.append(getString(revision.getComment()));
         buffer.append(", ");
-        if (revision instanceof FileContent) {
+        if (revision instanceof ContentFile) {
             buffer.append("'view.html");
             buffer.append(getLinkParameters(revision));
             buffer.append("&revision=");
@@ -620,7 +620,7 @@ class AdminScript {
         } else if (content instanceof Folder) {
             return getContentUrl(content.getParent()) +  
                    content.toString() + "/"; 
-        } else if (content instanceof FileContent) {
+        } else if (content instanceof ContentFile) {
             return getContentUrl(content.getParent()) +  
                    content.toString(); 
         } else {

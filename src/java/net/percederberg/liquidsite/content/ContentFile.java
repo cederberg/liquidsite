@@ -1,5 +1,5 @@
 /*
- * FileContent.java
+ * ContentFile.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@ import net.percederberg.liquidsite.dbo.ContentData;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class FileContent extends Content {
+public class ContentFile extends Content {
 
     /**
      * The file name content attribute.
@@ -48,7 +48,7 @@ public class FileContent extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    public FileContent(Content parent, String name) 
+    public ContentFile(Content parent, String name) 
         throws ContentException {
 
         super(parent.getDomain(), Content.FILE_CATEGORY);
@@ -66,7 +66,7 @@ public class FileContent extends Content {
      * @throws ContentException if the database couldn't be accessed 
      *             properly
      */
-    protected FileContent(ContentData data, 
+    protected ContentFile(ContentData data, 
                           boolean latest, 
                           DatabaseConnection con) 
         throws ContentException {

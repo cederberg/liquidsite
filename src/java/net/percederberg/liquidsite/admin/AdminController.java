@@ -33,9 +33,9 @@ import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.RequestException;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Domain;
-import net.percederberg.liquidsite.content.FileContent;
 import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.Lock;
@@ -476,7 +476,7 @@ public class AdminController extends Controller {
         User           user = request.getUser();
         FileParameter  param;
         Content        content;
-        FileContent    file;
+        ContentFile    file;
         
         try {
             validator.validateFile(request);
@@ -486,7 +486,7 @@ public class AdminController extends Controller {
                                         "No file content specified");
             }
             content = (Content) parent;
-            file = new FileContent(content, param.getName());
+            file = new ContentFile(content, param.getName());
             file.setName(request.getParameter("name"));
             file.setComment(request.getParameter("comment"));
             file.save(user);
@@ -541,12 +541,12 @@ public class AdminController extends Controller {
                 } else {
                     processEditFolder(request, (Folder) obj);
                 }
-            } else if (obj instanceof FileContent) {
+            } else if (obj instanceof ContentFile) {
                 if (step == null) {
                     checkLock((Content) obj, request.getUser(), true);
                     view.pageEditFile(request, obj);
                 } else {
-                    processEditFile(request, (FileContent) obj);
+                    processEditFile(request, (ContentFile) obj);
                 }
             } else {
                 request.sendRedirect("site.html");
@@ -635,7 +635,7 @@ public class AdminController extends Controller {
      * @throws ContentSecurityException if the user didn't have the 
      *             required permissions 
      */
-    private void processEditFile(Request request, FileContent file) 
+    private void processEditFile(Request request, ContentFile file) 
         throws ContentException, ContentSecurityException {
 
         User           user = request.getUser();
@@ -991,8 +991,8 @@ public class AdminController extends Controller {
             if (revision != null) {
                 content = content.getRevision(Integer.parseInt(revision));
             }
-            if (content instanceof FileContent) {
-                request.sendFile(((FileContent) content).getFile());
+            if (content instanceof ContentFile) {
+                request.sendFile(((ContentFile) content).getFile());
             } else {
                 view.pageError(request, "Cannot preview this object");
             }

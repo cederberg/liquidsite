@@ -24,7 +24,7 @@ package net.percederberg.liquidsite;
 import net.percederberg.liquidsite.admin.AdminController;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.FileContent;
+import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.Folder;
 import net.percederberg.liquidsite.content.Site;
 import net.percederberg.liquidsite.content.User;
@@ -150,9 +150,9 @@ public class DefaultController extends Controller {
     private void processAuthorized(Request request, Content page)
         throws RequestException {
 
-        if (page instanceof FileContent) {
+        if (page instanceof ContentFile) {
             try {
-                request.sendFile(((FileContent) page).getFile());
+                request.sendFile(((ContentFile) page).getFile());
             } catch (ContentException e) {
                 LOG.error("couldn't find content file for " + 
                           page.getId() + ": " + e.getMessage());
