@@ -140,6 +140,7 @@ public abstract class RequestProcessor {
             if (path.startsWith("/")) {
                 if (content instanceof ContentSite
                  || content instanceof ContentFolder
+                 || content instanceof ContentSection
                  || content instanceof ContentDocument) {
 
                     path = path.substring(1);
@@ -199,9 +200,9 @@ public abstract class RequestProcessor {
     }
 
     /**
-     * Finds the content document object corresponding to a name.
-     * This will search through a section linked to the page for a
-     * matching document.
+     * Finds the content section or document object corresponding to
+     * a name. This will search through a section linked to the page
+     * for a matching section or document.
      *
      * @param request        the request object
      * @param page           the content page
