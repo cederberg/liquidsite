@@ -91,7 +91,7 @@
   <#assign options = "">
 </#if>
         <tr>
-          <td>
+          <td class="buttons">
             <button type="submit" name="prev">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous

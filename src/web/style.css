@@ -259,9 +259,33 @@ table.form td.field {
         padding-bottom: 1em;
 }
 table.form td.buttons {
-        text-align: right;
+        text-align: left;
 }
 table.form button {
+        margin-right: 15px;
+        
+}
+
+/* Dialog style */
+table.dialog {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        border: 1px solid black;
+        padding: 10px;
+        background: rgb(255, 255, 245);
+}
+table.dialog td.decoration {
+        padding-top: 40px;
+}
+table.dialog td.field {
+        padding-bottom: 1em;
+}
+table.dialog td.buttons {
+        text-align: right;
+}
+table.dialog button {
         margin-left: 15px;
 }
 

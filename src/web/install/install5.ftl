@@ -73,7 +73,7 @@
           </td>
         </tr>
         <tr>
-          <td colspan="2">
+          <td class="buttons" colspan="2">
             <button type="submit" name="prev">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous

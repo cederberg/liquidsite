@@ -58,7 +58,7 @@
           </td>
         </tr>
         <tr>
-          <td colspan="2">
+          <td class="buttons" colspan="2">
             <button type="button" name="prev" disabled="disabled">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
