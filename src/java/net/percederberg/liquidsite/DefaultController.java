@@ -122,7 +122,7 @@ public class DefaultController extends Controller {
         try {
             if (site.isAdmin()) {
                 access = site.hasReadAccess(user);
-                if (access) {
+                if (access && user != null) {
                     admin.processAuthorized(request, path);
                 } else {
                     admin.processUnauthorized(request, path);
