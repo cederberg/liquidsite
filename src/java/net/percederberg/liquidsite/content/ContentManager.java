@@ -146,6 +146,8 @@ public class ContentManager {
         // Compare to user domain name
         if (user == null) {
             sameDomain = false;
+        } else if (user.isSuperUser()) {
+            sameDomain = true;
         } else {
             sameDomain = user.getDomainName().equals(domain);
         }
