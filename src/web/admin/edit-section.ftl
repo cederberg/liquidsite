@@ -74,7 +74,7 @@
 <#if !isadd>
         <tr>
           <th>
-            Parent:
+            Parent&nbsp;Section:
           </th>
           <td class="field">
             <select tabindex="2" name="parent">
