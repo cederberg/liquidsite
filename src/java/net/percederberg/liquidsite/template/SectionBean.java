@@ -137,12 +137,30 @@ public class SectionBean {
      * @return a list of the documents found (as document beans)
      */
     public ArrayList findDocuments(int offset, int count) {
+        return findDocuments("", offset, count);
+    }
+
+    /**
+     * Returns all documents in this section and any subsections. At
+     * most the specified number of documents will be returned. The
+     * documents will be ordered by last modification date.
+     *
+     * @param sorting        the sorting information
+     * @param offset         the number of documents to skip
+     * @param count          the maximum number of documents
+     *
+     * @return a list of the documents found (as document beans)
+     */
+    public ArrayList findDocuments(String sorting, int offset, int count) {
         ArrayList  results = new ArrayList();
 
-        // TODO: add sorting (and remove the one that exists)
         if (section != null) {
             try {
-                baseBean.findDocuments(section, offset, count, results);
+                baseBean.findDocuments(section,
+                                       sorting,
+                                       offset,
+                                       count,
+                                       results);
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }

@@ -338,17 +338,36 @@ public class LiquidSiteBean {
      * @return a list of the documents found (as document beans)
      */
     public ArrayList findDocuments(String path, int offset, int count) {
+        return findDocuments(path, "", offset, count);
+    }
+
+    /**
+     * Returns all document in the specified section path. All
+     * documents in subsections will also be returned.
+     *
+     * @param path           the section path
+     * @param sorting        the sorting information
+     * @param offset         the number of documents to skip
+     * @param count          the maximum number of documents
+     *
+     * @return a list of the documents found (as document beans)
+     */
+    public ArrayList findDocuments(String path,
+                                   String sorting,
+                                   int offset,
+                                   int count) {
+
         ArrayList       results = new ArrayList();
         Domain          domain;
         Content         content;
         ContentSection  section;
 
-        // TODO: add sorting (and remove the one that exists)
         try {
             domain = request.getEnvironment().getDomain();
             content = findContent(path, domain);
             if (content instanceof ContentSection) {
                 findDocuments((ContentSection) content,
+                              sorting,
                               offset,
                               count,
                               results);
@@ -486,6 +505,7 @@ public class LiquidSiteBean {
      * specified list.
      *
      * @param section        the content section
+     * @param sorting        the sorting information
      * @param offset         the number of documents to skip
      * @param count          the maximum number of documents
      * @param results        the list with results
@@ -494,6 +514,7 @@ public class LiquidSiteBean {
      *             properly
      */
     void findDocuments(ContentSection section,
+                       String sorting,
                        int offset,
                        int count,
                        ArrayList results)
@@ -510,6 +531,7 @@ public class LiquidSiteBean {
             selector.requireParent(sections[i]);
         }
         selector.requireCategory(Content.DOCUMENT_CATEGORY);
+        setSelectorSorting(selector, sorting.trim());
         selector.limitResults(offset, count);
         children = manager.getContentObjects(request.getUser(), selector);
         for (int i = 0; i < children.length; i++) {
@@ -564,6 +586,52 @@ public class LiquidSiteBean {
                                               Content.SECTION_CATEGORY);
         for (int i = 0; i < children.length; i++) {
             findSubSections((ContentSection) children[i], result);
+        }
+    }
+
+    /**
+     * Sets the selector sorting from the specified sorting
+     * information.
+     *
+     * @param selector       the content selector
+     * @param sorting        the sorting information
+     */
+    private void setSelectorSorting(ContentSelector selector,
+                                    String sorting) {
+
+        String   str;
+        boolean  ascending;
+        int      pos;
+
+        while (sorting.length() > 0) {
+            pos = sorting.indexOf(",");
+            if (pos > 0) {
+                str = sorting.substring(0, pos).trim();
+                sorting = sorting.substring(pos + 1).trim();
+            } else {
+                str = sorting;
+                sorting = "";
+            }
+            ascending = true;
+            if (str.startsWith("+") || str.startsWith("-")) {
+                ascending = str.startsWith("+");
+                str = str.substring(1);
+            }
+            if (str.equals("name")) {
+                selector.sortByName(ascending);
+            } else if (str.equals("meta.id")) {
+                selector.sortById(ascending);
+            } else if (str.equals("meta.revision")) {
+                selector.sortByRevision(ascending);
+            } else if (str.equals("meta.online")) {
+                selector.sortByOnline(ascending);
+            } else if (str.equals("meta.date")) {
+                selector.sortByModified(ascending);
+            } else if (str.equals("meta.user")) {
+                selector.sortByAuthor(ascending);
+            } else {
+                selector.sortByDocumentProperty(str, ascending);
+            }
         }
     }
 }
