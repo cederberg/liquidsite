@@ -1,0 +1,83 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The document data object</h1>
+
+    <p>The document data object is used to access the content of a
+    document.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="get">[property name]</ref></title>
+        <text>Returns the data value associated to a specified
+        property name.</text>
+      </item>
+      <item>
+        <title><ref id="isEmpty">isEmpty</ref></title>
+        <text>Checks if there is no data.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="get" style="inner">[property name]</h2>
+
+    <p>Returns the data value associated to a specified property
+    name. The properties correspond to fields defined in the section
+    under which the document is located.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>[property name] &#8594; freemarker
+    document model</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The data value associated to a specified
+    property name.</p>
+
+    <h3>Example:</h3>
+
+    <p>Suppose that "Section1" has in its definition the fields title
+    and text. This code obtains the values for these properties in
+    "doc1":</p>
+
+    <example>
+      <preformat>&lt;#assign doc1 = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#assign title = doc1.title&gt;
+&lt;#assign text = doc1.text&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="isEmpty" style="inner">isEmpty</h2>
+
+    <p>Checks if there is no data.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>isEmpty &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if there is no data, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the data of a document and checks whether there
+    is data:</p>
+
+    <example>
+      <preformat>&lt;#assign data = liquidsite.findDocument("Section1/doc1").data&gt;
+&lt;#if data.isEmpty&gt;</preformat>
+    </example>
+
+
+  </body>
+</doc>

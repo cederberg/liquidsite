@@ -1,0 +1,567 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The forum object</h1>
+
+    <p>The forum object is used to access the information about a
+    forum.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="findTopics">findTopics(offset,
+        count)</ref></title>
+        <text>Returns a number of topics in the forum.</text>
+      </item>
+      <item>
+        <title><ref id="description">description</ref></title>
+        <text>Returns the forum description.</text>
+      </item>
+      <item>
+        <title><ref id="first">first</ref></title>
+        <text>Returns the first topic in the forum.</text>
+      </item>
+      <item>
+        <title><ref id="last">last</ref></title>
+        <text>Returns the last topic in the forum.</text>
+      </item>
+      <item>
+        <title><ref id="moderator">moderator</ref></title>
+        <text>Checks whether the current logged in user is a forum
+        moderator.</text>
+      </item>
+      <item>
+        <title><ref id="realName">realName</ref></title>
+        <text>Returns the real forum name.</text>
+      </item>
+      <item>
+        <title><ref id="topicCount">topicCount</ref></title>
+        <text>Returns the number of topics in the forum.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the forum created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the forum revision date.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the forum id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the forum lock object.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the forum online flag.</text>
+      </item>
+      <item>
+        <title><ref id="parent">parent</ref></title>
+        <text>Returns the parent section of the forum.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the forum path.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the forum revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the forum revision author.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the forum.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="findTopics" style="inner">findTopics</h2>
+
+    <p>Returns a number of topics in the forum.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findTopics(offset, count) &#8594; sequence
+    of <ref file="topic.xml">topic objects</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>offset</code> -- the number of topics to
+        skip</text>
+      </item>
+      <item>
+        <text><code>count</code> -- the maximum number of topics to
+        return</text>
+      </item>
+    </list>
+    
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of at most <code>count</code> topics in
+    the forum, beginning at topic number <code>offset</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through the first ten topics in a forum:</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/forum1").findTopics(0, 10)&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="description" style="inner">description</h2>
+
+    <p>Returns the forum description.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>description &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum description.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code output the description of a forum:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The description of "forum1" is ${liquidsite.findDocument("Section1/forum1").description}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>The description of "forum1" is The description of forum1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="first" style="inner">first</h2>
+
+    <p>Returns the first topic in the forum.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>first &#8594; <ref file="topic.xml">topic
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The first topic in this forum.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the first topic in a forum and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign firstTopic = liquidsite.findDocument("Section1/forum1").first&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="last" style="inner">last</h2>
+
+    <p>Returns the last topic in the forum.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>last &#8594; <ref file="topic.xml">topic
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The last topic in this forum.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the last topic in a forum and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lastTopic = liquidsite.findDocument("Section1/forum1").last&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="moderator" style="inner">moderator</h2>
+
+    <p>Checks whether the current logged in user is a moderator of the
+    forum.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>moderator &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user is a
+    moderator of the forum, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the user is a moderator of a
+    forum:</p>
+
+    <example>
+      <preformat>&lt;#id liquidsite.findDocument("Section1/forum1").moderator&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="realName" style="inner">realName</h2>
+
+    <p>Returns the real forum name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>realName &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The real forum name.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code output the real name of a forum:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The real name of "forum1" is ${liquidsite.findDocument("Section1/forum1").realName}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>The realName of "forum1" is The real name of forum1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="topicCount" style="inner">topicCount</h2>
+
+    <p>Returns the number of topics in the forum.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>topicCount &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum topicCount.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through all topics in a forum:</p>
+
+    <example>
+      <preformat>&lt;#assign forum = liquidsite.findDocument("Section1/forum1")&gt;
+&lt;#list forum.findTopics(0, forum.topicCount)&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the forum created date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum created date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the forum created date:</p>
+
+    <example>
+      <preformat>&lt;#assign forum = liquidsite.findDocument("Section1/forum1")&gt;
+&lt;p&gt;The forum created date is ${forum.created}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The forum created date is 2005-01-15.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the forum revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the forum revision date:</p>
+
+    <example>
+      <preformat>&lt;#assign forum = liquidsite.findDocument("Section1/forum1")&gt;
+&lt;p&gt;The forum revision date is ${forum.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The forum revision date is 2005-01-21.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the forum id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum id.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the forum id:</p>
+
+    <example>
+      <preformat>&lt;#assign forum = liquidsite.findDocument("Section1/forum1")&gt;
+&lt;p&gt;The forum id is ${forum.id}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The forum id is 123.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the forum lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the lock object of a forum and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/forum1").lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the forum online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the forum is online, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the online flag of a forum and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/forum1").online&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="parent" style="inner">parent</h2>
+
+    <p>Returns the parent section of the forum.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>parent &#8594; <ref
+    file="section.xml">section object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The parent section under which the forum is
+    located.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the parent of a forum and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/forum1").parent&gt;</preformat>
+    </example>
+
+    <p>In this case the parent of "forum1" is "Section1".</p>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the forum path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the path of a forum:</p>
+
+    <example>
+      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/forum1").path&gt;
+&lt;p&gt;The path of "forum1" is ${path}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be:</p>
+
+    <example>
+      <p>The path of "forum1" is Section1/forum1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the forum revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum revision number, or zero (0) if the
+    forum doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision of a forum:</p>
+
+    <example>
+      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/forum1").revision&gt;
+&lt;p&gt;The revision of "forum1" is ${revision}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be something like:</p>
+
+    <example>
+      <p>The revision of "forum1" is 2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the forum revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum revision author, or an empty user
+    if the forum doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the revision author of a forum and assigns it
+    to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findDocument("Section1/forum1").user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks whether the current logged in user has a specified
+    permission over the forum. See the <ref file="document.xml"
+    id="hasAccess">document object</ref> for information about the
+    allowed permission values.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user has the
+    specified permission over the forum, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the current logged in user has read
+    access to a forum:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.findDocument("Section1/forum1").hasAccess("read")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

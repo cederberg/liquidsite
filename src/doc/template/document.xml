@@ -7,8 +7,7 @@
 
     <h1>The document object</h1>
 
-    <p>The <code>document</code> object represents a content
-    document.</p>
+    <p>The document object represents a content document.</p>
 
     <list style="compact">
       <item>
@@ -45,7 +44,7 @@
       </item>
       <item>
         <title><ref id="parent">parent</ref></title>
-        <text>Returns the document parent object.</text>
+        <text>Returns the parent section of the document.</text>
       </item>
       <item>
         <title><ref id="path">path</ref></title>
@@ -60,7 +59,7 @@
         <text>Returns the document revision author.</text>
       </item>
       <item>
-        <title><ref id="hasAccess">hasAccess</ref></title>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
         <text>Checks whether the current logged in user has a
         specified permission over the document.</text>
       </item>
@@ -283,29 +282,28 @@
 
     <h2 id="parent" style="inner">parent</h2>
 
-    <p>Returns the document parent object.</p>
+    <p>Returns the parent section of the document.</p>
 
     <h3>Syntax:</h3>
 
     <p style="indent"><code>parent &#8594; <ref
-    file="content.xml">content object</ref></code></p>
+    file="section.xml">section object</ref></code></p>
 
     <h3>Returns:</h3>
 
-    <p style="indent">The document parent object, which is the content
-    object under which the document is located.</p>
+    <p style="indent">The parent section under which the document is
+    located.</p>
 
     <h3>Example:</h3>
 
-    <p>This code gets the parent object of a document and stores it in
-    a variable:</p>
+    <p>This code gets the parent of a document and stores it in a
+    variable:</p>
 
     <example>
       <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/doc1").parent&gt;</preformat>
     </example>
 
-    <p>In this case the parent of "doc1" is the content object
-    "Section1".</p>
+    <p>In this case the parent of "doc1" is "Section1".</p>
 
 
     <separator/>
@@ -400,7 +398,23 @@
     <h2 id="hasAccess" style="inner">hasAccess</h2>
 
     <p>Checks whether the current logged in user has a specified
-    permission over the document.</p>
+    permission over the document. The different permission values
+    available are:</p>
+
+    <list style="compact">
+      <item>
+        <text>read, for reading permission</text>
+      </item>
+      <item>
+        <text>write, for writing permission</text>
+      </item>
+      <item>
+        <text>publish, for publishing permission</text>
+      </item>
+      <item>
+        <text>admin, for administration permission</text>
+      </item>
+    </list>
 
     <h3>Syntax:</h3>
 
@@ -408,7 +422,8 @@
 
     <h3>Returns:</h3>
 
-    <p style="indent">True if the current logged in user has the specified permission over the document, false otherwise.</p>
+    <p style="indent">True if the current logged in user has the
+    specified permission over the document, false otherwise.</p>
 
     <h3>Example:</h3>
 
@@ -416,7 +431,7 @@
     access to a document:</p>
 
     <example>
-      <preformat>&lt;#if liquidsite.findDocument("Section1/doc1").hasAccess("r")&gt;</preformat>
+      <preformat>&lt;#if liquidsite.findDocument("Section1/doc1").hasAccess("read")&gt;</preformat>
     </example>
 
   </body>

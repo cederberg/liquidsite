@@ -1,0 +1,109 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The lock object</h1>
+
+    <p>The lock object represents the lock status of an object.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the lock acquiring date.</text>
+      </item>
+      <item>
+        <title><ref id="open">open</ref></title>
+        <text>Returns the lock status.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the lock owner user.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the lock acquiring date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The lock acquiring date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This line outputs the lock date:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/doc1").lock&gt;
+&lt;p&gt;The lock acquiring date is ${lock.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>This will result in something like:</p>
+
+    <example>
+      <p>The lock acquiring date is 10-02-2005.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="open" style="inner">open</h2>
+
+    <p>Returns the lock status.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>open &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The lock status.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks if a document is locked:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/doc1").lock&gt;
+&lt;#if lock.open&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the lock owner user.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The lock owner user.</p>
+
+    <h3>Example:</h3>
+
+    <p>To assign a lock user to a variable would be done with this
+    code:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#if lock.open&gt;
+    &lt;#assign user = lock.user&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

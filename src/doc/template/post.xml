@@ -1,0 +1,482 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The post object</h1>
+
+    <p>The post object represents a forum post.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="subject">subject</ref></title>
+        <text>Returns the post subject.</text>
+      </item>
+      <item>
+        <title><ref id="subjectSource">subjectSource</ref></title>
+        <text>Returns the unprocessed post subject.</text>
+      </item>
+      <item>
+        <title><ref id="text">text</ref></title>
+        <text>Returns the post text.</text>
+      </item>
+      <item>
+        <title><ref id="textSource">textSource</ref></title>
+        <text>Returns the unprocessed post text.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the post created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the post revision date.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the post id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the post lock object.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the post online flag.</text>
+      </item>
+      <item>
+        <title><ref id="parent">parent</ref></title>
+        <text>Returns the parent topic of the post.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the post path.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the post revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the post revision author.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the post.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="subject" style="inner">subject</h2>
+
+    <p>Returns the post subject.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>subject &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post subject.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the subject of the first post in
+    "topic1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = topic1.first&gt;
+&lt;p&gt;The post subject is ${post.subject}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post subject is Welcome to the Liquid Site forum.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="subjectSource" style="inner">subjectSource</h2>
+
+    <p>Returns the unprocessed post subject.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>subjectSource &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The unprocessed post subject.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the unprocessed subject of the first post in
+    "topic1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = topic1.first&gt;
+&lt;p&gt;The post subject is ${post.subjectSource}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post subject is &lt;p&gt;Welcome to the Liquid Site
+      forum&lt;/p&gt;.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="text" style="inner">text</h2>
+
+    <p>Returns the post text.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>text &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post text.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the text of the first post in
+    "topic1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = topic1.first&gt;
+&lt;p&gt;The post text is ${post.text}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post text is I hope you'll enjoy it!.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="textSource" style="inner">textSource</h2>
+
+    <p>Returns the unprocessed post text.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>textSource &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The unprocessed post text.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the unprocessed text of the first post in
+    "topic1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = topic1.first&gt;
+&lt;p&gt;The post text is ${post.textSource}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post text is &lt;p&gt;I hope you'll enjoy it!&lt;/p&gt;.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the post created date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post created date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the created date of the first post in
+    "forum1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = liquidsite.findDocument("Section1/forum1").first&gt;
+&lt;p&gt;The post created date is ${post.created}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post created date is 2005-01-15.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the post revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision date of the first post in "forum1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = liquidsite.findDocument("Section1/forum1").first&gt;
+&lt;p&gt;The post revision date is ${post.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post revision date is 2005-01-21.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the post id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post id.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the id of the first post in "forum1":</p>
+
+    <example>
+      <preformat>&lt;#assign post = liquidsite.findDocument("Section1/forum1")&gt;
+&lt;p&gt;The post id is ${post.id}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The post id is 123.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the post lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the lock object of the first post in "forum1",
+    and stores it in a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/forum1").first.lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the post online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the post is online, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the online flag of the first post in "forum1",
+    and stores it in a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/forum1").first.online&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="parent" style="inner">parent</h2>
+
+    <p>Returns the parent topic of the post.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>parent &#8594; <ref file="topic.xml">topic
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The parent topic under which the post is
+    located.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the parent of the first post in "topic1", and
+    stores it in a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/forum1").first.parent&gt;</preformat>
+    </example>
+
+    <p>In this case the parent is "topic1".</p>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the post path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the path of the first post in "forum1":</p>
+
+    <example>
+      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/forum1").first.path&gt;
+&lt;p&gt;The path is ${path}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be:</p>
+
+    <example>
+      <p>The path is Section1/forum1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the post revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post revision number, or zero (0) if the
+    post doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision of the first post in "forum1":</p>
+
+    <example>
+      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/forum1").first.revision&gt;
+&lt;p&gt;The revision is ${revision}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be something like:</p>
+
+    <example>
+      <p>The revision is 2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the post revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post revision author, or an empty user
+    if the post doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the revision author of a post and assigns it
+    to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findDocument("Section1/forum1").user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks whether the current logged in user has a specified
+    permission over the post. See the <ref file="document.xml"
+    id="hasAccess">document object</ref> for information about the
+    allowed permission values.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user has the
+    specified permission over the post, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the current logged in user has read
+    access to a post:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.findDocument("Section1/forum1").hasAccess("read")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

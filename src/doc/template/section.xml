@@ -7,8 +7,7 @@
 
     <h1>The section object</h1>
 
-    <p>The <code>section</code> object represents a content
-    section.</p>
+    <p>The section object represents a content section.</p>
 
     <list style="compact">
       <item>
@@ -73,7 +72,7 @@
       </item>
       <item>
         <title><ref id="parent">parent</ref></title>
-        <text>Returns the section parent object.</text>
+        <text>Returns the parent section of the section.</text>
       </item>
       <item>
         <title><ref id="path">path</ref></title>
@@ -88,7 +87,7 @@
         <text>Returns the section revision author.</text>
       </item>
       <item>
-        <title><ref id="hasAccess">hasAccess</ref></title>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
         <text>Checks whether the current logged in user has a
         specified permission over the section.</text>
       </item>
@@ -240,7 +239,7 @@ ${liquidsite.findSection("Section1").countDocuments}.&lt;p&gt;</preformat>
     <code>/</code>.</p>
 
     <p>Read about the sort criterion format in the liquidsite object
-    <ref file="liquidsite.xml#findDocuments2">findDocuments</ref>
+    <ref file="liquidsite.xml" id="findDocuments2">findDocuments</ref>
     method.</p>
 
     <h3>Syntax:</h3>
@@ -551,29 +550,28 @@ ${sec1.description}</preformat>
 
     <h2 id="parent" style="inner">parent</h2>
 
-    <p>Returns the section parent object.</p>
+    <p>Returns the parent section of the section.</p>
 
     <h3>Syntax:</h3>
 
     <p style="indent"><code>parent &#8594; <ref
-    file="content.xml">content object</ref></code></p>
+    file="section.xml">section object</ref></code></p>
 
     <h3>Returns:</h3>
 
-    <p style="indent">The section parent object, which is the content
-    object under which the section is located.</p>
+    <p style="indent">The parent section under which the section is
+    located.</p>
 
     <h3>Example:</h3>
 
-    <p>This code gets the parent object of a section and stores it in
-    a variable:</p>
+    <p>This code gets the parent of a section and stores it in a
+    variable:</p>
 
     <example>
       <preformat>&lt;#assign parent = liquidsite.findSection("Section1.1").parent&gt;</preformat>
     </example>
 
-    <p>In this case the parent of "Section1.1" is the content object
-    "Section1".</p>
+    <p>In this case the parent of "Section1.1" is "Section1".</p>
 
 
     <separator/>
@@ -668,7 +666,9 @@ ${sec1.description}</preformat>
     <h2 id="hasAccess" style="inner">hasAccess</h2>
 
     <p>Checks whether the current logged in user has a specified
-    permission over the section.</p>
+    permission over the section. See the <ref file="document.xml"
+    id="hasAccess">document object</ref> for information about the
+    allowed permission values.</p>
 
     <h3>Syntax:</h3>
 
@@ -676,7 +676,8 @@ ${sec1.description}</preformat>
 
     <h3>Returns:</h3>
 
-    <p style="indent">True if the current logged in user has the specified permission over the section, false otherwise.</p>
+    <p style="indent">True if the current logged in user has the
+    specified permission over the section, false otherwise.</p>
 
     <h3>Example:</h3>
 
@@ -684,7 +685,7 @@ ${sec1.description}</preformat>
     access to a section:</p>
 
     <example>
-      <preformat>&lt;#if liquidsite.findSection("Section1").hasAccess("r")&gt;</preformat>
+      <preformat>&lt;#if liquidsite.findSection("Section1").hasAccess("read")&gt;</preformat>
     </example>
 
   </body>

@@ -1,0 +1,59 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The template API documentation</h1>
+
+    <p>The template API consists of the following objects:</p>
+
+    <list style="compact">
+      <item>
+        <text>The <ref file="document.xml">document
+        object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="documentdata.xml">document data
+        object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="documentfile.xml">document file
+        object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="forum.xml">forum object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="liquidsite.xml">liquidsite
+        object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="lock.xml">lock object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="post.xml">post object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="request.xml">request object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="section.xml">section object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="session.xml">session object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="topic.xml">topic object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="user.xml">user object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="util.xml">util object</ref></text>
+      </item>
+    </list>
+
+  </body>
+</doc>

@@ -1,0 +1,227 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The user object</h1>
+
+    <p>The user object represents a Liquid Site user.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="domainadmin">domainadmin</ref></title>
+        <text>Checks whether the user has administration priviledges
+        over the domain.</text>
+      </item>
+      <item>
+        <title><ref id="email">email</ref></title>
+        <text>Returns the user email.</text>
+      </item>
+      <item>
+        <title><ref id="groups">groups</ref></title>
+        <text>Returns a list of the groups to which the user
+        belongs.</text>
+      </item>
+      <item>
+        <title><ref id="login">login</ref></title>
+        <text>Returns the user login username.</text>
+      </item>
+      <item>
+        <title><ref id="realName">realName</ref></title>
+        <text>Returns the user real name.</text>
+      </item>
+      <item>
+        <title><ref id="superuser">superuser</ref></title>
+        <text>Returns the superuser flag for the user.</text>
+      </item>
+      <item>
+        <title><ref id="isGroup">isGroup(name)</ref></title>
+        <text>Checks if the user is member of a named group.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+ 
+    <h2 id="domainadmin" style="inner">domainadmin</h2>
+
+    <p>Checks whether the user has administration priviledges over the
+    domain.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>domainadmin &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the user has administration priviledges
+    over the domain, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks if a user has administration priviledges:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;#if user.domainadmin&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="email" style="inner">email</h2>
+
+    <p>Returns the user email.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>email &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The user email.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the email of a user:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;p&gt;The user email is ${user.email}&lt;/p&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="groups" style="inner">groups</h2>
+
+    <p>Returns a list of the groups to which the user belongs.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>groups &#8594; sequence of string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of the groups to which the user
+    belongs.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through a user groups:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;#list user.groups&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="login" style="inner">login</h2>
+
+    <p>Returns the user login username.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>login &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The user login username.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the login of a user:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;p&gt;The user login is ${user.login}&lt;/p&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="realName" style="inner">realName</h2>
+
+    <p>Returns the user real name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>realName &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The user real name.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the real name of a user:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;p&gt;The user realName is ${user.realName}&lt;/p&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="superuser" style="inner">superuser</h2>
+
+    <p>Returns the superuser flag for the user.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>superuser &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the user is superuser, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks if a user is superuser:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;#if user.superuser&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="isGroup" style="inner">isGroup</h2>
+
+    <p>Checks if the user is member of a named group.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>isGroup(name) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>name</code> -- the group name</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the user belongs to the named group,
+    false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks if a user belongs to a certain group:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;#if user.isGroup("editors")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

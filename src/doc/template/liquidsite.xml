@@ -7,9 +7,9 @@
 
     <h1>The liquidsite object</h1>
 
-    <p>The <code>liquidsite</code> object is the global entry point to
-    the content of your domain. You can also access the request and
-    session objects, and obtain information about users.</p>
+    <p>The liquidsite object is the global entry point to the content
+    of your domain. You can also access the request and session
+    objects, and obtain information about users.</p>
 
     <list style="compact">
       <item>

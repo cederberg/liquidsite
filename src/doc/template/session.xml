@@ -7,20 +7,21 @@
 
     <h1>The session object</h1>
 
-    <p>The <code>session</code> object represents an http session.</p>
+    <p>The session object represents an http session.</p>
 
     <list style="compact">
       <item>
-        <title><ref id="clear">clear</ref></title>
+        <title><ref id="clear">clear()</ref></title>
         <text>Clears all data in the user session.</text>
       </item>
       <item>
-        <title><ref id="destroy">destroy</ref></title>
+        <title><ref id="destroy">destroy()</ref></title>
         <text>Destroys the user session.</text>
       </item>
       <item>
-        <title><ref id="get">get</ref></title>
-        <text>Returns a session data value as a template model.</text>
+        <title><ref id="get">[property name]</ref></title>
+        <text>Returns the session data value associated to a specified
+        property name.</text>
       </item>
       <item>
         <title><ref id="isEmpty">isEmpty</ref></title>
@@ -37,14 +38,14 @@
 
     <h3>Syntax:</h3>
 
-    <p style="indent"><code>clear</code></p>
+    <p style="indent"><code>clear()</code></p>
 
     <h3>Example:</h3>
 
     <p>This code clears all data in the user session:</p>
 
     <example>
-      <preformat>${session.clear}</preformat>
+      <preformat>${session.clear()}</preformat>
     </example>
 
 
@@ -56,38 +57,43 @@
 
     <h3>Syntax:</h3>
 
-    <p style="indent"><code>destroy</code></p>
+    <p style="indent"><code>destroy()</code></p>
 
     <h3>Example:</h3>
 
     <p>This code destroys the user session:</p>
 
     <example>
-      <preformat>${session.destroy}</preformat>
+      <preformat>${session.destroy()}</preformat>
     </example>
 
 
     <separator/>
 
-    <h2 id="get" style="inner">get</h2>
+    <h2 id="get" style="inner">[property name]</h2>
 
-    <p>Returns a session data value as a template model.</p>
+    <p>Returns the session data value associated to a specified
+    property name.</p>
 
     <h3>Syntax:</h3>
 
-    <p style="indent"><code>get &#8594; template model</code></p>
+    <p style="indent"><code>[property name] &#8594; freemarker
+    document model</code></p>
 
     <h3>Returns:</h3>
 
-    <p style="indent">A session data value as a template model.</p>
+    <p style="indent">The session data value associated to a specified
+    property name.</p>
 
     <h3>Example:</h3>
 
-    <p>This code gets a session data value and assigns it to a
-    variable:</p>
+    <p>Here are some examples of how to obtain session data values:</p>
 
     <example>
-      <preformat>&lt;#assign user = session.get("user")&gt;</preformat>
+      <preformat>&lt;#assign pref = session.preferences&gt;
+&lt;#assign lang = session.preferences.lang&gt;
+&lt;#assign theme = session.preferences.theme&gt;
+&lt;#assign themeName = session.preferences.theme["name"]&gt;</preformat>
     </example>
 
 

@@ -1,0 +1,407 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The document file object</h1>
+
+    <p>The document file object is used to access the content of a
+    file.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="mimeType">mimeType</ref></title>
+        <text>Returns the MIME type of the file.</text>
+      </item>
+      <item>
+        <title><ref id="size">size</ref></title>
+        <text>Returns the size of the file in bytes.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the file created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the file revision date.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the file id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the file lock object.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the file online flag.</text>
+      </item>
+      <item>
+        <title><ref id="parent">parent</ref></title>
+        <text>Returns the parent section of the file.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the file path.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the file revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the file revision author.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the file.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="mimeType" style="inner">mimeType</h2>
+
+    <p>Returns the MIME type of the file.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>mimeType &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The MIME type of the file.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the MIME type of a file:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The MIME type of "file1" is ${liquidsite.findDocument("Section1/file1").mimeType}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>The MIME type of "file1" is application/pdf.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="size" style="inner">size</h2>
+
+    <p>Returns the size of the file in bytes.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>size &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The size of the file in bytes.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the size of a file:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The size of "file1" is ${liquidsite.findDocument("Section1/file1").size} bytes.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>The size of "file1" is 134500 bytes.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the file created date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file created date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the file created date:</p>
+
+    <example>
+      <preformat>&lt;#assign file = liquidsite.findDocument("Section1/file1")&gt;
+&lt;p&gt;The file created date is ${file.created}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The file created date is 2005-01-15.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the file revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the file revision date:</p>
+
+    <example>
+      <preformat>&lt;#assign file = liquidsite.findDocument("Section1/file1")&gt;
+&lt;p&gt;The file revision date is ${file.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The file revision date is 2005-01-21.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the file id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file id.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the file id:</p>
+
+    <example>
+      <preformat>&lt;#assign file = liquidsite.findDocument("Section1/file1")&gt;
+&lt;p&gt;The file id is ${file.id}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The file id is 123.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the file lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the lock object of a file and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/file1").lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the file online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the file is online, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the online flag of a file and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/file1").online&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="parent" style="inner">parent</h2>
+
+    <p>Returns the parent section of the file.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>parent &#8594; <ref
+    file="section.xml">section object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The parent section under which the file is
+    located.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the parent of a file and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/file1").parent&gt;</preformat>
+    </example>
+
+    <p>In this case the parent of "file1" is "Section1".</p>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the file path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the path of a file:</p>
+
+    <example>
+      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/file1").path&gt;
+&lt;p&gt;The path of "file1" is ${path}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be:</p>
+
+    <example>
+      <p>The path of "file1" is Section1/file1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the file revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file revision number, or zero (0) if the
+    file doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision of a file:</p>
+
+    <example>
+      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/file1").revision&gt;
+&lt;p&gt;The revision of "file1" is ${revision}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be something like:</p>
+
+    <example>
+      <p>The revision of "file1" is 2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the file revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file revision author, or an empty user
+    if the file doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the revision author of a file and assigns it
+    to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findDocument("Section1/file1").user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks whether the current logged in user has a specified
+    permission over the file. See the <ref file="document.xml"
+    id="hasAccess">document object</ref> for information about the
+    allowed permission values.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user has the
+    specified permission over the file, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the current logged in user has read
+    access to a file:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.findDocument("Section1/file1").hasAccess("read")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

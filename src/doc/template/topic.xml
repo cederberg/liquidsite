@@ -1,0 +1,603 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The topic object</h1>
+
+    <p>The topic object represents a forum topic.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="findTopics">findPost(id)</ref></title>
+        <text>Returns a specified post in the topic.</text>
+      </item>
+      <item>
+        <title><ref id="findTopics">findPosts(offset,
+        count)</ref></title>
+        <text>Returns a number of posts in the topic.</text>
+      </item>
+      <item>
+        <title><ref id="first">first</ref></title>
+        <text>Returns the first post in the topic.</text>
+      </item>
+      <item>
+        <title><ref id="last">last</ref></title>
+        <text>Returns the last post in the topic.</text>
+      </item>
+      <item>
+        <title><ref id="locked">locked</ref></title>
+        <text>Returns the topic locked flag.</text>
+      </item>
+      <item>
+        <title><ref id="postCount">postCount</ref></title>
+        <text>Returns the number of posts in this topic.</text>
+      </item>
+      <item>
+        <title><ref id="subject">subject</ref></title>
+        <text>Returns the topic subject.</text>
+      </item>
+      <item>
+        <title><ref id="subjectSource">subjectSource</ref></title>
+        <text>Returns the unprocessed topic subject.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the topic created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the topic revision date.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the topic id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the topic lock object.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the topic online flag.</text>
+      </item>
+      <item>
+        <title><ref id="parent">parent</ref></title>
+        <text>Returns the parent forum of the topic.</text>
+      </item>
+      <item>
+        <title><ref id="path">path</ref></title>
+        <text>Returns the topic path.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the topic revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the topic revision author.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the topic.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="findPost" style="inner">findPost</h2>
+
+    <p>Returns a specified post in the topic.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findPost(id) &#8594; <ref
+    file="post.xml">post object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>id</code> -- the id of the post to return</text>
+      </item>
+    </list>
+    
+    <h3>Returns:</h3>
+
+    <p style="indent">A specified post in the topic.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets a topic post from its id and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign post = topic1.findPost(id)&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findPosts" style="inner">findPosts</h2>
+
+    <p>Returns a number of posts in the topic.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findPosts(offset, count) &#8594; sequence
+    of <ref file="post.xml">post objects</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>offset</code> -- the number of posts to
+        skip</text>
+      </item>
+      <item>
+        <text><code>count</code> -- the maximum number of posts to
+        return</text>
+      </item>
+    </list>
+    
+    <h3>Returns:</h3>
+
+    <p style="indent">A list of at most <code>count</code> posts in
+    the topic, beginning at post number <code>offset</code>.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through the first ten posts in a topic:</p>
+
+    <example>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/topic1").findPosts(0, 10)&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="first" style="inner">first</h2>
+
+    <p>Returns the first post in the topic.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>first &#8594; <ref file="post.xml">post
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The first post in this topic.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the first post in a topic and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign firstPost = liquidsite.findDocument("Section1/topic1").first&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="last" style="inner">last</h2>
+
+    <p>Returns the last post in the topic.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>last &#8594; <ref file="post.xml">post
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The last post in this topic.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the last post in a topic and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lastPost = liquidsite.findDocument("Section1/topic1").last&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="locked" style="inner">locked</h2>
+
+    <p>Returns the topic locked flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>locked &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic locked flag.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether a topic is locked:</p>
+
+    <example>
+      <preformat>&lt;#if topic1.locked&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="postCount" style="inner">postCount</h2>
+
+    <p>Returns the number of posts in this topic.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>postCount &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The number os posts in this topic.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code loops through all posts in a topic:</p>
+
+    <example>
+      <preformat>&lt;#list topic1.findPosts(0, topic1.postCount)&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="subject" style="inner">subject</h2>
+
+    <p>Returns the topic subject.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>subject &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic subject.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the subject of the first topic in
+    "topic1":</p>
+
+    <example>
+      <preformat>&lt;#assign topic = forum1.first&gt;
+&lt;p&gt;The topic subject is ${topic.subject}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The topic subject is Welcome to the Liquid Site forum.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="subjectSource" style="inner">subjectSource</h2>
+
+    <p>Returns the unprocessed topic subject.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>subjectSource &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The unprocessed topic subject.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the unprocessed subject of the first topic in
+    "topic1":</p>
+
+    <example>
+      <preformat>&lt;#assign topic = forum1.first&gt;
+&lt;p&gt;The topic subject is ${topic.subjectSource}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The topic subject is &lt;p&gt;Welcome to the Liquid Site
+      forum&lt;/p&gt;.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the topic created date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic created date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the topic created date:</p>
+
+    <example>
+      <preformat>&lt;#assign topic = liquidsite.findDocument("Section1/topic1")&gt;
+&lt;p&gt;The topic created date is ${topic.created}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The topic created date is 2005-01-15.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the topic revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the topic revision date:</p>
+
+    <example>
+      <preformat>&lt;#assign topic = liquidsite.findDocument("Section1/topic1")&gt;
+&lt;p&gt;The topic revision date is ${topic.date}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The topic revision date is 2005-01-21.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the topic id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic id.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the topic id:</p>
+
+    <example>
+      <preformat>&lt;#assign topic = liquidsite.findDocument("Section1/topic1")&gt;
+&lt;p&gt;The topic id is ${topic.id}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will result in something like:</p>
+
+    <example>
+      <p>The topic id is 123.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the topic lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the lock object of a topic and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/topic1").lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the topic online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the topic is online, false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the online flag of a topic and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/topic1").online&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="parent" style="inner">parent</h2>
+
+    <p>Returns the parent section of the topic.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>parent &#8594; <ref
+    file="section.xml">section object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The parent section under which the topic is
+    located.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the parent of a topic and stores it in a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/topic1").parent&gt;</preformat>
+    </example>
+
+    <p>In this case the parent of "topic1" is "Section1".</p>
+
+
+    <separator/>
+
+    <h2 id="path" style="inner">path</h2>
+
+    <p>Returns the topic path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>path &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic path.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the path of a topic:</p>
+
+    <example>
+      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/topic1").path&gt;
+&lt;p&gt;The path of "topic1" is ${path}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be:</p>
+
+    <example>
+      <p>The path of "topic1" is Section1/topic1.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the topic revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic revision number, or zero (0) if the
+    topic doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the revision of a topic:</p>
+
+    <example>
+      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/topic1").revision&gt;
+&lt;p&gt;The revision of "topic1" is ${revision}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>The result will be something like:</p>
+
+    <example>
+      <p>The revision of "topic1" is 2.</p>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the topic revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The topic revision author, or an empty user
+    if the topic doesn't exist.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code gets the revision author of a topic and assigns it
+    to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findDocument("Section1/topic1").user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks whether the current logged in user has a specified
+    permission over the topic. See the <ref file="document.xml"
+    id="hasAccess">document object</ref> for information about the
+    allowed permission values.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current logged in user has the
+    specified permission over the topic, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the current logged in user has read
+    access to a topic:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.findDocument("Section1/topic1").hasAccess("read")&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

@@ -1,0 +1,49 @@
+<doc>
+  <head>
+    <title>Liquid Site Release Documentation</title>
+  </head>
+
+  <body>
+
+    <h1>The util object</h1>
+
+    <p>The util object provides utility data and functions.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="currentTime">currentTime</ref></title>
+        <text>Returns the current date and time</text>
+      </item>
+    </list>
+
+
+    <separator/>
+ 
+    <h2 id="currentTime" style="inner">currentTime</h2>
+
+    <p>Returns the current date and time.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>currentTime &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The current date and time.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs the current date and time:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The current date and time is ${liquidsite.util.currentTime}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>The current date and time is 12-02-2005 12:30:00.</p>
+    </example>
+
+  </body>
+</doc>
