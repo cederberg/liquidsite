@@ -93,6 +93,12 @@ public class Configuration {
         "liquidsite.db.pool.size";
 
     /**
+     * The file data directory key.
+     */
+    public static final String FILE_DIRECTORY = 
+        "liquidsite.file.dir";
+
+    /**
      * The configuration file. If this file is set to null, the 
      * configuration is read-only.
      */
@@ -115,7 +121,7 @@ public class Configuration {
     private boolean initialized = false;
 
     /**
-     * Creates a new read-only configuration. Thiis constructor is 
+     * Creates a new read-only configuration. This constructor is 
      * only used for accessing configuration data in databases during
      * the installation.
      */
