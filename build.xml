@@ -13,7 +13,7 @@
   General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software 
+  along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
   USA
 
@@ -35,7 +35,7 @@
 
   <target name="init">
     <tstamp>
-      <format property="build.printdate" 
+      <format property="build.printdate"
               pattern="yyyy-MM-dd" />
     </tstamp>
     <condition property="build.version" value="${DSTAMP}">
@@ -46,11 +46,11 @@
     <taskdef name="afterdoc"
              classname="net.percederberg.afterdoc.ant.AfterDocTask"
              classpathref="project.class.path" />
-  </target>  
+  </target>
 
 
 <!-- COMPILATION TARGETS -->
-  <target name="compile" 
+  <target name="compile"
           depends="init,compile-clean,compile-db,compile-java">
     <echo file="${build.dir}/classes/net/percederberg/liquidsite/build.properties">
 build.version=${build.version}
@@ -82,9 +82,9 @@ build.date=${build.printdate}
     <delete quiet="true">
       <fileset dir="${build.dir}/classes" />
       <fileset dir="${build.dir}/sql" />
-      <fileset dir="${build.dir}/lib" 
+      <fileset dir="${build.dir}/lib"
                includes="liquidsite*.jar" />
-      <fileset dir="${build.dir}" 
+      <fileset dir="${build.dir}"
                includes="liquidsite.war" />
     </delete>
     <mkdir dir="${build.dir}/classes" />
@@ -94,10 +94,16 @@ build.date=${build.printdate}
 
   <target name="compile-db">
     <afterdoc sqlComments="no">
-      <in type="afterdoc" src="${build.dir}/src/db/liquidsite-schema.afterdoc" />
-      <out type="sql" dest="${build.dir}/sql" />
+      <in type="afterdoc"
+          src="${build.dir}/src/db/liquidsite-schema.afterdoc" />
+      <out type="sql"
+           dest="${build.dir}/sql" />
     </afterdoc>
     <delete file="${build.dir}/sql/CREATE_DATABASES.sql" />
+    <copy todir="${build.dir}/sql">
+      <fileset dir="${build.dir}/src/db"
+               includes="*.sql" />
+    </copy>
   </target>
 
   <target name="compile-java">
@@ -187,7 +193,7 @@ build.date=${build.printdate}
              version="false"
              use="true"
              author="false"
-             windowtitle="Liquid Site ${build.version} Documentation" 
+             windowtitle="Liquid Site ${build.version} Documentation"
              failonerror="true" />
   </target>
 

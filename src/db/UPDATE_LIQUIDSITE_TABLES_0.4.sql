@@ -1,3 +1,5 @@
+# Updates Liquid Site Tables to version 0.4 (from 0.3)
+
 # Change domain length to 30 characters
 ALTER TABLE `LS_DOMAIN`
     MODIFY COLUMN `NAME` VARCHAR(30) NOT NULL;
