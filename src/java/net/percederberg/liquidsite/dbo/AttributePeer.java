@@ -217,52 +217,6 @@ public class AttributePeer extends AbstractPeer {
     }
 
     /**
-     * Clears the status flags for all content object revision
-     * attributes.
-     *
-     * @param id             the content identifier
-     * @param con            the database connection to use
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    static void doStatusClear(int id, DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("attribute.status.clear");
-
-        query.addParameter(id);
-        PEER.update(query, con);
-    }
-
-    /**
-     * Sets a status flag bit for all content object revision
-     * attributes. The bit flag will be added to the status flags
-     * without clearing any other bit flag (logical OR).
-     *
-     * @param id             the content identifier
-     * @param revision       the content revision
-     * @param flag           the bit flag to set
-     * @param con            the database connection to use
-     *
-     * @throws DatabaseObjectException if the database couldn't be
-     *             accessed properly
-     */
-    static void doStatusSet(int id,
-                            int revision,
-                            int flag,
-                            DatabaseConnection con)
-        throws DatabaseObjectException {
-
-        DatabaseQuery  query = new DatabaseQuery("attribute.status.set");
-
-        query.addParameter(flag);
-        query.addParameter(id);
-        query.addParameter(revision);
-        PEER.update(query, con);
-    }
-
-    /**
      * Creates a new content attribute database peer.
      */
     private AttributePeer() {

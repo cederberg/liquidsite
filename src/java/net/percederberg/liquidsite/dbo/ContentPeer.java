@@ -405,7 +405,6 @@ public class ContentPeer extends AbstractPeer {
 
         query.addParameter(id);
         PEER.update(query, con);
-        AttributePeer.doStatusClear(id, con);
     }
 
     /**
@@ -434,7 +433,6 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(id);
         query.addParameter(revision);
         PEER.update(query, con);
-        AttributePeer.doStatusSet(id, revision, flag, con);
     }
 
     /**

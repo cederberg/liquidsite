@@ -568,13 +568,6 @@
         </description>
         <type name="TEXT" required="true" />
       </column>
-      <column name="STATUS">
-        <description>
-          The content object revision status.
-        </description>
-        <type name="SMALLINT" required="true" />
-        <ref table="LS_CONTENT" column="STATUS" />
-      </column>
       <primarykey>
         <description>
           The content attribute is uniquely indexed by the object
