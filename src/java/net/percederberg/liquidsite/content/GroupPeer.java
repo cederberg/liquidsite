@@ -158,6 +158,8 @@ public class GroupPeer extends Peer {
         query.addParameter(group.getDescription());
         query.addParameter(group.getComment());
         execute("inserting group", query, con);
+        group.setModified(false);
+        group.setPersistent(true);
     }
     
     /**
@@ -192,6 +194,8 @@ public class GroupPeer extends Peer {
         query.addParameter(group.getDomainName());
         query.addParameter(group.getName());
         execute("updating group", query, con);
+        group.setModified(false);
+        group.setPersistent(true);
     }
     
     /**
@@ -226,6 +230,8 @@ public class GroupPeer extends Peer {
         query.addParameter(group.getName());
         execute("deleting group", query, con);
         UserGroupPeer.doDelete(group, con);
+        group.setModified(true);
+        group.setPersistent(false);
     }
     
     /**

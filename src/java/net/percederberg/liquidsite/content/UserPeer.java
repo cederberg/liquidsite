@@ -160,6 +160,8 @@ public class UserPeer extends Peer {
         query.addParameter(user.getEmail());
         query.addParameter(user.getComment());
         execute("inserting user", query, con);
+        user.setModified(false);
+        user.setPersistent(true);
     }
     
     /**
@@ -196,6 +198,8 @@ public class UserPeer extends Peer {
         query.addParameter(user.getDomainName());
         query.addParameter(user.getName());
         execute("updating user", query, con);
+        user.setModified(false);
+        user.setPersistent(true);
     }
     
     /**
@@ -230,6 +234,8 @@ public class UserPeer extends Peer {
         query.addParameter(user.getName());
         execute("deleting user", query, con);
         UserGroupPeer.doDelete(user, con);
+        user.setModified(true);
+        user.setPersistent(false);
     }
     
     /**

@@ -148,6 +148,8 @@ public final class DomainPeer extends Peer {
         query.addParameter(domain.getDescription());
         query.addParameter(domain.getOptions());
         execute("inserting domain", query, con);
+        domain.setModified(false);
+        domain.setPersistent(true);
         getContentManager().addDomain(domain);
     }
     
@@ -184,6 +186,8 @@ public final class DomainPeer extends Peer {
         query.addParameter(domain.getOptions());
         query.addParameter(domain.getName());
         execute("updating domain", query, con);
+        domain.setModified(false);
+        domain.setPersistent(true);
         getContentManager().addDomain(domain);
     }
     
@@ -217,6 +221,8 @@ public final class DomainPeer extends Peer {
 
         query.addParameter(domain.getName());
         execute("deleting domain", query, con);
+        domain.setModified(true);
+        domain.setPersistent(false);
         getContentManager().removeDomain(domain);
     }
     

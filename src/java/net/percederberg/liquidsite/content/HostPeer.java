@@ -186,6 +186,8 @@ public class HostPeer extends Peer {
         query.addParameter(host.getDescription());
         query.addParameter(host.getOptions());
         execute("inserting host", query, con);
+        host.setModified(false);
+        host.setPersistent(true);
         ContentManager.getInstance().addHost(host);
     }
     
@@ -222,6 +224,8 @@ public class HostPeer extends Peer {
         query.addParameter(host.getOptions());
         query.addParameter(host.getName());
         execute("updating host", query, con);
+        host.setModified(false);
+        host.setPersistent(true);
         ContentManager.getInstance().addHost(host);
     }
     
@@ -255,6 +259,8 @@ public class HostPeer extends Peer {
 
         query.addParameter(host.getName());
         execute("deleting host", query, con);
+        host.setModified(true);
+        host.setPersistent(false);
         ContentManager.getInstance().removeHost(host);
     }
     
