@@ -243,7 +243,7 @@ public class Host extends PersistentObject {
     public void validate() throws ContentException {
         Host  host = getContentManager().getHost(getName());
 
-        if (getDomain().equals("")) {
+        if (getDomainName().equals("")) {
             throw new ContentException("no domain set for host object");
         } else if (getDomain() == null) {
             throw new ContentException("domain '" + getDomainName() + 
