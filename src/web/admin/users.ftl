@@ -1,5 +1,5 @@
 <#include "header.ftl">
 
-    <p>&nbsp;</p>
+    <p style="margin-left: 5em;">Nothing here yet...</p>
 
 <#include "footer.ftl">

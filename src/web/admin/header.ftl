@@ -60,7 +60,7 @@
         <td class="inactive"
             onclick="window.location='${page}'"
             onmouseover="this.className='hoover'"
-            onmouseout="this.className='active'">
+            onmouseout="this.className='inactive'">
           <a href="${page}">${name}</a>
         </td>
   </#if>
