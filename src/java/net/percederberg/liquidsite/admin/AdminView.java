@@ -384,6 +384,41 @@ class AdminView {
     }
 
     /**
+     * Shows the edit site page.
+     * 
+     * @param request        the request object
+     * @param site           the site to edit
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void pageEditSite(Request request, Site site) 
+        throws ContentException {
+
+        Domain     domain = site.getDomain();
+        Host[]     hosts = domain.getHosts();
+        ArrayList  list = new ArrayList();
+        String     str;
+        
+        for (int i = 0; i < hosts.length; i++) {
+            list.add(hosts[i].getName());
+        }
+        setRequestReference(request, site);
+        request.setAttribute("hostnames", list);
+        str = request.getParameter("name", site.getName());
+        request.setAttribute("name", str);
+        str = request.getParameter("protcol", site.getProtocol());
+        request.setAttribute("protocol", str);
+        str = request.getParameter("host", site.getHost());
+        request.setAttribute("host", str);
+        str = request.getParameter("port", String.valueOf(site.getPort()));
+        request.setAttribute("port", str);
+        str = request.getParameter("dir", site.getDirectory());
+        request.setAttribute("dir", str);
+        request.sendTemplate("admin/edit-site.ftl");
+    }
+
+    /**
      * Shows the load site object JavaScript code.
      * 
      * @param request        the request object

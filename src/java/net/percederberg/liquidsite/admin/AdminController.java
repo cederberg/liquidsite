@@ -127,6 +127,8 @@ public class AdminController extends Controller {
             processLogout(request);
         } else if (path.equals("add-site.html")) {
             processAddObject(request);
+        } else if (path.equals("edit-site.html")) {
+            processEditObject(request);
         } else if (path.equals("delete-site.html")) {
             processDeleteObject(request);
         } else if (path.equals("publish-site.html")) {
@@ -297,7 +299,7 @@ public class AdminController extends Controller {
         Site    site;
         
         try {
-            validator.validateAddSite(request);
+            validator.validateSite(request);
             domain = (Domain) parent;
             site = new Site(domain);
             site.setName(request.getParameter("name"));
@@ -313,6 +315,78 @@ public class AdminController extends Controller {
         } catch (FormException e) {
             request.setAttribute("error", e.getMessage());
             view.pageAddSite(request, parent);
+        }
+    }
+
+    /**
+     * Processes the edit object requests for the site view.
+     * 
+     * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
+     */
+    private void processEditObject(Request request) throws RequestException {
+        String   step = request.getParameter("step");
+        Object   obj;
+        Content  content;
+        
+        try {
+            obj = view.getRequestReference(request);
+            if (obj instanceof Content) {
+                content = ((Content) obj).getRevision(0);
+                if (content != null) {
+                    obj = content;
+                }
+            }
+            if (request.getParameter("prev") != null) {
+                request.sendRedirect("site.html");
+            } else if (obj instanceof Site) {
+                if (step == null) {
+                    view.pageEditSite(request, (Site) obj);
+                } else {
+                    processEditSite(request, (Site) obj);
+                }
+            } else {
+                request.sendRedirect("site.html");
+            }
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            view.pageError(request, e);
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            view.pageError(request, e);
+        }
+    }
+
+    /**
+     * Processes the edit site requests for the site view.
+     * 
+     * @param request        the request object
+     * @param site           the site object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void processEditSite(Request request, Site site) 
+        throws ContentException, ContentSecurityException {
+
+        try {
+            validator.validateSite(request);
+            site.setRevisionNumber(0);
+            site.setName(request.getParameter("name"));
+            site.setProtocol(request.getParameter("protocol"));
+            site.setHost(request.getParameter("host"));
+            site.setPort(Integer.parseInt(request.getParameter("port")));
+            site.setDirectory(request.getParameter("dir"));
+            site.setComment("Modified");
+            site.save(request.getUser());
+            request.sendRedirect("site.html");
+        } catch (FormException e) {
+            request.setAttribute("error", e.getMessage());
+            view.pageAddSite(request, site);
         }
     }
 

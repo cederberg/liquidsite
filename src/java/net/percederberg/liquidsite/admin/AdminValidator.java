@@ -63,9 +63,9 @@ public class AdminValidator {
     private FormValidator addDomain = new FormValidator();
 
     /**
-     * The add site form validator.
+     * The site form validator.
      */
-    private FormValidator addSite = new FormValidator();
+    private FormValidator site = new FormValidator();
 
     /**
      * The publish and unpublish form validator.
@@ -91,24 +91,24 @@ public class AdminValidator {
         error = "Host name must be lower-case, invalid character";
         addDomain.addCharacterConstraint("host", chars, error);
 
-        // Add site validator
-        addSite.addRequiredConstraint("name", "No site name specified");
-        addSite.addRequiredConstraint("protocol", "No protocol specified");
+        // Add and edit site validator
+        site.addRequiredConstraint("name", "No site name specified");
+        site.addRequiredConstraint("protocol", "No protocol specified");
         error = "Protocol must be either 'http' or 'https', " +
                 "invalid character";
-        addSite.addCharacterConstraint("protocol", "https", error);
-        addSite.addRequiredConstraint("host", "No host name specified");
+        site.addCharacterConstraint("protocol", "https", error);
+        site.addRequiredConstraint("host", "No host name specified");
         chars = LOWERCASE_CHARACTERS + NUMBER_CHARACTERS + ".-_*";
         error = "Host name must be lower-case, invalid character";
-        addSite.addCharacterConstraint("host", chars, error);
-        addSite.addRequiredConstraint("port", "No port number specified");
+        site.addCharacterConstraint("host", chars, error);
+        site.addRequiredConstraint("port", "No port number specified");
         error = "Port number must be numeric, invalid character";
-        addSite.addCharacterConstraint("port", NUMBER_CHARACTERS, error);
-        addSite.addRequiredConstraint("dir", "No base directory specified");
+        site.addCharacterConstraint("port", NUMBER_CHARACTERS, error);
+        site.addRequiredConstraint("dir", "No base directory specified");
         chars = UPPERCASE_CHARACTERS + LOWERCASE_CHARACTERS +
                 NUMBER_CHARACTERS + ".-_/";
         error = "Base directory contains invalid character";
-        addSite.addCharacterConstraint("dir", chars, error);
+        site.addCharacterConstraint("dir", chars, error);
 
         // Add publish validator
         publish.addRequiredConstraint("date", "No publish date specified");
@@ -129,14 +129,14 @@ public class AdminValidator {
     }
 
     /**
-     * Validates the parameters in an add site request.
+     * Validates the parameters in an add and edit site request.
      * 
-     * @param request        the add site request
+     * @param request        the add or edit site request
      * 
      * @throws FormException if the form validation failed
      */
-    public void validateAddSite(Request request) throws FormException {
-        addSite.validate(request);
+    public void validateSite(Request request) throws FormException {
+        site.validate(request);
     }
 
     /**

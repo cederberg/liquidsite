@@ -348,6 +348,9 @@ class AdminScript {
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
                 }
+                buffer.append("objectAddEditButton('edit-site.html");
+                buffer.append(getLinkParameters(content));
+                buffer.append("');\n");
             }
             if (content.hasPublishAccess(user)) {
                 if (status == 1) {
