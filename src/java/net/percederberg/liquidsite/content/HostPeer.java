@@ -149,6 +149,7 @@ public class HostPeer extends Peer {
 
         ArrayList  params = new ArrayList();
 
+        host.validate();
         params.add(host.getName());
         params.add(host.getDescription());
         params.add(host.getOptions());
@@ -170,6 +171,7 @@ public class HostPeer extends Peer {
 
         ArrayList  params = new ArrayList();
 
+        host.validate();
         params.add(host.getDescription());
         params.add(host.getOptions());
         params.add(host.getName());
@@ -215,5 +217,4 @@ public class HostPeer extends Peer {
         host.setModified(false);
         host.setPersistent(true);
     }
-
 }

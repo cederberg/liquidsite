@@ -224,6 +224,31 @@ public class Host extends DataObject {
     }
 
     /**
+     * Validates this data object. This method checks that all 
+     * required fields have been filled with suitable values.
+     * 
+     * @throws ContentException if the data object contained errors
+     */
+    public void validate() throws ContentException {
+        Host  host = ContentManager.getInstance().getHost(name);
+
+        if (domain.equals("")) {
+            throw new ContentException("no domain set for host object");
+        } else if (getDomain() == null) {
+            throw new ContentException("domain '" + domain + 
+                                       "'does not exist");
+        } else if (name.equals("")) {
+            throw new ContentException("no name set for host object");
+        } else if (isPersistent() && host == null) {
+            throw new ContentException("host '" + name + 
+                                       "' does not exist");
+        } else if (!isPersistent() && host != null) {
+            throw new ContentException("host '" + name + 
+                                       "' already exists");
+        }
+    }
+
+    /**
      * Saves this host to the database.
      * 
      * @throws ContentException if the database couldn't be accessed 

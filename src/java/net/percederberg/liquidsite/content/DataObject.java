@@ -82,6 +82,14 @@ public abstract class DataObject {
     }
 
     /**
+     * Validates this data object. This method is called before 
+     * writing the data to the database. 
+     * 
+     * @throws ContentException if the data object contained errors
+     */
+    public abstract void validate() throws ContentException;
+
+    /**
      * Saves this data object to the database.
      * 
      * @throws ContentException if the database couldn't be accessed 

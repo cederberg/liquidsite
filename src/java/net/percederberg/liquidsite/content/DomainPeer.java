@@ -116,6 +116,7 @@ public class DomainPeer extends Peer {
 
         ArrayList  params = new ArrayList();
 
+        domain.validate();
         params.add(domain.getName());
         params.add(domain.getDescription());
         params.add(domain.getOptions());
@@ -137,6 +138,7 @@ public class DomainPeer extends Peer {
 
         ArrayList  params = new ArrayList();
 
+        domain.validate();
         params.add(domain.getDescription());
         params.add(domain.getOptions());
         params.add(domain.getName());

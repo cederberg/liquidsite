@@ -188,6 +188,26 @@ public class Domain extends DataObject {
     }
 
     /**
+     * Validates this data object. This method checks that all 
+     * required fields have been filled with suitable values.
+     * 
+     * @throws ContentException if the data object contained errors
+     */
+    public void validate() throws ContentException {
+        Domain  domain = ContentManager.getInstance().getDomain(name);
+
+        if (name.equals("")) {
+            throw new ContentException("no name set for domain object");
+        } else if (isPersistent() && domain == null) {
+            throw new ContentException("domain '" + name + 
+                                       "' does not exist");
+        } else if (!isPersistent() && domain != null) {
+            throw new ContentException("domain '" + name + 
+                                       "' already exists");
+        }
+    }
+
+    /**
      * Saves this domain to the database.
      * 
      * @throws ContentException if the database couldn't be accessed 
