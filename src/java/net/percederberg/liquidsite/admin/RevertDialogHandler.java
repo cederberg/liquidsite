@@ -57,7 +57,9 @@ class RevertDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        DIALOG_VIEW.viewRevert(request, (Content) getReference(request));
+        Content  content = (Content) AdminUtils.getReference(request);
+
+        DIALOG_VIEW.viewRevert(request, content);
     }
 
     /**
@@ -97,7 +99,7 @@ class RevertDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Content  content = (Content) getReference(request);
+        Content  content = (Content) AdminUtils.getReference(request);
 
         content.deleteRevision(request.getUser());
         return 0;

@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -46,12 +45,6 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 class AdminScript {
-
-    /**
-     * The date format used by this class.
-     */
-    private static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * Creates a new admin script helper.
@@ -86,7 +79,7 @@ class AdminScript {
         StringBuffer  buffer = new StringBuffer();
 
         buffer.append("treeSelect('");
-        buffer.append(getContentCategory(content));
+        buffer.append(AdminUtils.getCategory(content));
         buffer.append("', ");
         buffer.append(content.getId());
         buffer.append(");\n");
@@ -141,7 +134,7 @@ class AdminScript {
             buffer.append("', ");
             buffer.append(children[i].getId());
             buffer.append(", '");
-            buffer.append(getContentCategory(children[i]));
+            buffer.append(AdminUtils.getCategory(children[i]));
             buffer.append("', ");
             buffer.append(getString(children[i].getName()));
             buffer.append(", ");
@@ -181,7 +174,7 @@ class AdminScript {
             buffer.append(", ");
             buffer.append(children[i].getId());
             buffer.append(", '");
-            buffer.append(getContentCategory(children[i]));
+            buffer.append(AdminUtils.getCategory(children[i]));
             buffer.append("', ");
             buffer.append(getString(children[i].getName()));
             buffer.append(", ");
@@ -191,7 +184,7 @@ class AdminScript {
             buffer.append(");\n");
         }
         buffer.append("treeOpen('");
-        buffer.append(getContentCategory(parent));
+        buffer.append(AdminUtils.getCategory(parent));
         buffer.append("', ");
         buffer.append(parent.getId());
         buffer.append(");\n");
@@ -247,7 +240,7 @@ class AdminScript {
         Lock          lock = content.getLock();
 
         buffer.append("objectShow('");
-        buffer.append(getContentCategory(content));
+        buffer.append(AdminUtils.getCategory(content));
         buffer.append("', ");
         buffer.append(content.getId());
         buffer.append(", ");
@@ -602,30 +595,6 @@ class AdminScript {
     }
 
     /**
-     * Returns the JavaScript representation of a content category.
-     * 
-     * @param content        the content object
-     * 
-     * @return the JavaScript representation of a content category
-     */
-    public String getContentCategory(Content content) {
-        switch (content.getCategory()) {
-        case Content.SITE_CATEGORY:
-            return "site";
-        case Content.FOLDER_CATEGORY:
-            return "folder";
-        case Content.PAGE_CATEGORY:
-            return "page";
-        case Content.FILE_CATEGORY:
-            return "file";
-        case Content.TEMPLATE_CATEGORY:
-            return "template";
-        default:
-            return "";
-        }
-    }
-
-    /**
      * Returns the JavaScript representation of a content URL.
      * 
      * @param content        the content object
@@ -734,7 +703,7 @@ class AdminScript {
         if (date == null) {
             return "null";
         } else {
-            return getString(DATE_FORMAT.format(date)); 
+            return getString(AdminUtils.formatDate(date)); 
         }
     }
 
@@ -796,7 +765,7 @@ class AdminScript {
      * @return the content URL parameter string
      */
     private String getLinkParameters(Content content) {
-        return "?type=" + getContentCategory(content) + 
+        return "?type=" + AdminUtils.getCategory(content) + 
                "&id=" + content.getId();
     }
 }

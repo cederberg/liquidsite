@@ -61,7 +61,7 @@ class UnpublishDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Content  content = (Content) getReference(request);
+        Content  content = (Content) AdminUtils.getReference(request);
 
         DIALOG_VIEW.viewUnpublish(request, content);
     }
@@ -109,13 +109,13 @@ class UnpublishDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Content  content = (Content) getReference(request);
+        Content  content = (Content) AdminUtils.getReference(request);
         String   date;
 
         content.setRevisionNumber(content.getRevisionNumber() + 1);
         try {
             date = request.getParameter("date");
-            content.setOfflineDate(DATE_FORMAT.parse(date));
+            content.setOfflineDate(AdminUtils.parseDate(date));
         } catch (ParseException e) {
             content.setOfflineDate(new Date());
         }

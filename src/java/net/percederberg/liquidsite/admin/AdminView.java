@@ -21,7 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,12 +47,6 @@ import net.percederberg.liquidsite.content.User;
  * @version  1.0
  */
 class AdminView {
-
-    /**
-     * The date format used by this class.
-     */
-    public static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The admin script helper.
@@ -94,7 +87,7 @@ class AdminView {
     public void pageSite(Request request) 
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = getContentManager();
+        ContentManager  manager = AdminUtils.getContentManager();
         Object          focus = getSiteTreeFocus(request);
         User            user = request.getUser();
         Domain[]        domains;
@@ -166,7 +159,7 @@ class AdminView {
         Domain   domain;
         Content  content;
 
-        setReference(request, parent);
+        AdminUtils.setReference(request, parent);
         if (parent instanceof Domain) {
             domain = (Domain) parent;
             if (user.isSuperUser()) {
@@ -203,7 +196,7 @@ class AdminView {
      * @param parent         the parent object
      */
     public void pageAddDomain(Request request, Object parent) {
-        setReference(request, parent);
+        AdminUtils.setReference(request, parent);
         request.setAttribute("name", request.getParameter("name", ""));
         request.setAttribute("description", 
                              request.getParameter("description", ""));
@@ -257,7 +250,7 @@ class AdminView {
         for (int i = 0; i < hosts.length; i++) {
             list.add(hosts[i].getName());
         }
-        setReference(request, reference);
+        AdminUtils.setReference(request, reference);
         request.setAttribute("hostnames", list);
         str = request.getParameter("name", defaultName);
         request.setAttribute("name", str);
@@ -298,7 +291,7 @@ class AdminView {
         String     str;
 
         // Find default values
-        setReference(request, reference);
+        AdminUtils.setReference(request, reference);
         if (reference instanceof ContentPage) {
             page = (ContentPage) reference;
             setRequestTemplates(request, page.getDomain(), 0);
@@ -354,7 +347,7 @@ class AdminView {
         String  name;
         String  comment;
 
-        setReference(request, reference);
+        AdminUtils.setReference(request, reference);
         if (reference instanceof ContentFile) {
             name = ((ContentFile) reference).getName();
             comment = "";
@@ -384,11 +377,11 @@ class AdminView {
         String  comment;
 
         if (parent != null) {
-            setReference(request, parent);
+            AdminUtils.setReference(request, parent);
             name = "";
             comment = "Created";
         } else {
-            setReference(request, folder);
+            AdminUtils.setReference(request, folder);
             name = folder.getName();
             comment = "";
         }
@@ -424,7 +417,7 @@ class AdminView {
 
         // Find default values
         if (parent != null) {
-            setReference(request, parent);
+            AdminUtils.setReference(request, parent);
             name = "";
             comment = "Created";
             if (parent instanceof Domain) {
@@ -434,7 +427,7 @@ class AdminView {
                 inherited = ((Content) parent).getId();
             }
         } else {
-            setReference(request, template);
+            AdminUtils.setReference(request, template);
             setRequestTemplates(request, 
                                 template.getDomain(), 
                                 template.getId());
@@ -519,7 +512,6 @@ class AdminView {
 
         User     user = request.getUser();
         Content  content;
-        Content  revision;
         String   buffer;
 
         if (obj instanceof Domain) {
@@ -527,10 +519,6 @@ class AdminView {
             setSiteTreeFocus(request, obj);
         } else {
             content = (Content) obj;
-            revision = content.getRevision(0);
-            if (revision != null) {
-                content = revision;
-            }
             buffer = script.getObjectView(user, content);
             setSiteTreeFocus(request, content);
         }
@@ -578,7 +566,7 @@ class AdminView {
                                   boolean recursive) 
         throws ContentException {
 
-        ContentManager  manager = getContentManager();
+        ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children; 
 
         if (content == null) {
@@ -621,27 +609,6 @@ class AdminView {
     }
     
     /**
-     * Sets the domain or content reference attributes in a request.
-     * 
-     * @param request        the request
-     * @param obj            the domain or content object
-     */
-    protected void setReference(Request request, Object obj) {
-        Content  content;
-
-        if (obj instanceof Domain) {
-            request.setAttribute("type", "domain");
-            request.setAttribute("id", ((Domain) obj).getName());
-        } else {
-            content = (Content) obj;
-            request.setAttribute("type", 
-                                 script.getContentCategory(content));
-            request.setAttribute("id", 
-                                 String.valueOf(content.getId()));
-        }
-    }
-    
-    /**
      * Sets template id and name attributes in a request. This method
      * will retrieve all templates in the domain, excluding the 
      * specified content id.
@@ -658,12 +625,13 @@ class AdminView {
                                      int excludeId)
         throws ContentException {
 
-        User       user = request.getUser();
-        ArrayList  templateIds = new ArrayList();
-        HashMap    templateNames = new HashMap();
-        Content[]  children;
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        ArrayList       templateIds = new ArrayList();
+        HashMap         templateNames = new HashMap();
+        Content[]       children;
     
-        children = getContentManager().getContentChildren(user, domain);
+        children = manager.getContentChildren(user, domain);
         addTemplates(user, 
                      "", 
                      children, 
@@ -697,7 +665,7 @@ class AdminView {
                               HashMap names)
         throws ContentException {
 
-        ContentManager  cm = getContentManager();
+        ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children;
         String          id;
         String          name;
@@ -710,7 +678,7 @@ class AdminView {
                 name = baseName + content[i].getName();
                 ids.add(id);
                 names.put(id, name);
-                children = cm.getContentChildren(user, content[i]);
+                children = manager.getContentChildren(user, content[i]);
                 addTemplates(user, 
                              name + " / ", 
                              children, 
@@ -719,16 +687,5 @@ class AdminView {
                              names);
             }
         }
-    }
-
-    /**
-     * Returns the content manager currently in use.
-     * 
-     * @return the content manager currently in use
-     * 
-     * @throws ContentException if no content manager exists
-     */
-    private ContentManager getContentManager() throws ContentException {
-        return ContentManager.getInstance();
     }
 }

@@ -21,8 +21,6 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.SimpleDateFormat;
-
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.form.FormValidationException;
 import net.percederberg.liquidsite.form.FormValidator;
@@ -52,12 +50,6 @@ public class AdminValidator {
      */
     private static final String NUMBER_CHARACTERS = 
         "0123456789";
-
-    /**
-     * The date format used by this class.
-     */
-    private static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The edit user form validator.
@@ -194,7 +186,7 @@ public class AdminValidator {
         // Add publish validator
         publish.addRequiredConstraint("date", "No publish date specified");
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
-        publish.addDateConstraint("date", DATE_FORMAT, error); 
+        publish.addDateConstraint("date", AdminUtils.DATE_FORMAT, error); 
         publish.addRequiredConstraint("comment", "No comment specified");
     }
 

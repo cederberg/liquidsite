@@ -27,6 +27,7 @@ import java.util.Date;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
+import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.User;
 import net.percederberg.liquidsite.form.FormValidationException;
@@ -62,7 +63,7 @@ class PublishDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Content  content = (Content) getReference(request);
+        Content  content = (Content) AdminUtils.getReference(request);
 
         DIALOG_VIEW.viewPublish(request, content);
     }
@@ -110,13 +111,14 @@ class PublishDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        User     user = request.getUser();
-        Content  content = (Content) getReference(request);
-        Content  max;
-        String   date;
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        Content         content = (Content) AdminUtils.getReference(request);
+        Content         max;
+        String          date;
 
         if (content.getRevisionNumber() == 0) {
-            max = getContentManager().getContent(user, content.getId());
+            max = manager.getContent(user, content.getId());
             content.setRevisionNumber(max.getRevisionNumber() + 1);
             content.setOfflineDate(max.getOfflineDate());
         } else {
@@ -124,7 +126,7 @@ class PublishDialogHandler extends AdminDialogHandler {
         }
         try {
             date = request.getParameter("date");
-            content.setOnlineDate(DATE_FORMAT.parse(date));
+            content.setOnlineDate(AdminUtils.parseDate(date));
         } catch (ParseException e) {
             content.setOnlineDate(new Date());
         }

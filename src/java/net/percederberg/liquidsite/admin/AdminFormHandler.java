@@ -21,13 +21,10 @@
 
 package net.percederberg.liquidsite.admin;
 
-import java.text.SimpleDateFormat;
-
 import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
-import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.Lock;
 import net.percederberg.liquidsite.content.User;
@@ -48,12 +45,6 @@ abstract class AdminFormHandler extends FormHandler {
      * The class logger.
      */
     private static final Log LOG = new Log(AdminFormHandler.class);
-
-    /**
-     * The date format used by this class.
-     */
-    public static final SimpleDateFormat DATE_FORMAT = 
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
      * The dialog view helper.
@@ -219,7 +210,7 @@ abstract class AdminFormHandler extends FormHandler {
 
         try {
             if (lock) {
-                ref = getReference(request);
+                ref = AdminUtils.getReference(request);
                 if (ref instanceof Content) {
                     lock((Content) ref, request.getUser(), false);
                 }
@@ -330,7 +321,7 @@ abstract class AdminFormHandler extends FormHandler {
 
         if (lock) {
             try {
-                ref = getReference(request);
+                ref = AdminUtils.getReference(request);
                 if (ref instanceof Content) {
                     lock((Content) ref, request.getUser(), true);
                 }
@@ -361,7 +352,7 @@ abstract class AdminFormHandler extends FormHandler {
 
         if (lock) {
             try {
-                ref = getReference(request);
+                ref = AdminUtils.getReference(request);
                 if (ref instanceof Content) {
                     unlock((Content) ref, request.getUser(), false);
                 }
@@ -389,52 +380,6 @@ abstract class AdminFormHandler extends FormHandler {
         displayError(request, e.getMessage());
     }
 
-    /**
-     * Returns the domain or content referenced by a request. When
-     * returning a content object, the latest revision (including 
-     * work revisions) will be returned.
-     * 
-     * @param request        the request
-     * 
-     * @return the domain or content object referenced, or
-     *         null if not found
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     * @throws ContentSecurityException if the user didn't have the 
-     *             required permissions 
-     */
-    protected Object getReference(Request request) 
-        throws ContentException, ContentSecurityException {
-
-        User     user = request.getUser();
-        String   type = request.getParameter("type");
-        String   id = request.getParameter("id");
-        Content  content = null;
-        Content  revision = null;
-        String   message;
-        int      value;
-        
-        if (type == null || id == null) {
-            return null;
-        } else if (type.equals("domain")) {
-            return getContentManager().getDomain(user, id);
-        } else {
-            try {
-                value = Integer.parseInt(id);
-            } catch (NumberFormatException e) {
-                message = "invalid content id: " + id;
-                LOG.warning(message);
-                throw new ContentSecurityException(message);
-            }
-            content = getContentManager().getContent(user, value);
-            if (content != null) {
-                revision = content.getRevision(0);
-            }
-            return (revision == null) ? content : revision;
-        }
-    }
-    
     /**
      * Checks or acquires a content lock. This method will verify 
      * that any existing lock is owned by the correct user. If the
@@ -465,7 +410,7 @@ abstract class AdminFormHandler extends FormHandler {
         } else if (!lock.isOwner(user)) {
             throw new ContentSecurityException(
                 "object locked by " + lock.getUserName() +
-                " since " + DATE_FORMAT.format(lock.getAcquiredDate()));
+                " since " + AdminUtils.formatDate(lock.getAcquiredDate()));
         }
     }
     
@@ -493,16 +438,5 @@ abstract class AdminFormHandler extends FormHandler {
         } else if (lock.isOwner(user) || force) {
             lock.delete(user);
         }
-    }
-
-    /**
-     * Returns the content manager currently in use.
-     * 
-     * @return the content manager currently in use
-     * 
-     * @throws ContentException if no content manager exists
-     */
-    protected ContentManager getContentManager() throws ContentException {
-        return ContentManager.getInstance();
     }
 }

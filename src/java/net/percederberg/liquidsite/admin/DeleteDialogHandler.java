@@ -58,7 +58,7 @@ class DeleteDialogHandler extends AdminDialogHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        DIALOG_VIEW.viewDelete(request, getReference(request));
+        DIALOG_VIEW.viewDelete(request, AdminUtils.getReference(request));
     }
 
     /**
@@ -98,7 +98,7 @@ class DeleteDialogHandler extends AdminDialogHandler {
     protected int handleStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object   ref = getReference(request);
+        Object   ref = AdminUtils.getReference(request);
         Domain   domain;
         Content  content;
         Content  parent;

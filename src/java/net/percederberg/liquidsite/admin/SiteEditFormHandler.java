@@ -67,7 +67,7 @@ class SiteEditFormHandler extends AdminFormHandler {
     protected void displayStep(Request request, int step)
         throws ContentException, ContentSecurityException {
 
-        Object  ref = getReference(request);
+        Object  ref = AdminUtils.getReference(request);
 
         if (ref instanceof ContentSite) {
             SITE_VIEW.pageEditSite(request, (ContentSite) ref);
@@ -104,7 +104,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException, 
                FormValidationException {
 
-        Object  ref = getReference(request);
+        Object  ref = AdminUtils.getReference(request);
         String  message;
 
         if (ref instanceof ContentSite) {
@@ -148,7 +148,7 @@ class SiteEditFormHandler extends AdminFormHandler {
     protected int handleStep(Request request, int step) 
         throws ContentException, ContentSecurityException {
 
-        Object  ref = getReference(request);
+        Object  ref = AdminUtils.getReference(request);
 
         if (ref instanceof ContentSite) {
             handleEditSite(request, (ContentSite) ref);

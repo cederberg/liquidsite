@@ -93,7 +93,7 @@ class DialogView extends AdminView {
     public void viewDelete(Request request, Object obj) {
         String  name;
 
-        setReference(request, obj);
+        AdminUtils.setReference(request, obj);
         if (obj instanceof Domain) {
             name = ((Domain) obj).getName();
         } else {
@@ -114,12 +114,12 @@ class DialogView extends AdminView {
         String comment = request.getParameter("comment");
 
         if (dateStr == null) {
-            dateStr = formatDate(new Date());
+            dateStr = AdminUtils.formatDate(new Date());
         }
         if (comment == null) {
             comment = content.getComment();
         }
-        setReference(request, content);
+        AdminUtils.setReference(request, content);
         request.setAttribute("date", dateStr);
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/dialog/publish-object.ftl");
@@ -136,15 +136,15 @@ class DialogView extends AdminView {
         String comment = request.getParameter("comment");
 
         if (dateStr == null) {
-            dateStr = formatDate(content.getOfflineDate());
+            dateStr = AdminUtils.formatDate(content.getOfflineDate());
         }
         if (dateStr.equals("")) {
-            dateStr = formatDate(new Date());
+            dateStr = AdminUtils.formatDate(new Date());
         }
         if (comment == null) {
             comment = "Unpublished";
         }
-        setReference(request, content);
+        AdminUtils.setReference(request, content);
         request.setAttribute("date", dateStr);
         request.setAttribute("comment", comment);
         request.sendTemplate("admin/dialog/unpublish-object.ftl");
@@ -159,7 +159,7 @@ class DialogView extends AdminView {
     public void viewRevert(Request request, Content content) {
         String  str;
 
-        setReference(request, content);
+        AdminUtils.setReference(request, content);
         if (content.getRevisionNumber() == 0) {
             str = "Work";
         } else {
@@ -176,22 +176,7 @@ class DialogView extends AdminView {
      * @param content        the content object to unlock
      */
     public void viewUnlock(Request request, Content content) {
-        setReference(request, content);
+        AdminUtils.setReference(request, content);
         request.sendTemplate("admin/dialog/unlock-object.ftl");
-    }
-
-    /**
-     * Formats a date for form input.
-     * 
-     * @param date           the date to format
-     * 
-     * @return a formatted date string
-     */
-    private String formatDate(Date date) {
-        if (date == null) {
-            return "";
-        } else {
-            return DATE_FORMAT.format(date);
-        }
     }
 }

@@ -72,7 +72,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         String  category = request.getParameter("category", "");
-        Object  parent = getReference(request);
+        Object  parent = AdminUtils.getReference(request);
 
         if (step == 1) {
             SITE_VIEW.pageAddObject(request, parent);
@@ -173,7 +173,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         String  category = request.getParameter("category", "");
-        Object  parent = getReference(request);
+        Object  parent = AdminUtils.getReference(request);
 
         if (step == 1) {
             return 2;
