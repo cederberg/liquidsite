@@ -17,7 +17,7 @@
         </tr>
         <tr>
           <td class="buttons">
-            <button onclick="window.location='${page}'">
+            <button type="button" onclick="window.location='${page}'">
               <img src="images/icons/24x24/ok.png" />
               OK
             </button>
