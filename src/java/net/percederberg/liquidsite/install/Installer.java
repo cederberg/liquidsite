@@ -95,6 +95,9 @@ public class Installer {
                                          "0.5",
                                          "UPDATE_LIQUIDSITE_TABLES_0.5.sql"));
         updaters.add(new Version06DatabaseUpdater());
+        updaters.add(new DatabaseUpdater("0.6",
+                                         "0.7",
+                                         "UPDATE_LIQUIDSITE_TABLES_0.7.sql"));
     }
 
     /**
