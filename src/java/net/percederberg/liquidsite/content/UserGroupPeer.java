@@ -265,7 +265,7 @@ public class UserGroupPeer extends Peer {
                 LOG.error("reading group user list", e);
                 throw new ContentException("reading group user list", e);
             }
-            user = UserPeer.doSelectByName(getDomain(domain), name);
+            user = User.findByName(getDomain(domain), name);
             if (user == null) {
                 throw new ContentException("couldn't find user '" + 
                                            name + "' in domain '" +
@@ -305,7 +305,7 @@ public class UserGroupPeer extends Peer {
                 LOG.error("reading user group list", e);
                 throw new ContentException("reading user group list", e);
             }
-            group = GroupPeer.doSelectByName(getDomain(domain), name);
+            group = Group.findByName(getDomain(domain), name);
             if (group == null) {
                 throw new ContentException("couldn't find group '" + 
                                            name + "' in domain '" +

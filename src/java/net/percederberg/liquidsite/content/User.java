@@ -21,50 +21,117 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
+
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+import net.percederberg.liquidsite.dbo.UserData;
+import net.percederberg.liquidsite.dbo.UserPeer;
 
 /**
- * A domain user.
+ * A system user.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class User extends DataObject {
+public class User extends PersistentObject {
 
     /**
-     * The domain the user belongs to.
+     * The user data.
      */
-    private String domain = "";
+    private UserData data;
 
     /**
-     * The user name.
+     * The list of user group data objects. This variable is null
+     * until the list of user groups has been requested the first 
+     * time.
      */
-    private String name = "";
-    
+    private ArrayList groups = null;
+
     /**
-     * The encoded user password.
+     * Returns an array of all users in a certain domain.
+     * 
+     * @param domain         the domain
+     * 
+     * @return an array of all users in the domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    private String password = "";
-    
+    public static User[] findByDomain(Domain domain) 
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        User[]              res;
+
+        try {
+            list = UserPeer.doSelectByDomain(domain.getName(), con);
+            res = new User[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new User((UserData) list.get(i));
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
     /**
-     * The real user name.
+     * Returns a user with a specified name.
+     * 
+     * @param domain         the domain
+     * @param name           the user name
+     * 
+     * @return the user found, or
+     *         null if no matching user existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    private String realName = "";
-    
-    /**
-     * The user e-mail address.
-     */
-    private String email = "";
-    
-    /**
-     * The user comment.
-     */
-    private String comment = "";
+    public static User findByName(Domain domain, String name)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        UserData            data;
+
+        try {
+            data = UserPeer.doSelectByName(domain.getName(), name, con);
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        if (data == null) {
+            return null;
+        } else {
+            return new User(data);
+        }
+    }
 
     /**
      * Creates a new user with default values.
+     * 
+     * @param domain         the domain
+     * @param name           the user name
      */
-    public User() {
+    public User(Domain domain, String name) {
+        super(false);
+        this.data = new UserData();
+        this.data.setString(UserData.DOMAIN, domain.getName());
+        this.data.setString(UserData.NAME, name);
+    }
+
+    /**
+     * Creates a new user from a data object.
+     * 
+     * @param data           the user data object
+     */
+    private User(UserData data) {
+        super(true);
+        this.data = data;
     }
 
     /**
@@ -96,8 +163,8 @@ public class User extends DataObject {
      *         false otherwise 
      */
     public boolean equals(User obj) {
-        return domain.equals(obj.domain)
-            && name.equals(obj.name);
+        return getDomainName().equals(obj.getDomainName())
+            && getName().equals(obj.getName());
     }
 
     /**
@@ -106,7 +173,7 @@ public class User extends DataObject {
      * @return a string representation of this object
      */
     public String toString() {
-        return name;
+        return getName();
     }
 
     /**
@@ -117,16 +184,7 @@ public class User extends DataObject {
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
-        return ContentManager.getInstance().getDomain(domain);
-    }
-    
-    /**
-     * Sets the user domain.
-     * 
-     * @param domain         the new domain
-     */
-    public void setDomain(Domain domain) {
-        setDomainName(domain.getName());
+        return getContentManager().getDomain(getDomainName());
     }
     
     /**
@@ -135,17 +193,7 @@ public class User extends DataObject {
      * @return the user domain name
      */
     public String getDomainName() {
-        return domain;
-    }
-    
-    /**
-     * Sets the user domain.
-     * 
-     * @param domain         the new domain name
-     */
-    public void setDomainName(String domain) {
-        this.domain = domain;
-        setModified(true);
+        return data.getString(UserData.DOMAIN);
     }
     
     /**
@@ -154,17 +202,7 @@ public class User extends DataObject {
      * @return the user name
      */
     public String getName() {
-        return name;
-    }
-    
-    /**
-     * Sets the user name.
-     * 
-     * @param name           the new user name
-     */
-    public void setName(String name) {
-        this.name = name;
-        setModified(true);
+        return data.getString(UserData.NAME);
     }
     
     /**
@@ -173,17 +211,18 @@ public class User extends DataObject {
      * @return the encoded user password
      */
     public String getPassword() {
-        return password;
+        return data.getString(UserData.PASSWORD);
     }
     
     /**
-     * Sets the encoded user password.
+     * Sets the user password. This method will also encode the user
+     * password.
      * 
-     * @param password       the new encoded user password
+     * @param password       the new user password
      */
     public void setPassword(String password) {
-        this.password = password;
-        setModified(true);
+        // TODO: encode the password
+        data.setString(UserData.PASSWORD, password);
     }
     
     /**
@@ -192,7 +231,7 @@ public class User extends DataObject {
      * @return the real user name
      */
     public String getRealName() {
-        return realName;
+        return data.getString(UserData.REAL_NAME);
     }
     
     /**
@@ -201,8 +240,7 @@ public class User extends DataObject {
      * @param realName       the new real user name
      */
     public void setRealName(String realName) {
-        this.realName = realName;
-        setModified(true);
+        data.setString(UserData.REAL_NAME, realName);
     }
     
     /**
@@ -211,7 +249,7 @@ public class User extends DataObject {
      * @return the user e-mail address
      */
     public String getEmail() {
-        return email;
+        return data.getString(UserData.EMAIL);
     }
     
     /**
@@ -220,8 +258,7 @@ public class User extends DataObject {
      * @param email          the new user e-mail address
      */
     public void setEmail(String email) {
-        this.email = email;
-        setModified(true);
+        data.setString(UserData.EMAIL, email);
     }
     
     /**
@@ -230,7 +267,7 @@ public class User extends DataObject {
      * @return the user comment
      */
     public String getComment() {
-        return comment;
+        return data.getString(UserData.COMMENT);
     }
     
     /**
@@ -239,8 +276,7 @@ public class User extends DataObject {
      * @param comment        the new user comment
      */
     public void setComment(String comment) {
-        this.comment = comment;
-        setModified(true);
+        data.setString(UserData.COMMENT, comment);
     }
     
     /**
@@ -250,31 +286,57 @@ public class User extends DataObject {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        if (domain.equals("")) {
+        if (getDomainName().equals("")) {
             throw new ContentException("no domain set for user object");
         } else if (getDomain() == null) {
-            throw new ContentException("domain '" + domain + 
-                                       "'does not exist");
-        } else if (name.equals("")) {
+            throw new ContentException("domain '" + getDomainName() + 
+                                       "' does not exist");
+        } else if (getName().equals("")) {
             throw new ContentException("no name set for user object");
-        } else if (password.equals("")) {
+        } else if (getPassword().equals("")) {
             throw new ContentException("no password set for user object");
         }
     }
 
     /**
-     * Saves this user to the database.
+     * Inserts the object data into the database.
      * 
      * @param con            the database connection to use
      * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
      */
-    public void save(DatabaseConnection con) throws ContentException {
-        if (!isPersistent()) {
-            UserPeer.doInsert(this, con);
-        } else if (isModified()) {
-            UserPeer.doUpdate(this, con);
-        }
+    protected void doInsert(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        UserPeer.doInsert(data, con);
+    }
+
+    /**
+     * Updates the object data in the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doUpdate(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        UserPeer.doUpdate(data, con);
+    }
+
+    /**
+     * Deletes the object data from the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doDelete(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        UserPeer.doDelete(data, con);
     }
 }

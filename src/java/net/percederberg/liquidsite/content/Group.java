@@ -21,40 +21,110 @@
 
 package net.percederberg.liquidsite.content;
 
+import java.util.ArrayList;
+
 import net.percederberg.liquidsite.db.DatabaseConnection;
+import net.percederberg.liquidsite.dbo.DatabaseObjectException;
+import net.percederberg.liquidsite.dbo.GroupData;
+import net.percederberg.liquidsite.dbo.GroupPeer;
 
 /**
- * A domain group.
+ * A system group.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class Group extends DataObject {
+public class Group extends PersistentObject {
 
     /**
-     * The domain the group belongs to.
+     * The group data.
      */
-    private String domain = "";
+    private GroupData data;
 
     /**
-     * The group name.
+     * Returns an array of all groups in a certain domain.
+     * 
+     * @param domain         the domain
+     * 
+     * @return an array of all groups in the domain
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    private String name = "";
-    
+    public static Group[] findByDomain(Domain domain)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        ArrayList           list;
+        Group[]             res;
+
+        try {
+            list = GroupPeer.doSelectByDomain(domain.getName(), con);
+            res = new Group[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                res[i] = new Group((GroupData) list.get(i));
+            }
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        return res;
+    }
+
     /**
-     * The group description.
+     * Returns a group with a specified name.
+     * 
+     * @param domain         the domain
+     * @param name           the group name
+     * 
+     * @return the group found, or
+     *         null if no matching group existed
+     * 
+     * @throws ContentException if the database couldn't be accessed 
+     *             properly
      */
-    private String description = "";
-    
-    /**
-     * The group comment.
-     */
-    private String comment = "";
+    public static Group findByName(Domain domain, String name)
+        throws ContentException {
+
+        DatabaseConnection  con = getDatabaseConnection();
+        GroupData           data;
+
+        try {
+            data = GroupPeer.doSelectByName(domain.getName(), name, con);
+        } catch (DatabaseObjectException e) {
+            throw new ContentException(e);
+        } finally {
+            returnDatabaseConnection(con);
+        }
+        if (data == null) {
+            return null;
+        } else {
+            return new Group(data);
+        }
+    }
 
     /**
      * Creates a new group with default values.
+     * 
+     * @param domain         the domain
+     * @param name           the group name
      */
-    public Group() {
+    public Group(Domain domain, String name) {
+        super(false);
+        this.data = new GroupData();
+        this.data.setString(GroupData.DOMAIN, domain.getName());
+        this.data.setString(GroupData.NAME, name);
+    }
+
+    /**
+     * Creates a new group from a data object.
+     * 
+     * @param data           the group data object
+     */
+    private Group(GroupData data) {
+        super(true);
+        this.data = data;
     }
 
     /**
@@ -86,8 +156,8 @@ public class Group extends DataObject {
      *         false otherwise 
      */
     public boolean equals(Group obj) {
-        return domain.equals(obj.domain)
-            && name.equals(obj.name);
+        return getDomainName().equals(obj.getDomainName())
+            && getName().equals(obj.getName());
     }
 
     /**
@@ -96,7 +166,7 @@ public class Group extends DataObject {
      * @return a string representation of this object
      */
     public String toString() {
-        return name;
+        return getName();
     }
 
     /**
@@ -107,16 +177,7 @@ public class Group extends DataObject {
      * @throws ContentException if no content manager is available
      */
     public Domain getDomain() throws ContentException {
-        return ContentManager.getInstance().getDomain(domain);
-    }
-    
-    /**
-     * Sets the group domain.
-     * 
-     * @param domain         the new domain
-     */
-    public void setDomain(Domain domain) {
-        setDomainName(domain.getName());
+        return getContentManager().getDomain(getDomainName());
     }
     
     /**
@@ -125,17 +186,7 @@ public class Group extends DataObject {
      * @return the group domain name
      */
     public String getDomainName() {
-        return domain;
-    }
-    
-    /**
-     * Sets the group domain.
-     * 
-     * @param domain         the new domain name
-     */
-    public void setDomainName(String domain) {
-        this.domain = domain;
-        setModified(true);
+        return data.getString(GroupData.DOMAIN);
     }
     
     /**
@@ -144,17 +195,7 @@ public class Group extends DataObject {
      * @return the group name
      */
     public String getName() {
-        return name;
-    }
-    
-    /**
-     * Sets the group name.
-     * 
-     * @param name           the new group name
-     */
-    public void setName(String name) {
-        this.name = name;
-        setModified(true);
+        return data.getString(GroupData.NAME);
     }
     
     /**
@@ -163,7 +204,7 @@ public class Group extends DataObject {
      * @return the group description
      */
     public String getDescription() {
-        return description;
+        return data.getString(GroupData.DESCRIPTION);
     }
     
     /**
@@ -172,8 +213,7 @@ public class Group extends DataObject {
      * @param description    the new group description
      */
     public void setDescription(String description) {
-        this.description = description;
-        setModified(true);
+        data.setString(GroupData.DESCRIPTION, description);
     }
     
     /**
@@ -182,7 +222,7 @@ public class Group extends DataObject {
      * @return the group comment
      */
     public String getComment() {
-        return comment;
+        return data.getString(GroupData.COMMENT);
     }
     
     /**
@@ -191,8 +231,7 @@ public class Group extends DataObject {
      * @param comment        the new group comment
      */
     public void setComment(String comment) {
-        this.comment = comment;
-        setModified(true);
+        data.setString(GroupData.COMMENT, comment);
     }
     
     /**
@@ -202,29 +241,55 @@ public class Group extends DataObject {
      * @throws ContentException if the data object contained errors
      */
     public void validate() throws ContentException {
-        if (domain.equals("")) {
+        if (getDomainName().equals("")) {
             throw new ContentException("no domain set for group object");
         } else if (getDomain() == null) {
-            throw new ContentException("domain '" + domain + 
-                                       "'does not exist");
-        } else if (name.equals("")) {
+            throw new ContentException("domain '" + getDomainName() + 
+                                       "' does not exist");
+        } else if (getName().equals("")) {
             throw new ContentException("no name set for group object");
         }
     }
 
     /**
-     * Saves this group to the database.
+     * Inserts the object data into the database.
      * 
      * @param con            the database connection to use
      * 
-     * @throws ContentException if the database couldn't be accessed 
-     *             properly
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
      */
-    public void save(DatabaseConnection con) throws ContentException {
-        if (!isPersistent()) {
-            GroupPeer.doInsert(this, con);
-        } else if (isModified()) {
-            GroupPeer.doUpdate(this, con);
-        }
+    protected void doInsert(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        GroupPeer.doInsert(data, con);
+    }
+
+    /**
+     * Updates the object data in the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doUpdate(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        GroupPeer.doUpdate(data, con);
+    }
+
+    /**
+     * Deletes the object data from the database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws DatabaseObjectException if the database couldn't be 
+     *             accessed properly
+     */
+    protected void doDelete(DatabaseConnection con)
+        throws DatabaseObjectException {
+
+        GroupPeer.doDelete(data, con);
     }
 }
