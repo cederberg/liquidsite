@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
-import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentDocument;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
@@ -221,17 +220,33 @@ public class ContentEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException,
                FormValidationException {
 
-        String          category = request.getParameter("category", "");
-        String          message;
+        SiteEditFormHandler  handler = SiteEditFormHandler.getInstance();
+        String               category;
+        String               message;
 
+        category = request.getParameter("category", "");
         if (category.equals("section")) {
             sectionValidator.validate(request);
+            message = "Another object with identical name already " +
+                      "exists in the parent section or domain";
+            handler.validateParent(request, "parent", message);
         } else if (category.equals("document")) {
-            validateDocument(request);
+            if (request.getParameter("action", "").equals("upload")) {
+                validateUpload(request);
+            } else {
+                documentValidator.validate(request);
+                message = "Another object with identical name " +
+                          "already exists in the parent section";
+                handler.validateParent(request, "section", message);
+            }
         } else if (category.equals("file")) {
-            SiteEditFormHandler.getInstance().validateStep(request, step);
+            handler.validateFile(request);
+            // TODO: validate parent
         } else if (category.equals("forum")) {
             forumValidator.validate(request);
+            message = "Another object with identical name already " +
+                      "exists in the parent section";
+            handler.validateParent(request, "section", message);
         } else if (category.equals("topic")) {
             topicValidator.validate(request);
         } else if (category.equals("post")) {
@@ -243,10 +258,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
     }
 
     /**
-     * Validates a document form posting. If the form validation fails
-     * in this step, the form page for the workflow step will be
-     * displayed again with an 'error' attribute containing the
-     * message in the validation exception.
+     * Validates a document file upload.
      *
      * @param request        the request object
      *
@@ -257,55 +269,24 @@ public class ContentEditFormHandler extends AdminFormHandler {
      * @throws FormValidationException if the form request data
      *             validation failed
      */
-    private void validateDocument(Request request)
+    private void validateUpload(Request request)
         throws ContentException, ContentSecurityException,
                FormValidationException {
 
-        ContentManager   manager = AdminUtils.getContentManager();
         RequestSession   session = request.getSession();
         FileParameter    param;
-        Object           ref;
-        ContentDocument  doc;
-        Content          content;
         String           message;
-        int              id;
 
-        if (request.getParameter("action", "").equals("upload")) {
-            param = request.getFileParameter("upload");
-            if (param == null || param.getSize() <= 0) {
-                message = "No file to add specified";
-                throw new FormValidationException("upload", message);
-            } else if (session.getFile(param.getName()) != null) {
-                message = "Another file named '" + param.getName() +
-                          "' already exists";
-                throw new FormValidationException("upload", message);
-            }
-        } else {
-            documentValidator.validate(request);
-            ref = AdminUtils.getReference(request);
-            if (ref instanceof ContentDocument) {
-                doc = (ContentDocument) ref;
-                try {
-                    id = Integer.parseInt(request.getParameter("section"));
-                    content = manager.getContent(request.getUser(), id);
-                } catch (NumberFormatException ignore) {
-                    content = doc.getParent();
-                }
-            } else {
-                doc = null;
-                content = (Content) ref;
-            }
-            content = manager.getContentChild(request.getUser(),
-                                              content,
-                                              request.getParameter("name"));
-            if (content != null
-             && (doc == null || doc.getId() != content.getId())) {
-
-                message = "Another document with the same name is " +
-                          "already present in the parent section";
-                throw new FormValidationException("name", message);
-            }
+        param = request.getFileParameter("upload");
+        if (param == null || param.getSize() <= 0) {
+            message = "No file to add specified";
+            throw new FormValidationException("upload", message);
+        } else if (session.getFile(param.getName()) != null) {
+            message = "Another file named '" + param.getName() +
+                      "' already exists";
+            throw new FormValidationException("upload", message);
         }
+        // TODO: validate name for parent conflicts
     }
 
     /**

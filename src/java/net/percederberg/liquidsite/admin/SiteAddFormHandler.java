@@ -120,11 +120,16 @@ class SiteAddFormHandler extends AdminFormHandler {
      * @param request        the request object
      * @param step           the workflow step
      *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
-        throws FormValidationException {
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
 
         SiteEditFormHandler  edit = SiteEditFormHandler.getInstance();
         String               category = request.getParameter("category", "");

@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.percederberg.liquidsite.admin.view.AdminView;
+import net.percederberg.liquidsite.content.Content;
 import net.percederberg.liquidsite.content.ContentException;
 import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
@@ -277,11 +278,16 @@ class SiteEditFormHandler extends AdminFormHandler {
      * @param request        the request object
      * @param step           the workflow step
      *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
      * @throws FormValidationException if the form request data
      *             validation failed
      */
     protected void validateStep(Request request, int step)
-        throws FormValidationException {
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
 
         String  category = request.getParameter("category", "");
         String  message;
@@ -296,20 +302,115 @@ class SiteEditFormHandler extends AdminFormHandler {
             }
         } else if (category.equals("site")) {
             siteValidator.validate(request);
+            // TODO: check parameters for conflicting sites & objects
         } else if (category.equals("folder")) {
             folderValidator.validate(request);
+            message = "Another object with identical name already " +
+                      "exists in the parent folder";
+            validateParent(request, "parent", message);
         } else if (category.equals("page")) {
             pageValidator.validate(request);
+            message = "Another object with identical name already " +
+                      "exists in the parent folder";
+            validateParent(request, "parent", message);
         } else if (category.equals("file")) {
-            fileValidator.validate(request);
+            validateFile(request);
+            message = "Another object with identical name already " +
+                      "exists in the parent folder";
+            validateParent(request, "parent", message);
         } else if (category.equals("translator")) {
             translatorValidator.validate(request);
+            message = "Another object with identical name already " +
+                      "exists in the parent folder";
+            validateParent(request, "parent", message);
         } else if (category.equals("template")) {
             templateValidator.validate(request);
+            message = "Another object with identical name already " +
+                      "exists in the base template or domain";
+            validateParent(request, "parent", message);
         } else {
             message = "Unknown content category specified";
             throw new FormValidationException("category", message);
         }
+    }
+
+    /**
+     * Validates a content name with regard to its parent. That is,
+     * this method will check that no other content objects with the
+     * same parent have the same name.
+     *
+     * @param request        the request object
+     * @param field          the parent id field
+     * @param error          the message to use on validation error
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    protected void validateParent(Request request,
+                                  String field,
+                                  String error)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager   manager = AdminUtils.getContentManager();
+        String           name;
+        String           parentId;
+        Object           parent;
+        int              id;
+        Content          content;
+
+        // Find parent object and content object id
+        name = request.getParameter("name");
+        parentId = request.getParameter(field);
+        if (parentId == null) {
+            parent = AdminUtils.getReference(request);
+            id = 0;
+        } else {
+            content = (Content) AdminUtils.getReference(request);
+            try {
+                id = Integer.parseInt(parentId);
+                if (id <= 0) {
+                    parent = content.getDomain();
+                } else {
+                    parent = manager.getContent(request.getUser(), id);
+                }
+            } catch (NumberFormatException ignore) {
+                parent = content.getDomain();
+            }
+            id = content.getId();
+        }
+
+        // Check for existing child with identical name
+        if (parent instanceof Domain) {
+            content = manager.getContentChild(request.getUser(),
+                                              (Domain) parent,
+                                              name);
+        } else {
+            content = manager.getContentChild(request.getUser(),
+                                              (Content) parent,
+                                              name);
+        }
+        if (content != null && content.getId() != id) {
+            throw new FormValidationException("name", error);
+        }
+    }
+
+    /**
+     * Validates a file add or edit form.
+     *
+     * @param request        the request object
+     *
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    protected void validateFile(Request request)
+        throws FormValidationException {
+
+        fileValidator.validate(request);
     }
 
     /**
