@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -41,106 +40,105 @@ public final class DomainPeer extends AbstractPeer {
     private static final DomainPeer PEER = new DomainPeer();
 
     /**
-     * Returns a list of all domains in the database.
+     * Returns a list of all domains in the data source.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @return a list of all domains in the database
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectAll(DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectAll(DataSource src)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.select.all");
 
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns a domain with a specified name.
      *
+     * @param src            the data source to use
      * @param name           the domain name
-     * @param con            the database connection to use
      *
      * @return the domain found, or
      *         null if no matching domain existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static DomainData doSelectByName(String name,
-                                            DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static DomainData doSelectByName(DataSource src, String name)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.select.name");
 
         query.addParameter(name);
-        return (DomainData) PEER.select(query, con);
+        return (DomainData) PEER.select(src, query);
     }
 
     /**
-     * Inserts a new domain into the database.
+     * Inserts a new domain into the data source.
      *
+     * @param src            the data source to use
      * @param data           the domain data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(DomainData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, DomainData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.insert");
 
         query.addParameter(data.getString(DomainData.NAME));
         query.addParameter(data.getString(DomainData.DESCRIPTION));
         query.addParameter(data.getString(DomainData.OPTIONS));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Updates a domain in the database.
+     * Updates a domain in the data source.
      *
+     * @param src            the data source to use
      * @param data           the domain data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doUpdate(DomainData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doUpdate(DataSource src, DomainData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.update");
 
         query.addParameter(data.getString(DomainData.DESCRIPTION));
         query.addParameter(data.getString(DomainData.OPTIONS));
         query.addParameter(data.getString(DomainData.NAME));
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
-     * Deletes a domain from the database.
+     * Deletes a domain from the data source.
      *
+     * @param src            the data source to use
      * @param data           the domain data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(DomainData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, DomainData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("domain.delete");
         String         domain = data.getString(DomainData.NAME);
 
         query.addParameter(domain);
-        PEER.delete(query, con);
-        UserPeer.doDeleteDomain(domain, con);
-        GroupPeer.doDeleteDomain(domain, con);
-        HostPeer.doDeleteDomain(domain, con);
-        ContentPeer.doDeleteDomain(domain, con);
+        PEER.delete(src, query);
+        UserPeer.doDeleteDomain(src, domain);
+        GroupPeer.doDeleteDomain(src, domain);
+        HostPeer.doDeleteDomain(src, domain);
+        ContentPeer.doDeleteDomain(src, domain);
     }
 
     /**

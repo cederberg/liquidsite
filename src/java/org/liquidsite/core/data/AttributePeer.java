@@ -19,16 +19,11 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
-import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseQuery;
-import org.liquidsite.util.db.DatabaseResults;
-
-import org.liquidsite.util.log.Log;
 
 /**
  * A content attribute database peer. This class contains static
@@ -40,11 +35,6 @@ import org.liquidsite.util.log.Log;
 public class AttributePeer extends AbstractPeer {
 
     /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(AttributePeer.class);
-
-    /**
      * The attribute peer instance.
      */
     private static final AttributePeer PEER = new AttributePeer();
@@ -53,97 +43,89 @@ public class AttributePeer extends AbstractPeer {
      * Calculates the aggregate size in the database of all attributes
      * in a domain.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
      * @return the size in bytes of all the attributes in the domain
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static long doCalculateDomainSize(String domain,
-                                            DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static long doCalculateDomainSize(DataSource src, String domain)
+        throws DataObjectException {
 
-        DatabaseQuery    query;
-        DatabaseResults  res;
+        DatabaseQuery  query;
 
         query = new DatabaseQuery("attribute.select.domainsize");
         query.addParameter(domain);
-        res = PEER.execute("calculating domain size", query, con);
-        try {
-            return res.getRow(0).getLong(0);
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
-        }
+        return PEER.count(src, query);
     }
 
     /**
      * Returns a list of all attribute objects with the specified
      * content id and revision.
      *
+     * @param src            the data source to use
      * @param id             the content id
      * @param revision       the content revision
-     * @param con            the database connection to use
      *
      * @return the list of attribute objects found
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByRevision(int id,
-                                               int revision,
-                                               DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectByRevision(DataSource src,
+                                               int id,
+                                               int revision)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.select.revision");
 
         query.addParameter(id);
         query.addParameter(revision);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns the attribute object with the specified content id,
      * content revision, and attribute name.
      *
+     * @param src            the data source to use
      * @param id             the content id
      * @param revision       the content revision
      * @param name           the attribute name
-     * @param con            the database connection to use
      *
      * @return the attribute found, or
      *         null if no matching attribute existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static AttributeData doSelectByName(int id,
+    public static AttributeData doSelectByName(DataSource src,
+                                               int id,
                                                int revision,
-                                               String name,
-                                               DatabaseConnection con)
-        throws DatabaseObjectException {
+                                               String name)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.select.name");
 
         query.addParameter(id);
         query.addParameter(revision);
         query.addParameter(name);
-        return (AttributeData) PEER.select(query, con);
+        return (AttributeData) PEER.select(src, query);
     }
 
     /**
-     * Inserts a new attribute object into the database.
+     * Inserts a new attribute object into the data source.
      *
+     * @param src            the data source to use
      * @param data           the attribute data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(AttributeData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, AttributeData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.insert");
 
@@ -152,20 +134,20 @@ public class AttributePeer extends AbstractPeer {
         query.addParameter(data.getInt(AttributeData.REVISION));
         query.addParameter(data.getString(AttributeData.NAME));
         query.addParameter(data.getString(AttributeData.DATA));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Updates an attribute in the database.
+     * Updates an attribute in the data source.
      *
+     * @param src            the data source to use
      * @param data           the attribute data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doUpdate(AttributeData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doUpdate(DataSource src, AttributeData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.update");
 
@@ -173,86 +155,87 @@ public class AttributePeer extends AbstractPeer {
         query.addParameter(data.getInt(AttributeData.CONTENT));
         query.addParameter(data.getInt(AttributeData.REVISION));
         query.addParameter(data.getString(AttributeData.NAME));
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
-     * Deletes an attribute object from the database.
+     * Deletes an attribute object from the data source.
      *
+     * @param src            the data source to use
      * @param data           the attribute data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(AttributeData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, AttributeData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.delete");
 
         query.addParameter(data.getInt(AttributeData.CONTENT));
         query.addParameter(data.getInt(AttributeData.REVISION));
         query.addParameter(data.getString(AttributeData.NAME));
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all attributes for a domain from the database.
+     * Deletes all attributes for a domain from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all attributes for a content object from the database.
+     * Deletes all attributes for a content object from the data
+     * source.
      *
+     * @param src            the data source to use
      * @param id             the content object id
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteContent(int id, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteContent(DataSource src, int id)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.delete.content");
 
         query.addParameter(id);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all attributes for a content revision from the
-     * database.
+     * Deletes all attributes for a content revision from the data
+     * source.
      *
+     * @param src            the data source to use
      * @param id             the content object id
      * @param revision       the content revision
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteRevision(int id,
-                                        int revision,
-                                        DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteRevision(DataSource src,
+                                        int id,
+                                        int revision)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("attribute.delete.revision");
 
         query.addParameter(id);
         query.addParameter(revision);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**

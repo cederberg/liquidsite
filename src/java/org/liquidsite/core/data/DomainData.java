@@ -1,5 +1,5 @@
 /*
- * UserGroupData.java
+ * DomainData.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,39 +19,39 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 /**
- * A user group data object. This object encapsulates a row of data
- * from the LS_USER_GROUP table.
+ * A domain data object. This object encapsulates a row of data from
+ * the LS_DOMAIN table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class UserGroupData extends AbstractData {
+public class DomainData extends AbstractData {
 
     /**
-     * The domain parameter.
+     * The name parameter.
      */
-    public static final Parameter DOMAIN =
-        new StringParameter(UserGroupData.class, "DOMAIN", "");
+    public static final Parameter NAME =
+        new StringParameter(DomainData.class, "NAME", "");
 
     /**
-     * The user parameter.
+     * The description parameter.
      */
-    public static final Parameter USER =
-        new StringParameter(UserGroupData.class, "USER", "");
+    public static final Parameter DESCRIPTION =
+        new StringParameter(DomainData.class, "DESCRIPTION", "");
 
     /**
-     * The group parameter.
+     * The options parameter.
      */
-    public static final Parameter GROUP =
-        new StringParameter(UserGroupData.class, "GROUP", "");
+    public static final Parameter OPTIONS =
+        new StringParameter(DomainData.class, "OPTIONS", "");
 
     /**
-     * Creates a new user group data object with default values.
+     * Creates a new domain data object with default values.
      */
-    public UserGroupData() {
-        // No further initialization needed
+    public DomainData() {
+        super();
     }
 }

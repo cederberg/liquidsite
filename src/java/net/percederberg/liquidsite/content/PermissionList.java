@@ -23,11 +23,10 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-import net.percederberg.liquidsite.dbo.PermissionData;
-import net.percederberg.liquidsite.dbo.PermissionPeer;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.PermissionData;
+import org.liquidsite.core.data.PermissionPeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -78,19 +77,17 @@ public class PermissionList extends PersistentObject {
     static PermissionList findByDomain(ContentManager manager, Domain domain)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
 
         try {
-            list = PermissionPeer.doSelectByContent(domain.getName(),
-                                                    0,
-                                                    con);
+            list = PermissionPeer.doSelectByContent(src, domain.getName(), 0);
             return new PermissionList(manager, domain.getName(), 0, list);
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -111,22 +108,22 @@ public class PermissionList extends PersistentObject {
                                         Content content)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
 
         try {
-            list = PermissionPeer.doSelectByContent(content.getDomainName(),
-                                                    content.getId(),
-                                                    con);
+            list = PermissionPeer.doSelectByContent(src,
+                                                    content.getDomainName(),
+                                                    content.getId());
             return new PermissionList(manager,
                                       content.getDomainName(),
                                       content.getId(),
                                       list);
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -333,16 +330,14 @@ public class PermissionList extends PersistentObject {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
-                            boolean restore)
+    protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
         Permission      perm;
@@ -352,9 +347,9 @@ public class PermissionList extends PersistentObject {
             for (int i = 0; i < permissions.size(); i++) {
                 perm = (Permission) permissions.get(i);
                 data = perm.getData(domain, content);
-                PermissionPeer.doInsert(data, con);
+                PermissionPeer.doInsert(src, data);
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -363,19 +358,19 @@ public class PermissionList extends PersistentObject {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
         try {
-            PermissionPeer.doDelete(domain, content, con);
-            doInsert(user, con, false);
-        } catch (DatabaseObjectException e) {
+            PermissionPeer.doDelete(src, domain, content);
+            doInsert(src, user, false);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -384,18 +379,18 @@ public class PermissionList extends PersistentObject {
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         try {
-            PermissionPeer.doDelete(domain, content, con);
-        } catch (DatabaseObjectException e) {
+            PermissionPeer.doDelete(src, domain, content);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }

@@ -26,12 +26,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.dbo.ContentPeer;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-import net.percederberg.liquidsite.dbo.PermissionPeer;
-
+import org.liquidsite.core.data.ContentPeer;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.PermissionPeer;
 import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseException;
 import org.liquidsite.util.db.DatabaseQuery;
@@ -93,7 +94,7 @@ public class Installer {
         updaters.add(new DatabaseUpdater("0.4",
                                          "0.5",
                                          "UPDATE_LIQUIDSITE_TABLES_0.5.sql"));
-        updaters.add(new Version06DatabaseUpdater());
+        updaters.add(new Version06DatabaseUpdater(connector));
         updaters.add(new DatabaseUpdater("0.6", "0.7"));
         updaters.add(new DatabaseUpdater("0.7", "0.8"));
         updaters.add(new DatabaseUpdater("0.8", "0.8.1"));
@@ -382,10 +383,18 @@ public class Installer {
     private class Version06DatabaseUpdater extends DatabaseUpdater {
 
         /**
-         * Creates a new database updater for version 0.6.
+         * The data source to use.
          */
-        public Version06DatabaseUpdater() {
+        private DataSource src;
+
+        /**
+         * Creates a new database updater for version 0.6.
+         *
+         * @param connector      the database connector to use
+         */
+        public Version06DatabaseUpdater(DatabaseConnector connector) {
             super("0.5", "0.6", "UPDATE_LIQUIDSITE_TABLES_0.6.sql");
+            this.src = new DataSource(connector);
         }
 
         /**
@@ -410,11 +419,13 @@ public class Installer {
             res = con.execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 try {
-                    ContentPeer.doStatusUpdate(res.getRow(i).getInt(0), con);
+                    ContentPeer.doStatusUpdate(src, res.getRow(i).getInt(0));
                 } catch (DatabaseDataException e) {
                     throw new DatabaseException(e.getMessage());
-                } catch (DatabaseObjectException e) {
+                } catch (DataObjectException e) {
                     throw new DatabaseException(e.getMessage());
+                } finally {
+                    src.close();
                 }
             }
 
@@ -424,13 +435,15 @@ public class Installer {
             res = con.execute(query);
             for (int i = 0; i < res.getRowCount(); i++) {
                 try {
-                    PermissionPeer.doDelete(res.getRow(i).getString(1),
-                                            res.getRow(i).getInt(0),
-                                            con);
+                    PermissionPeer.doDelete(src,
+                                            res.getRow(i).getString(1),
+                                            res.getRow(i).getInt(0));
                 } catch (DatabaseDataException e) {
                     throw new DatabaseException(e.getMessage());
-                } catch (DatabaseObjectException e) {
+                } catch (DataObjectException e) {
                     throw new DatabaseException(e.getMessage());
+                } finally {
+                    src.close();
                 }
             }
         }

@@ -30,12 +30,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import net.percederberg.liquidsite.dbo.ConfigurationData;
-import net.percederberg.liquidsite.dbo.ConfigurationPeer;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-
-import org.liquidsite.util.db.DatabaseConnection;
-import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.core.data.ConfigurationData;
+import org.liquidsite.core.data.ConfigurationPeer;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
 import org.liquidsite.util.db.DatabaseConnector;
 
 /**
@@ -297,37 +295,14 @@ public class Configuration {
     public void read(DatabaseConnector db)
         throws ConfigurationException {
 
-        DatabaseConnection  con;
-        String              message;
+        DataSource  src = new DataSource(db);
 
         readFile();
         try {
-            con = db.getConnection();
-        } catch (DatabaseConnectionException e) {
-            message = "couldn't read configuration database table";
-            throw new ConfigurationException(message, e);
-        }
-        try {
-            readDatabase(con);
+            readDatabase(src);
         } finally {
-            db.returnConnection(con);
+            src.close();
         }
-    }
-
-    /**
-     * Reads the configuration. The configuration is read from both
-     * file and database.
-     *
-     * @param con            the database connection to use
-     *
-     * @throws ConfigurationException if the configuration couldn't
-     *             be read properly
-     */
-    public void read(DatabaseConnection con)
-        throws ConfigurationException {
-
-        readFile();
-        readDatabase(con);
     }
 
     /**
@@ -373,12 +348,12 @@ public class Configuration {
     /**
      * Reads the configuration database table.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ConfigurationException if the database table couldn't
      *             be read properly
      */
-    private void readDatabase(DatabaseConnection con)
+    private void readDatabase(DataSource src)
         throws ConfigurationException {
 
         ArrayList          list;
@@ -388,14 +363,14 @@ public class Configuration {
         String             message;
 
         try {
-            list = ConfigurationPeer.doSelectAll(con);
+            list = ConfigurationPeer.doSelectAll(src);
             for (int i = 0; i < list.size(); i++) {
                 data = (ConfigurationData) list.get(i);
                 name = data.getString(ConfigurationData.NAME);
                 value = data.getString(ConfigurationData.VALUE);
                 set(name, value);
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             message = "couldn't read configuration database table";
             throw new ConfigurationException(message, e);
         }
@@ -413,37 +388,14 @@ public class Configuration {
     public void write(DatabaseConnector db)
         throws ConfigurationException {
 
-        DatabaseConnection  con;
-        String              message;
+        DataSource  src = new DataSource(db);
 
         writeFile();
         try {
-            con = db.getConnection();
-        } catch (DatabaseConnectionException e) {
-            message = "couldn't write configuration database table";
-            throw new ConfigurationException(message, e);
-        }
-        try {
-            writeDatabase(con);
+            writeDatabase(src);
         } finally {
-            db.returnConnection(con);
+            src.close();
         }
-    }
-
-    /**
-     * Writes the configuration. The configuration is written to both
-     * file and database.
-     *
-     * @param con            the database connection to use
-     *
-     * @throws ConfigurationException if the configuration couldn't
-     *             be written properly
-     */
-    public void write(DatabaseConnection con)
-        throws ConfigurationException {
-
-        writeFile();
-        writeDatabase(con);
     }
 
     /**
@@ -492,12 +444,12 @@ public class Configuration {
      * table is first cleared, then all the configuration keys are
      * inserted.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ConfigurationException if the database table couldn't
      *             be written properly
      */
-    private void writeDatabase(DatabaseConnection con)
+    private void writeDatabase(DataSource src)
         throws ConfigurationException {
 
         ConfigurationData  data;
@@ -507,7 +459,7 @@ public class Configuration {
         String             message;
 
         try {
-            ConfigurationPeer.doDeleteAll(con);
+            ConfigurationPeer.doDeleteAll(src);
             iter = databaseProperties.propertyNames();
             while (iter.hasMoreElements()) {
                 name = (String) iter.nextElement();
@@ -515,9 +467,9 @@ public class Configuration {
                 data = new ConfigurationData();
                 data.setString(ConfigurationData.NAME, name);
                 data.setString(ConfigurationData.VALUE, value);
-                ConfigurationPeer.doInsert(data, con);
+                ConfigurationPeer.doInsert(src, data);
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             message = "couldn't write configuration database table";
             throw new ConfigurationException(message, e);
         }

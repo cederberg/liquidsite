@@ -26,13 +26,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.dbo.AttributeData;
-import net.percederberg.liquidsite.dbo.AttributePeer;
-import net.percederberg.liquidsite.dbo.ContentData;
-import net.percederberg.liquidsite.dbo.ContentPeer;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.AttributeData;
+import org.liquidsite.core.data.AttributePeer;
+import org.liquidsite.core.data.ContentData;
+import org.liquidsite.core.data.ContentPeer;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -161,22 +160,22 @@ public class Content extends PersistentObject {
      *
      * @param manager        the content manager to use
      * @param data           the content data object
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected Content(ContentManager manager,
                       ContentData data,
-                      DatabaseConnection con)
+                      DataSource src)
         throws ContentException {
 
         super(manager, true);
         this.data = data;
         this.oldRevision = data.getInt(ContentData.REVISION);
         try {
-            doReadAttributes(con);
-        } catch (DatabaseObjectException e) {
+            doReadAttributes(src);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -714,18 +713,18 @@ public class Content extends PersistentObject {
     public void deleteRevision(User user)
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con = getDatabaseConnection(getContentManager());
+        DataSource  src = getDataSource(getContentManager());
 
         // Delete from database
         try {
             SecurityManager.getInstance().checkDelete(user, this);
-            ContentPeer.doDeleteRevision(getId(), getRevisionNumber(), con);
-            ContentPeer.doStatusUpdate(getId(), con);
-        } catch (DatabaseObjectException e) {
+            ContentPeer.doDeleteRevision(src, getId(), getRevisionNumber());
+            ContentPeer.doStatusUpdate(src, getId());
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(getContentManager(), con);
+            src.close();
         }
 
         // Remove from cache
@@ -753,16 +752,14 @@ public class Content extends PersistentObject {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
-                            boolean restore)
+    protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
         if (!restore) {
@@ -770,11 +767,11 @@ public class Content extends PersistentObject {
             data.setDate(ContentData.MODIFIED, new Date());
         }
         try {
-            ContentPeer.doInsert(data, con);
-            doWriteAttributes(con, true);
+            ContentPeer.doInsert(src, data);
+            doWriteAttributes(src, true);
             oldRevision = getRevisionNumber();
-            ContentPeer.doStatusUpdate(getId(), con);
-        } catch (DatabaseObjectException e) {
+            ContentPeer.doStatusUpdate(src, getId());
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -783,31 +780,31 @@ public class Content extends PersistentObject {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
         data.setString(ContentData.AUTHOR, user.getName());
         data.setDate(ContentData.MODIFIED, new Date());
         try {
             if (oldRevision != getRevisionNumber()) {
-                ContentPeer.doInsert(data, con);
-                doWriteAttributes(con, true);
+                ContentPeer.doInsert(src, data);
+                doWriteAttributes(src, true);
                 if (oldRevision == 0) {
-                    ContentPeer.doDeleteRevision(getId(), 0, con);
+                    ContentPeer.doDeleteRevision(src, getId(), 0);
                 }
                 oldRevision = getRevisionNumber();
             } else {
-                ContentPeer.doUpdate(data, con);
-                doWriteAttributes(con, false);
+                ContentPeer.doUpdate(src, data);
+                doWriteAttributes(src, false);
             }
-            ContentPeer.doStatusUpdate(getId(), con);
-        } catch (DatabaseObjectException e) {
+            ContentPeer.doStatusUpdate(src, getId());
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -817,13 +814,13 @@ public class Content extends PersistentObject {
      * Deletes the object data from the database. This method will
      * also delete any child content object recursively.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         Content[]  children;
@@ -831,10 +828,10 @@ public class Content extends PersistentObject {
         children = InternalContent.findByParent(getContentManager(), this);
         try {
             for (int i = 0; i < children.length; i++) {
-                children[i].delete(user, con);
+                children[i].delete(src, user);
             }
-            ContentPeer.doDelete(data, con);
-        } catch (DatabaseObjectException e) {
+            ContentPeer.doDelete(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } catch (ContentSecurityException e) {
@@ -847,20 +844,20 @@ public class Content extends PersistentObject {
      * Reads the content attributes from the database. This method
      * will add all found attributes to the attributes map.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    private void doReadAttributes(DatabaseConnection con)
-        throws DatabaseObjectException {
+    private void doReadAttributes(DataSource src)
+        throws DataObjectException {
 
         ArrayList      list;
         AttributeData  attr;
 
-        list = AttributePeer.doSelectByRevision(getId(),
-                                                getRevisionNumber(),
-                                                con);
+        list = AttributePeer.doSelectByRevision(src,
+                                                getId(),
+                                                getRevisionNumber());
         for (int i = 0; i < list.size(); i++) {
             attr = (AttributeData) list.get(i);
             attributes.put(attr.getString(AttributeData.NAME), attr);
@@ -872,14 +869,14 @@ public class Content extends PersistentObject {
      * will either insert of update each attribute depending on
      * whether it is present in the added attributes list or not.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      * @param insert         the force insert flag
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    private void doWriteAttributes(DatabaseConnection con, boolean insert)
-        throws DatabaseObjectException {
+    private void doWriteAttributes(DataSource src, boolean insert)
+        throws DataObjectException {
 
         Iterator       iter = attributes.keySet().iterator();
         AttributeData  attr;
@@ -892,15 +889,15 @@ public class Content extends PersistentObject {
                 attr.setInt(AttributeData.CONTENT, getId());
             }
             if (insert || attributesAdded.contains(name)) {
-                AttributePeer.doInsert(attr, con);
+                AttributePeer.doInsert(src, attr);
             } else {
-                AttributePeer.doUpdate(attr, con);
+                AttributePeer.doUpdate(src, attr);
             }
         }
         if (!insert) {
             for (int i = 0; i < attributesRemoved.size(); i++) {
                 attr = (AttributeData) attributesRemoved.get(i);
-                AttributePeer.doDelete(attr, con);
+                AttributePeer.doDelete(src, attr);
             }
         }
         attributesAdded.clear();

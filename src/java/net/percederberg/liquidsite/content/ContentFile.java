@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.percederberg.liquidsite.Application;
-import net.percederberg.liquidsite.dbo.ContentData;
 
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.ContentData;
+import org.liquidsite.core.data.DataSource;
 
 /**
  * A web site file.
@@ -84,17 +84,17 @@ public class ContentFile extends Content {
      *
      * @param manager        the content manager to use
      * @param data           the content data object
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentFile(ContentManager manager,
                           ContentData data,
-                          DatabaseConnection con)
+                          DataSource src)
         throws ContentException {
 
-        super(manager, data, con);
+        super(manager, data, src);
     }
 
     /**
@@ -312,35 +312,35 @@ public class ContentFile extends Content {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the object data didn't validate or
      *             if the database couldn't be accessed properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
-        super.doUpdate(user, con);
+        super.doUpdate(src, user);
         cleanUnusedFiles();
     }
 
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         File    dir;
         File[]  files;
 
-        super.doDelete(user, con);
+        super.doDelete(src, user);
         try {
             dir = getDirectory();
             files = dir.listFiles();

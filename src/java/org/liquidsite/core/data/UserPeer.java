@@ -19,15 +19,11 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
-import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseQuery;
-import org.liquidsite.util.db.DatabaseResults;
-import org.liquidsite.util.log.Log;
 
 /**
  * A user database peer. This class contains static methods that
@@ -39,11 +35,6 @@ import org.liquidsite.util.log.Log;
 public class UserPeer extends AbstractPeer {
 
     /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(UserPeer.class);
-
-    /**
      * The user peer instance.
      */
     private static final UserPeer PEER = new UserPeer();
@@ -52,35 +43,28 @@ public class UserPeer extends AbstractPeer {
      * Returns the number of users in a specified domain. Only users
      * with matching names will be counted.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param filter         the search filter (empty for all)
-     * @param con            the database connection to use
      *
      * @return the number of matching users in the domain
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static int doCountByDomain(String domain,
-                                      String filter,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static int doCountByDomain(DataSource src,
+                                      String domain,
+                                      String filter)
+        throws DataObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery("user.count");
-        DatabaseResults  res;
-        String           filterSql = "%" + filter + "%";
+        DatabaseQuery  query = new DatabaseQuery("user.count");
+        String         filterSql = "%" + filter + "%";
 
         query.addParameter(domain);
         query.addParameter(filterSql);
         query.addParameter(filterSql);
         query.addParameter(filterSql);
-        res = PEER.execute("counting users", query, con);
-        try {
-            return res.getRow(0).getInt(0);
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
-        }
+        return (int) PEER.count(src, query);
     }
 
     /**
@@ -88,23 +72,23 @@ public class UserPeer extends AbstractPeer {
      * users with matching names will be returned. Also, only a
      * limited interval of the matching users will be returned.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param filter         the search filter (empty for all)
      * @param startPos       the list interval start position
      * @param maxLength      the list interval maximum length
-     * @param con            the database connection to use
      *
      * @return a list of matching users in the domain
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByDomain(String domain,
+    public static ArrayList doSelectByDomain(DataSource src,
+                                             String domain,
                                              String filter,
                                              int startPos,
-                                             int maxLength,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
+                                             int maxLength)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.select.domain");
         String         filterSql = "%" + filter + "%";
@@ -115,45 +99,45 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(filterSql);
         query.addParameter(startPos);
         query.addParameter(maxLength);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns a user with a specified name.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param name           the user name
-     * @param con            the database connection to use
      *
      * @return the user found, or
      *         null if no matching user existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static UserData doSelectByName(String domain,
-                                          String name,
-                                          DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static UserData doSelectByName(DataSource src,
+                                          String domain,
+                                          String name)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.select.name");
 
         query.addParameter(domain);
         query.addParameter(name);
-        return (UserData) PEER.select(query, con);
+        return (UserData) PEER.select(src, query);
     }
 
     /**
-     * Inserts a new user into the database.
+     * Inserts a new user into the data source.
      *
+     * @param src            the data source to use
      * @param data           the user data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(UserData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, UserData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.insert");
 
@@ -164,20 +148,20 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(data.getString(UserData.REAL_NAME));
         query.addParameter(data.getString(UserData.EMAIL));
         query.addParameter(data.getString(UserData.COMMENT));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Updates a user in the database.
+     * Updates a user in the data source.
      *
+     * @param src            the data source to use
      * @param data           the user data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doUpdate(UserData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doUpdate(DataSource src, UserData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.update");
 
@@ -188,21 +172,21 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(data.getString(UserData.COMMENT));
         query.addParameter(data.getString(UserData.DOMAIN));
         query.addParameter(data.getString(UserData.NAME));
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
-     * Deletes a user from the database. This method also deletes
+     * Deletes a user from the data source. This method also deletes
      * all related user group and permission entries.
      *
+     * @param src            the data source to use
      * @param data           the user data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(UserData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, UserData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.delete");
         String         domain = data.getString(UserData.DOMAIN);
@@ -210,32 +194,31 @@ public class UserPeer extends AbstractPeer {
 
         query.addParameter(domain);
         query.addParameter(name);
-        PEER.delete(query, con);
-        PreferencePeer.doDeleteUser(domain, name, con);
-        UserGroupPeer.doDeleteUser(domain, name, con);
-        PermissionPeer.doDeleteUser(domain, name, con);
+        PEER.delete(src, query);
+        PreferencePeer.doDeleteUser(src, domain, name);
+        UserGroupPeer.doDeleteUser(src, domain, name);
+        PermissionPeer.doDeleteUser(src, domain, name);
     }
 
     /**
-     * Deletes all users in a domain from the database. This method
-     * also deletes all user group entries in the domain.
+     * Deletes all users in a domain from the data source. This
+     * method also deletes all user group entries in the domain.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("user.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
-        PreferencePeer.doDeleteDomain(domain, con);
-        UserGroupPeer.doDeleteDomain(domain, con);
+        PEER.delete(src, query);
+        PreferencePeer.doDeleteDomain(src, domain);
+        UserGroupPeer.doDeleteDomain(src, domain);
     }
 
     /**

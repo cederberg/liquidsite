@@ -1,5 +1,5 @@
 /*
- * ConfigurationData.java
+ * UserGroupData.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,33 +19,39 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 /**
- * A configuration data object. This object encapsulates a row of
- * data from the LS_CONFIGURATION table.
+ * A user group data object. This object encapsulates a row of data
+ * from the LS_USER_GROUP table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class ConfigurationData extends AbstractData {
+public class UserGroupData extends AbstractData {
 
     /**
-     * The name parameter.
+     * The domain parameter.
      */
-    public static final Parameter NAME =
-        new StringParameter(ConfigurationData.class, "NAME", "");
+    public static final Parameter DOMAIN =
+        new StringParameter(UserGroupData.class, "DOMAIN", "");
 
     /**
-     * The value parameter.
+     * The user parameter.
      */
-    public static final Parameter VALUE =
-        new StringParameter(ConfigurationData.class, "VALUE", "");
+    public static final Parameter USER =
+        new StringParameter(UserGroupData.class, "USER", "");
 
     /**
-     * Creates a new configuration data object with default values.
+     * The group parameter.
      */
-    public ConfigurationData() {
+    public static final Parameter GROUP =
+        new StringParameter(UserGroupData.class, "GROUP", "");
+
+    /**
+     * Creates a new user group data object with default values.
+     */
+    public UserGroupData() {
         // No further initialization needed
     }
 }

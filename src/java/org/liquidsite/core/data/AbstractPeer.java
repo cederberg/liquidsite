@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseException;
 import org.liquidsite.util.db.DatabaseQuery;
@@ -31,10 +30,11 @@ import org.liquidsite.util.db.DatabaseResults;
 import org.liquidsite.util.log.Log;
 
 /**
- * An abstract database peer. This class provides some of the
- * functionality common to all database peers. Normally a database
- * peer provides static methods operating on it's one and only
- * instance.
+ * An abstract data object peer. This class provides some of the
+ * functionality needed by all data object peers. The data object
+ * peers each provide specialized static methods for operating on the
+ * data objects by retrieving and storing them to the data source
+ * (i.e. a database).
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
@@ -68,96 +68,131 @@ public abstract class AbstractPeer {
     protected abstract AbstractData getDataObject();
 
     /**
-     * Performs a database select query. This query is supposed to
-     * return either one or zero rows.
+     * Performs a database query that returns a single number as the
+     * result. The data source will NOT be closed after this
+     * operation.
      *
+     * @param src            the data source to use
      * @param query          the database query
-     * @param con            the database connection
+     *
+     * @return the query result number, or
+     *         zero (0) if no results were found
+     *
+     * @throws DataObjectException if the query couldn't be executed
+     *             correctly, or the results were malformed
+     */
+    protected long count(DataSource src, DatabaseQuery query)
+        throws DataObjectException {
+
+        DatabaseResults  res;
+
+        res = execute(src, "counting " + name + " rows or size", query);
+        try {
+            if (res.getRowCount() > 0) {
+                return res.getRow(0).getLong(0);
+            } else {
+                return 0;
+            }
+        } catch (DatabaseDataException e) {
+            LOG.error(e.getMessage());
+            throw new DataObjectException(e);
+        }
+    }
+
+    /**
+     * Performs a database select query. This query is supposed to
+     * return either one or zero rows. The data source will NOT be
+     * closed after this operation.
+     *
+     * @param src            the data source to use
+     * @param query          the database query
      *
      * @return the database object found, or
      *         null if the query didn't match any row
      *
-     * @throws DatabaseObjectException if the query couldn't be
-     *             executed correctly, or the results were malformed
+     * @throws DataObjectException if the query couldn't be executed
+     *             correctly, or the results were malformed
      */
-    protected AbstractData select(DatabaseQuery query,
-                                  DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected AbstractData select(DataSource src, DatabaseQuery query)
+        throws DataObjectException {
 
         DatabaseResults  res;
 
-        res = execute("reading " + name, query, con);
+        res = execute(src, "reading " + name, query);
         return createObject(res);
     }
 
     /**
      * Performs a database list select query. This query is supposed
-     * to zero or more rows.
+     * to zero or more rows. The data source will NOT be closed after
+     * this operation.
      *
+     * @param src            the data source to use
      * @param query          the database query
-     * @param con            the database connection
      *
      * @return the list of database objects found
      *
-     * @throws DatabaseObjectException if the query couldn't be
-     *             executed correctly, or the results were malformed
+     * @throws DataObjectException if the query couldn't be executed
+     *             correctly, or the results were malformed
      */
-    protected ArrayList selectList(DatabaseQuery query,
-                                   DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected ArrayList selectList(DataSource src, DatabaseQuery query)
+        throws DataObjectException {
 
         DatabaseResults  res;
 
-        res = execute("reading " + name + " list", query, con);
+        res = execute(src, "reading " + name + " list", query);
         return createObjectList(res);
     }
 
     /**
      * Performs a database insert statement. No database results are
-     * returned
+     * returned. The data source will NOT be closed after this
+     * operation.
      *
+     * @param src            the data source to use
      * @param query          the database query
-     * @param con            the database connection
      *
-     * @throws DatabaseObjectException if the statement couldn't be
+     * @throws DataObjectException if the statement couldn't be
      *             executed correctly
      */
-    protected void insert(DatabaseQuery query, DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void insert(DataSource src, DatabaseQuery query)
+        throws DataObjectException {
 
-        execute("inserting " + name, query, con);
+        execute(src, "inserting " + name, query);
     }
 
     /**
      * Performs a database update statement. No database results are
-     * returned
+     * returned. The data source will NOT be closed after this
+     * operation.
      *
+     * @param src            the data source to use
      * @param query          the database query
-     * @param con            the database connection
      *
-     * @throws DatabaseObjectException if the statement couldn't be
+     * @throws DataObjectException if the statement couldn't be
      *             executed correctly
      */
-    protected void update(DatabaseQuery query, DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void update(DataSource src, DatabaseQuery query)
+        throws DataObjectException {
 
-        execute("updating " + name, query, con);
+        execute(src, "updating " + name, query);
     }
 
     /**
      * Performs a database delete statement. No database results are
-     * returned
+     * returned. The data source will NOT be closed after this
+     * operation.
      *
+     * @param src            the data source to use
      * @param query          the database query
-     * @param con            the database connection
      *
-     * @throws DatabaseObjectException if the statement couldn't be
+     * @throws DataObjectException if the statement couldn't be
      *             executed correctly
      */
-    protected void delete(DatabaseQuery query, DatabaseConnection con)
-        throws DatabaseObjectException {
+    protected void delete(DataSource src, DatabaseQuery query)
+        throws DataObjectException {
 
-        execute("deleting " + name, query, con);
+        execute(src, "deleting " + name, query);
     }
 
     /**
@@ -165,32 +200,31 @@ public abstract class AbstractPeer {
      * normally not be called directly by subclasses, unless a query
      * does not return results compatible with the data object.
      *
+     * @param src            the data source to use
      * @param log            the log message
      * @param query          the database query
-     * @param con            the database connection to use, or null
      *
      * @return the database results for a query, or
      *         null for database statements
      *
-     * @throws DatabaseObjectException if the query or statement
+     * @throws DataObjectException if the query or statement
      *             couldn't be executed correctly
      */
-    protected DatabaseResults execute(String log,
-                                      DatabaseQuery query,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    private DatabaseResults execute(DataSource src,
+                                    String log,
+                                    DatabaseQuery query)
+        throws DataObjectException {
 
         DatabaseResults    res;
 
         try {
             LOG.trace(log);
-            res = con.execute(query);
+            res = src.getConnection().execute(query);
             LOG.trace("done " + log);
         } catch (DatabaseException e) {
             LOG.error(log, e);
-            throw new DatabaseObjectException(log, e);
+            throw new DataObjectException(log, e);
         }
-
         return res;
     }
 
@@ -203,11 +237,11 @@ public abstract class AbstractPeer {
      * @return a new instance of the data object, or
      *         null if the database results were empty
      *
-     * @throws DatabaseObjectException if the database results were
+     * @throws DataObjectException if the database results were
      *             malformed
      */
     private AbstractData createObject(DatabaseResults res)
-        throws DatabaseObjectException {
+        throws DataObjectException {
 
         AbstractData  data;
         String        message;
@@ -221,7 +255,7 @@ public abstract class AbstractPeer {
             } catch (DatabaseDataException e) {
                 message = "reading " + name;
                 LOG.error(message, e);
-                throw new DatabaseObjectException(message, e);
+                throw new DataObjectException(message, e);
             }
         }
         return data;
@@ -236,11 +270,11 @@ public abstract class AbstractPeer {
      *
      * @return a list of new data objects (may be empty)
      *
-     * @throws DatabaseObjectException if the database results were
+     * @throws DataObjectException if the database results were
      *             malformed
      */
     private ArrayList createObjectList(DatabaseResults res)
-        throws DatabaseObjectException {
+        throws DataObjectException {
 
         ArrayList     list = new ArrayList();
         AbstractData  data;
@@ -253,7 +287,7 @@ public abstract class AbstractPeer {
             } catch (DatabaseDataException e) {
                 message = "reading " + name + " list";
                 LOG.error(message, e);
-                throw new DatabaseObjectException(message, e);
+                throw new DataObjectException(message, e);
             }
             list.add(data);
         }

@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -43,39 +42,38 @@ public class PreferencePeer extends AbstractPeer {
     /**
      * Returns a list of preferences for a specified user.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param user           the user name
-     * @param con            the database connection to use
      *
      * @return a list of preferences for the user
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByUser(String domain,
-                                           String user,
-                                           DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectByUser(DataSource src,
+                                           String domain,
+                                           String user)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("preference.select.user");
 
         query.addParameter(domain);
         query.addParameter(user);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
-     * Inserts a new preference into the database.
+     * Inserts a new preference into the data source.
      *
+     * @param src            the data source to use
      * @param data           the preference data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(PreferenceData data,
-                                DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, PreferenceData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("preference.insert");
 
@@ -83,48 +81,47 @@ public class PreferencePeer extends AbstractPeer {
         query.addParameter(data.getString(PreferenceData.USER));
         query.addParameter(data.getString(PreferenceData.NAME));
         query.addParameter(data.getString(PreferenceData.VALUE));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Deletes all preferences in a domain from the database.
+     * Deletes all preferences in a domain from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("preference.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all preferences for a user from the database.
+     * Deletes all preferences for a user from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param user           the user name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteUser(String domain,
-                                    String user,
-                                    DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteUser(DataSource src,
+                                    String domain,
+                                    String user)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("preference.delete.user");
 
         query.addParameter(domain);
         query.addParameter(user);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**

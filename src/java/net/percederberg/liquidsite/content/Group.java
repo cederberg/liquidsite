@@ -23,13 +23,12 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-import net.percederberg.liquidsite.dbo.GroupData;
-import net.percederberg.liquidsite.dbo.GroupPeer;
-import net.percederberg.liquidsite.dbo.UserGroupData;
-import net.percederberg.liquidsite.dbo.UserGroupPeer;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.GroupData;
+import org.liquidsite.core.data.GroupPeer;
+import org.liquidsite.core.data.UserGroupData;
+import org.liquidsite.core.data.UserGroupPeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -78,21 +77,21 @@ public class Group extends PersistentObject {
                                 String filter)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Group[]             res;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
+        Group[]     res;
 
         try {
-            list = GroupPeer.doSelectByDomain(domain.getName(), filter, con);
+            list = GroupPeer.doSelectByDomain(src, domain.getName(), filter);
             res = new Group[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new Group(manager, (GroupData) list.get(i));
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         return res;
     }
@@ -115,16 +114,16 @@ public class Group extends PersistentObject {
                             String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        GroupData           data;
+        DataSource  src = getDataSource(manager);
+        GroupData   data;
 
         try {
-            data = GroupPeer.doSelectByName(domain.getName(), name, con);
-        } catch (DatabaseObjectException e) {
+            data = GroupPeer.doSelectByName(src, domain.getName(), name);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         if (data == null) {
             return null;
@@ -147,31 +146,31 @@ public class Group extends PersistentObject {
     static Group[] findByUser(ContentManager manager, User user)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Group[]             res;
-        UserGroupData       data;
-        GroupData           group;
-        String              name;
+        DataSource     src = getDataSource(manager);
+        ArrayList      list;
+        Group[]        res;
+        UserGroupData  data;
+        GroupData      group;
+        String         name;
 
         try {
-            list = UserGroupPeer.doSelectByUser(user.getDomainName(),
-                                                user.getName(),
-                                                con);
+            list = UserGroupPeer.doSelectByUser(src,
+                                                user.getDomainName(),
+                                                user.getName());
             res = new Group[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 data = (UserGroupData) list.get(i);
                 name = data.getString(UserGroupData.GROUP);
-                group = GroupPeer.doSelectByName(user.getDomainName(),
-                                                 name,
-                                                 con);
+                group = GroupPeer.doSelectByName(src,
+                                                 user.getDomainName(),
+                                                 name);
                 res[i] = new Group(manager, group);
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         return res;
     }
@@ -396,22 +395,20 @@ public class Group extends PersistentObject {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
-                            boolean restore)
+    protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
         try {
-            GroupPeer.doInsert(data, con);
-            doUserGroups(con);
-        } catch (DatabaseObjectException e) {
+            GroupPeer.doInsert(src, data);
+            doUserGroups(src);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -420,19 +417,19 @@ public class Group extends PersistentObject {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
         try {
-            GroupPeer.doUpdate(data, con);
-            doUserGroups(con);
-        } catch (DatabaseObjectException e) {
+            GroupPeer.doUpdate(src, data);
+            doUserGroups(src);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -441,18 +438,18 @@ public class Group extends PersistentObject {
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         try {
-            GroupPeer.doDelete(data, con);
-        } catch (DatabaseObjectException e) {
+            GroupPeer.doDelete(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -461,13 +458,13 @@ public class Group extends PersistentObject {
     /**
      * Adds and removes user groups from the database.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    private void doUserGroups(DatabaseConnection con)
-        throws DatabaseObjectException {
+    private void doUserGroups(DataSource src)
+        throws DataObjectException {
 
         UserGroupData  userData;
 
@@ -479,7 +476,7 @@ public class Group extends PersistentObject {
                 userData.setString(UserGroupData.USER,
                                usersAdded.get(i).toString());
                 userData.setString(UserGroupData.GROUP, getName());
-                UserGroupPeer.doInsert(userData, con);
+                UserGroupPeer.doInsert(src, userData);
             }
             usersAdded = null;
         }
@@ -492,7 +489,7 @@ public class Group extends PersistentObject {
                 userData.setString(UserGroupData.USER,
                                usersRemoved.get(i).toString());
                 userData.setString(UserGroupData.GROUP, getName());
-                UserGroupPeer.doDelete(userData, con);
+                UserGroupPeer.doDelete(src, userData);
             }
             usersRemoved = null;
         }

@@ -1,5 +1,5 @@
 /*
- * GroupData.java
+ * LockData.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,45 +19,47 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
+
+import java.util.Date;
 
 /**
- * A group data object. This object encapsulates a row of data from
- * the LS_GROUP table.
+ * A lock data object. This object encapsulates a row of data from
+ * the LS_LOCK table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class GroupData extends AbstractData {
+public class LockData extends AbstractData {
 
     /**
      * The domain parameter.
      */
     public static final Parameter DOMAIN =
-        new StringParameter(GroupData.class, "DOMAIN", "");
+        new StringParameter(LockData.class, "DOMAIN", "");
 
     /**
-     * The name parameter.
+     * The content parameter.
      */
-    public static final Parameter NAME =
-        new StringParameter(GroupData.class, "NAME", "");
+    public static final Parameter CONTENT =
+        new IntegerParameter(LockData.class, "CONTENT", 0);
 
     /**
-     * The description parameter.
+     * The user parameter.
      */
-    public static final Parameter DESCRIPTION =
-        new StringParameter(GroupData.class, "DESCRIPTION", "");
+    public static final Parameter USER =
+        new StringParameter(LockData.class, "USER", "");
 
     /**
-     * The comment parameter.
+     * The acquired parameter.
      */
-    public static final Parameter COMMENT =
-        new StringParameter(GroupData.class, "COMMENT", "");
+    public static final Parameter ACQUIRED =
+        new DateParameter(LockData.class, "ACQUIRED", new Date(0));
 
     /**
-     * Creates a new group data object with default values.
+     * Creates a new lock data object with default values.
      */
-    public GroupData() {
-        // No further initialization needed
+    public LockData() {
+        super();
     }
 }

@@ -23,12 +23,11 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.dbo.ContentData;
-import net.percederberg.liquidsite.dbo.ContentPeer;
-import net.percederberg.liquidsite.dbo.ContentQuery;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.ContentData;
+import org.liquidsite.core.data.ContentPeer;
+import org.liquidsite.core.data.ContentQuery;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -92,29 +91,29 @@ public class ContentSite extends Content {
                                                 Domain domain)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
-        ArrayList           list;
-        ContentData         data;
-        ContentSite[]       res;
+        DataSource     src = getDataSource(manager);
+        ContentQuery   query;
+        ArrayList      list;
+        ContentData    data;
+        ContentSite[]  res;
 
         try {
             query = new ContentQuery(domain.getName());
             query.requireParent(0);
             query.requireCategory(SITE_CATEGORY);
             query.requirePublished(!manager.isAdmin());
-            list = ContentPeer.doSelectByQuery(query, con);
+            list = ContentPeer.doSelectByQuery(src, query);
             res = new ContentSite[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 data = (ContentData) list.get(i);
-                res[i] = new ContentSite(manager, data, con);
+                res[i] = new ContentSite(manager, data, src);
             }
             return res;
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -138,17 +137,17 @@ public class ContentSite extends Content {
      *
      * @param manager        the content manager to use
      * @param data           the content data object
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentSite(ContentManager manager,
                           ContentData data,
-                          DatabaseConnection con)
+                          DataSource src)
         throws ContentException {
 
-        super(manager, data, con);
+        super(manager, data, src);
     }
 
     /**

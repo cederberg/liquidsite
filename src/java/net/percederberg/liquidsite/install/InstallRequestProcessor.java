@@ -42,7 +42,10 @@ import net.percederberg.liquidsite.web.Request;
 
 import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseException;
+import org.liquidsite.util.db.DatabaseQuery;
+import org.liquidsite.util.db.DatabaseResults;
 import org.liquidsite.util.db.MySQLDatabaseConnector;
 import org.liquidsite.util.log.Log;
 
@@ -568,7 +571,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         connector = new MySQLDatabaseConnector(host,
                                                installUser,
                                                installPassword);
-        connector.setPoolSize(1);
+        connector.setPoolSize(3);
         try {
             connector.loadFunctions(getFile("WEB-INF/database.properties"));
             connector.returnConnection(connector.getConnection());
@@ -701,19 +704,21 @@ public class InstallRequestProcessor extends RequestProcessor {
      *         null if the database wasn't a Liquid Site database
      */
     private String getVersion(String database) {
-        Configuration       config = new Configuration();
         DatabaseConnection  con = null;
+        DatabaseQuery       query = new DatabaseQuery("config.select.name");
+        DatabaseResults     res;
 
         try {
             con = connector.getConnection();
             con.setCatalog(database);
-            config.read(con);
-            return config.get(Configuration.VERSION, null);
+            query.addParameter(Configuration.VERSION);
+            res = con.execute(query);
+            return res.getRow(0).getString(0);
         } catch (DatabaseConnectionException ignore) {
             // Do nothing
         } catch (DatabaseException ignore) {
             // Do nothing
-        } catch (ConfigurationException ignore) {
+        } catch (DatabaseDataException ignore) {
             // Do nothing
         } finally {
             if (con != null) {

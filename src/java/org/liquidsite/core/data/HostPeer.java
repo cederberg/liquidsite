@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -41,77 +40,75 @@ public class HostPeer extends AbstractPeer {
     private static final HostPeer PEER = new HostPeer();
 
     /**
-     * Returns a list of all hosts in the database.
+     * Returns a list of all hosts in the data source.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @return a list of all hosts in the database
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectAll(DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectAll(DataSource src)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.select.all");
 
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns a list of all hosts in a certain domain.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
-     *
+    *
      * @return a list of all hosts in the domain
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByDomain(String domain,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectByDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.select.domain");
 
         query.addParameter(domain);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns a host with a specified name.
      *
+     * @param src            the data source to use
      * @param name           the host name
-     * @param con            the database connection to use
      *
      * @return the host found, or
      *         null if no matching host existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static HostData doSelectByName(String name,
-                                          DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static HostData doSelectByName(DataSource src, String name)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.select.name");
 
         query.addParameter(name);
-        return (HostData) PEER.select(query, con);
+        return (HostData) PEER.select(src, query);
     }
 
     /**
-     * Inserts a new host into the database.
+     * Inserts a new host into the data source.
      *
+     * @param src            the data source to use
      * @param data           the host data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(HostData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, HostData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.insert");
 
@@ -119,64 +116,63 @@ public class HostPeer extends AbstractPeer {
         query.addParameter(data.getString(HostData.NAME));
         query.addParameter(data.getString(HostData.DESCRIPTION));
         query.addParameter(data.getString(HostData.OPTIONS));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Updates a host in the database.
+     * Updates a host in the data source.
      *
+     * @param src            the data source to use
      * @param data           the host data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doUpdate(HostData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doUpdate(DataSource src, HostData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.update");
 
         query.addParameter(data.getString(HostData.DESCRIPTION));
         query.addParameter(data.getString(HostData.OPTIONS));
         query.addParameter(data.getString(HostData.NAME));
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
-     * Deletes a host from the database.
+     * Deletes a host from the data source.
      *
+     * @param src            the data source to use
      * @param data           the host data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(HostData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, HostData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.delete");
 
         query.addParameter(data.getString(HostData.NAME));
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all hosts in a domain from the database.
+     * Deletes all hosts in a domain from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("host.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**

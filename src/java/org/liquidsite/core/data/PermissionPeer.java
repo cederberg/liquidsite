@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -45,38 +44,38 @@ public class PermissionPeer extends AbstractPeer {
      * domain and content id. If the content id is zero (0), the
      * permissions for the domain root is returned.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param content        the content id, or zero (0)
-     * @param con            the database connection to use
      *
      * @return the list of permission objects found
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByContent(String domain,
-                                              int content,
-                                              DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectByContent(DataSource src,
+                                              String domain,
+                                              int content)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.select.content");
 
         query.addParameter(domain);
         query.addParameter(content);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
-     * Inserts a new permission object into the database.
+     * Inserts a new permission object into the data source.
      *
+     * @param src            the data source to use
      * @param data           the permission data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(PermissionData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, PermissionData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.insert");
 
@@ -88,91 +87,90 @@ public class PermissionPeer extends AbstractPeer {
         query.addParameter(data.getBoolean(PermissionData.WRITE));
         query.addParameter(data.getBoolean(PermissionData.PUBLISH));
         query.addParameter(data.getBoolean(PermissionData.ADMIN));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Deletes all permissions for a content object from the database.
+     * Deletes all permissions for a content object from the data
+     * source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param id             the content object id
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(String domain,
-                                int id,
-                                DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, String domain, int id)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.delete");
 
         query.addParameter(domain);
         query.addParameter(id);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all permissions for a domain from the database.
+     * Deletes all permissions for a domain from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all permissions for a user from the database.
+     * Deletes all permissions for a user from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param user           the user name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteUser(String domain,
-                                    String user,
-                                    DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteUser(DataSource src,
+                                    String domain,
+                                    String user)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.delete.user");
 
         query.addParameter(domain);
         query.addParameter(user);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
-     * Deletes all permissions for a group from the database.
+     * Deletes all permissions for a group from the data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param group          the group name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteGroup(String domain,
-                                     String group,
-                                     DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteGroup(DataSource src,
+                                     String domain,
+                                     String group)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("permission.delete.group");
 
         query.addParameter(domain);
         query.addParameter(group);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**

@@ -24,8 +24,8 @@ package net.percederberg.liquidsite.content;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.liquidsite.util.db.DatabaseConnection;
-import org.liquidsite.util.db.DatabaseConnectionException;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
 import org.liquidsite.util.db.DatabaseConnector;
 import org.liquidsite.util.log.Log;
 
@@ -77,39 +77,27 @@ public abstract class PersistentObject {
     }
 
     /**
-     * Returns a database connection.
+     * Returns a data source with an open connection.
      *
      * @param manager        the content manager to use
      *
-     * @return a database connection
+     * @return a data source with an open connection
      *
      * @throws ContentException if no database connector is available
      *             or no database connection could be made
      */
-    static DatabaseConnection getDatabaseConnection(ContentManager manager)
+    static DataSource getDataSource(ContentManager manager)
         throws ContentException {
 
+        DataSource  src;
+
         try {
-            return getDatabase(manager).getConnection();
-        } catch (DatabaseConnectionException e) {
+            src = new DataSource(getDatabase(manager));
+            src.open();
+            return src;
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
-        }
-    }
-
-    /**
-     * Disposes of a database connection.
-     *
-     * @param manager        the content manager to use
-     * @param con            the database connection
-     */
-    static void returnDatabaseConnection(ContentManager manager,
-                                         DatabaseConnection con) {
-        try {
-            getDatabase(manager).returnConnection(con);
-        } catch (ContentException e) {
-            LOG.error(e.getMessage());
-            con.close();
         }
     }
 
@@ -298,40 +286,40 @@ public abstract class PersistentObject {
     public final void save(User user)
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con;
+        DataSource  src;
 
-        con = getDatabaseConnection(getContentManager());
+        src = getDataSource(getContentManager());
         try {
-            save(user, con);
+            save(src, user);
         } finally {
-            returnDatabaseConnection(getContentManager(), con);
+            src.close();
         }
     }
 
     /**
      * Saves this object to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public final void save(User user, DatabaseConnection con)
+    public final void save(DataSource src, User user)
         throws ContentException, ContentSecurityException {
 
         // Save to database
         if (!isPersistent()) {
             SecurityManager.getInstance().checkInsert(user, this);
             doValidate();
-            doInsert(user, con, false);
+            doInsert(src, user, false);
             persistent = true;
         } else {
             SecurityManager.getInstance().checkUpdate(user, this);
             doValidate();
-            doUpdate(user, con);
+            doUpdate(src, user);
         }
 
         // Remove from cache
@@ -353,12 +341,12 @@ public abstract class PersistentObject {
     public final void restore(User user)
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con = getDatabaseConnection(getContentManager());
+        DataSource  src = getDataSource(getContentManager());
 
         try {
-            restore(user, con);
+            restore(src, user);
         } finally {
-            returnDatabaseConnection(getContentManager(), con);
+            src.close();
         }
     }            
 
@@ -367,21 +355,21 @@ public abstract class PersistentObject {
      * when restoring objects from a backup. Superuser permissions
      * are normally required for this operation.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public final void restore(User user, DatabaseConnection con)
+    public final void restore(DataSource src, User user)
         throws ContentException, ContentSecurityException {
 
         // Store to database
         SecurityManager.getInstance().checkRestore(user, this);
         doValidate();
-        doInsert(user, con, true);
+        doInsert(src, user, true);
         persistent = true;
 
         // Remove from cache
@@ -401,34 +389,34 @@ public abstract class PersistentObject {
     public final void delete(User user)
         throws ContentException, ContentSecurityException {
 
-        DatabaseConnection  con;
+        DataSource  src;
 
-        con = getDatabaseConnection(getContentManager());
+        src = getDataSource(getContentManager());
         try {
-            delete(user, con);
+            delete(src, user);
         } finally {
-            returnDatabaseConnection(getContentManager(), con);
+            src.close();
         }
     }
 
     /**
      * Deletes this object from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user specified didn't
      *             have write permissions
      */
-    public final void delete(User user, DatabaseConnection con)
+    public final void delete(DataSource src, User user)
         throws ContentException, ContentSecurityException {
 
         // Delete from database
         if (isPersistent()) {
             SecurityManager.getInstance().checkDelete(user, this);
-            doDelete(user, con);
+            doDelete(src, user);
             persistent = false;
         }
 
@@ -448,39 +436,39 @@ public abstract class PersistentObject {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected abstract void doInsert(User user,
-                                     DatabaseConnection con,
+    protected abstract void doInsert(DataSource src,
+                                     User user,
                                      boolean restore)
         throws ContentException;
 
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected abstract void doUpdate(User user, DatabaseConnection con)
+    protected abstract void doUpdate(DataSource src, User user)
         throws ContentException ;
 
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected abstract void doDelete(User user, DatabaseConnection con)
+    protected abstract void doDelete(DataSource src, User user)
         throws ContentException;
 }

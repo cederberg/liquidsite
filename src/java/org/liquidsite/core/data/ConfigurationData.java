@@ -1,5 +1,5 @@
 /*
- * LockData.java
+ * ConfigurationData.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,47 +19,33 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
-
-import java.util.Date;
+package org.liquidsite.core.data;
 
 /**
- * A lock data object. This object encapsulates a row of data from
- * the LS_LOCK table.
+ * A configuration data object. This object encapsulates a row of
+ * data from the LS_CONFIGURATION table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class LockData extends AbstractData {
+public class ConfigurationData extends AbstractData {
 
     /**
-     * The domain parameter.
+     * The name parameter.
      */
-    public static final Parameter DOMAIN =
-        new StringParameter(LockData.class, "DOMAIN", "");
+    public static final Parameter NAME =
+        new StringParameter(ConfigurationData.class, "NAME", "");
 
     /**
-     * The content parameter.
+     * The value parameter.
      */
-    public static final Parameter CONTENT =
-        new IntegerParameter(LockData.class, "CONTENT", 0);
+    public static final Parameter VALUE =
+        new StringParameter(ConfigurationData.class, "VALUE", "");
 
     /**
-     * The user parameter.
+     * Creates a new configuration data object with default values.
      */
-    public static final Parameter USER =
-        new StringParameter(LockData.class, "USER", "");
-
-    /**
-     * The acquired parameter.
-     */
-    public static final Parameter ACQUIRED =
-        new DateParameter(LockData.class, "ACQUIRED", new Date(0));
-
-    /**
-     * Creates a new lock data object with default values.
-     */
-    public LockData() {
-        super();
+    public ConfigurationData() {
+        // No further initialization needed
     }
 }

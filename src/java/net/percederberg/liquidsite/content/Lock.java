@@ -23,11 +23,10 @@ package net.percederberg.liquidsite.content;
 
 import java.util.Date;
 
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-import net.percederberg.liquidsite.dbo.LockData;
-import net.percederberg.liquidsite.dbo.LockPeer;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.LockData;
+import org.liquidsite.core.data.LockPeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -63,16 +62,16 @@ public class Lock extends PersistentObject {
     static Lock findByContent(ContentManager manager, Content content)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        LockData            data;
+        DataSource  src = getDataSource(manager);
+        LockData    data;
 
         try {
-            data = LockPeer.doSelectByContent(content.getId(), con);
-        } catch (DatabaseObjectException e) {
+            data = LockPeer.doSelectByContent(src, content.getId());
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         if (data == null) {
             return null;
@@ -264,15 +263,15 @@ public class Lock extends PersistentObject {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
+    protected void doInsert(DataSource src,
+                            User user,
                             boolean restore)
         throws ContentException {
 
@@ -281,8 +280,8 @@ public class Lock extends PersistentObject {
             data.setDate(LockData.ACQUIRED, new Date());
         }
         try {
-            LockPeer.doInsert(data, con);
-        } catch (DatabaseObjectException e) {
+            LockPeer.doInsert(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -291,13 +290,13 @@ public class Lock extends PersistentObject {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
         throw new ContentException("content locks cannot be updated");
@@ -306,18 +305,18 @@ public class Lock extends PersistentObject {
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         try {
-            LockPeer.doDelete(data, con);
-        } catch (DatabaseObjectException e) {
+            LockPeer.doDelete(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }

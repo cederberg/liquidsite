@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.percederberg.liquidsite.Configuration;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-import net.percederberg.liquidsite.dbo.DomainData;
-import net.percederberg.liquidsite.dbo.DomainPeer;
 
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.DomainData;
+import org.liquidsite.core.data.DomainPeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -70,21 +70,21 @@ public class Domain extends PersistentObject implements Comparable {
     static Domain[] findAll(ContentManager manager)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Domain[]            res;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
+        Domain[]    res;
 
         try {
-            list = DomainPeer.doSelectAll(con);
+            list = DomainPeer.doSelectAll(src);
             res = new Domain[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new Domain(manager, (DomainData) list.get(i));
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         return res;
     }
@@ -104,16 +104,16 @@ public class Domain extends PersistentObject implements Comparable {
     static Domain findByName(ContentManager manager, String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        DomainData          data;
+        DataSource  src = getDataSource(manager);
+        DomainData  data;
 
         try {
-            data = DomainPeer.doSelectByName(name, con);
-        } catch (DatabaseObjectException e) {
+            data = DomainPeer.doSelectByName(src, name);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         if (data == null) {
             return null;
@@ -372,22 +372,20 @@ public class Domain extends PersistentObject implements Comparable {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
-                            boolean restore)
+    protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
         data.setString(DomainData.OPTIONS, encodeMap(options));
         try {
-            DomainPeer.doInsert(data, con);
-        } catch (DatabaseObjectException e) {
+            DomainPeer.doInsert(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -396,19 +394,19 @@ public class Domain extends PersistentObject implements Comparable {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
         data.setString(DomainData.OPTIONS, encodeMap(options));
         try {
-            DomainPeer.doUpdate(data, con);
-        } catch (DatabaseObjectException e) {
+            DomainPeer.doUpdate(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -417,18 +415,18 @@ public class Domain extends PersistentObject implements Comparable {
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         try {
-            DomainPeer.doDelete(data, con);
-        } catch (DatabaseObjectException e) {
+            DomainPeer.doDelete(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }

@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -41,58 +40,57 @@ public class ConfigurationPeer extends AbstractPeer {
     private static final ConfigurationPeer PEER = new ConfigurationPeer();
 
     /**
-     * Returns a list of all configuration data object in the
-     * database.
+     * Returns a list of all configuration data object in the data
+     * source.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @return a list of all configuration data objects
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectAll(DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectAll(DataSource src)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("config.select.all");
 
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
-     * Inserts a new configuration data object into the database.
+     * Inserts a new configuration data object into the data source.
      *
+     * @param src            the data source to use
      * @param data           the configuration data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(ConfigurationData data,
-                                DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, ConfigurationData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("config.insert");
 
         query.addParameter(data.getString(ConfigurationData.NAME));
         query.addParameter(data.getString(ConfigurationData.VALUE));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Deletes all configuration data objects from the database.
+     * Deletes all configuration data objects from the data source.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteAll(DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteAll(DataSource src)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("config.delete.all");
 
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**

@@ -19,15 +19,11 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
-import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseQuery;
-import org.liquidsite.util.db.DatabaseResults;
-import org.liquidsite.util.log.Log;
 
 /**
  * A content database peer. This class contains static methods that
@@ -37,11 +33,6 @@ import org.liquidsite.util.log.Log;
  * @version  1.0
  */
 public class ContentPeer extends AbstractPeer {
-
-    /**
-     * The class logger.
-     */
-    private static final Log LOG = new Log(ContentPeer.class);
 
     /**
      * The content peer instance.
@@ -66,76 +57,64 @@ public class ContentPeer extends AbstractPeer {
      * Returns the number of content objects matching the specified
      * query.
      *
+     * @param src            the data source to use
      * @param query          the content query to use
-     * @param con            the database connection to use
      *
      * @return the number of matching content objects
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static int doCountByQuery(ContentQuery query,
-                                     DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static int doCountByQuery(DataSource src, ContentQuery query)
+        throws DataObjectException {
 
-        DatabaseResults  res;
-
-        res = PEER.execute("counting content",
-                           query.createCountQuery(),
-                           con);
-        try {
-            return res.getRow(0).getInt(0);
-        } catch (DatabaseDataException e) {
-            LOG.error(e.getMessage());
-            throw new DatabaseObjectException(e);
-        }
+        return (int) PEER.count(src, query.createCountQuery());
     }
 
     /**
      * Returns a list of all content object revisions with the
      * specified id.
      *
+     * @param src            the data source to use
      * @param id             the content id
-     * @param con            the database connection to use
      *
      * @return the list of content objects found
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectById(int id,
-                                         DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectById(DataSource src, int id)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.select.id");
 
         query.addParameter(id);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns the content object with the specified id and revision.
      *
+     * @param src            the data source to use
      * @param id             the content id
      * @param revision       the content revision
-     * @param con            the database connection to use
      *
      * @return the content found, or
      *         null if no matching content existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ContentData doSelectByRevision(int id,
-                                                 int revision,
-                                                 DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ContentData doSelectByRevision(DataSource src,
+                                                 int id,
+                                                 int revision)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.select.revision");
 
         query.addParameter(id);
         query.addParameter(revision);
-        return (ContentData) PEER.select(query, con);
+        return (ContentData) PEER.select(src, query);
     }
 
     /**
@@ -143,33 +122,33 @@ public class ContentPeer extends AbstractPeer {
      * revision. A flag can be set to regard the revision number zero
      * (0) as the highest one.
      *
+     * @param src            the data source to use
      * @param id             the content id
      * @param maxIsZero      the revision zero is max flag
-     * @param con            the database connection to use
      *
      * @return the content found, or
      *         null if no matching content existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ContentData doSelectByMaxRevision(int id,
-                                                    boolean maxIsZero,
-                                                    DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ContentData doSelectByMaxRevision(DataSource src,
+                                                    int id,
+                                                    boolean maxIsZero)
+        throws DataObjectException {
 
         DatabaseQuery  query;
         ContentData    data;
 
         if (maxIsZero) {
-            data = doSelectByRevision(id, 0, con);
+            data = doSelectByRevision(src, id, 0);
             if (data != null) {
                 return data;
             }
         }
         query = new DatabaseQuery("content.select.id");
         query.addParameter(id);
-        return (ContentData) PEER.select(query, con);
+        return (ContentData) PEER.select(src, query);
     }
 
     /**
@@ -180,24 +159,24 @@ public class ContentPeer extends AbstractPeer {
      * is returned. A flag can be set to regard the revision number
      * zero (0) as the highest one.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param parent         the parent content id
      * @param name           the content name
      * @param maxIsZero      the revision zero is max flag
-     * @param con            the database connection to use
      *
      * @return the content found, or
      *         null if no matching content existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ContentData doSelectByName(String domain,
+    public static ContentData doSelectByName(DataSource src,
+                                             String domain,
                                              int parent,
                                              String name,
-                                             boolean maxIsZero,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
+                                             boolean maxIsZero)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.select.name");
 
@@ -209,47 +188,47 @@ public class ContentPeer extends AbstractPeer {
         } else {
             query.addParameter(PUBLISHED_STATUS);
         }
-        return (ContentData) PEER.select(query, con);
+        return (ContentData) PEER.select(src, query);
     }
 
     /**
      * Returns a list of content objects matching the specified query.
      *
+     * @param src            the data source to use
      * @param query          the content query to use
-     * @param con            the database connection to use
      *
      * @return a list of all matching content objects
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByQuery(ContentQuery query,
-                                            DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectByQuery(DataSource src,
+                                            ContentQuery query)
+        throws DataObjectException {
 
-        return PEER.selectList(query.createSelectQuery(), con);
+        return PEER.selectList(src, query.createSelectQuery());
     }
 
     /**
-     * Inserts a new content object into the database. This method
+     * Inserts a new content object into the data source. This method
      * will assign a new content id if it is set to zero (0).
      *
+     * @param src            the data source to use
      * @param data           the content data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      *
      * @see #doStatusUpdate
      */
-    public static synchronized void doInsert(ContentData data,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static synchronized void doInsert(DataSource src,
+                                             ContentData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.insert");
 
         if (data.getInt(ContentData.ID) <= 0) {
-            data.setInt(ContentData.ID, getNewId(con));
+            data.setInt(ContentData.ID, getNewId(src));
         }
         query.addParameter(data.getString(ContentData.DOMAIN));
         query.addParameter(data.getInt(ContentData.ID));
@@ -262,22 +241,22 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(data.getDate(ContentData.MODIFIED));
         query.addParameter(data.getString(ContentData.AUTHOR));
         query.addParameter(data.getString(ContentData.COMMENT));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Updates a content object in the database.
+     * Updates a content object in the data source.
      *
+     * @param src            the data source to use
      * @param data           the content data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      *
      * @see #doStatusUpdate
      */
-    public static void doUpdate(ContentData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doUpdate(DataSource src, ContentData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.update");
 
@@ -290,130 +269,120 @@ public class ContentPeer extends AbstractPeer {
         query.addParameter(data.getString(ContentData.COMMENT));
         query.addParameter(data.getInt(ContentData.ID));
         query.addParameter(data.getInt(ContentData.REVISION));
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
-     * Deletes a content object from the database. This method will
-     * delete all revisions, as well as related attributes,
+     * Deletes a content object from the data source. This method
+     * will delete all revisions, as well as related attributes,
      * permissions and locks. Note, however, that it will NOT delete
      * referenced child objects.
      *
+     * @param src            the data source to use
      * @param data           the content data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(ContentData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, ContentData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete");
         String         domain = data.getString(ContentData.DOMAIN);
         int            id = data.getInt(ContentData.ID);
 
         query.addParameter(id);
-        PEER.delete(query, con);
-        AttributePeer.doDeleteContent(id, con);
-        PermissionPeer.doDelete(domain, id, con);
-        LockPeer.doDeleteContent(id, con);
+        PEER.delete(src, query);
+        AttributePeer.doDeleteContent(src, id);
+        PermissionPeer.doDelete(src, domain, id);
+        LockPeer.doDeleteContent(src, id);
     }
 
     /**
-     * Deletes all content objects in a domain from the database.
+     * Deletes all content objects in a domain from the data source.
      * This method also deletes all attributes, permissions and locks
      * in the domain.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
-        AttributePeer.doDeleteDomain(domain, con);
-        PermissionPeer.doDeleteDomain(domain, con);
-        LockPeer.doDeleteDomain(domain, con);
+        PEER.delete(src, query);
+        AttributePeer.doDeleteDomain(src, domain);
+        PermissionPeer.doDeleteDomain(src, domain);
+        LockPeer.doDeleteDomain(src, domain);
     }
 
     /**
-     * Deletes a content object revision from the database. This
+     * Deletes a content object revision from the data source. This
      * method also deletes all related attributes.
      *
+     * @param src            the data source to use
      * @param id             the content identifier
      * @param revision       the content revision
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      *
      * @see #doStatusUpdate
      */
-    public static void doDeleteRevision(int id,
-                                        int revision,
-                                        DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteRevision(DataSource src,
+                                        int id,
+                                        int revision)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.delete.revision");
 
         query.addParameter(id);
         query.addParameter(revision);
-        PEER.delete(query, con);
-        AttributePeer.doDeleteRevision(id, revision, con);
+        PEER.delete(src, query);
+        AttributePeer.doDeleteRevision(src, id, revision);
     }
 
     /**
-     * Updates the status flags for all content object revisions. This
-     * method will read the database to extract the latest revisions,
-     * clear any previous status flags, and then set the new flags.
-     * This method also updates the status flags in related
-     * attributes. When finished inserting, updating or deleting in
-     * the content and attribute tables, this method should always be
-     * called.
+     * Updates the status flags for all content object revisions.
+     * This method will read the data source to extract the latest
+     * revisions, clear any previous status flags, and then set the
+     * new flags. This method also updates the status flags in
+     * related attributes. When finished inserting, updating or
+     * deleting in the content and attribute tables, this method
+     * should always be called.
      *
+     * @param src            the data source to use
      * @param id             the content identifier
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doStatusUpdate(int id,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doStatusUpdate(DataSource src, int id)
+        throws DataObjectException {
 
-        DatabaseQuery    query;
-        DatabaseResults  res;
-        int              min;
-        int              max;
+        DatabaseQuery  query;
+        int            min;
+        int            max;
 
-        query = new DatabaseQuery("content.select.revision.minmax");
+        query = new DatabaseQuery("content.select.revision.min");
         query.addParameter(id);
-        res = PEER.execute("finding min & max content revision", query, con);
-        if (res.getRowCount() > 0) {
-            try {
-                min = res.getRow(0).getInt(0);
-                max = res.getRow(0).getInt(1);
-            } catch (DatabaseDataException e) {
-                LOG.error(e.getMessage());
-                throw new DatabaseObjectException(e);
-            }
-        } else {
-            throw new DatabaseObjectException("no content identifier " + id);
-        }
-        doStatusClear(id, con);
+        min = (int) PEER.count(src, query);
+        query = new DatabaseQuery("content.select.revision.max");
+        query.addParameter(id);
+        max = (int) PEER.count(src, query);
+        doStatusClear(src, id);
         if (max > 0) {
-            doStatusSet(id, max, PUBLISHED_STATUS, con);
+            doStatusSet(src, id, max, PUBLISHED_STATUS);
         }
         if (min > 0) {
-            doStatusSet(id, max, LATEST_STATUS, con);
+            doStatusSet(src, id, max, LATEST_STATUS);
         } else {
-            doStatusSet(id, min, LATEST_STATUS, con);
+            doStatusSet(src, id, min, LATEST_STATUS);
         }
     }
 
@@ -421,19 +390,19 @@ public class ContentPeer extends AbstractPeer {
      * Clears the status flags for all content object revisions. This
      * method also clears the status flags in related attributes.
      *
+     * @param src            the data source to use
      * @param id             the content identifier
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    private static void doStatusClear(int id, DatabaseConnection con)
-        throws DatabaseObjectException {
+    private static void doStatusClear(DataSource src, int id)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.status.clear");
 
         query.addParameter(id);
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
@@ -442,57 +411,46 @@ public class ContentPeer extends AbstractPeer {
      * other bit flag (logical OR). This method also sets the same bit
      * in related attributes.
      *
+     * @param src            the data source to use
      * @param id             the content identifier
      * @param revision       the content revision
      * @param flag           the bit flag to set
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    private static void doStatusSet(int id,
+    private static void doStatusSet(DataSource src,
+                                    int id,
                                     int revision,
-                                    int flag,
-                                    DatabaseConnection con)
-        throws DatabaseObjectException {
+                                    int flag)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("content.status.set");
 
         query.addParameter(flag);
         query.addParameter(id);
         query.addParameter(revision);
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
      * Returns a new unique content identifier. This method will
-     * search the database for the maximum content identifier
+     * search the data source for the maximum content identifier
      * currently used and add one to it.
      *
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @return the new unique content identifier
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    private static int getNewId(DatabaseConnection con)
-        throws DatabaseObjectException {
+    private static int getNewId(DataSource src)
+        throws DataObjectException {
 
-        DatabaseQuery    query = new DatabaseQuery("content.select.id.max");
-        DatabaseResults  res;
-        int              id = 0;
+        DatabaseQuery  query = new DatabaseQuery("content.select.id.max");
 
-        res = PEER.execute("finding max content id", query, con);
-        if (res.getRowCount() > 0) {
-            try {
-                id = res.getRow(0).getInt(0);
-            } catch (DatabaseDataException e) {
-                LOG.error(e.getMessage());
-                throw new DatabaseObjectException(e);
-            }
-        }
-        return id + 1;
+        return (int) PEER.count(src, query) + 1;
     }
 
     /**

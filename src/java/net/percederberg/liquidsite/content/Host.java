@@ -24,11 +24,10 @@ package net.percederberg.liquidsite.content;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-import net.percederberg.liquidsite.dbo.HostData;
-import net.percederberg.liquidsite.dbo.HostPeer;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.HostData;
+import org.liquidsite.core.data.HostPeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -66,21 +65,21 @@ public class Host extends PersistentObject {
      *             properly
      */
     static Host[] findAll(ContentManager manager) throws ContentException {
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Host[]              res;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
+        Host[]      res;
 
         try {
-            list = HostPeer.doSelectAll(con);
+            list = HostPeer.doSelectAll(src);
             res = new Host[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new Host(manager, (HostData) list.get(i));
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         return res;
     }
@@ -99,21 +98,21 @@ public class Host extends PersistentObject {
     static Host[] findByDomain(ContentManager manager, Domain domain)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
-        Host[]              res;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
+        Host[]      res;
 
         try {
-            list = HostPeer.doSelectByDomain(domain.getName(), con);
+            list = HostPeer.doSelectByDomain(src, domain.getName());
             res = new Host[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 res[i] = new Host(manager, (HostData) list.get(i));
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         return res;
     }
@@ -133,16 +132,16 @@ public class Host extends PersistentObject {
     static Host findByName(ContentManager manager, String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        HostData            data;
+        DataSource  src = getDataSource(manager);
+        HostData    data;
 
         try {
-            data = HostPeer.doSelectByName(name, con);
-        } catch (DatabaseObjectException e) {
+            data = HostPeer.doSelectByName(src, name);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
         if (data == null) {
             return null;
@@ -278,22 +277,20 @@ public class Host extends PersistentObject {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
-                            boolean restore)
+    protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
         data.setString(HostData.OPTIONS, encodeMap(options));
         try {
-            HostPeer.doInsert(data, con);
-        } catch (DatabaseObjectException e) {
+            HostPeer.doInsert(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -302,19 +299,19 @@ public class Host extends PersistentObject {
     /**
      * Updates the object data in the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doUpdate(User user, DatabaseConnection con)
+    protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
         data.setString(HostData.OPTIONS, encodeMap(options));
         try {
-            HostPeer.doUpdate(data, con);
-        } catch (DatabaseObjectException e) {
+            HostPeer.doUpdate(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }
@@ -323,18 +320,18 @@ public class Host extends PersistentObject {
     /**
      * Deletes the object data from the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doDelete(User user, DatabaseConnection con)
+    protected void doDelete(DataSource src, User user)
         throws ContentException {
 
         try {
-            HostPeer.doDelete(data, con);
-        } catch (DatabaseObjectException e) {
+            HostPeer.doDelete(src, data);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         }

@@ -19,9 +19,8 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -41,36 +40,35 @@ public class LockPeer extends AbstractPeer {
     /**
      * Returns the lock object with the specified content id.
      *
+     * @param src            the data source to use
      * @param content        the content id
-     * @param con            the database connection to use
      *
      * @return the lock found, or
      *         null if no matching lock existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static LockData doSelectByContent(int content,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static LockData doSelectByContent(DataSource src, int content)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("lock.select.content");
 
         query.addParameter(content);
-        return (LockData) PEER.select(query, con);
+        return (LockData) PEER.select(src, query);
     }
 
     /**
-     * Inserts a new lock object into the database.
+     * Inserts a new lock object into the data source.
      *
+     * @param src            the data source to use
      * @param data           the lock data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(LockData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, LockData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("lock.insert");
 
@@ -78,61 +76,59 @@ public class LockPeer extends AbstractPeer {
         query.addParameter(data.getInt(LockData.CONTENT));
         query.addParameter(data.getString(LockData.USER));
         query.addParameter(data.getDate(LockData.ACQUIRED));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Deletes a lock object from the database.
+     * Deletes a lock object from the data source.
      *
+     * @param src            the data source to use
      * @param data           the lock data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDelete(LockData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, LockData data)
+        throws DataObjectException {
 
-        doDeleteContent(data.getInt(LockData.CONTENT), con);
+        doDeleteContent(src, data.getInt(LockData.CONTENT));
     }
 
     /**
-     * Deletes a lock object from the database.
+     * Deletes a lock object from the data source.
      *
+     * @param src            the data source to use
      * @param content        the content object id
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteContent(int content,
-                                       DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteContent(DataSource src, int content)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("lock.delete");
 
         query.addParameter(content);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**
      * Deletes all lock objects in a specified domain from the
-     * database.
+     * data source.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("lock.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
+        PEER.delete(src, query);
     }
 
     /**

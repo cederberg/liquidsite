@@ -19,11 +19,10 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 import java.util.ArrayList;
 
-import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseQuery;
 
 /**
@@ -44,19 +43,19 @@ public class GroupPeer extends AbstractPeer {
      * Returns a list of matching groups in a specified domain. Only
      * groups with matching names will be returned.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param filter         the search filter (empty for all)
-     * @param con            the database connection to use
      *
      * @return a list of matching groups in the domain
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static ArrayList doSelectByDomain(String domain,
-                                             String filter,
-                                             DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static ArrayList doSelectByDomain(DataSource src,
+                                             String domain,
+                                             String filter)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.select.domain");
         String         filterSql = "%" + filter + "%";
@@ -64,45 +63,45 @@ public class GroupPeer extends AbstractPeer {
         query.addParameter(domain);
         query.addParameter(filterSql);
         query.addParameter(filterSql);
-        return PEER.selectList(query, con);
+        return PEER.selectList(src, query);
     }
 
     /**
      * Returns a group with a specified name.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
      * @param name           the group name
-     * @param con            the database connection to use
      *
      * @return the group found, or
      *         null if no matching group existed
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static GroupData doSelectByName(String domain,
-                                           String name,
-                                           DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static GroupData doSelectByName(DataSource src,
+                                           String domain,
+                                           String name)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.select.name");
 
         query.addParameter(domain);
         query.addParameter(name);
-        return (GroupData) PEER.select(query, con);
+        return (GroupData) PEER.select(src, query);
     }
 
     /**
-     * Inserts a new group into the database.
+     * Inserts a new group into the data source.
      *
+     * @param src            the data source to use
      * @param data           the group data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doInsert(GroupData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doInsert(DataSource src, GroupData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.insert");
 
@@ -110,20 +109,20 @@ public class GroupPeer extends AbstractPeer {
         query.addParameter(data.getString(GroupData.NAME));
         query.addParameter(data.getString(GroupData.DESCRIPTION));
         query.addParameter(data.getString(GroupData.COMMENT));
-        PEER.insert(query, con);
+        PEER.insert(src, query);
     }
 
     /**
-     * Updates a group in the database.
+     * Updates a group in the data source.
      *
+     * @param src            the data source to use
      * @param data           the group data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doUpdate(GroupData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doUpdate(DataSource src, GroupData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.update");
 
@@ -131,21 +130,21 @@ public class GroupPeer extends AbstractPeer {
         query.addParameter(data.getString(GroupData.COMMENT));
         query.addParameter(data.getString(GroupData.DOMAIN));
         query.addParameter(data.getString(GroupData.NAME));
-        PEER.update(query, con);
+        PEER.update(src, query);
     }
 
     /**
-     * Deletes a group from the database. This method also deletes
+     * Deletes a group from the data source. This method also deletes
      * all related user group and permission entries.
      *
+     * @param src            the data source to use
      * @param data           the group data object
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be accessed
-     *             properly
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
      */
-    public static void doDelete(GroupData data, DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDelete(DataSource src, GroupData data)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.delete");
         String         domain = data.getString(GroupData.DOMAIN);
@@ -153,30 +152,29 @@ public class GroupPeer extends AbstractPeer {
 
         query.addParameter(domain);
         query.addParameter(name);
-        PEER.delete(query, con);
-        UserGroupPeer.doDeleteGroup(domain, name, con);
-        PermissionPeer.doDeleteGroup(domain, name, con);
+        PEER.delete(src, query);
+        UserGroupPeer.doDeleteGroup(src, domain, name);
+        PermissionPeer.doDeleteGroup(src, domain, name);
     }
 
     /**
-     * Deletes all groups in a domain from the database. This method
-     * also deletes all user group entries in the domain.
+     * Deletes all groups in a domain from the data source. This
+     * method also deletes all user group entries in the domain.
      *
+     * @param src            the data source to use
      * @param domain         the domain name
-     * @param con            the database connection to use
      *
-     * @throws DatabaseObjectException if the database couldn't be
+     * @throws DataObjectException if the data source couldn't be
      *             accessed properly
      */
-    public static void doDeleteDomain(String domain,
-                                      DatabaseConnection con)
-        throws DatabaseObjectException {
+    public static void doDeleteDomain(DataSource src, String domain)
+        throws DataObjectException {
 
         DatabaseQuery  query = new DatabaseQuery("group.delete.domain");
 
         query.addParameter(domain);
-        PEER.delete(query, con);
-        UserGroupPeer.doDeleteDomain(domain, con);
+        PEER.delete(src, query);
+        UserGroupPeer.doDeleteDomain(src, domain);
     }
 
     /**

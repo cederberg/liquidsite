@@ -1,5 +1,5 @@
 /*
- * PreferenceData.java
+ * GroupData.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -19,45 +19,45 @@
  * Copyright (c) 2004 Per Cederberg. All rights reserved.
  */
 
-package net.percederberg.liquidsite.dbo;
+package org.liquidsite.core.data;
 
 /**
- * A preference data object. This object encapsulates a row of data
- * from the LS_PREFERENCE table.
+ * A group data object. This object encapsulates a row of data from
+ * the LS_GROUP table.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class PreferenceData extends AbstractData {
+public class GroupData extends AbstractData {
 
     /**
      * The domain parameter.
      */
     public static final Parameter DOMAIN =
-        new StringParameter(PreferenceData.class, "DOMAIN", "");
-
-    /**
-     * The user parameter.
-     */
-    public static final Parameter USER =
-        new StringParameter(PreferenceData.class, "USER", "");
+        new StringParameter(GroupData.class, "DOMAIN", "");
 
     /**
      * The name parameter.
      */
     public static final Parameter NAME =
-        new StringParameter(PreferenceData.class, "NAME", "");
+        new StringParameter(GroupData.class, "NAME", "");
 
     /**
-     * The value parameter.
+     * The description parameter.
      */
-    public static final Parameter VALUE =
-        new StringParameter(PreferenceData.class, "VALUE", "");
+    public static final Parameter DESCRIPTION =
+        new StringParameter(GroupData.class, "DESCRIPTION", "");
 
     /**
-     * Creates a new preference data object with default values.
+     * The comment parameter.
      */
-    public PreferenceData() {
+    public static final Parameter COMMENT =
+        new StringParameter(GroupData.class, "COMMENT", "");
+
+    /**
+     * Creates a new group data object with default values.
+     */
+    public GroupData() {
         // No further initialization needed
     }
 }

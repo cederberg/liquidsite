@@ -21,7 +21,7 @@
 
 package net.percederberg.liquidsite.content;
 
-import net.percederberg.liquidsite.dbo.PermissionData;
+import org.liquidsite.core.data.PermissionData;
 
 /**
  * A content object permission.

@@ -21,9 +21,8 @@
 
 package net.percederberg.liquidsite.content;
 
-import net.percederberg.liquidsite.dbo.ContentData;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.ContentData;
+import org.liquidsite.core.data.DataSource;
 
 /**
  * A discussion forum post.
@@ -86,17 +85,17 @@ public class ContentPost extends Content {
      *
      * @param manager        the content manager to use
      * @param data           the content data object
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentPost(ContentManager manager,
                           ContentData data,
-                          DatabaseConnection con)
+                          DataSource src)
         throws ContentException {
 
-        super(manager, data, con);
+        super(manager, data, src);
     }
 
     /**
@@ -200,24 +199,22 @@ public class ContentPost extends Content {
      * is set, no automatic changes should be made to the data before
      * writing to the database.
      *
+     * @param src            the data source to use
      * @param user           the user performing the operation
-     * @param con            the database connection to use
      * @param restore        the restore flag
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    protected void doInsert(User user,
-                            DatabaseConnection con,
-                            boolean restore)
+    protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
         ContentTopic  parent;
 
-        super.doInsert(user, con, restore);
+        super.doInsert(src, user, restore);
         if (!restore) {
             parent = (ContentTopic) getParent();
-            parent.doUpdate(user, con);
+            parent.doUpdate(src, user);
         }
     }
 

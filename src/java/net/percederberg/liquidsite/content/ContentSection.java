@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import net.percederberg.liquidsite.dbo.ContentData;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.ContentData;
+import org.liquidsite.core.data.DataSource;
 
 /**
  * A content section.
@@ -81,17 +80,17 @@ public class ContentSection extends Content {
      *
      * @param manager        the content manager to use
      * @param data           the content data object
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
     protected ContentSection(ContentManager manager,
                              ContentData data,
-                             DatabaseConnection con)
+                             DataSource src)
         throws ContentException {
 
-        super(manager, data, con);
+        super(manager, data, src);
     }
 
     /**

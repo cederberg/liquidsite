@@ -23,13 +23,12 @@ package net.percederberg.liquidsite.content;
 
 import java.util.ArrayList;
 
-import net.percederberg.liquidsite.dbo.AttributePeer;
-import net.percederberg.liquidsite.dbo.ContentData;
-import net.percederberg.liquidsite.dbo.ContentPeer;
-import net.percederberg.liquidsite.dbo.ContentQuery;
-import net.percederberg.liquidsite.dbo.DatabaseObjectException;
-
-import org.liquidsite.util.db.DatabaseConnection;
+import org.liquidsite.core.data.AttributePeer;
+import org.liquidsite.core.data.ContentData;
+import org.liquidsite.core.data.ContentPeer;
+import org.liquidsite.core.data.ContentQuery;
+import org.liquidsite.core.data.DataObjectException;
+import org.liquidsite.core.data.DataSource;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -63,15 +62,15 @@ class InternalContent {
     static long calculateDomainSize(ContentManager manager, Domain domain)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
+        DataSource  src = getDataSource(manager);
 
         try {
-            return AttributePeer.doCalculateDomainSize(domain.getName(), con);
-        } catch (DatabaseObjectException e) {
+            return AttributePeer.doCalculateDomainSize(src, domain.getName());
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -92,17 +91,17 @@ class InternalContent {
                                ContentSelector selector)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
+        DataSource    src = getDataSource(manager);
+        ContentQuery  query;
 
         try {
             query = selector.getContentQuery(manager);
-            return ContentPeer.doCountByQuery(query, con);
-        } catch (DatabaseObjectException e) {
+            return ContentPeer.doCountByQuery(src, query);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -121,17 +120,17 @@ class InternalContent {
     static Content[] findById(ContentManager manager, int id)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ArrayList           list;
+        DataSource  src = getDataSource(manager);
+        ArrayList   list;
 
         try {
-            list = ContentPeer.doSelectById(id, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
+            list = ContentPeer.doSelectById(src, id);
+            return createContent(manager, list, src);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -151,23 +150,23 @@ class InternalContent {
     static Content findByMaxRevision(ContentManager manager, int id)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentData         data;
+        DataSource   src = getDataSource(manager);
+        ContentData  data;
 
         try {
-            data = ContentPeer.doSelectByMaxRevision(id,
-                                                     manager.isAdmin(),
-                                                     con);
+            data = ContentPeer.doSelectByMaxRevision(src,
+                                                     id,
+                                                     manager.isAdmin());
             if (data != null) {
-                return createContent(manager, data, con);
+                return createContent(manager, data, src);
             } else {
                 return null;
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -190,21 +189,21 @@ class InternalContent {
                                   int revision)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentData         data;
+        DataSource   src = getDataSource(manager);
+        ContentData  data;
 
         try {
-            data = ContentPeer.doSelectByRevision(id, revision, con);
+            data = ContentPeer.doSelectByRevision(src, id, revision);
             if (data != null) {
-                return createContent(manager, data, con);
+                return createContent(manager, data, src);
             } else {
                 return null;
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -228,25 +227,25 @@ class InternalContent {
                               String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentData         data;
+        DataSource   src = getDataSource(manager);
+        ContentData  data;
 
         try {
-            data = ContentPeer.doSelectByName(domain.getName(),
+            data = ContentPeer.doSelectByName(src,
+                                              domain.getName(),
                                               0,
                                               name,
-                                              manager.isAdmin(),
-                                              con);
+                                              manager.isAdmin());
             if (data != null) {
-                return createContent(manager, data, con);
+                return createContent(manager, data, src);
             } else {
                 return null;
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -270,25 +269,25 @@ class InternalContent {
                               String name)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentData         data;
+        DataSource   src = getDataSource(manager);
+        ContentData  data;
 
         try {
-            data = ContentPeer.doSelectByName(parent.getDomainName(),
+            data = ContentPeer.doSelectByName(src,
+                                              parent.getDomainName(),
                                               parent.getId(),
                                               name,
-                                              manager.isAdmin(),
-                                              con);
+                                              manager.isAdmin());
             if (data != null) {
-                return createContent(manager, data, con);
+                return createContent(manager, data, src);
             } else {
                 return null;
             }
-        } catch (DatabaseObjectException e) {
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -407,19 +406,19 @@ class InternalContent {
                                     ContentSelector selector)
         throws ContentException {
 
-        DatabaseConnection  con = getDatabaseConnection(manager);
-        ContentQuery        query;
-        ArrayList           list;
+        DataSource    src = getDataSource(manager);
+        ContentQuery  query;
+        ArrayList     list;
 
         try {
             query = selector.getContentQuery(manager);
-            list = ContentPeer.doSelectByQuery(query, con);
-            return createContent(manager, list, con);
-        } catch (DatabaseObjectException e) {
+            list = ContentPeer.doSelectByQuery(src, query);
+            return createContent(manager, list, src);
+        } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
         } finally {
-            returnDatabaseConnection(manager, con);
+            src.close();
         }
     }
 
@@ -429,7 +428,7 @@ class InternalContent {
      *
      * @param manager        the content manager to use
      * @param list           the list of content object data
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @return the array of new content objects
      *
@@ -438,7 +437,7 @@ class InternalContent {
      */
     private static Content[] createContent(ContentManager manager,
                                            ArrayList list,
-                                           DatabaseConnection con)
+                                           DataSource src)
         throws ContentException {
 
         Content[]    res;
@@ -447,7 +446,7 @@ class InternalContent {
         res = new Content[list.size()];
         for (int i = 0; i < list.size(); i++) {
             data = (ContentData) list.get(i);
-            res[i] = createContent(manager, data, con);
+            res[i] = createContent(manager, data, src);
         }
         return res;
     }
@@ -458,7 +457,7 @@ class InternalContent {
      *
      * @param manager        the content manager to use
      * @param data           the content object data
-     * @param con            the database connection to use
+     * @param src            the data source to use
      *
      * @return the new content object
      *
@@ -467,32 +466,32 @@ class InternalContent {
      */
     private static Content createContent(ContentManager manager,
                                          ContentData data,
-                                         DatabaseConnection con)
+                                         DataSource src)
         throws ContentException {
 
         switch (data.getInt(ContentData.CATEGORY)) {
         case Content.SITE_CATEGORY:
-            return new ContentSite(manager, data, con);
+            return new ContentSite(manager, data, src);
         case Content.TRANSLATOR_CATEGORY:
-            return new ContentTranslator(manager, data,  con);
+            return new ContentTranslator(manager, data, src);
         case Content.FOLDER_CATEGORY:
-            return new ContentFolder(manager, data,  con);
+            return new ContentFolder(manager, data, src);
         case Content.PAGE_CATEGORY:
-            return new ContentPage(manager, data, con);
+            return new ContentPage(manager, data, src);
         case Content.FILE_CATEGORY:
-            return new ContentFile(manager, data, con);
+            return new ContentFile(manager, data, src);
         case Content.TEMPLATE_CATEGORY:
-            return new ContentTemplate(manager, data, con);
+            return new ContentTemplate(manager, data, src);
         case Content.SECTION_CATEGORY:
-            return new ContentSection(manager, data, con);
+            return new ContentSection(manager, data, src);
         case Content.DOCUMENT_CATEGORY:
-            return new ContentDocument(manager, data, con);
+            return new ContentDocument(manager, data, src);
         case Content.FORUM_CATEGORY:
-            return new ContentForum(manager, data, con);
+            return new ContentForum(manager, data, src);
         case Content.TOPIC_CATEGORY:
-            return new ContentTopic(manager, data, con);
+            return new ContentTopic(manager, data, src);
         case Content.POST_CATEGORY:
-            return new ContentPost(manager, data, con);
+            return new ContentPost(manager, data, src);
         default:
             throw new ContentException(
                 "content category " + data.getInt(ContentData.CATEGORY) +
@@ -501,30 +500,18 @@ class InternalContent {
     }
 
     /**
-     * Returns a database connection.
+     * Returns a data source with an open connection.
      *
      * @param manager        the content manager to use
      *
-     * @return a database connection
+     * @return a data source with an open connection
      *
      * @throws ContentException if no database connector is available
      *             or no database connection could be made
      */
-    static DatabaseConnection getDatabaseConnection(ContentManager manager)
+    static DataSource getDataSource(ContentManager manager)
         throws ContentException {
 
-        return PersistentObject.getDatabaseConnection(manager);
-    }
-
-    /**
-     * Disposes of a database connection.
-     *
-     * @param manager        the content manager to use
-     * @param con            the database connection
-     */
-    static void returnDatabaseConnection(ContentManager manager,
-                                         DatabaseConnection con) {
-
-        PersistentObject.returnDatabaseConnection(manager, con);
+        return PersistentObject.getDataSource(manager);
     }
 }

@@ -21,7 +21,7 @@
 
 package net.percederberg.liquidsite.content;
 
-import net.percederberg.liquidsite.dbo.ContentQuery;
+import org.liquidsite.core.data.ContentQuery;
 
 /**
  * A content selector. This class controls the selection of content
