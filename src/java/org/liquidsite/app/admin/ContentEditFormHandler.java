@@ -231,7 +231,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
             sectionValidator.validate(request);
             message = "Another object with identical name already " +
                       "exists in the parent section or domain";
-            handler.validateParent(request, "parent", message);
+            validateParent(request, "parent", message);
         } else if (category.equals("document")) {
             action = request.getParameter("action", "");
             if (action.equals("reload") || action.equals("filedelete")) {
@@ -242,7 +242,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
                 documentValidator.validate(request);
                 message = "Another object with identical name " +
                           "already exists in the parent section";
-                handler.validateParent(request, "section", message);
+                validateParent(request, "section", message);
             }
         } else if (category.equals("file")) {
             handler.validateFile(request);
@@ -251,7 +251,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
             forumValidator.validate(request);
             message = "Another object with identical name already " +
                       "exists in the parent section";
-            handler.validateParent(request, "section", message);
+            validateParent(request, "section", message);
         } else if (category.equals("topic")) {
             topicValidator.validate(request);
         } else if (category.equals("post")) {
@@ -740,31 +740,5 @@ public class ContentEditFormHandler extends AdminFormHandler {
 
         super.workflowExited(request);
         request.getSession().removeAllFiles();
-    }
-
-    /**
-     * Converts a file name to a valid file name. All space
-     * characters and non-ASCII letters will be converted to '_' or
-     * '-'.
-     *
-     * @param name           the file name to convert
-     *
-     * @return the converted file name
-     */
-    private String convertFileName(String name) {
-        StringBuffer  buffer = new StringBuffer();
-        char          c;
-
-        for (int i = 0; i < name.length(); i++) {
-            c = name.charAt(i);
-            if (c == ' ') {
-                buffer.append("_");
-            } else if (CONTENT_CHARS.indexOf(c) >= 0) {
-                buffer.append(c);
-            } else {
-                buffer.append("-");
-            }
-        }
-        return buffer.toString();
     }
 }

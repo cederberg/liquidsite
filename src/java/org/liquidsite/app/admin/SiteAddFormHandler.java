@@ -61,11 +61,6 @@ import org.liquidsite.core.web.Request.FileParameter;
 class SiteAddFormHandler extends AdminFormHandler {
 
     /**
-     * The permitted ZIP file entry name characters.
-     */
-    private static final String ZIPENTRY_CHARS = CONTENT_CHARS + "/";
-
-    /**
      * Creates a new site add request handler.
      */
     public SiteAddFormHandler() {
@@ -133,7 +128,6 @@ class SiteAddFormHandler extends AdminFormHandler {
 
         SiteEditFormHandler  edit = SiteEditFormHandler.getInstance();
         String               category = request.getParameter("category", "");
-        FileParameter        param;
         String               message;
 
         if (step == 1) {
@@ -143,25 +137,62 @@ class SiteAddFormHandler extends AdminFormHandler {
             }
         } else {
             if (category.equals("file")) {
-                param = request.getFileParameter("upload");
-                if (param == null || param.getSize() <= 0) {
-                    message = "No file upload specified";
-                    throw new FormValidationException("upload", message);
-                }
-                if (!request.getParameter("unpack", "").equals("true")) {
-                    edit.validateStep(request, step);
-                } else if (request.getParameter("comment", "").equals("")) {
-                    message = "No comment specified";
-                    throw new FormValidationException("comment", message);
-                } else if (!param.getName().endsWith(".zip")) {
-                    message = "Uploaded file must have .zip extension " +
-                              "to be unpacked";
-                    throw new FormValidationException("upload", message);
-                }
+                validateFile(request);
             } else {
                 edit.validateStep(request, step);
             }
         }
+    }
+
+    /**
+     * Validates a site file add form.
+     *
+     * @param request        the request object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the
+     *             required permissions
+     * @throws FormValidationException if the form request data
+     *             validation failed
+     */
+    private void validateFile(Request request)
+        throws ContentException, ContentSecurityException,
+               FormValidationException {
+
+        ContentManager  manager = AdminUtils.getContentManager();
+        FileParameter   param;
+        Content         content;
+        String          name;
+        String          message;
+
+        param = request.getFileParameter("upload");
+        if (param == null || param.getSize() <= 0) {
+            message = "No file upload specified";
+            throw new FormValidationException("upload", message);
+        }
+        if (request.getParameter("unpack", "").equals("true")) {
+            if (!param.getName().endsWith(".zip")) {
+                message = "Uploaded file must have .zip " +
+                          "extension to be unpacked";
+                throw new FormValidationException("upload", message);
+            }
+        } else {
+            name = request.getParameter("name");
+            if (name == null || name.equals("")) {
+                name = convertFileName(param.getName());
+            }
+            content = (Content) AdminUtils.getReference(request);
+            content = manager.getContentChild(request.getUser(),
+                                              content,
+                                              name);
+            if (content != null) {
+                message = "Another object with identical name " +
+                          "already exists in the parent folder";
+                throw new FormValidationException("name", message);
+            }
+        }
+        validateComment(request);
     }
 
     /**
@@ -379,14 +410,20 @@ class SiteAddFormHandler extends AdminFormHandler {
         ContentManager  manager = AdminUtils.getContentManager();
         FileParameter   param;
         ContentFile     file;
+        String          name;
 
         try {
             param = request.getFileParameter("upload");
             if (request.getParameter("unpack", "").equals("true")) {
                 handleAddZipFile(request, parent, param.write());
             } else {
-                file = new ContentFile(manager, parent, param.getName());
-                file.setName(request.getParameter("name"));
+                name = convertFileName(param.getName());
+                file = new ContentFile(manager, parent, name);
+                name = request.getParameter("name");
+                if (name == null || name.equals("")) {
+                    name = file.getFileName();
+                }
+                file.setName(name);
                 file.setComment(request.getParameter("comment"));
                 if (request.getParameter("action", "").equals("publish")) {
                     file.setRevisionNumber(1);
@@ -422,24 +459,10 @@ class SiteAddFormHandler extends AdminFormHandler {
         Enumeration  entries;
         boolean      publish;
         Content      content;
-        String       name;
-        String       message;
 
         try {
-            zip = new ZipFile(file);
-            entries = zip.entries();
-            while (entries.hasMoreElements()) {
-                entry = (ZipEntry) entries.nextElement();
-                name = entry.getName();
-                for (int i = 0; i < name.length(); i++) {
-                    if (ZIPENTRY_CHARS.indexOf(name.charAt(i)) < 0) {
-                        message = "invalid character in ZIP file entry '" +
-                                  name + "': '" + name.charAt(i) + "'";
-                        throw new ContentException(message);
-                    }
-                }
-            }
             publish = request.getParameter("action", "").equals("publish");
+            zip = new ZipFile(file);
             entries = zip.entries();
             while (entries.hasMoreElements()) {
                 entry = (ZipEntry) entries.nextElement();
@@ -566,6 +589,7 @@ class SiteAddFormHandler extends AdminFormHandler {
         ContentManager  manager = AdminUtils.getContentManager();
         Content         content;
         String          name;
+        String          fileName;
         int             pos;
 
         name = entry.getName();
@@ -577,12 +601,11 @@ class SiteAddFormHandler extends AdminFormHandler {
             if (pos == 0) {
                 name = name.substring(1);
             } else {
-                content = manager.getContentChild(user,
-                                                  parent,
-                                                  name.substring(0, pos));
+                fileName = convertFileName(name.substring(0, pos));
+                content = manager.getContentChild(user, parent, fileName);
                 if (content == null) {
                     content = new ContentFolder(manager, parent);
-                    content.setName(name.substring(0, pos));
+                    content.setName(fileName);
                     content.setComment(comment);
                     if (publish) {
                         content.setRevisionNumber(1);
@@ -594,6 +617,7 @@ class SiteAddFormHandler extends AdminFormHandler {
                 name = name.substring(pos + 1);
             }
         }
+        name = convertFileName(name);
         content = manager.getContentChild(user, parent, name);
         if (content == null) {
             if (entry.isDirectory()) {
