@@ -234,16 +234,45 @@ public class Configuration {
      * Reads the configuration. The configuration is read from both
      * file and database.
      * 
-     * @param database       the database connector to use
+     * @param db             the database connector to use
      * 
      * @throws ConfigurationException if the configuration couldn't 
      *             be read properly
      */
-    public void read(DatabaseConnector database) 
+    public void read(DatabaseConnector db) 
+        throws ConfigurationException {
+
+        DatabaseConnection  con;
+        String              message;
+
+        readFile();
+        try {
+            con = db.getConnection();
+        } catch (DatabaseConnectionException e) {
+            message = "couldn't read configuration database table"; 
+            throw new ConfigurationException(message, e);
+        }
+        try {
+            readDatabase(con);
+        } finally {
+            db.returnConnection(con);
+        }
+    }
+
+    /**
+     * Reads the configuration. The configuration is read from both
+     * file and database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws ConfigurationException if the configuration couldn't 
+     *             be read properly
+     */
+    public void read(DatabaseConnection con) 
         throws ConfigurationException {
 
         readFile();
-        readDatabase(database);
+        readDatabase(con);
     }
 
     /**
@@ -289,12 +318,12 @@ public class Configuration {
     /**
      * Reads the configuration database table.
      * 
-     * @param database       the database connector to use
+     * @param con            the database connection to use
      * 
      * @throws ConfigurationException if the database table couldn't 
      *             be read properly
      */
-    private void readDatabase(DatabaseConnector database) 
+    private void readDatabase(DatabaseConnection con) 
         throws ConfigurationException {
 
         DatabaseResults  res;
@@ -303,15 +332,12 @@ public class Configuration {
         String           message;
 
         try {
-            res = database.execute("config.select");
+            res = con.execute("config.select");
             for (int i = 0; i < res.getRowCount(); i++) {
                 name = res.getRow(i).getString("NAME");
                 value = res.getRow(i).getString("VALUE");
                 set(name, value);         
             }
-        } catch (DatabaseConnectionException e) {
-            message = "couldn't read configuration database table"; 
-            throw new ConfigurationException(message, e);
         } catch (DatabaseException e) {
             message = "couldn't read configuration database table"; 
             throw new ConfigurationException(message, e);
@@ -325,12 +351,12 @@ public class Configuration {
      * Writes the configuration. The configuration is written to both
      * file and database.
      * 
-     * @param database       the database connector to use
+     * @param db             the database connector to use
      * 
      * @throws ConfigurationException if the configuration couldn't 
      *             be written properly
      */
-    public void write(DatabaseConnector database) 
+    public void write(DatabaseConnector db) 
         throws ConfigurationException {
             
         DatabaseConnection  con;
@@ -338,19 +364,32 @@ public class Configuration {
 
         writeFile();
         try {
-            con = database.getConnection();
+            con = db.getConnection();
         } catch (DatabaseConnectionException e) {
             message = "couldn't write configuration database table"; 
             throw new ConfigurationException(message, e);
         }
         try {
             writeDatabase(con);
-        } catch (DatabaseException e) {
-            message = "couldn't write configuration database table"; 
-            throw new ConfigurationException(message, e);
         } finally {
-            database.returnConnection(con);
+            db.returnConnection(con);
         }
+    }
+
+    /**
+     * Writes the configuration. The configuration is written to both
+     * file and database.
+     * 
+     * @param con            the database connection to use
+     * 
+     * @throws ConfigurationException if the configuration couldn't 
+     *             be written properly
+     */
+    public void write(DatabaseConnection con) 
+        throws ConfigurationException {
+            
+        writeFile();
+        writeDatabase(con);
     }
 
     /**
@@ -401,24 +440,30 @@ public class Configuration {
      * 
      * @param con            the database connection to use
      * 
-     * @throws DatabaseException if the database table couldn't be 
-     *             written properly
+     * @throws ConfigurationException if the database table couldn't 
+     *             be written properly
      */
     private void writeDatabase(DatabaseConnection con) 
-        throws DatabaseException {
+        throws ConfigurationException {
 
-        Enumeration  e;
+        Enumeration  iter;
         ArrayList    params;
         String       name;
+        String       message;
 
-        con.execute("config.delete");
-        e = databaseProperties.propertyNames();
-        while (e.hasMoreElements()) {
-            name = (String) e.nextElement();
-            params = new ArrayList(2);
-            params.add(name);
-            params.add(get(name, ""));
-            con.execute("config.insert", params);
+        try {
+            con.execute("config.delete");
+            iter = databaseProperties.propertyNames();
+            while (iter.hasMoreElements()) {
+                name = (String) iter.nextElement();
+                params = new ArrayList(2);
+                params.add(name);
+                params.add(get(name, ""));
+                con.execute("config.insert", params);
+            }
+        } catch (DatabaseException e) {
+            message = "couldn't write configuration database table"; 
+            throw new ConfigurationException(message, e);
         }
     }
 }
