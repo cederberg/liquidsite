@@ -567,9 +567,17 @@ class AdminScript {
         if (perm == null) {
             buffer.append("null, null, false, false, false, false");
         } else {
-            buffer.append(getString(perm.getUserName()));
+            if (perm.getUserName().equals("")) {
+                buffer.append("null");
+            } else {
+                buffer.append(getString(perm.getUserName()));
+            }
             buffer.append(", ");
-            buffer.append(getString(perm.getGroupName()));
+            if (perm.getGroupName().equals("")) {
+                buffer.append("null");
+            } else {
+                buffer.append(getString(perm.getGroupName()));
+            }
             buffer.append(", ");
             buffer.append(perm.getRead());
             buffer.append(", ");
@@ -684,22 +692,25 @@ class AdminScript {
 
     /**
      * Returns the JavaScript representation of a string. This method
-     * will present empty strings as null. It will also take care of
-     * needed character escapes. 
+     * will take care of required character escapes. 
      * 
      * @param str            the string to present, or null
      * 
      * @return a JavaScript representation of the string
      */
-    private String getString(String str) {
+    public String getString(String str) {
         StringBuffer  buffer = new StringBuffer();
 
-        if (str == null || str.equals("")) {
+        if (str == null) {
             return "null";
         } else {
             buffer.append("'");
             for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) == '\'') {
+                if (str.charAt(i) == '\n') {
+                    buffer.append("\\n");
+                } else if (str.charAt(i) == '\r') {
+                    buffer.append("\\r");
+                } else if (str.charAt(i) == '\'') {
                     buffer.append("\\'");
                 } else {
                     buffer.append(str.charAt(i));
