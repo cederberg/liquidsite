@@ -212,7 +212,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         user.setEnabled(request.getParameter("enabled") != null);
-        if (request.getParameter("password") != null) {
+        if (!request.getParameter("password", "").equals("")) {
             user.setPassword(request.getParameter("password"));
         }
         user.setRealName(request.getParameter("realname", ""));
