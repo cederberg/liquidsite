@@ -29,11 +29,7 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.util.PropertyResourceBundle;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import net.percederberg.liquidsite.db.DatabaseConnection;
 import net.percederberg.liquidsite.db.DatabaseConnectionException;
 import net.percederberg.liquidsite.db.DatabaseDataException;
 import net.percederberg.liquidsite.db.DatabaseException;
@@ -482,14 +478,6 @@ public class InstallController implements Controller {
             // get list of users
             try {
                 users = getUserNames(host, rootUsername, rootPassword);
-                // TODO uncomment 
-//                  if (dbchoice.equals("select")) {
-//                      lsusers = getVectorLSUsers(dbsel, host, rootUsername, 
-//                                                 rootPassword);
-//                  } else {
-//                      lsusers = getVectorLSUsers(database, host, rootUsername, 
-//                                                 rootPassword);
-//                  }
             } catch (DatabaseConnectionException e) {
                 // could not open connection
                 error = true;
