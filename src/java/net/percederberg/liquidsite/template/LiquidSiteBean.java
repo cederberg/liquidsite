@@ -372,11 +372,10 @@ public class LiquidSiteBean {
             return null;
         } else if (parent instanceof Domain) {
             children = manager.getContentChildren(request.getUser(),
-                                                  (Domain) parent);
+                                                  (Domain) parent,
+                                                  Content.SECTION_CATEGORY);
             for (int i = 0; i < children.length; i++) {
-                if (children[i] instanceof ContentSection
-                 && children[i].getName().equals(name)) {
-
+                if (children[i].getName().equals(name)) {
                     return children[i];
                 }
             }

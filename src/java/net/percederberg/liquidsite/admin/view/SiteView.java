@@ -734,7 +734,9 @@ public class SiteView extends AdminView {
         HashMap         templateNames = new HashMap();
         Content[]       children;
     
-        children = manager.getContentChildren(user, domain);
+        children = manager.getContentChildren(user,
+                                              domain,
+                                              Content.TEMPLATE_CATEGORY);
         addTemplates(user, 
                      "", 
                      children, 
@@ -774,14 +776,14 @@ public class SiteView extends AdminView {
         String          name;
 
         for (int i = 0; i < content.length; i++) {
-            if (content[i] instanceof ContentTemplate 
-             && content[i].getId() != excludeId) {
-
+            if (content[i].getId() != excludeId) {
                 id = String.valueOf(content[i].getId());
                 name = baseName + content[i].getName();
                 ids.add(id);
                 names.put(id, name);
-                children = manager.getContentChildren(user, content[i]);
+                children = manager.getContentChildren(user,
+                                                      content[i],
+                                                      Content.TEMPLATE_CATEGORY);
                 addTemplates(user, 
                              name + " / ", 
                              children, 

@@ -171,7 +171,9 @@ public class AdminView {
         } else {
             return;
         }
-        children = manager.getContentChildren(user, parent);
+        children = manager.getContentChildren(user,
+                                              parent,
+                                              Content.FOLDER_CATEGORY);
         for (int i = 0; i < children.length; i++) {
             if (!children[i].equals(exclude)) {
                 findFolders(user, baseName, children[i], exclude, result);
@@ -233,14 +235,16 @@ public class AdminView {
         String          name;
 
         if (parent instanceof Domain) {
-            children = manager.getContentChildren(user, (Domain) parent);
+            children = manager.getContentChildren(user,
+                                                  (Domain) parent,
+                                                  Content.SECTION_CATEGORY);
         } else {
-            children = manager.getContentChildren(user, (Content) parent);
+            children = manager.getContentChildren(user,
+                                                  (Content) parent,
+                                                  Content.SECTION_CATEGORY);
         }
         for (int i = 0; i < children.length; i++) {
-            if (children[i] instanceof ContentSection
-             && !children[i].equals(exclude)) {
-
+            if (!children[i].equals(exclude)) {
                 values = new HashMap(2);
                 values.put("id", String.valueOf(children[i].getId()));
                 name = baseName + children[i].getName();

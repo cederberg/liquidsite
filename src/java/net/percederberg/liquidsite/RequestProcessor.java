@@ -184,15 +184,15 @@ public abstract class RequestProcessor {
         if (content != null) {
             return content;
         }
-        children = manager.getContentChildren(user, parent);
+        children = manager.getContentChildren(user,
+                                              parent,
+                                              Content.PAGE_CATEGORY);
         for (int i = 0; i < children.length; i++) {
-            if (children[i] instanceof ContentPage) {
-                content = locateDocument(request,
-                                         (ContentPage) children[i],
-                                         name);
-                if (content != null) {
-                    return content;
-                }
+            content = locateDocument(request,
+                                     (ContentPage) children[i],
+                                     name);
+            if (content != null) {
+                return content;
             }
         }
         return null;

@@ -388,6 +388,31 @@ public class ContentManager {
     }
 
     /**
+     * Returns the user readable domain root content objects in the
+     * specified category. Only the highest revision of each object
+     * will be returned.
+     *
+     * @param user           the user requesting the content
+     * @param domain         the domain
+     * @param category       the content category
+     *
+     * @return the user readable domain root content objects
+     * 
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content[] getContentChildren(User user,
+                                        Domain domain,
+                                        int category) 
+        throws ContentException {
+
+        Content[]  children;
+
+        children = InternalContent.findByCategory(this, domain, category);
+        return postProcess(user, children);
+    }
+
+    /**
      * Returns the user readable child content objects. Only the 
      * highest revision of each object will be returned.
      * 
@@ -404,6 +429,31 @@ public class ContentManager {
 
         Content[]  children = InternalContent.findByParent(this, parent);
 
+        return postProcess(user, children);                    
+    }
+
+    /**
+     * Returns the user readable child content objects in the
+     * specified category. Only the highest revision of each object
+     * will be returned.
+     *
+     * @param user           the user requesting the content
+     * @param parent         the content parent
+     * @param category       the content category
+     *
+     * @return the user readable child content objects
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content[] getContentChildren(User user,
+                                        Content parent,
+                                        int category) 
+        throws ContentException {
+
+        Content[]  children;
+
+        children = InternalContent.findByCategory(this, parent, category);
         return postProcess(user, children);                    
     }
 
