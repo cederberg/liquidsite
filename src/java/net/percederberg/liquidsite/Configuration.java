@@ -459,7 +459,7 @@ public class Configuration {
         String         message;
 
         try {
-            query = new DatabaseQuery("config.delete");
+            query = new DatabaseQuery("config.delete.all");
             con.execute(query);
             iter = databaseProperties.propertyNames();
             while (iter.hasMoreElements()) {
