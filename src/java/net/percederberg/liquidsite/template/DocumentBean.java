@@ -274,11 +274,13 @@ public class DocumentBean implements TemplateHashModel {
     private String processTaggedParagraph(String str) {
         StringBuffer  buffer = new StringBuffer();
         boolean       isBlock;
+        boolean       isList;
         char          c;
         int           pos;
 
         isBlock = startsWithBlockTag(str);
-        if (!isBlock) {
+        isList = str.startsWith("<list");
+        if (!isBlock && !isList) {
             buffer.append("<p>");
         }
         for (int i = 0; i < str.length(); i++) {
@@ -301,7 +303,11 @@ public class DocumentBean implements TemplateHashModel {
                 buffer.append("&amp;");
                 break;
             case '\n':
-                buffer.append("<br/>");
+                if (isList) {
+                    buffer.append("\n");
+                } else {
+                    buffer.append("<br/>\n");
+                }
                 break;
             case '\r':
                 // Discard
@@ -310,7 +316,7 @@ public class DocumentBean implements TemplateHashModel {
                 buffer.append(c);
             }
         }
-        if (!isBlock) {
+        if (!isBlock && !isList) {
             buffer.append("</p>");
         }
 
@@ -326,13 +332,7 @@ public class DocumentBean implements TemplateHashModel {
      * @return the HTML encoded result
      */
     private String processTag(String tag) {
-        if (tag.startsWith("<link=")) {
-            return "<a href=\"" + tag.substring(6, tag.length()) + "\">";
-        } else if (tag.equals("</link>")) {
-            return "</a>";
-        } else if (tag.startsWith("<image=")) {
-            return "<img src=\"" + tag.substring(7, tag.length()) + "\" />";
-        } else if (tag.equals("<p>") || tag.equals("</p>")) {
+        if (tag.equals("<p>") || tag.equals("</p>")) {
             return tag;
         } else if (tag.equals("<h1>") || tag.equals("</h1>")) {
             return tag;
@@ -344,6 +344,32 @@ public class DocumentBean implements TemplateHashModel {
             return tag;
         } else if (tag.equals("<i>") || tag.equals("</i>")) {
             return tag;
+        } else if (tag.startsWith("<link=")) {
+            return "<a href=\"" + tag.substring(6, tag.length() - 1) +
+                   "\">";
+        } else if (tag.equals("</link>")) {
+            return "</a>";
+        } else if (tag.startsWith("<image=")) {
+            return "<img src=\"" + tag.substring(7, tag.length() - 1) +
+                   "\" />";
+        } else if (tag.startsWith("<list")) {
+            if (tag.equals("<list=1>")) {
+                return "<ul style=\"list-style-type: decimal;\">";
+            } else if (tag.equals("<list=i>")) {
+                return "<ul style=\"list-style-type: lower-roman;\">";
+            } else if (tag.equals("<list=I>")) {
+                return "<ul style=\"list-style-type: upper-roman;\">";
+            } else if (tag.equals("<list=a>")) {
+                return "<ul style=\"list-style-type: lower-alpha;\">";
+            } else if (tag.equals("<list=A>")) {
+                return "<ul style=\"list-style-type: upper-alpha;\">";
+            } else {
+                return "<ul>";
+            }
+        } else if (tag.equals("</list>")) {
+            return "</ul>";
+        } else if (tag.equals("<item>")) {
+            return "<li>";
         } else {
             return "";
         }
