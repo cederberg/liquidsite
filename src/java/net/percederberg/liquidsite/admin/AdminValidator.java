@@ -90,6 +90,11 @@ public class AdminValidator {
     private FormValidator file = new FormValidator();
 
     /**
+     * The template form validator.
+     */
+    private FormValidator template = new FormValidator();
+
+    /**
      * The publish and unpublish form validator.
      */
     private FormValidator publish = new FormValidator();
@@ -168,6 +173,10 @@ public class AdminValidator {
         error = "File name contains invalid character";
         file.addCharacterConstraint("name", chars, error);
         file.addRequiredConstraint("comment", "No comment specified");
+
+        // Add and edit template validator
+        template.addRequiredConstraint("name", "No template name specified");
+        template.addRequiredConstraint("comment", "No comment specified");
 
         // Add publish validator
         publish.addRequiredConstraint("date", "No publish date specified");
@@ -259,6 +268,19 @@ public class AdminValidator {
         throws FormValidationException {
 
         file.validate(request);
+    }
+
+    /**
+     * Validates the parameters in an add and edit template request.
+     * 
+     * @param request        the add or edit template request
+     * 
+     * @throws FormValidationException if the form validation failed
+     */
+    public void validateTemplate(Request request) 
+        throws FormValidationException {
+
+        template.validate(request);
     }
 
     /**

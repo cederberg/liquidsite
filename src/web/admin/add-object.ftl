@@ -92,13 +92,28 @@
           </td>
         </tr>
 </#if>
+<#if enableTemplate?exists>
+        <tr>
+          <th style="width: 7em;">
+            <input type="radio" tabindex="5"
+                   name="category" value="template" />
+            Template
+          </th>
+          <td>
+            A web page template is used as a basis for creating web
+            pages. The template consists of page elements with HTML 
+            code. Each page element can be defined in the template 
+            or inherited from a parent template.
+          </td>
+        </tr>
+</#if>
         <tr>
           <td class="buttons" colspan="2">
-            <button type="button" tabindex="6" onclick="previous()">
+            <button type="button" tabindex="11" onclick="previous()">
               <img src="images/icons/24x24/left_arrow.png" />
               Previous
             </button>
-            <button tabindex="5" type="submit">
+            <button tabindex="10" type="submit">
               Next
               <img src="images/icons/24x24/right_arrow.png" />
             </button>

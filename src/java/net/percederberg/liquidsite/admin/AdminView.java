@@ -33,6 +33,7 @@ import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentManager;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.User;
@@ -215,32 +216,6 @@ class AdminView {
     }
 
     /**
-     * Shows the error message page.
-     * 
-     * @param request        the request object
-     * @param e              the content database error
-     */
-    public void pageError(Request request, ContentException e) {
-        // TODO: remove this method
-        pageError(request, 
-                  "Database access error, " + e.getMessage(), 
-                  "index.html");
-    }
-
-    /**
-     * Shows the error message page.
-     * 
-     * @param request        the request object
-     * @param e              the content security error
-     */
-    public void pageError(Request request, ContentSecurityException e) {
-        // TODO: remove this method
-        pageError(request, 
-                  "Security violation, " + e.getMessage(), 
-                  "index.html");
-    }
-
-    /**
      * Shows the home page.
      *
      * @param request        the request object
@@ -367,6 +342,7 @@ class AdminView {
             }
             if (domain.hasWriteAccess(user)) {
                 request.setAttribute("enableSite", true);
+                request.setAttribute("enableTemplate", true);
             }
         }
         if (parent instanceof ContentSite
@@ -376,6 +352,13 @@ class AdminView {
             if (content.hasWriteAccess(user)) {
                 request.setAttribute("enableFolder", true);
                 request.setAttribute("enableFile", true);
+            }
+        }
+        if (parent instanceof ContentTemplate) {
+            content = (Content) parent;
+            if (content.hasWriteAccess(user)) {
+                request.setAttribute("enableSite", true);
+                request.setAttribute("enableTemplate", true);
             }
         }
         request.sendTemplate("admin/add-object.ftl");
@@ -511,6 +494,37 @@ class AdminView {
         request.setAttribute("comment", 
                              request.getParameter("comment", comment));
         request.sendTemplate("admin/edit-folder.ftl");
+    }
+    
+    /**
+     * Shows the add or edit template page. Either the parent or the
+     * template object must be specified.
+     * 
+     * @param request        the request object
+     * @param parent         the parent object, or null
+     * @param template       the template object, or null
+     */
+    public void pageEditTemplate(Request request, 
+                                 Object parent, 
+                                 ContentTemplate template) {
+
+        String  name;
+        String  comment;
+
+        // TODO: forward local / previously sent parameters...
+        if (parent != null) {
+            setRequestReference(request, parent);
+            name = "";
+            comment = "Created";
+        } else {
+            setRequestReference(request, template);
+            name = template.getName();
+            comment = "";
+        }
+        request.setAttribute("name", request.getParameter("name", name));
+        request.setAttribute("comment", 
+                             request.getParameter("comment", comment));
+        request.sendTemplate("admin/edit-template.ftl");
     }
     
     /**

@@ -22,7 +22,10 @@
 package net.percederberg.liquidsite.admin;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
+import net.percederberg.liquidsite.Log;
 import net.percederberg.liquidsite.Request;
 import net.percederberg.liquidsite.Request.FileParameter;
 import net.percederberg.liquidsite.content.Content;
@@ -31,6 +34,7 @@ import net.percederberg.liquidsite.content.ContentFile;
 import net.percederberg.liquidsite.content.ContentFolder;
 import net.percederberg.liquidsite.content.ContentSecurityException;
 import net.percederberg.liquidsite.content.ContentSite;
+import net.percederberg.liquidsite.content.ContentTemplate;
 import net.percederberg.liquidsite.content.Domain;
 import net.percederberg.liquidsite.content.Host;
 import net.percederberg.liquidsite.content.User;
@@ -44,6 +48,11 @@ import net.percederberg.liquidsite.form.FormValidationException;
  * @version  1.0
  */
 class SiteAddFormHandler extends AdminFormHandler {
+
+    /**
+     * The class logger.
+     */
+    private static final Log LOG = new Log(SiteAddFormHandler.class);
 
     /**
      * Creates a new site add request handler.
@@ -80,6 +89,8 @@ class SiteAddFormHandler extends AdminFormHandler {
             SITE_VIEW.pageEditFolder(request, parent, null);
         } else if (category.equals("file")) {
             SITE_VIEW.pageEditFile(request, parent);
+        } else if (category.equals("template")) {
+            SITE_VIEW.pageEditTemplate(request, parent, null);
         } else {
             SITE_VIEW.pageAddObject(request, parent);
         }
@@ -125,6 +136,10 @@ class SiteAddFormHandler extends AdminFormHandler {
                     throw new FormValidationException("content", message);
                 }
             }
+        } else if (category.equals("template")) {
+            if (step == 2) {
+                VALIDATOR.validateTemplate(request);
+            }
         } else {
             message = "No content category specified";
             throw new FormValidationException("category", message);
@@ -169,6 +184,8 @@ class SiteAddFormHandler extends AdminFormHandler {
             handleAddFolder(request, (Content) parent);
         } else if (category.equals("file")) {
             handleAddFile(request, (Content) parent);
+        } else if (category.equals("template")) {
+            handleAddTemplate(request, parent);
         }
         return 0;
     }
@@ -284,4 +301,43 @@ class SiteAddFormHandler extends AdminFormHandler {
             throw new ContentException(e.getMessage());
         }
     }
+
+    /**
+     * Handles the add template form.
+     * 
+     * @param request        the request object
+     * @param parent         the parent domain or template object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     * @throws ContentSecurityException if the user didn't have the 
+     *             required permissions 
+     */
+    private void handleAddTemplate(Request request, Object parent) 
+        throws ContentException, ContentSecurityException {
+
+        ContentTemplate  template;
+        Map              params = request.getAllParameters();
+        Iterator         iter = params.keySet().iterator();
+        String           name;
+        String           value;
+        
+        if (parent instanceof Domain) {
+            template = new ContentTemplate((Domain) parent);
+        } else {
+            template = new ContentTemplate((ContentTemplate) parent);
+        }
+        template.setName(request.getParameter("name"));
+        template.setComment(request.getParameter("comment"));
+        while (iter.hasNext()) {
+            name = iter.next().toString();
+            if (name.startsWith("element.")) {
+                value = params.get(name).toString();
+                template.setElement(name.substring(8), value);
+            }
+        }
+        template.save(request.getUser());
+        SITE_VIEW.setSiteTreeFocus(request, template);
+    }
+
 }

@@ -201,10 +201,10 @@ public class AdminController extends Controller {
             view.pageSite(request);
         } catch (ContentException e) {
             LOG.error(e.getMessage());
-            view.pageError(request, e);
+            view.pageError(request, e.getMessage(), "site.html");
         } catch (ContentSecurityException e) {
             LOG.warning(e.getMessage());
-            view.pageError(request, e);
+            view.pageError(request, e.getMessage(), "site.html");
         }
     }
 
