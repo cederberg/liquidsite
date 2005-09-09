@@ -783,8 +783,12 @@ public class ContentManager {
             domain = getDomain(host.getDomainName());
         }
         sites = getSites(domain);
+        LOG.trace("evaluating " + sites.length + " sites");
         for (int i = 0; i < sites.length; i++) {
             match = sites[i].match(protocol, hostname, port, path);
+            LOG.trace("site " + sites[i] + " match value: " + match +
+                      ", online: " + sites[i].isOnline() +
+                      ", revision: " + sites[i].getRevisionNumber());
             if (sites[i].isOnline()
              && sites[i].getRevisionNumber() > 0
              && match > max) {
