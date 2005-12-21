@@ -58,9 +58,9 @@
     <xsl:text> for
 more information.
 
-Copyright (c) 2004 Per Cederberg. Permission is granted to copy this
-document verbatim in any medium, provided that this copyright notice
-is left intact.</xsl:text>
+Copyright (c) 2004-2006 Per Cederberg. Permission is granted to copy
+this document verbatim in any medium, provided that this copyright
+notice is left intact.</xsl:text>
     &newline;
   </xsl:template>
 

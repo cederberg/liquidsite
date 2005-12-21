@@ -128,7 +128,7 @@
       <hr/>
       &newline;&newline;&indent;&indent;
       <p class="footer">
-        <xsl:text disable-output-escaping="yes">Copyright &amp;copy; 2004 by</xsl:text>
+        <xsl:text disable-output-escaping="yes">Copyright &amp;copy; 2004-2006 by</xsl:text>
         &newline;&indent;&indent;
         <a href="http://www.percederberg.net/software/">Per Cederberg</a>
         <xsl:text>.</xsl:text>

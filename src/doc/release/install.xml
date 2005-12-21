@@ -16,19 +16,60 @@
       </item>
 
       <item>
-        <text>Apache Tomcat version 4.1 or later</text>
+        <text>Java servlet 2.3 compatible container (for example
+        Apache Tomcat 4.1 or later)</text>
       </item>
 
       <item>
-        <text>MySQL database</text>
+        <text>MySQL 4.0 database</text>
       </item>
     </list>
 
 
     <h1>Installation</h1>
 
-    <p></p>
+    <p>Liquid Site comes with a web-based installation program that
+    is automatically run when a configuration file cannot be found.
+    The installation program can create the database, users and
+    tables required. It can also update an old version of Liquid
+    Site. At the end of the installation, the full configuration is
+    stored to file so that subsequent startups will skip the
+    installation.</p>
 
+    <p>A number of things still must be done before starting the
+    Liquid Site installer:</p>
+
+    <list>
+      <item>
+        <text>Create a data directory that is writable by the
+        servlet container process (Tomcat). This directory is used
+        for storing file data that for performance is not in the
+        database.</text>
+      </item>
+
+      <item>
+        <text>Make sure that the WEB-INF directory is writable for
+        servlet container process (Tomcat). This directory is used
+        for storing the base Liquid Site configuration file.</text>
+      </item>
+
+      <item>
+        <text>If you are performing an update, please stop the
+        servlet container, clear the temporary work directory and
+        rename the old deploy directory. This will make sure that
+        the new version will not interfere with the old
+        installation.</text>
+      </item>
+
+      <item>
+        <text>Deploy the <code>liquidsite.war</code> file to the
+        servlet container. If you wish that all web requests to
+        the servlet container are handled in Liquid Site (normally
+        the case), you may have to rename the file to
+        <code>ROOT.war</code> or find some other way to deploy
+        Liquid Site as the root web application.</text>
+      </item>      
+    </list>
 
   </body>
 </doc>
