@@ -16,12 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
 
 import java.util.Date;
+
+import org.liquidsite.core.content.User;
 
 /**
  * A utility template bean. This class is used to provide utility data
@@ -46,5 +48,15 @@ public class UtilBean {
      */
     public Date getCurrentTime() {
         return new Date();
+    }
+
+    /**
+     * Returns a new random password. The generated password can be
+     * used for various types of authentication.
+     *
+     * @return the new random password
+     */
+    public String getRandomPassword() {
+        return User.generatePassword();
     }
 }
