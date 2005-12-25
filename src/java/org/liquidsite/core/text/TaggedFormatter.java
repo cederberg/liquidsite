@@ -100,6 +100,9 @@ public class TaggedFormatter {
                 result.append("\n");
                 pos = cleanList(text, newPos, result);
                 pos = cleanTagEnd(text, pos, "</list>", result);
+            } else if (tag.startsWith("<box")) {
+                pos = cleanInline(text, newPos, result);
+                pos = cleanTagEnd(text, pos, "</box>", result);
             } else {
                 result.setLength(backupLength);
                 pos = cleanInline(text, pos, result);
@@ -133,7 +136,9 @@ public class TaggedFormatter {
              || text.startsWith("\n<p", pos)
              || text.startsWith("\n<h", pos)
              || text.startsWith("\n<list", pos)
-             || text.startsWith("\n<item", pos)) {
+             || text.startsWith("\n</list", pos)
+             || text.startsWith("\n<item", pos)
+             || text.startsWith("\n<box", pos)) {
 
                 break;
             } else if (text.charAt(pos) == '<') {
@@ -289,7 +294,8 @@ public class TaggedFormatter {
          && !name.equals("h3") && !name.equals("p") 
          && !name.equals("b") && !name.equals("i")
          && !name.equals("link") && !name.equals("image")
-         && !name.equals("list") && !name.equals("item")) {
+         && !name.equals("list") && !name.equals("item")
+         && !name.equals("box")) {
 
             result.append("<");
             return start + 1;
@@ -314,7 +320,8 @@ public class TaggedFormatter {
         if (!isEnd) {
             if (name.equals("link")
              || name.equals("image")
-             || name.equals("list")) {
+             || name.equals("list")
+             || name.equals("box")) {
 
                 cleanTagAttributes(text, pos, end - 1, name, result);
             }
@@ -406,6 +413,13 @@ public class TaggedFormatter {
                 result.append(str);
             }
             result.append("\"");
+            str = (String) attributes.get("layout");
+            if (str != null) {
+                result.append(" layout=\"");
+                result.append(str);
+                result.append("\"");
+            }
+        } else if (tagName.equals("box")) {
             str = (String) attributes.get("layout");
             if (str != null) {
                 result.append(" layout=\"");
@@ -508,7 +522,8 @@ public class TaggedFormatter {
             pos = formatHtmlList(text, pos, context, result);
         } else if (text.startsWith("<h1>", pos)
                 || text.startsWith("<h2>", pos)
-                || text.startsWith("<h3>", pos)) {
+                || text.startsWith("<h3>", pos)
+                || text.startsWith("<box>", pos)) {
 
             pos = formatHtmlInline(text, pos, context, result);
         } else {
@@ -715,6 +730,18 @@ public class TaggedFormatter {
             result.append("<li>");
         } else if (name.equals("/item")) {
             result.append("</li>");
+        } else if (name.equals("box")) {
+            attributes = parseTagAttributes(text, pos, end - 1);
+            result.append("<p class=\"box\"");
+            str = (String) attributes.get("layout");
+            if (str != null && str.equals("right")) {
+                result.append(" style=\"float: right;\"");
+            } else if (str != null && str.equals("left")) {
+                result.append(" style=\"float: left;\"");
+            }
+            result.append(">");
+        } else if (name.equals("/box")) {
+            result.append("</p>");
         } else {
             result.append("&lt;");
             end = start + 1;
