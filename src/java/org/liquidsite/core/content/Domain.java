@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -43,6 +43,12 @@ public class Domain extends PersistentObject implements Comparable {
      * The class logger.
      */
     private static final Log LOG = new Log(Domain.class);
+
+    /**
+     * The permitted domain name characters.
+     */
+    public static final String NAME_CHARS =
+        UPPER_CASE + NUMBERS + BINDERS + ".";
 
     /**
      * The domain data object.
@@ -352,14 +358,15 @@ public class Domain extends PersistentObject implements Comparable {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
-        Domain  domain = getContentManager().getDomain(getName());
-
-        if (getName().equals("")) {
-            throw new ContentException("no name set for domain object");
-        } else if (!isPersistent() && domain != null) {
-            throw new ContentException("domain '" + getName() +
-                                       "' already exists");
+        if (!isPersistent()) {
+            validateSize("domain name", getName(), 1, 30);
+            validateChars("domain name", getName(), NAME_CHARS);
+            if (getContentManager().getDomain(getName()) != null) {
+                throw new ContentException("domain '" + getName() +
+                                           "' already exists");
+            }
         }
+        validateSize("domain description", getDescription(), 0, 100);
     }
 
     /**

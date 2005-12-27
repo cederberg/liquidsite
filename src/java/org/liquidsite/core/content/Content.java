@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -103,6 +103,12 @@ public class Content extends PersistentObject {
      * The post content category.
      */
     public static final int POST_CATEGORY = 15;
+
+    /**
+     * The permitted content name characters.
+     */
+    public static final String NAME_CHARS =
+        UPPER_CASE + LOWER_CASE + NUMBERS + BINDERS + ".";
 
     /**
      * The content data object.
@@ -741,14 +747,17 @@ public class Content extends PersistentObject {
         Iterator       iter;
         String         str;
 
-        if (getDomain().equals("")) {
-            throw new ContentException("no domain set for content object");
-        } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() +
-                                       "'does not exist");
-        } else if (getName().equals("")) {
-            throw new ContentException("no name set for content object");
+        if (!isPersistent()) {
+            if (getDomain().equals("")) {
+                throw new ContentException("no domain set for content object");
+            } else if (getDomain() == null) {
+                throw new ContentException("domain '" + getDomainName() +
+                                           "'does not exist");
+            }
+            validateSize("content name", getName(), 1, 200);
+            validateChars("content name", getName(), NAME_CHARS);
         }
+        validateSize("content comment", getComment(), 0, 200);
         iter = attributes.values().iterator();
         while (iter.hasNext()) {
             attr = (AttributeData) iter.next();

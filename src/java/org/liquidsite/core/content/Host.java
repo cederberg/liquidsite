@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -42,6 +42,12 @@ public class Host extends PersistentObject {
      * The class logger.
      */
     private static final Log LOG = new Log(Host.class);
+
+    /**
+     * The permitted host name characters.
+     */
+    public static final String NAME_CHARS =
+        LOWER_CASE + NUMBERS + BINDERS + ".";
 
     /**
      * The host data object.
@@ -257,19 +263,21 @@ public class Host extends PersistentObject {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
-        Host  host = getContentManager().getHost(getName());
-
-        if (getDomainName().equals("")) {
-            throw new ContentException("no domain set for host object");
-        } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() +
-                                       "'does not exist");
-        } else if (getName().equals("")) {
-            throw new ContentException("no name set for host object");
-        } else if (!isPersistent() && host != null) {
-            throw new ContentException("host '" + getName() +
-                                       "' already exists");
+        if (!isPersistent()) {
+            if (getDomainName().equals("")) {
+                throw new ContentException("no domain set for host object");
+            } else if (getDomain() == null) {
+                throw new ContentException("domain '" + getDomainName() +
+                                           "'does not exist");
+            }
+            validateSize("host name", getName(), 1, 100);
+            validateChars("host name", getName(), NAME_CHARS);
+            if (getContentManager().getHost(getName()) != null) {
+                throw new ContentException("host '" + getName() +
+                                           "' already exists");
+            }
         }
+        validateSize("host description", getDescription(), 0, 100);
     }
 
     /**

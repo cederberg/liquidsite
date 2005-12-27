@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -300,7 +300,7 @@ class SystemRequestProcessor {
             return false;
         }
         for (int i = 0; i < name.length(); i++) {
-            if (AdminFormHandler.DOMAIN_CHARS.indexOf(name.charAt(i)) < 0) {
+            if (Domain.NAME_CHARS.indexOf(name.charAt(i)) < 0) {
                 message = "invalid character in domain name: '" +
                            name.charAt(i) + "'";
                 request.setAttribute("error", message);

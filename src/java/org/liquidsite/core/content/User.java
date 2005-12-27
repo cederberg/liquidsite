@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -48,6 +48,12 @@ public class User extends PersistentObject {
      * The class logger.
      */
     private static final Log LOG = new Log(User.class);
+
+    /**
+     * The permitted user name characters.
+     */
+    public static final String NAME_CHARS =
+        UPPER_CASE + LOWER_CASE + NUMBERS + BINDERS;
 
     /**
      * The string containing suitable password characters.
@@ -606,20 +612,22 @@ public class User extends PersistentObject {
     protected void doValidate() throws ContentException {
         ContentManager  manager = getContentManager();
 
-        if (!getDomainName().equals("") && getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() +
-                                       "' does not exist");
-        } else if (getName().equals("")) {
-            throw new ContentException("no name set for user object");
-        } else if (getPassword().equals("")) {
-            throw new ContentException("no password set for user object");
+        if (!isPersistent()) {
+            if (!getDomainName().equals("") && getDomain() == null) {
+                throw new ContentException("domain '" + getDomainName() +
+                                           "' does not exist");
+            }
+            validateSize("user name", getName(), 1, 30);
+            validateChars("user name", getName(), NAME_CHARS);
+            if (manager.getUser(getDomain(), getName()) != null) {
+                throw new ContentException("user '" + getName() +
+                                           "' already exists");
+            }
         }
-        if (!isPersistent()
-         && manager.getUser(getDomain(), getName()) != null) {
-
-            throw new ContentException("user '" + getName() +
-                                       "' already exists");
-        }
+        validateSize("user password", getPassword(), 1, 30);
+        validateSize("user real name", getRealName(), 0, 100);
+        validateSize("user email", getEmail(), 0, 100);
+        validateSize("user comment", getComment(), 0, 200);
     }
 
     /**

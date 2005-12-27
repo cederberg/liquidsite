@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -48,12 +48,6 @@ public class UsersEditFormHandler extends AdminFormHandler {
      * The latest object instance created.
      */
     private static UsersEditFormHandler instance = null;
-
-    /**
-     * The permitted user and group name characters.
-     */
-    private static final String USER_CHARS =
-        UPPER_CASE + LOWER_CASE + NUMBERS + "-_";
 
     /**
      * The user form validator.
@@ -99,13 +93,17 @@ public class UsersEditFormHandler extends AdminFormHandler {
         error = "No login name specified";
         userValidator.addRequiredConstraint("name", error);
         error = "Login name contains invalid character";
-        userValidator.addCharacterConstraint("name", USER_CHARS, error);
+        userValidator.addCharacterConstraint("name",
+                                             User.NAME_CHARS,
+                                             error);
 
         // Add and edit group validator
         error = "No group name specified";
         groupValidator.addRequiredConstraint("name", error);
         error = "Group name contains invalid character";
-        groupValidator.addCharacterConstraint("name", USER_CHARS, error);
+        groupValidator.addCharacterConstraint("name",
+                                              Group.NAME_CHARS,
+                                              error);
     }
 
     /**

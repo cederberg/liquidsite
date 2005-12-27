@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -40,6 +40,28 @@ public abstract class PersistentObject {
      * The class logger.
      */
     private static final Log LOG = new Log(PersistentObject.class);
+
+    /**
+     * The ASCII upper-case characters.
+     */
+    protected static final String UPPER_CASE =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    /**
+     * The ASCII lower-case characters.
+     */
+    protected static final String LOWER_CASE =
+        "abcdefghijklmonpqrstuvwxyz";
+
+    /**
+     * The ASCII numerical characters.
+     */
+    protected static final String NUMBERS = "0123456789";
+
+    /**
+     * The ASCII binding separator characters.
+     */
+    protected static final String BINDERS = "-_";
 
     /**
      * The content manager used for this object.
@@ -146,6 +168,60 @@ public abstract class PersistentObject {
             map.put(name, value);
         }
         return map;
+    }
+
+    /**
+     * Checks a field value size.
+     *
+     * @param name           the field name
+     * @param value          the field value to check
+     * @param minLength      the minimum length
+     * @param maxLength      the maximum length
+     *
+     * @throws ContentException if the field value was too short or
+     *             too long
+     */
+    protected static void validateSize(String name,
+                                       String value,
+                                       int minLength,
+                                       int maxLength)
+        throws ContentException {
+
+        if (minLength > 0 && value.length() == 0) {
+            throw new ContentException(name + " field cannot be empty");
+        } else if (value.length() < minLength) {
+            throw new ContentException(name + " too short, minimum " +
+                                       minLength +
+                                       " character(s) required");
+        } else if (value.length() > maxLength) {
+            throw new ContentException(name + " too long, maximum " +
+                                       maxLength +
+                                       " character(s) allowed");
+        }
+    }
+
+    /**
+     * Checks a field value for invalid characters.
+     *
+     * @param name           the field name
+     * @param value          the field value to check
+     * @param chars          the allowed characters
+     *
+     * @throws ContentException if the field value contained invalid
+     *             characters
+     */
+    protected static void validateChars(String name,
+                                        String value,
+                                        String chars)
+        throws ContentException {
+
+        for (int i = 0; i < value.length(); i++) {
+            if (chars.indexOf(value.charAt(i)) < 0) {
+                throw new ContentException("invalid character in " +
+                                           name + ": '"
+                                           + value.charAt(i) + "'");
+            }
+        }
     }
 
     /**

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -43,6 +43,12 @@ public class Group extends PersistentObject {
      * The class logger.
      */
     private static final Log LOG = new Log(Group.class);
+
+    /**
+     * The permitted group name characters.
+     */
+    public static final String NAME_CHARS =
+        UPPER_CASE + LOWER_CASE + NUMBERS + BINDERS;
 
     /**
      * The group data.
@@ -382,20 +388,22 @@ public class Group extends PersistentObject {
     protected void doValidate() throws ContentException {
         ContentManager  manager = getContentManager();
 
-        if (getDomainName().equals("")) {
-            throw new ContentException("no domain set for group object");
-        } else if (getDomain() == null) {
-            throw new ContentException("domain '" + getDomainName() +
-                                       "' does not exist");
-        } else if (getName().equals("")) {
-            throw new ContentException("no name set for group object");
+        if (!isPersistent()) {
+            if (getDomainName().equals("")) {
+                throw new ContentException("no domain set for group object");
+            } else if (getDomain() == null) {
+                throw new ContentException("domain '" + getDomainName() +
+                                           "' does not exist");
+            }
+            validateSize("group name", getName(), 1, 30);
+            validateChars("group name", getName(), NAME_CHARS);
+            if (manager.getGroup(getDomain(), getName()) != null) {
+                throw new ContentException("group '" + getName() +
+                                           "' already exists");
+            }
         }
-        if (!isPersistent()
-         && manager.getGroup(getDomain(), getName()) != null) {
-
-             throw new ContentException("group '" + getName() +
-                                        "' already exists");
-         }
+        validateSize("group description", getDescription(), 0, 100);
+        validateSize("group comment", getComment(), 0, 200);
     }
 
     /**

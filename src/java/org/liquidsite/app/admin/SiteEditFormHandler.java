@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.liquidsite.app.admin.view.AdminView;
+import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentFile;
 import org.liquidsite.core.content.ContentFolder;
@@ -129,24 +130,26 @@ class SiteEditFormHandler extends AdminFormHandler {
         error = "Domain name cannot be longer than 30 characters";
         domainValidator.addLengthConstraint("name", 0, 30, error);
         error = "Domain name must be upper-case, invalid character";
-        domainValidator.addCharacterConstraint("name", DOMAIN_CHARS, error);
+        domainValidator.addCharacterConstraint("name",
+                                               Domain.NAME_CHARS,
+                                               error);
         error = "No description specified";
         domainValidator.addRequiredConstraint("description", error);
         error = "Host name must be lower-case, invalid character";
         domainValidator.addCharacterConstraint("host.0.name",
-                                               HOST_CHARS,
+                                               Host.NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.1.name",
-                                               HOST_CHARS,
+                                               Host.NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.2.name",
-                                               HOST_CHARS,
+                                               Host.NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.3.name",
-                                               HOST_CHARS,
+                                               Host.NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.4.name",
-                                               HOST_CHARS,
+                                               Host.NAME_CHARS,
                                                error);
 
         // Add and edit site validator
@@ -161,17 +164,19 @@ class SiteEditFormHandler extends AdminFormHandler {
         siteValidator.addRequiredConstraint("host", error);
         error = "Host name must be lower-case, invalid character";
         siteValidator.addCharacterConstraint("host",
-                                             HOST_CHARS + "*",
+                                             Host.NAME_CHARS + "*",
                                              error);
         error = "No port number specified";
         siteValidator.addRequiredConstraint("port", error);
         error = "Port number must be numeric, invalid character";
-        siteValidator.addCharacterConstraint("port", NUMBERS, error);
+        siteValidator.addCharacterConstraint("port",
+                                             "0123456789",
+                                             error);
         error = "No base directory specified";
         siteValidator.addRequiredConstraint("dir", error);
         error = "Base directory contains invalid character";
         siteValidator.addCharacterConstraint("dir",
-                                             CONTENT_CHARS + "/",
+                                             Content.NAME_CHARS + "/",
                                              error);
         error = "No revision comment specified";
         siteValidator.addRequiredConstraint("comment", error);
@@ -181,7 +186,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         folderValidator.addRequiredConstraint("name", error);
         error = "Folder name contains invalid character";
         folderValidator.addCharacterConstraint("name",
-                                               CONTENT_CHARS,
+                                               Content.NAME_CHARS,
                                                error);
         error = "No comment specified";
         folderValidator.addRequiredConstraint("comment", error);
@@ -191,7 +196,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         pageValidator.addRequiredConstraint("name", error);
         error = "Page name contains invalid character";
         pageValidator.addCharacterConstraint("name",
-                                             CONTENT_CHARS,
+                                             Content.NAME_CHARS,
                                              error);
         error = "No comment specified";
         pageValidator.addRequiredConstraint("comment", error);
@@ -201,7 +206,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         fileValidator.addRequiredConstraint("name", error);
         error = "File name contains invalid character";
         fileValidator.addCharacterConstraint("name",
-                                             CONTENT_CHARS,
+                                             Content.NAME_CHARS,
                                              error);
         error = "No comment specified";
         fileValidator.addRequiredConstraint("comment", error);
@@ -211,7 +216,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         translatorValidator.addRequiredConstraint("name", error);
         error = "File name contains invalid character";
         translatorValidator.addCharacterConstraint("name",
-                                                   CONTENT_CHARS,
+                                                   Content.NAME_CHARS,
                                                    error);
         error = "No comment specified";
         translatorValidator.addRequiredConstraint("comment", error);
@@ -221,7 +226,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         templateValidator.addRequiredConstraint("name", error);
         error = "Template name contains invalid character";
         templateValidator.addCharacterConstraint("name",
-                                                 CONTENT_CHARS,
+                                                 Content.NAME_CHARS,
                                                  error);
         error = "No comment specified";
         templateValidator.addRequiredConstraint("comment", error);

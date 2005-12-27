@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004, 2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -123,7 +123,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         sectionValidator.addRequiredConstraint("name", error);
         error = "Section name contains invalid character";
         sectionValidator.addCharacterConstraint("name",
-                                                CONTENT_CHARS,
+                                                Content.NAME_CHARS,
                                                 error);
         error = "No revision comment specified";
         sectionValidator.addRequiredConstraint("comment", error);
@@ -133,7 +133,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         documentValidator.addRequiredConstraint("name", error);
         error = "Document name contains invalid character";
         documentValidator.addCharacterConstraint("name",
-                                                 CONTENT_CHARS,
+                                                 Content.NAME_CHARS,
                                                  error);
         error = "No revision comment specified";
         documentValidator.addRequiredConstraint("comment", error);
@@ -143,7 +143,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
         forumValidator.addRequiredConstraint("name", error);
         error = "Forum name contains invalid character";
         forumValidator.addCharacterConstraint("name",
-                                              CONTENT_CHARS,
+                                              Content.NAME_CHARS,
                                               error);
         error = "No real forum name specified";
         forumValidator.addRequiredConstraint("realname", error);
@@ -312,7 +312,7 @@ public class ContentEditFormHandler extends AdminFormHandler {
             throw new FormValidationException("name", message);
         }
         for (int i = 0; i < name.length(); i++) {
-            if (CONTENT_CHARS.indexOf(name.charAt(i)) < 0) {
+            if (Content.NAME_CHARS.indexOf(name.charAt(i)) < 0) {
                 message = "File name contains invalid character: " +
                           "'" + name.charAt(i) + "'";
                 throw new FormValidationException("name", message);

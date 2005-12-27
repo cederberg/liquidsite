@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -48,37 +48,6 @@ abstract class AdminFormHandler extends FormHandler {
      * The class logger.
      */
     private static final Log LOG = new Log(AdminFormHandler.class);
-
-    /**
-     * The ASCII upper-case characters.
-     */
-    public static final String UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    /**
-     * The ASCII lower-case characters.
-     */
-    public static final String LOWER_CASE = "abcdefghijklmonpqrstuvwxyz";
-
-    /**
-     * The ASCII numerical characters.
-     */
-    public static final String NUMBERS = "0123456789";
-
-    /**
-     * The permitted domain name characters.
-     */
-    public static final String DOMAIN_CHARS = UPPER_CASE + NUMBERS + ".-_";
-
-    /**
-     * The permitted host name characters.
-     */
-    public static final String HOST_CHARS = LOWER_CASE + NUMBERS + ".-_";
-
-    /**
-     * The permitted content name characters.
-     */
-    public static final String CONTENT_CHARS =
-        UPPER_CASE + LOWER_CASE + NUMBERS + ".-_";
 
     /**
      * The default start page for the workflow. This is where
@@ -564,7 +533,7 @@ abstract class AdminFormHandler extends FormHandler {
             c = name.charAt(i);
             if (c == ' ') {
                 buffer.append("_");
-            } else if (CONTENT_CHARS.indexOf(c) >= 0) {
+            } else if (Content.NAME_CHARS.indexOf(c) >= 0) {
                 buffer.append(c);
             } else {
                 buffer.append("-");
