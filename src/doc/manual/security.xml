@@ -1,0 +1,16 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1 style="draft">Securing Web Sites</h1>
+
+    <p>Template API gives anyone permission to create new users.</p>
+
+    <p>Template API will give permission to let users add or remove
+    themselves to/from all public groups.</p>
+
+  </body>
+</doc>

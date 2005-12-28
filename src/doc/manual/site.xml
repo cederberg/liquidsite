@@ -1,0 +1,81 @@
+<doc>
+  <head>
+    <title>Liquid Site Reference Manual</title>
+  </head>
+
+  <body>
+
+    <h1 style="draft">Sites &amp; Folders</h1>
+
+    <h2>What's a Site?</h2>
+
+    <p>A web site contains a collection of documents and files
+    available from the same base location on the world wide web. That
+    base location is the web site, and in Liquid Site it is defined by
+    four parameters - the protocol (http or https), the host name, the
+    port number, and the base path.</p>
+
+    <list>
+      <item>
+        <title>Protocol</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Host Name</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Port Number</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>Base Path</title>
+        <text></text>
+      </item>
+    </list>
+
+    <p>As an example, if the URL for one site is
+    <code>http://www.liquidsite.org/</code>, then
+    <code>https://www.liquidsite.org/</code> would define another site
+    as another protocol is used.</p>
+
+
+    <h2>Finding the Site</h2>
+
+    <p>Incoming requests to Liquid Site are always processed in a
+    particular way. The exact processing order is important to
+    understand in order to correctly design site security and
+    similar.</p>
+
+    <list>
+      <item>
+        <title>1. Determine Site</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>2. Authenticate User</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>3. Determine Directory</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>4. Determine Page</title>
+        <text></text>
+      </item>
+
+      <item>
+        <title>5. Process Page</title>
+        <text></text>
+      </item>
+    </list>
+
+  </body>
+</doc>
