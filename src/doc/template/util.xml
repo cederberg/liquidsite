@@ -14,6 +14,10 @@
         <title><ref id="currentTime">currentTime</ref></title>
         <text>Returns the current date and time</text>
       </item>
+      <item>
+        <title><ref id="randomPassword">randomPassword</ref></title>
+        <text>Returns a new random password</text>
+      </item>
     </list>
 
 
@@ -43,6 +47,36 @@
 
     <example>
       <p>The current date and time is 12-02-2005 12:30:00.</p>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="randomPassword" style="inner">randomPassword</h2>
+
+    <p>Returns a new random password. The generated password can be
+    used for various types of authentication.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>randomPassword &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The new random password string.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code outputs a new random password:</p>
+
+    <example>
+      <preformat>&lt;p&gt;Suggested password: ${liquidsite.util.randomPassword}&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      <p>Suggested password: niDsRG3t</p>
     </example>
 
   </body>

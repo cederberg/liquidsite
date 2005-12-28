@@ -33,6 +33,26 @@
         <text>Returns the user real name.</text>
       </item>
       <item>
+        <title><ref id="save">save()</ref></title>
+        <text>Saves all the modifications to a user.</text>
+      </item>
+      <item>
+        <title><ref id="setEmail">setEmail(email)</ref></title>
+        <text>Modifies the user email.</text>
+      </item>
+      <item>
+        <title><ref id="setLogin">setLogin(login)</ref></title>
+        <text>Modifies the user login username (only new users).</text>
+      </item>
+      <item>
+        <title><ref id="setPassword">setPassword(password)</ref></title>
+        <text>Modifies the user password.</text>
+      </item>
+      <item>
+        <title><ref id="setRealName">setRealName(name)</ref></title>
+        <text>Modifies the user real name.</text>
+      </item>
+      <item>
         <title><ref id="superuser">superuser</ref></title>
         <text>Returns the superuser flag for the user.</text>
       </item>
@@ -163,6 +183,127 @@
     <example>
       <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
 &lt;p&gt;The user realName is ${user.realName}&lt;/p&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="save" style="inner">save</h2>
+
+    <p>Saves all the modifications to a user. This method will write
+    all the changes to the database if security permits.</p>
+
+    <p>New users can be saved by non-logged in users. Existing users
+    can be saved by themselves. A logged in user with administrator
+    privileges can save any other user, including themselves.
+    Superusers cannot be modified at all by this method.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>save() &#8594; boolean</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code creates a new user "bob":</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("bob")&gt;
+${user.setLogin("bob")}
+${user.setPassword("secret")}
+${user.setRealName("Robert")}
+${user.setEmail("info@liquidsite.net")}
+&lt;#assign result = user.save()&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="setEmail" style="inner">setEmail</h2>
+
+    <p>Modifies the user email address. The change is not saved
+    until the <ref id="save">save()</ref> method is called.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>setEmail(email) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code modifies the current user email address:</p>
+
+    <example>
+      <preformat>${liquidsite.user.setEmail("info@liquidsite.net")}
+&lt;#assign result = liquidsite.user.save()&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="setLogin" style="inner">setLogin</h2>
+
+    <p>Modifies the login username. This method can only be called
+    for new users that have not yet been saved. It is not possible
+    to change login username once a user has been saved. The new
+    user is not saved until the <ref id="save">save()</ref> method
+    is called.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>setLogin(login) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code creates a new user "bob":</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("bob")&gt;
+${user.setLogin("bob")}
+${user.setPassword("secret")}
+${user.setRealName("Robert")}
+${user.setEmail("info@liquidsite.net")}
+&lt;#assign result = user.save()&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="setPassword" style="inner">setPassword</h2>
+
+    <p>Modifies the user password. The change is not saved until
+    the <ref id="save">save()</ref> method is called.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>setPassword(password) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code modifies the password for the current user:</p>
+
+    <example>
+      <preformat>${liquidsite.user.setPassword("secret")}
+&lt;#assign result = liquidsite.user.save()&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="setRealName" style="inner">setRealName</h2>
+
+    <p>Modifies the user real name. The change is not saved until
+    the <ref id="save">save()</ref> method is called.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>setRealName(name) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code modifies the name for the current user:</p>
+
+    <example>
+      <preformat>${liquidsite.user.setRealName("Bobby")}
+&lt;#assign result = liquidsite.user.save()&gt;</preformat>
     </example>
 
 
