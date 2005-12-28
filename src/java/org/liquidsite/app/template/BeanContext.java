@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -94,7 +94,7 @@ class BeanContext {
 
         this.request = request;
         this.manager = manager;
-        user = new UserBean(request.getUser());
+        user = new UserBean(this, request.getUser());
         usersCache.put(user.getLogin(), user);
         if (!user.getLogin().equals("")) {
             usersCache.put("", user);
@@ -611,9 +611,25 @@ class BeanContext {
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
-            usersCache.put(name, new UserBean(user));
+            usersCache.put(name, new UserBean(this, user));
         }
         return (UserBean) usersCache.get(name);
+    }
+
+    /**
+     * Creates a new user with the specified name in the current
+     * environment domain. The user object will not be saved to the
+     * database, only instantiated with the correct parameters.
+     *
+     * @param name           the login name
+     *
+     * @return the user object create, or
+     *         null if no such user could be created
+     */
+    public User createUser(String name) {
+        return new User(manager,
+                        request.getEnvironment().getDomain(),
+                        name);
     }
 
     /**

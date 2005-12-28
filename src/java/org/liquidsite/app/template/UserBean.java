@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -24,6 +24,7 @@ package org.liquidsite.app.template;
 import java.util.ArrayList;
 
 import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
@@ -49,12 +50,43 @@ public class UserBean {
     private User user;
 
     /**
+     * The bean context.
+     */
+    private BeanContext context;
+
+    /**
+     * The modified login username.
+     */
+    private String login;
+
+    /**
+     * The modified password.
+     */
+    private String password;
+
+    /**
+     * The modified real name.
+     */
+    private String realName;
+
+    /**
+     * The modified email.
+     */
+    private String email;
+
+    /**
      * Creates a new user template bean.
      *
+     * @param context        the bean context
      * @param user           the request user
      */
-    UserBean(User user) {
+    UserBean(BeanContext context, User user) {
+        this.context = context;
         this.user = user;
+        this.login = null;
+        this.password = null;
+        this.realName = null;
+        this.email = null;
     }
 
     /**
@@ -87,6 +119,29 @@ public class UserBean {
     }
 
     /**
+     * Sets the login user name. This action will not take effect
+     * until this object is saved. Note that login names of existing
+     * users cannot be modified.
+     *
+     * @param login          the new use login name
+     */
+    public void setLogin(String login) {
+        if (user == null) {
+            this.login = login;
+        }
+    }
+
+    /**
+     * Sets the user password. This action will not take effect
+     * until this object is saved.
+     *
+     * @param password       the new user password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
      * Returns the real user name.
      *
      * @return the real user name, or
@@ -101,6 +156,16 @@ public class UserBean {
     }
 
     /**
+     * Sets the real user name. This action will not take effect
+     * until this object is saved.
+     *
+     * @param realName       the new real user name
+     */
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    /**
      * Returns the user email address.
      *
      * @return the user email address, or
@@ -112,6 +177,16 @@ public class UserBean {
         } else {
             return user.getEmail();
         }
+    }
+
+    /**
+     * Sets the user e-mail address. This action will not take effect
+     * until this object is saved.
+     *
+     * @param email          the new user e-mail address
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
@@ -185,5 +260,62 @@ public class UserBean {
         ArrayList  groups = getGroups();
 
         return groups.contains(name);
+    }
+
+    /**
+     * Saves all the modifications for this user to the database.
+     *
+     * @return true if the user could be saved, or
+     *         false otherwise
+     */
+    public boolean save() {
+        User    currentUser;
+        boolean created = false;
+
+        if (user == null) {
+            if (login == null || login.equals("")) {
+                LOG.error("no login name given");
+                return false;
+            }
+            user = context.createUser(login);
+            if (user == null) {
+                LOG.error("couldn't create user with login " + login);
+                return false;
+            }
+            created = true;
+        }
+        if (password != null) {
+            user.setPassword(password);
+        }
+        if (realName != null) {
+            user.setRealName(realName);
+        }
+        if (email != null) {
+            user.setEmail(email);
+        }
+        try {
+            currentUser = context.findUser("").user;
+            if (currentUser == null) {
+                currentUser = user;
+            }
+            user.save(currentUser);
+            login = null;
+            password = null;
+            realName = null;
+            email = null;
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            if (created) {
+                user = null;
+            }
+            return false;
+        } catch (ContentSecurityException e) {
+            LOG.error(e.getMessage());
+            if (created) {
+                user = null;
+            }
+            return false;
+        }
+        return true;
     }
 }
