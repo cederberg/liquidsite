@@ -295,7 +295,7 @@ public class UserBean {
         }
         try {
             currentUser = context.findUser("").user;
-            if (currentUser == null) {
+            if (currentUser == null && created) {
                 currentUser = user;
             }
             user.save(currentUser);
