@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.servlet;
@@ -180,19 +180,28 @@ public class DefaultRequestProcessor extends RequestProcessor {
         ContentSite  site = request.getEnvironment().getSite();
         String       name;
         String       password;
+        String       redirect;
         User         user;
 
         name = request.getParameter("liquidsite.login", "");
         password = request.getParameter("liquidsite.password", "");
+        redirect = request.getParameter("liquidsite.redirect", "");
         try {
             user = getContentManager().getUser(site.getDomain(), name);
+            LOG.info("correct login by user " + name + " in domain " +
+                     site.getDomain().getName() + " from " +
+                     request.getRemoteAddr());
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             throw RequestException.INTERNAL_ERROR;
         }
         if (user != null && user.verifyPassword(password)) {
             request.setUser(user);
-            request.sendRedirect(request.getPath());
+            if (redirect.length() > 0) {
+                request.sendRedirect(redirect);
+            } else {
+                request.sendRedirect(request.getPath());
+            }
         } else {
             try {
                 Thread.sleep(FAILED_LOGIN_DELAY);
