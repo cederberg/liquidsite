@@ -248,6 +248,15 @@
         </description>
         <type name="VARCHAR" size="100" required="true" />
       </column>
+      <column name="PUBLIC">
+        <description>
+          The public group flag. This flag is set to one (1) if the
+          group allows users to add or remove themselves from the
+          group. This is used for non-security related groups, such
+          as mailing list memberships and similar.
+        </description>
+        <type name="SMALLINT" required="true" />
+      </column>
       <column name="COMMENT">
         <description>
           The group comment. The comment can be used to add

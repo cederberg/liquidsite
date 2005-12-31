@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
@@ -108,6 +108,7 @@ public class GroupPeer extends AbstractPeer {
         query.addParameter(data.getString(GroupData.DOMAIN));
         query.addParameter(data.getString(GroupData.NAME));
         query.addParameter(data.getString(GroupData.DESCRIPTION));
+        query.addParameter(data.getBoolean(GroupData.PUBLIC));
         query.addParameter(data.getString(GroupData.COMMENT));
         PEER.insert(src, query);
     }
@@ -127,6 +128,7 @@ public class GroupPeer extends AbstractPeer {
         DatabaseQuery  query = new DatabaseQuery("group.update");
 
         query.addParameter(data.getString(GroupData.DESCRIPTION));
+        query.addParameter(data.getBoolean(GroupData.PUBLIC));
         query.addParameter(data.getString(GroupData.COMMENT));
         query.addParameter(data.getString(GroupData.DOMAIN));
         query.addParameter(data.getString(GroupData.NAME));

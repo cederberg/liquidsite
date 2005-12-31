@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
@@ -47,6 +47,12 @@ public class GroupData extends AbstractData {
      */
     public static final Parameter DESCRIPTION =
         new StringParameter(GroupData.class, "DESCRIPTION", "");
+
+    /**
+     * The public parameter.
+     */
+    public static final Parameter PUBLIC =
+        new BooleanParameter(GroupData.class, "PUBLIC", false);
 
     /**
      * The comment parameter.
