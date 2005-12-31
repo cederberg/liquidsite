@@ -28,6 +28,7 @@ import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.RequestSession;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -43,6 +44,36 @@ public class UserBean {
      * The class logger.
      */
     private static final Log LOG = new Log(UserBean.class);
+
+    /**
+     * The session email verification user attribute. This session
+     * key value stores the login name for the user for which an
+     * email verification request was sent. This value is required
+     * for security reasons so that only the correct user can be
+     * unlocked. 
+     *
+     * @see #VERIFY_KEY_ATTRIBUTE
+     * @see #sendEmailVerification(String, String, String)
+     * @see #verifyEmail(String)
+     */
+    private static final String VERIFY_USER_ATTRIBUTE =
+        "template.verification.user";
+
+    /**
+     * The session email verification key attribute. This session key
+     * value is only sent to the user email address and is not
+     * retreivable through the public template API. If the user can
+     * provide the correct verification key, the user object is
+     * unlocked for saving by anonymous users. This is used to
+     * overwrite the user password without requiring a correct login
+     * (used for password "recovery").
+     *
+     * @see #VERIFY_USER_ATTRIBUTE
+     * @see #sendEmailVerification(String, String, String)
+     * @see #verifyEmail(String)
+     */
+    private static final String VERIFY_KEY_ATTRIBUTE =
+        "template.verification.key";
 
     /**
      * The request user.
@@ -75,6 +106,16 @@ public class UserBean {
     private String email;
 
     /**
+     * The email verified flag. This flag is set when the user has
+     * provided the correct verification key, i.e. has been able to
+     * read an email that was previously sent. Once the email has
+     * been verified, this object is unlocked for saving by anonymous
+     * users. This can be used to overwrite the user password without
+     * requiring a correct login (used for password "recovery").
+     */
+    private boolean emailVerified;
+
+    /**
      * Creates a new user template bean.
      *
      * @param context        the bean context
@@ -87,6 +128,7 @@ public class UserBean {
         this.password = null;
         this.realName = null;
         this.email = null;
+        this.emailVerified = false;
     }
 
     /**
@@ -295,7 +337,7 @@ public class UserBean {
         }
         try {
             currentUser = context.findUser("").user;
-            if (currentUser == null && created) {
+            if (currentUser == null && (created || emailVerified)) {
                 currentUser = user;
             }
             user.save(currentUser);
@@ -317,5 +359,92 @@ public class UserBean {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Sends an email verification request to the user. The request
+     * email will only be sent if the user exists, has an email
+     * address set and has not been modified. A verfication key will
+     * be inserted into the email subject and text where a specified
+     * replacement text matches. This allows for customizing the
+     * verification email while only sending the secret validation
+     * key in the email.
+     *
+     * @param subject        the mail subject
+     * @param text           the mail text
+     * @param replaceText    the key replacement text
+     *
+     * @return true if the email verification was sent, or
+     *         false otherwise
+     *
+     * @see #verifyEmail(String)
+     */
+    public boolean sendEmailVerification(String subject,
+                                         String text,
+                                         String replaceText) {
+
+        RequestSession session;
+        String         key;
+
+        if (user == null || email != null) {
+            return false;
+        }
+        key = User.generatePassword();
+        session = context.getRequest().getSession();
+        session.setAttribute(VERIFY_USER_ATTRIBUTE, user.getName());
+        session.setAttribute(VERIFY_KEY_ATTRIBUTE, key);
+        subject = replace(subject, replaceText, key);
+        text = replace(text, replaceText, key);
+        return context.sendMail(user.getEmail(), subject, text);
+    }
+
+    /**
+     * Verifies the user email address and unlocks this user. The
+     * verification is done by comparing a previously sent key with
+     * the specified one. If the two keys match, the user email is
+     * considered verified and this user object is unlocked for save
+     * operations by an anonymous user.
+     *
+     * @param key            the verification key
+     *
+     * @return true if the verification was correct, or
+     *         false otherwise
+     */
+    public boolean verifyEmail(String key) {
+        RequestSession session;
+        String         verificationUser;
+        String         verificationKey;
+
+        session = context.getRequest().getSession();
+        verificationUser = (String) session.getAttribute(VERIFY_USER_ATTRIBUTE);
+        verificationKey = (String) session.getAttribute(VERIFY_KEY_ATTRIBUTE);
+        emailVerified = user != null &&
+                        verificationUser != null &&
+                        verificationKey != null &&
+                        verificationUser.equals(user.getName()) &&
+                        verificationKey.equals(key);
+        return emailVerified;
+    }
+
+    /**
+     * Replaces all occurrencies of a text within a string.
+     *
+     * @param str            the string to process
+     * @param from           the text to replace
+     * @param to             the new text to use
+     *
+     * @return the processed string
+     */
+    private String replace(String str, String from, String to) {
+        int pos;
+
+        do {
+            pos = str.indexOf(from);
+            if (pos >= 0) {
+                str = str.substring(0, pos) + to +
+                      str.substring(pos + from.length());
+            }
+        } while (pos >= 0);
+        return str;
     }
 }

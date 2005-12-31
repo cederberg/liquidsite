@@ -25,6 +25,10 @@
         belongs.</text>
       </item>
       <item>
+        <title><ref id="isGroup">isGroup(name)</ref></title>
+        <text>Checks if the user is member of a named group.</text>
+      </item>
+      <item>
         <title><ref id="login">login</ref></title>
         <text>Returns the user login username.</text>
       </item>
@@ -35,6 +39,10 @@
       <item>
         <title><ref id="save">save()</ref></title>
         <text>Saves all the modifications to a user.</text>
+      </item>
+      <item>
+        <title><ref id="sendEmailVerification">sendEmailVerification(subject, text, replaceText)</ref></title>
+        <text>Sends an email verification request to the user.</text>
       </item>
       <item>
         <title><ref id="setEmail">setEmail(email)</ref></title>
@@ -57,8 +65,8 @@
         <text>Returns the superuser flag for the user.</text>
       </item>
       <item>
-        <title><ref id="isGroup">isGroup(name)</ref></title>
-        <text>Checks if the user is member of a named group.</text>
+        <title><ref id="verifyEmail">verifyEmail(key)</ref></title>
+        <text>Verifies the user email address and unlocks this user.</text>
       </item>
     </list>
 
@@ -135,6 +143,39 @@
     <example>
       <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
 &lt;#list user.groups&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="isGroup" style="inner">isGroup</h2>
+
+    <p>Checks if the user is member of a named group.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>isGroup(name) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>name</code> -- the group name</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the user belongs to the named group,
+    false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks if a user belongs to a certain group:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+&lt;#if user.isGroup("editors")&gt;</preformat>
     </example>
 
 
@@ -327,41 +368,97 @@ ${user.setEmail("info@liquidsite.net")}
     <p>This code checks if a user is superuser:</p>
 
     <example>
-      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
+      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite")&gt;
 &lt;#if user.superuser&gt;</preformat>
     </example>
 
 
     <separator/>
- 
-    <h2 id="isGroup" style="inner">isGroup</h2>
 
-    <p>Checks if the user is member of a named group.</p>
+    <h2 id="sendEmailVerification" style="inner">sendEmailVerification</h2>
+
+    <p>Sends an email verification request to the user. The request
+    email will only be sent if the user exists, has an email
+    address set and has not been modified. A verfication key will
+    be inserted into the email subject and text where a specified
+    replacement text matches. The secret validation key is only sent
+    to the user in email and cannot be retrieved in any other way
+    for security reasons.</p>
+    
+    <p>This method is used for password recovery, as it would be
+    unsecure to allow changes to users that cannot in some way
+    authorize themselves. By sending a validation key to the user by
+    email, it will only be possible to change the password if the
+    user was able to read their email. When the user provides the
+    validation key from the email, this user object can be unlocked
+    with the <ref id="verifyEmail">verifyEmail(key)</ref> method.</p>
 
     <h3>Syntax:</h3>
 
-    <p style="indent"><code>isGroup(name) &#8594; boolean</code></p>
-
-    <h3>Parameters:</h3>
-
-    <list style="compact">
-      <item>
-        <text><code>name</code> -- the group name</text>
-      </item>
-    </list>
+    <p style="indent"><code>sendEmailVerification(subject, text, replaceText) &#8594; boolean</code></p>
 
     <h3>Returns:</h3>
 
-    <p style="indent">True if the user belongs to the named group,
-    false otherwise.</p>
+    <p style="indent">True if the email was sent, or false
+    otherwise.</p>
 
     <h3>Example:</h3>
 
-    <p>This code checks if a user belongs to a certain group:</p>
+    <p>This code sends an email verification mail:</p>
 
     <example>
-      <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
-&lt;#if user.isGroup("editors")&gt;</preformat>
+      <preformat>&lt;#assign user = liquidsite.findUser("bob")&gt;
+&lt;#assign subject = "Validation Key"&gt;
+&lt;#assign text = "Validation Key:  ####"&gt;
+&lt;#assign result = user.sendEmailVerification(subject, text, "####")&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="verifyEmail" style="inner">verifyEmail</h2>
+
+    <p>Verifies the user email address and unlocks this user. The
+    verification is done by comparing a previously sent key with
+    the specified one. If the two keys match, the user email is
+    considered verified and this user object is unlocked for save
+    operations by an anonymous user.</p>
+
+    <p>This method is used for password recovery, as it would be
+    unsecure to allow changes to users that cannot in some way
+    authorize themselves. By sending a validation key to the user by
+    email, it will only be possible to change the password if the
+    user was able to read their email. The validation key to enter
+    for a user is created and sent with the
+    <ref id="sendEmailVerification">sendEmailVerification(subject, text, replaceText)</ref>
+    method.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>verifyEmail(key) &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the email was verified, or false
+    otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code uses a verification key to unlock a user and modify
+    the password:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUser("bob")&gt;
+&lt;#if user.verifyEmail(liquidsite.request.param.key)&gt;
+  ${user.setPassword("secret")}
+  &lt;#if user.save()&gt;
+    Password changed
+  &lt;#else&gt;
+    Failed to save user
+  &lt;/#if&gt;
+&lt;#else&gt;
+  Invalid validation key, email couldn't be verified
+&lt;/#if&gt;</preformat>
     </example>
 
   </body>
