@@ -566,7 +566,7 @@
           The attribute text data. This may be set to blank if the
           attribute has no data.
         </description>
-        <type name="TEXT" required="true" />
+        <type name="MEDIUMTEXT" required="true" />
       </column>
       <primarykey>
         <description>

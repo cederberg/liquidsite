@@ -743,10 +743,6 @@ public class Content extends PersistentObject {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
-        AttributeData  attr;
-        Iterator       iter;
-        String         str;
-
         if (!isPersistent()) {
             if (getDomain().equals("")) {
                 throw new ContentException("no domain set for content object");
@@ -758,17 +754,6 @@ public class Content extends PersistentObject {
             validateChars("content name", getName(), NAME_CHARS);
         }
         validateSize("content comment", getComment(), 0, 200);
-        iter = attributes.values().iterator();
-        while (iter.hasNext()) {
-            attr = (AttributeData) iter.next();
-            str = attr.getString(AttributeData.DATA);
-            if (str.length() > 30000 && str.getBytes().length > 65535) {
-                str = "content attribute '" +
-                      attr.getString(AttributeData.NAME) +
-                      "' is too large, max 65536 bytes are allowed";
-                throw new ContentException(str);
-            }
-        }
     }
 
     /**

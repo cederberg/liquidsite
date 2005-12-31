@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.install;
@@ -99,6 +99,9 @@ public class Installer {
         updaters.add(new DatabaseUpdater("0.7", "0.8"));
         updaters.add(new DatabaseUpdater("0.8", "0.8.1"));
         updaters.add(new DatabaseUpdater("0.8.1", "0.8.2"));
+        updaters.add(new DatabaseUpdater("0.8.2",
+                                         "0.9",
+                                         "UPDATE_LIQUIDSITE_TABLES_0.9.sql"));
     }
 
     /**
