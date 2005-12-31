@@ -36,6 +36,7 @@ import org.liquidsite.core.content.ContentSelector;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
@@ -614,6 +615,27 @@ class BeanContext {
             usersCache.put(name, new UserBean(this, user));
         }
         return (UserBean) usersCache.get(name);
+    }
+
+    /**
+     * Finds a specified group.
+     *
+     * @param name           the group name
+     *
+     * @return the group found, or
+     *         null if not found
+     */
+    public Group findGroup(String name) {
+        Domain  domain;
+        Group   group = null;
+
+        try {
+            domain = request.getEnvironment().getDomain();
+            group = manager.getGroup(domain, name);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
+        return group;
     }
 
     /**

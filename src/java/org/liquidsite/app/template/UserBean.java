@@ -106,6 +106,18 @@ public class UserBean {
     private String email;
 
     /**
+     * The list of group additions. The list contains the group
+     * objects to add to the user when saving.
+     */
+    private ArrayList groupAdds;
+
+    /**
+     * The list of group removals. The list contains the group
+     * objects to remove from the user when saving.
+     */
+    private ArrayList groupRemoves;
+
+    /**
      * The email verified flag. This flag is set when the user has
      * provided the correct verification key, i.e. has been able to
      * read an email that was previously sent. Once the email has
@@ -305,6 +317,42 @@ public class UserBean {
     }
 
     /**
+     * Adds this user to the specified group. The user will only be
+     * added if the group exists and is public. Furthermore, this
+     * action will not take effect until this object is saved. 
+     *
+     * @param name           the group name
+     */
+    public void groupAdd(String name) {
+        Group  group = context.findGroup(name);
+
+        if (group != null && group.isPublic()) {
+            if (groupAdds == null) {
+                groupAdds = new ArrayList();
+            }
+            groupAdds.add(group);
+        }
+    }
+
+    /**
+     * Removes this user to the specified group. The user will only
+     * be removed if the group exists and is public. Furthermore,
+     * this action will not take effect until this object is saved. 
+     *
+     * @param name           the group name
+     */
+    public void groupRemove(String name) {
+        Group  group = context.findGroup(name);
+
+        if (group != null && group.isPublic()) {
+            if (groupRemoves == null) {
+                groupRemoves = new ArrayList();
+            }
+            groupRemoves.add(group);
+        }
+    }
+
+    /**
      * Saves all the modifications for this user to the database.
      *
      * @return true if the user could be saved, or
@@ -315,6 +363,7 @@ public class UserBean {
         User    currentUser;
         boolean created = false;
         String  msg;
+        int     i;
 
         if (user == null) {
             if (login == null || login.equals("")) {
@@ -337,6 +386,16 @@ public class UserBean {
         }
         if (email != null) {
             user.setEmail(email);
+        }
+        if (groupAdds != null) {
+            for (i = 0; i < groupAdds.size(); i++) {
+                user.addToGroup((Group) groupAdds.get(i));
+            }
+        }
+        if (groupRemoves != null) {
+            for (i = 0; i < groupRemoves.size(); i++) {
+                user.removeFromGroup((Group) groupRemoves.get(i));
+            }
         }
         try {
             currentUser = context.findUser("").user;
@@ -364,6 +423,8 @@ public class UserBean {
             password = null;
             realName = null;
             email = null;
+            groupAdds = null;
+            groupRemoves = null;
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             if (created) {
