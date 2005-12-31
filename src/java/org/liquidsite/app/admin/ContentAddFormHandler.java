@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -186,7 +186,6 @@ public class ContentAddFormHandler extends AdminFormHandler {
                       "attached to the parent document";
             throw new FormValidationException("name", message);
         }
-        validateComment(request);
     }
 
     /**

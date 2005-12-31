@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -67,7 +67,6 @@ class UnpublishDialogHandler extends AdminDialogHandler {
         error = "Date format should be 'YYYY-MM-DD HH:MM'";
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         validator.addDateConstraint("date", df, error);
-        validator.addRequiredConstraint("comment", "No comment specified");
     }
 
     /**

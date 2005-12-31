@@ -125,8 +125,6 @@ public class ContentEditFormHandler extends AdminFormHandler {
         sectionValidator.addCharacterConstraint("name",
                                                 Content.NAME_CHARS,
                                                 error);
-        error = "No revision comment specified";
-        sectionValidator.addRequiredConstraint("comment", error);
 
         // Add and edit document validator
         error = "No document name specified";
@@ -135,8 +133,6 @@ public class ContentEditFormHandler extends AdminFormHandler {
         documentValidator.addCharacterConstraint("name",
                                                  Content.NAME_CHARS,
                                                  error);
-        error = "No revision comment specified";
-        documentValidator.addRequiredConstraint("comment", error);
 
         // Add and edit forum validator
         error = "No forum name specified";
@@ -149,22 +145,16 @@ public class ContentEditFormHandler extends AdminFormHandler {
         forumValidator.addRequiredConstraint("realname", error);
         error = "No forum description specified";
         forumValidator.addRequiredConstraint("description", error);
-        error = "No revision comment specified";
-        forumValidator.addRequiredConstraint("comment", error);
 
         // Add and edit topic validator
         error = "No topic subject specified";
         topicValidator.addRequiredConstraint("subject", error);
-        error = "No revision comment specified";
-        topicValidator.addRequiredConstraint("comment", error);
 
         // Add and edit post validator
         error = "No post subject specified";
         postValidator.addRequiredConstraint("subject", error);
         error = "No post text specified";
         postValidator.addRequiredConstraint("text", error);
-        error = "No revision comment specified";
-        postValidator.addRequiredConstraint("comment", error);
     }
 
     /**
@@ -328,7 +318,6 @@ public class ContentEditFormHandler extends AdminFormHandler {
                       "attached to the parent document";
             throw new FormValidationException("name", message);
         }
-        validateComment(request);
     }
 
     /**

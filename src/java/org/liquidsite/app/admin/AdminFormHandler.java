@@ -237,26 +237,6 @@ abstract class AdminFormHandler extends FormHandler {
                FormValidationException;
 
     /**
-     * Validates the comment field. The comment field is required to
-     * be non-empty.
-     *
-     * @param request        the request object
-     *
-     * @throws FormValidationException if the form request data
-     *             validation failed
-     */
-    protected void validateComment(Request request)
-        throws FormValidationException {
-
-        String  value = request.getParameter("comment");
-
-        if (value == null || value.equals("")) {
-            throw new FormValidationException("comment",
-                                              "No comment specified");
-        }
-    }
-
-    /**
      * Validates a content name with regard to its parent. That is,
      * this method will check that no other content objects with the
      * same parent have the same name.

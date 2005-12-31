@@ -178,8 +178,6 @@ class SiteEditFormHandler extends AdminFormHandler {
         siteValidator.addCharacterConstraint("dir",
                                              Content.NAME_CHARS + "/",
                                              error);
-        error = "No revision comment specified";
-        siteValidator.addRequiredConstraint("comment", error);
 
         // Add and edit folder validator
         error = "No folder name specified";
@@ -188,8 +186,6 @@ class SiteEditFormHandler extends AdminFormHandler {
         folderValidator.addCharacterConstraint("name",
                                                Content.NAME_CHARS,
                                                error);
-        error = "No comment specified";
-        folderValidator.addRequiredConstraint("comment", error);
 
         // Add and edit page validator
         error = "No page name specified";
@@ -198,8 +194,6 @@ class SiteEditFormHandler extends AdminFormHandler {
         pageValidator.addCharacterConstraint("name",
                                              Content.NAME_CHARS,
                                              error);
-        error = "No comment specified";
-        pageValidator.addRequiredConstraint("comment", error);
 
         // Add and edit file validator
         error = "No file name specified";
@@ -208,8 +202,6 @@ class SiteEditFormHandler extends AdminFormHandler {
         fileValidator.addCharacterConstraint("name",
                                              Content.NAME_CHARS,
                                              error);
-        error = "No comment specified";
-        fileValidator.addRequiredConstraint("comment", error);
 
         // Add and edit translator validator
         error = "No translator name specified";
@@ -218,8 +210,6 @@ class SiteEditFormHandler extends AdminFormHandler {
         translatorValidator.addCharacterConstraint("name",
                                                    Content.NAME_CHARS,
                                                    error);
-        error = "No comment specified";
-        translatorValidator.addRequiredConstraint("comment", error);
 
         // Add and edit template validator
         error = "No template name specified";
@@ -228,8 +218,6 @@ class SiteEditFormHandler extends AdminFormHandler {
         templateValidator.addCharacterConstraint("name",
                                                  Content.NAME_CHARS,
                                                  error);
-        error = "No comment specified";
-        templateValidator.addRequiredConstraint("comment", error);
     }
 
     /**
