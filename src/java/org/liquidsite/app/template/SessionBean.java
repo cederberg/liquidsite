@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -44,9 +44,9 @@ import org.liquidsite.core.web.RequestSession;
 public class SessionBean implements TemplateHashModel {
 
     /**
-     * The request data attribute.
+     * The session data attribute.
      */
-    private static final String DATA_ATTRIBUTE = "data";
+    private static final String DATA_ATTRIBUTE = "template.data";
 
     /**
      * The bean context.
