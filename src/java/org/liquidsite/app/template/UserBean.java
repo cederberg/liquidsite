@@ -311,17 +311,20 @@ public class UserBean {
      *         false otherwise
      */
     public boolean save() {
+        Domain  domain = context.getRequest().getEnvironment().getDomain();
         User    currentUser;
         boolean created = false;
+        String  msg;
 
         if (user == null) {
             if (login == null || login.equals("")) {
-                LOG.error("no login name given");
+                LOG.info("failed to create user, no login name given");
                 return false;
             }
             user = context.createUser(login);
             if (user == null) {
-                LOG.error("couldn't create user with login " + login);
+                LOG.error("couldn't create user with login " + login +
+                          " in domain " + domain);
                 return false;
             }
             created = true;
@@ -338,9 +341,25 @@ public class UserBean {
         try {
             currentUser = context.findUser("").user;
             if (currentUser == null && (created || emailVerified)) {
-                currentUser = user;
+                user.save(user);
+            } else {
+                user.save(currentUser);
             }
-            user.save(currentUser);
+            if (created) {
+                msg = "created new user ";
+            } else {
+                msg = "modified user ";
+            }
+            msg += user + " in domain " + domain.getName() +
+                   ", saved by ";
+            if (emailVerified) {
+                msg += "anonymous (email verification)";
+            } else if (currentUser == null) {
+                msg += "anonymous";
+            } else {
+                msg += currentUser;
+            }
+            LOG.info(msg);
             login = null;
             password = null;
             realName = null;
