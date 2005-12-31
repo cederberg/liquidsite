@@ -71,7 +71,7 @@
 <#if enabled = "true">
             <input type="checkbox" tabindex="2" checked="checked"
 <#else>
-            <input type="checkbox" tabindex="3"
+            <input type="checkbox" tabindex="2"
 </#if>
                    name="enabled" value="true" />
             <p>The enabled flag. If the user is not enabled, no logins
