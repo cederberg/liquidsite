@@ -25,6 +25,14 @@
         belongs.</text>
       </item>
       <item>
+        <title><ref id="groupAdd">groupAdd(name)</ref></title>
+        <text>Adds the user to the specified group.</text>
+      </item>
+      <item>
+        <title><ref id="groupRemove">groupRemove(name)</ref></title>
+        <text>Removes the user from the specified group.</text>
+      </item>
+      <item>
         <title><ref id="isGroup">isGroup(name)</ref></title>
         <text>Checks if the user is member of a named group.</text>
       </item>
@@ -143,6 +151,52 @@
     <example>
       <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
 &lt;#list user.groups&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="groupAdd" style="inner">groupAdd</h2>
+
+    <p>Adds the user to the specified group. The user will only be
+    added if the group exists and is public. Furthermore, the change
+    is not saved until the <ref id="save">save()</ref> method is
+    called.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>groupAdd(name) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code adds a group "Newslist" from the current user:</p>
+
+    <example>
+      <preformat>${liquidsite.user.groupAdd("Newslist")}
+&lt;#assign result = liquidsite.user.save()&gt;</preformat>
+    </example>
+
+
+    <separator/>
+ 
+    <h2 id="groupRemove" style="inner">groupRemove</h2>
+
+    <p>Removes the user from the specified group. The user will only
+    be removed if the group exists and is public. Furthermore, the
+    change is not saved until the <ref id="save">save()</ref> method
+    is called.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>groupRemove(name) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This code removes a group "Newslist" from the current user:</p>
+
+    <example>
+      <preformat>${liquidsite.user.groupRemove("Newslist")}
+&lt;#assign result = liquidsite.user.save()&gt;</preformat>
     </example>
 
 
