@@ -296,6 +296,35 @@ public class Group extends PersistentObject {
     }
 
     /**
+     * Checks if this group is public. A public group allows users
+     * to add or remove themselves to or from the group. This is used
+     * in the template API to allow users administer some of their
+     * group memberships. The public groups should not be security
+     * related, but only used for other things such as mailing list
+     * membership and similar.
+     *
+     * @return true if this group is public, or
+     *         false otherwise
+     */
+    public boolean isPublic() {
+        return data.getBoolean(GroupData.PUBLIC);
+    }
+
+    /**
+     * Sets the public group flag. A public group allows users to add
+     * or remove themselves to or from the group. This is used in the
+     * template API to allow users administer some of their group
+     * memberships. The public groups should not be security related,
+     * but only used for other things such as mailing list membership
+     * and similar.
+     *
+     * @param value          the new flag value
+     */
+    public void setPublic(boolean value) {
+        data.setBoolean(GroupData.PUBLIC, value);
+    }
+
+    /**
      * Returns the group comment.
      *
      * @return the group comment

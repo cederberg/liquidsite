@@ -252,6 +252,7 @@ public class UsersEditFormHandler extends AdminFormHandler {
         throws ContentException, ContentSecurityException {
 
         group.setDescription(request.getParameter("description", ""));
+        group.setPublic(request.getParameter("public") != null);
         group.setComment(request.getParameter("comment", ""));
         group.save(request.getUser());
     }

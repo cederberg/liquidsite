@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -246,6 +246,7 @@ public class UsersAddFormHandler extends AdminFormHandler {
 
         group = new Group(manager, domain, request.getParameter("name"));
         group.setDescription(request.getParameter("description", ""));
+        group.setPublic(request.getParameter("public") != null);
         group.setComment(request.getParameter("comment", ""));
         group.save(request.getUser());
     }

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin.view;
@@ -277,6 +277,7 @@ public class UserView extends AdminView {
     public void viewEditGroup(Request request, Group group) {
         String  defaultName;
         String  defaultDescription;
+        String  defaultPublic;
         String  defaultComment;
         String  str;
 
@@ -284,10 +285,12 @@ public class UserView extends AdminView {
         if (group != null) {
             defaultName = group.getName();
             defaultDescription = group.getDescription();
+            defaultPublic = String.valueOf(group.isPublic());
             defaultComment = group.getComment();
         } else {
             defaultName = "";
             defaultDescription = "";
+            defaultPublic = "false";
             defaultComment = "";
         }
 
@@ -298,6 +301,15 @@ public class UserView extends AdminView {
         request.setAttribute("name", str);
         str = request.getParameter("description", defaultDescription);
         request.setAttribute("description", str);
+        if (request.getParameter("comment") == null) {
+            request.setAttribute("public", defaultPublic);
+        } else {
+            if (request.getParameter("public") != null) {
+                request.setAttribute("public", "true");
+            } else {
+                request.setAttribute("public", "false");
+            }
+        }
         str = request.getParameter("comment", defaultComment);
         request.setAttribute("comment", str);
         AdminUtils.sendTemplate(request, "admin/edit-group.ftl");

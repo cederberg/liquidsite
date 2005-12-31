@@ -75,10 +75,28 @@
         </tr>
         <tr>
           <th>
+            Public:
+          </th>
+          <td class="field">
+<#if public = "true">
+            <input type="checkbox" tabindex="3" checked="checked"
+<#else>
+            <input type="checkbox" tabindex="3"
+</#if>
+                   name="public" value="true" />
+            <p>The the public group flag. A public group allows users
+            to add or remove themselves to or from the group. The
+            public groups should not be security related, but only
+            used for other things such as mailing list membership and
+            similar.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
             Comment:
           </th>
           <td class="field">
-            <input type="text" tabindex="3" size="30"
+            <input type="text" tabindex="4" size="30"
                    name="comment" value="${comment}" />
             <p>The group comment. This annotation area is only visible
             for the domain administrators and isn't shown for users.</p>
