@@ -30,6 +30,7 @@ import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.Lock;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.FormValidationException;
 import org.liquidsite.core.web.FormValidator;
@@ -178,8 +179,13 @@ class PublishDialogHandler extends AdminDialogHandler {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Content[]       children;
+        Lock            lock;
 
         if (!content.isOnline() || content.getRevisionNumber() == 0) {
+            lock = content.getLock();
+            if (lock != null) {
+                lock.delete(user);
+            }
             if (content.getRevisionNumber() == 0) {
                 content.setRevisionNumber(content.getMaxRevisionNumber() + 1);
             } else {
