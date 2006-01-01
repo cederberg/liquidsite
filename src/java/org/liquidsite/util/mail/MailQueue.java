@@ -64,6 +64,12 @@ public class MailQueue {
     private static final int MAX_WAIT_SIZE = 1000;
 
     /**
+     * The maximum number of email messages to send from each
+     * processing round of a message.
+     */
+    private static final int MAX_SEND_COUNT = 10;
+
+    /**
      * The default mail message header.
      */
     private static final String DEFAULT_HEADER = "";
@@ -312,7 +318,9 @@ public class MailQueue {
     }
 
     /**
-     * Processes the specified mail message.
+     * Processes the specified mail message. This will attempt to
+     * send a number of generated mails from the message, although
+     * not all.
      *
      * @param message        the mail message to send
      *
@@ -327,6 +335,7 @@ public class MailQueue {
         Transport  transport;
         Message    msg;
         String     error;
+        int        count = 0;
 
         // Connect to SMTP server
         try {
@@ -352,11 +361,12 @@ public class MailQueue {
             throw new MailTransportException(error, e);
         }
 
-        // Send one mail message
+        // Send a number of mail messages
         try {
-            if (message.hasMoreMessages()) {
+            while (message.hasMoreMessages() && count < MAX_SEND_COUNT) {
                 msg = message.getNextMessage(session);
                 transport.sendMessage(msg, msg.getAllRecipients());
+                count++;
             }
         } catch (SendFailedException e) {
             error = "failed to send mail message";
