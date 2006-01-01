@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.liquidsite.core.data.ContentData;
 import org.liquidsite.core.data.DataSource;
@@ -95,9 +95,9 @@ public class ContentTemplate extends Content {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public Collection getAllElementNames() throws ContentException {
+    public List getAllElementNames() throws ContentException {
         ContentTemplate  parent;
-        Collection       res = getLocalElementNames();
+        List             res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
 
@@ -122,7 +122,7 @@ public class ContentTemplate extends Content {
      *
      * @return a collection of page element names
      */
-    public Collection getLocalElementNames() {
+    public List getLocalElementNames() {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
         String     name;

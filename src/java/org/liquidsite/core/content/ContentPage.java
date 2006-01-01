@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.liquidsite.core.data.ContentData;
 import org.liquidsite.core.data.DataSource;
@@ -151,18 +151,18 @@ public class ContentPage extends Content {
      *
      * @param user           the user performing the operation
      *
-     * @return a collection of page element names
+     * @return a list of page element names
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      * @throws ContentSecurityException if the user didn't have read
      *             access to the template
      */
-    public Collection getAllElementNames(User user)
+    public List getAllElementNames(User user)
         throws ContentException, ContentSecurityException {
 
         ContentTemplate  template;
-        Collection       res = getLocalElementNames();
+        List             res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
 
@@ -184,9 +184,9 @@ public class ContentPage extends Content {
      * is not present in this collection, it may still be present in
      * the template and thus returned by getElement().
      *
-     * @return a collection of page element names
+     * @return a list of page element names
      */
-    public Collection getLocalElementNames() {
+    public List getLocalElementNames() {
         ArrayList  list = new ArrayList();
         Iterator   iter = getAttributeNames();
         String     name;
