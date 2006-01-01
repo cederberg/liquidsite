@@ -220,6 +220,11 @@ public class TaggedFormatter {
                 } else if (tag.equals("</item>")) {
                     result.setLength(backupLength);
                     pos = newPos;
+                } else if (tag.startsWith("<list")) {
+                    result.append("\n");
+                    pos = cleanList(text, newPos, result);
+                    pos = cleanTagEnd(text, pos, "</list>", result);
+                    result.append("\n");
                 } else if (tag.equals("</list>")) {
                     result.setLength(backupLength);
                     break;
@@ -523,7 +528,7 @@ public class TaggedFormatter {
                                        FormattingContext context,
                                        StringBuffer result) {
 
-        if (text.startsWith("<list>", pos)) {
+        if (text.startsWith("<list", pos)) {
             pos = formatHtmlList(text, pos, context, result);
         } else if (text.startsWith("<h1>", pos)
                 || text.startsWith("<h2>", pos)
@@ -557,7 +562,9 @@ public class TaggedFormatter {
 
         while (pos < text.length()
             && !text.startsWith("\n\n", pos)
+            && !text.startsWith("<list", pos)
             && !text.startsWith("</list>", pos)
+            && !text.startsWith("<item>", pos)
             && !text.startsWith("</item>", pos)) {
 
             switch (text.charAt(pos)) {
@@ -618,6 +625,9 @@ public class TaggedFormatter {
             } else if (text.startsWith("</item>", pos)) {
                 pos = formatHtmlTag(text, pos, context, result);
                 result.append("\n\n");
+            } else if (text.startsWith("<list", pos)) {
+                pos = formatHtmlList(text, pos, context, result);
+                result.append("\n");
             } else if (text.startsWith("</list>", pos)) {
                 return formatHtmlTag(text, pos, context, result);
             } else {
