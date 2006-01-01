@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004, 2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.text;
@@ -238,10 +238,15 @@ public class TaggedFormatter {
                     break;
                 }
             } else {
+                backupLength = result.length();
                 result.append("<item>");
-                pos = cleanInline(text, pos, result);
-                pos = cleanTagEnd(text, pos, "</item>", result);
-                result.append("\n");
+                newPos = cleanInline(text, pos, result);
+                if (newPos != pos) {
+                    pos = cleanTagEnd(text, newPos, "</item>", result);
+                    result.append("\n");
+                } else {
+                    result.setLength(backupLength);
+                }
             }
         }
         return pos;
