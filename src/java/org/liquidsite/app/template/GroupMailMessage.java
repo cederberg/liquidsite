@@ -19,7 +19,7 @@
  * Copyright (c) 2006 Per Cederberg. All rights reserved.
  */
 
-package org.liquidsite.util.mail;
+package org.liquidsite.app.template;
 
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
@@ -29,6 +29,8 @@ import javax.mail.internet.MimeMessage;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
+import org.liquidsite.util.mail.MailMessage;
+import org.liquidsite.util.mail.MailMessageException;
 
 /**
  * A group email message. This class is used for creating email

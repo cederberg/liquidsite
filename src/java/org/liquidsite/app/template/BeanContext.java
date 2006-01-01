@@ -40,7 +40,6 @@ import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
-import org.liquidsite.util.mail.GroupMailMessage;
 import org.liquidsite.util.mail.MailMessageException;
 import org.liquidsite.util.mail.MailQueue;
 import org.liquidsite.util.mail.SimpleMailMessage;
