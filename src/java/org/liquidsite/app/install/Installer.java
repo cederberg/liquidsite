@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.install;
@@ -26,10 +26,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.liquidsite.core.data.AttributeData;
+import org.liquidsite.core.data.AttributePeer;
 import org.liquidsite.core.data.ContentPeer;
 import org.liquidsite.core.data.DataObjectException;
 import org.liquidsite.core.data.DataSource;
 import org.liquidsite.core.data.PermissionPeer;
+import org.liquidsite.core.text.TaggedFormatter;
 import org.liquidsite.util.db.DatabaseConnection;
 import org.liquidsite.util.db.DatabaseConnectionException;
 import org.liquidsite.util.db.DatabaseConnector;
@@ -37,7 +40,6 @@ import org.liquidsite.util.db.DatabaseDataException;
 import org.liquidsite.util.db.DatabaseException;
 import org.liquidsite.util.db.DatabaseQuery;
 import org.liquidsite.util.db.DatabaseResults;
-import org.liquidsite.util.db.MySQLDatabaseConnector;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -52,7 +54,7 @@ public class Installer {
     /**
      * The class logger.
      */
-    private static final Log LOG = new Log(Installer.class);
+    static final Log LOG = new Log(Installer.class);
 
     /**
      * The version to install.
@@ -62,7 +64,7 @@ public class Installer {
     /**
      * The database connector to use.
      */
-    private MySQLDatabaseConnector connector;
+    private DatabaseConnector connector;
 
     /**
      * The SQL file directory.
@@ -82,7 +84,7 @@ public class Installer {
      * @param sqlDir         the base directory for the SQL files
      */
     public Installer(String version,
-                     MySQLDatabaseConnector connector,
+                     DatabaseConnector connector,
                      File sqlDir) {
 
         this.version = version;
@@ -94,14 +96,12 @@ public class Installer {
         updaters.add(new DatabaseUpdater("0.4",
                                          "0.5",
                                          "UPDATE_LIQUIDSITE_TABLES_0.5.sql"));
-        updaters.add(new Version06DatabaseUpdater(connector));
+        updaters.add(new Version06DatabaseUpdater());
         updaters.add(new DatabaseUpdater("0.6", "0.7"));
         updaters.add(new DatabaseUpdater("0.7", "0.8"));
         updaters.add(new DatabaseUpdater("0.8", "0.8.1"));
         updaters.add(new DatabaseUpdater("0.8.1", "0.8.2"));
-        updaters.add(new DatabaseUpdater("0.8.2",
-                                         "0.9",
-                                         "UPDATE_LIQUIDSITE_TABLES_0.9.sql"));
+        updaters.add(new Version09DatabaseUpdater());
     }
 
     /**
@@ -375,10 +375,7 @@ public class Installer {
 
 
     /**
-     * A database updater. This class handles a database update from
-     * one version to another. Multiple database updaters can be
-     * chained together to provide an update path across several
-     * versions.
+     * A database updater for version 0.6.
      *
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
@@ -386,18 +383,10 @@ public class Installer {
     private class Version06DatabaseUpdater extends DatabaseUpdater {
 
         /**
-         * The data source to use.
-         */
-        private DataSource src;
-
-        /**
          * Creates a new database updater for version 0.6.
-         *
-         * @param connector      the database connector to use
          */
-        public Version06DatabaseUpdater(DatabaseConnector connector) {
+        public Version06DatabaseUpdater() {
             super("0.5", "0.6", "UPDATE_LIQUIDSITE_TABLES_0.6.sql");
-            this.src = new DataSource(connector);
         }
 
         /**
@@ -414,6 +403,7 @@ public class Installer {
         protected void updateTableContent(DatabaseConnection con)
             throws DatabaseException {
 
+            DataSource       src = new DataSource(con);
             DatabaseQuery    query = new DatabaseQuery();
             DatabaseResults  res;
 
@@ -427,8 +417,6 @@ public class Installer {
                     throw new DatabaseException(e.getMessage());
                 } catch (DataObjectException e) {
                     throw new DatabaseException(e.getMessage());
-                } finally {
-                    src.close();
                 }
             }
 
@@ -445,8 +433,76 @@ public class Installer {
                     throw new DatabaseException(e.getMessage());
                 } catch (DataObjectException e) {
                     throw new DatabaseException(e.getMessage());
-                } finally {
-                    src.close();
+                }
+            }
+        }
+    }
+
+
+    /**
+     * A database updater for version 0.9.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    private class Version09DatabaseUpdater extends DatabaseUpdater {
+
+        /**
+         * Creates a new database updater for version 0.9.
+         */
+        public Version09DatabaseUpdater() {
+            super("0.8.2", "0.9", "UPDATE_LIQUIDSITE_TABLES_0.9.sql");
+        }
+
+        /**
+         * Updates the Liquid Site database table content. This method
+         * is called by the updateTables() method, directly after
+         * executing the SQL script and before calling the next
+         * updater in the chain.
+         *
+         * @param con            the database connection to use
+         *
+         * @throws DatabaseException if a database statement execution
+         *             failed
+         */
+        protected void updateTableContent(DatabaseConnection con)
+            throws DatabaseException {
+
+            DataSource       src = new DataSource(con);
+            DatabaseQuery    query = new DatabaseQuery();
+            DatabaseResults  res;
+            AttributeData    data;
+            int              id;
+            int              revision;
+            String           name;
+            String           str;
+
+            // Clean tagged text document attributes
+            query.setSql("SELECT CONTENT, REVISION, NAME " +
+                         "FROM LS_ATTRIBUTE " +
+                         "WHERE NAME LIKE 'PROPERTYTYPE.%' AND DATA = '2'");
+            res = con.execute(query);
+            for (int i = 0; i < res.getRowCount(); i++) {
+                try {
+                    id = res.getRow(i).getInt(0);
+                    revision = res.getRow(i).getInt(1);
+                    name = "PROPERTY." +
+                           res.getRow(i).getString(2).substring(13);
+                    LOG.info("cleaning tagged text in content " +
+                             id + " revision " + revision +
+                             " property " + name.substring(9));
+                    data = AttributePeer.doSelectByName(src,
+                                                        id,
+                                                        revision,
+                                                        name);
+                    str = data.getString(AttributeData.DATA);
+                    data.setString(AttributeData.DATA,
+                                   TaggedFormatter.clean(str));
+                    AttributePeer.doUpdate(src, data);
+                } catch (DatabaseDataException e) {
+                    throw new DatabaseException(e.getMessage());
+                } catch (DataObjectException e) {
+                    throw new DatabaseException(e.getMessage());
                 }
             }
         }

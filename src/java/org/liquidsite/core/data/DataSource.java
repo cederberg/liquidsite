@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
@@ -43,7 +43,7 @@ public class DataSource {
     /**
      * The database connector to use.
      */
-    private DatabaseConnector database;
+    private DatabaseConnector database = null;
 
     /**
      * The database connection currently in use.
@@ -51,12 +51,24 @@ public class DataSource {
     private DatabaseConnection connection = null;
 
     /**
-     * Creates a new data source.
+     * Creates a new data source. The specified database connector
+     * will be used to get and return a database connection.
      *
      * @param database       the database connector to use
      */
     public DataSource(DatabaseConnector database) {
         this.database = database;
+    }
+
+    /**
+     * Creates a new data source. The specified database connection
+     * will be used continously. The open and close operation will
+     * not have any effect for data sources created in this way.
+     *
+     * @param connection     the database connection to use
+     */
+    public DataSource(DatabaseConnection connection) {
+        this.connection = connection;
     }
 
     /**
@@ -85,11 +97,13 @@ public class DataSource {
      * @see #close()
      */
     public void open() throws DataObjectException {
-        try {
-            connection = database.getConnection();
-        } catch (DatabaseConnectionException e) {
-            LOG.error(e.getMessage());
-            throw new DataObjectException(e);
+        if (connection == null) {
+            try {
+                connection = database.getConnection();
+            } catch (DatabaseConnectionException e) {
+                LOG.error(e.getMessage());
+                throw new DataObjectException(e);
+            }
         }
     }
 
@@ -104,7 +118,7 @@ public class DataSource {
      * @see #open()
      */
     public void close() {
-        if (connection != null) {
+        if (database != null && connection != null) {
             database.returnConnection(connection);
             connection = null;
         }
