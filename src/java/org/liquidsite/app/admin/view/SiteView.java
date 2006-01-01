@@ -16,14 +16,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.liquidsite.app.admin.AdminUtils;
 import org.liquidsite.app.servlet.Application;
@@ -393,20 +396,21 @@ public class SiteView extends AdminView {
     public void viewEditPage(Request request, Content reference)
         throws ContentException, ContentSecurityException {
 
-        User         user = request.getUser();
-        ContentPage  page;
-        ContentSite  site;
-        String       name;
-        int          parent;
-        ArrayList    folders = null;
-        String       template;
-        ArrayList    templates;
-        String       comment;
-        boolean      publish;
-        HashMap      locals = new HashMap();
-        Iterator     iter;
-        String       value;
-        String       str;
+        User          user = request.getUser();
+        ContentPage   page;
+        ContentSite   site;
+        String        name;
+        int           parent;
+        ArrayList     folders = null;
+        String        template;
+        ArrayList     templates;
+        String        comment;
+        boolean       publish;
+        List          localNames;
+        LinkedHashMap locals = new LinkedHashMap();
+        Iterator      iter;
+        String        value;
+        String        str;
 
         // Find default values
         AdminUtils.setReference(request, reference);
@@ -423,7 +427,9 @@ public class SiteView extends AdminView {
             } else {
                 comment = "";
             }
-            iter = page.getLocalElementNames().iterator();
+            localNames = page.getLocalElementNames();
+            Collections.sort(localNames);
+            iter = localNames.iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
                 value = page.getElement(user, str);
@@ -641,15 +647,16 @@ public class SiteView extends AdminView {
                                  ContentTemplate template)
         throws ContentException {
 
-        String     name;
-        String     comment;
-        HashMap    locals = new HashMap();
-        int        inherited;
-        ArrayList  templates = null;
-        boolean    publish;
-        Iterator   iter;
-        String     value;
-        String     str;
+        String        name;
+        String        comment;
+        List          localNames;
+        LinkedHashMap locals = new LinkedHashMap();
+        int           inherited;
+        ArrayList     templates = null;
+        boolean       publish;
+        Iterator      iter;
+        String        value;
+        String        str;
 
         // Find default values
         if (parent != null) {
@@ -676,7 +683,9 @@ public class SiteView extends AdminView {
             } else {
                 comment = "";
             }
-            iter = template.getLocalElementNames().iterator();
+            localNames = template.getLocalElementNames();
+            Collections.sort(localNames);
+            iter = localNames.iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
                 value = template.getElement(str);
@@ -733,17 +742,22 @@ public class SiteView extends AdminView {
                                     ContentTemplate template)
         throws ContentException {
 
-        HashMap   locals = new HashMap();
-        HashMap   inherited = new HashMap();
-        Iterator  iter;
-        String    name;
+        LinkedHashMap locals = new LinkedHashMap();
+        LinkedHashMap inherited = new LinkedHashMap();
+        List          names;
+        Iterator      iter;
+        String        name;
 
-        iter = template.getLocalElementNames().iterator();
+        names = template.getLocalElementNames();
+        Collections.sort(names);
+        iter = names.iterator();
         while (iter.hasNext()) {
             name = iter.next().toString();
             locals.put(name, template.getElement(name));
         }
-        iter = template.getAllElementNames().iterator();
+        names = template.getAllElementNames();
+        Collections.sort(names);
+        iter = names.iterator();
         while (iter.hasNext()) {
             name = iter.next().toString();
             if (!locals.containsKey(name)) {
