@@ -16,15 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.util.mail;
 
-import java.util.Date;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -35,15 +35,17 @@ import javax.mail.internet.MimeMessage;
 import org.liquidsite.util.log.Log;
 
 /**
- * An email message. This class is used for creating email messages
- * for the outgoing mail queue. Even though a message is registered
- * with multiple recipients, a single unique message will be sent to
- * each of the recipients.
+ * An email message. This is the base class for all types of email
+ * messages in the outgoing mail queue. The queue will iterate over
+ * all the message recipients one by one and send each one a single
+ * unique message. Due to queueing considerations, it is possible
+ * that other messages are delivered before all emails have been
+ * generated for a message.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class MailMessage {
+public abstract class MailMessage {
 
     /**
      * The class logger.
@@ -54,12 +56,6 @@ public class MailMessage {
      * The character set to use for the messages.
      */
     private static final String CHARACTER_SET = "ISO-8859-1";
-
-    /**
-     * The list of mail recipients. This list contains InternetAddress
-     * instances.
-     */
-    private ArrayList recipients = new ArrayList();
 
     /**
      * The message reply-to address.
@@ -82,38 +78,6 @@ public class MailMessage {
     private HashMap attributes = new HashMap();
 
     /**
-     * Creates a new empty mail message.
-     */
-    public MailMessage() {
-        // No further initialization needed
-    }
-
-    /**
-     * Returns a string representation of this mail message.
-     *
-     * @return a string representation of this mail message
-     */
-    public String toString() {
-        StringBuffer  buffer = new StringBuffer();
-        String        str;
-
-        buffer.append("To: ");
-        buffer.append(getRecipients());
-        buffer.append("\n");
-        str = getReplyTo();
-        if (str != null) {
-            buffer.append("Reply-To: ");
-            buffer.append(str);
-            buffer.append("\n");
-        }
-        buffer.append("Subject: ");
-        buffer.append(getSubject());
-        buffer.append("\n\n");
-        buffer.append(getText());
-        return buffer.toString();
-    }
-
-    /**
      * Checks if this message is valid. A message becomes valid once
      * it has at least one recipient and non-empty subject and text
      * content.
@@ -122,74 +86,18 @@ public class MailMessage {
      *         false otherwise
      */
     public boolean isValid() {
-        return recipients.size() > 0
-            && subject.length() > 0
+        return subject.length() > 0
             && text.length() > 0;
     }
 
     /**
-     * Returns a string representation of the list of message
-     * recipients.
+     * Returns a string representation of the message recipient. This
+     * method is used for logging purposes, so the returned string
+     * shouldn't be too long. 
      *
-     * @return the message recipients, each separated with a comma (',')
+     * @return the message recipient
      */
-    public String getRecipients() {
-        StringBuffer  buffer = new StringBuffer();
-
-        for (int i = 0; i < recipients.size(); i++) {
-            if (i > 0) {
-                buffer.append(", ");
-            }
-            buffer.append(recipients.get(i).toString());
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Sets the list of message recipients. The list is a string of
-     * comma separated mail addesses with the format specified in RFC
-     * 822. This method will clear any previously existing message
-     * recipients.
-     *
-     * @param recipients     the message recipient addresses
-     *
-     * @throws MailMessageException if the list of message recipient
-     *             addresses wasn't possible to parse correctly
-     */
-    public void setRecipients(String recipients)
-        throws MailMessageException {
-
-        this.recipients.clear();
-        addRecipients(recipients);
-    }
-
-    /**
-     * Adds a list of message recipients. The list is a string of
-     * comma separated mail addesses with the format specified in RFC
-     * 822.
-     *
-     * @param recipients     the message recipient addresses
-     *
-     * @throws MailMessageException if the list of message recipient
-     *             addresses wasn't possible to parse correctly
-     */
-    public void addRecipients(String recipients)
-        throws MailMessageException {
-
-        InternetAddress[]  addresses;
-        String             error;
-
-        try {
-            addresses = InternetAddress.parse(recipients);
-        } catch (AddressException e) {
-            error = "failed to parse mail address(es) '" + recipients + "'";
-            LOG.info(error, e);
-            throw new MailMessageException(error, e);
-        }
-        for (int i = 0; i < addresses.length; i++) {
-            this.recipients.add(addresses[i]);
-        }
-    }
+    public abstract String getRecipient();
 
     /**
      * Returns the message reply to address.
@@ -203,6 +111,16 @@ public class MailMessage {
         } else {
             return replyTo.toString();
         }
+    }
+
+    /**
+     * Returns the message reply to address.
+     *
+     * @return the message reply to address, or
+     *         null if none has been set
+     */
+    public InternetAddress getReplyToAddress() {
+        return replyTo;
     }
 
     /**
@@ -303,46 +221,66 @@ public class MailMessage {
     }
 
     /**
-     * Creates the Java mail MIME messages corresponding to this
+     * Checks if there remains any Java mail MIME messages to
+     * generate.
+     *
+     * @return true if there are more messages to generate, or
+     *         false otherwise
+     */
+    protected abstract boolean hasMoreMessages();
+
+    /**
+     * Creates the next Java mail MIME message from this mail
      * message.
      *
      * @param session        the Java mail session
      *
-     * @return the Java MIME messages created
+     * @return the Java MIME message created
      *
-     * @throws MailMessageException if the messages couldn't be
+     * @throws MailMessageException if the message couldn't be
      *             created correctly
      */
-    protected MimeMessage[] createMessages(Session session)
+    protected abstract MimeMessage getNextMessage(Session session)
+        throws MailMessageException;
+
+    /**
+     * Creates a Java mail MIME message.
+     *
+     * @param session        the Java mail session
+     * @param recipient      the mail recipient
+     *
+     * @return the Java MIME message created
+     *
+     * @throws MailMessageException if the message couldn't be
+     *             created correctly
+     */
+    protected MimeMessage createMessage(Session session,
+                                        InternetAddress recipient)
         throws MailMessageException {
 
-        MimeMessage[]      msgs = new MimeMessage[recipients.size()];
-        InternetAddress[]  addresses;
-        String             error;
+        MimeMessage       msg = new MimeMessage(session);
+        InternetAddress[] addresses;
+        String            error;
 
         try {
-            for (int i = 0; i < recipients.size(); i++) {
-                msgs[i] = new MimeMessage(session);
-                msgs[i].setSentDate(new Date());
-                msgs[i].setFrom();
-                if (replyTo != null) {
-                    addresses = new InternetAddress[1];
-                    addresses[0] = replyTo;
-                    msgs[i].setReplyTo(addresses);
-                }
+            msg.setSentDate(new Date());
+            msg.setFrom();
+            if (getReplyToAddress() != null) {
                 addresses = new InternetAddress[1];
-                addresses[0] = (InternetAddress) recipients.get(i);
-                msgs[i].setRecipients(Message.RecipientType.TO, addresses);
-                msgs[i].setSubject(subject, CHARACTER_SET);
-                msgs[i].setText(text, CHARACTER_SET);
-                msgs[i].saveChanges();
+                addresses[0] = getReplyToAddress();
+                msg.setReplyTo(addresses);
             }
+            addresses = new InternetAddress[1];
+            addresses[0] = recipient;
+            msg.setRecipients(Message.RecipientType.TO, addresses);
+            msg.setSubject(getSubject(), CHARACTER_SET);
+            msg.setText(getText(), CHARACTER_SET);
+            msg.saveChanges();
         } catch (MessagingException e) {
-            error = "failed to create mail message to '" + getRecipients() +
-                    "'";
+            error = "failed to create mail message to '" + recipient + "'";
             LOG.error(error, e);
             throw new MailMessageException(error, e);
         }
-        return msgs;
+        return msg;
     }
 }

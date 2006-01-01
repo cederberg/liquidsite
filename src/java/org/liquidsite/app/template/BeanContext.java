@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -40,9 +40,10 @@ import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
-import org.liquidsite.util.mail.MailMessage;
+import org.liquidsite.util.mail.GroupMailMessage;
 import org.liquidsite.util.mail.MailMessageException;
 import org.liquidsite.util.mail.MailQueue;
+import org.liquidsite.util.mail.SimpleMailMessage;
 
 /**
  * A template bean context. This class holds contains references to
@@ -666,10 +667,39 @@ class BeanContext {
      *         false otherwise
      */
     public boolean sendMail(String receiver, String subject, String text) {
-        MailMessage  msg = new MailMessage();
+        SimpleMailMessage  msg = new SimpleMailMessage();
 
         try {
             msg.setRecipients(receiver);
+            msg.setSubject(subject);
+            msg.setText(text);
+            msg.setAttribute("URL", request.getUrl() );
+            msg.setAttribute("IP", request.getRemoteAddr());
+            MailQueue.getInstance().add(msg);
+            return true;
+        } catch (MailMessageException e) {
+            LOG.warning("couldn't send mail", e);
+            return false;
+        }
+    }
+
+    /**
+     * Sends an email to all the members in a group. The email will
+     * not be sent immediately, but rather queued in the outgoing
+     * mail queue.
+     *
+     * @param receiver       the message recipient group
+     * @param subject        the message subject line
+     * @param text           the message text
+     *
+     * @return true if the mail could be queued correctly, or
+     *         false otherwise
+     */
+    public boolean sendMail(Group receiver, String subject, String text) {
+        GroupMailMessage  msg = new GroupMailMessage();
+
+        try {
+            msg.setRecipient(receiver);
             msg.setSubject(subject);
             msg.setText(text);
             msg.setAttribute("URL", request.getUrl() );

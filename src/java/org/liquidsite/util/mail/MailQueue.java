@@ -16,11 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.util.mail;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -53,9 +54,14 @@ public class MailQueue {
     private static final Log LOG = new Log(MailQueue.class);
 
     /**
-     * The maximum mail queue size.
+     * The maximum mail process queue size.
      */
-    private static final int MAX_QUEUE_SIZE = 1000;
+    private static final int MAX_PROCESS_SIZE = 5;
+
+    /**
+     * The maximum mail wait queue size.
+     */
+    private static final int MAX_WAIT_SIZE = 1000;
 
     /**
      * The default mail message header.
@@ -79,10 +85,23 @@ public class MailQueue {
     private static MailQueue instance = null;
 
     /**
-     * The actual queue containing the mail messages. New messages are
-     * added last and sending is performed in FIFO order.
+     * The mail processing queue. This queue is completely internal
+     * and is only modified when processing mails (and there is
+     * therefore no need for thread synchronization). The mail
+     * messages in this queue are processed in a round-robin fashion
+     * until all mails have been generated. At that point the mail
+     * message is removed from this queue. 
      */
-    private LinkedList queue = new LinkedList();
+    private ArrayList processQueue = new ArrayList(MAX_PROCESS_SIZE);
+
+    /**
+     * The mail wait queue. New messages are added last to this queue
+     * by any thread in the system. All accesses to this queue must
+     * therefore be strictly synchronized to avoid race conditions.
+     * The mail messages are moved from this queue to the process
+     * queue in FIFO order when a processing slot is available.
+     */
+    private LinkedList waitQueue = new LinkedList();
 
     /**
      * The mail session. This object contains the SMTP configuration
@@ -207,25 +226,25 @@ public class MailQueue {
 
         if (!message.isValid()) {
             error = "invalid mail message to '" +
-                    message.getRecipients() + "'";
+                    message.getRecipient() + "'";
             LOG.warning(error);
             throw new MailMessageException(error);
         }
-        if (queue.size() >= MAX_QUEUE_SIZE) {
+        if (waitQueue.size() >= MAX_WAIT_SIZE) {
             error = "mail queue full, message to '" +
-                    message.getRecipients() + "' rejected";
+                    message.getRecipient() + "' rejected";
             LOG.error(error);
             throw new MailMessageException(error);
         }
         if (session == null) {
             error = "mail not initialized, message to '" +
-                    message.getRecipients() + "' rejected";
+                    message.getRecipient() + "' rejected";
             LOG.error(error);
             throw new MailMessageException(error);
         }
         adjustMessageText(message);
         enqueue(message);
-        LOG.trace("queued mail message to '" + message.getRecipients() + "'");
+        LOG.trace("queued mail message to '" + message.getRecipient() + "'");
     }
 
     /**
@@ -264,44 +283,50 @@ public class MailQueue {
      *             be initialized correctly
      */
     public void process() throws MailTransportException {
-        int          count = queue.size();
         MailMessage  message;
 
-        while (count-- > 0) {
+        // Fill up process queue
+        while (processQueue.size() < MAX_PROCESS_SIZE &&
+               waitQueue.size() > 0) {
+
+            message = dequeue();
+            processQueue.add(message);
+            LOG.trace("starting processing of mail message to '" +
+                      message.getRecipient() + "'");
+        }
+
+        // Loop through process queue once
+        for (int i = 0; i < processQueue.size(); i++) {
+            message = (MailMessage) processQueue.get(i);
             try {
-                processFirst();
+                processMessage(message);
             } catch (MailMessageException e) {
-                message = dequeue();
-                LOG.error("dumping message due to error:\n\n" + message + "\n");
+                // Do nothing, message will skip to next address
+            }
+            if (!message.hasMoreMessages()) {
+                processQueue.remove(i--);
+                LOG.trace("finished processing of mail message to '" +
+                          message.getRecipient() + "'");
             }
         }
     }
 
     /**
-     * Processes the first mail message in the queue. If the queue is
-     * empty, nothing is done. The message is removed from the queue
-     * only if it has been sent correctly.
+     * Processes the specified mail message.
+     *
+     * @param message        the mail message to send
      *
      * @throws MailTransportException if the mail transport couldn't
      *             be initialized correctly
      * @throws MailMessageException if the mail message couldn't be
      *             sent due to an error in the message 
      */
-    private void processFirst()
+    private void processMessage(MailMessage message)
         throws MailTransportException, MailMessageException {
 
-        MailMessage  message;
-        Transport    transport;
-        Message[]    msgs;
-        String       error;
-
-        // Get first message
-        message = getFirst();
-        if (message == null || session == null) {
-            return;
-        }
-        LOG.trace("starting processing of mail message to '" +
-                  message.getRecipients() + "'");
+        Transport  transport;
+        Message    msg;
+        String     error;
 
         // Connect to SMTP server
         try {
@@ -327,11 +352,11 @@ public class MailQueue {
             throw new MailTransportException(error, e);
         }
 
-        // Send mail messages
+        // Send one mail message
         try {
-            msgs = message.createMessages(session);
-            for (int i = 0; i < msgs.length; i++) {
-                transport.sendMessage(msgs[i], msgs[i].getAllRecipients());
+            if (message.hasMoreMessages()) {
+                msg = message.getNextMessage(session);
+                transport.sendMessage(msg, msg.getAllRecipients());
             }
         } catch (SendFailedException e) {
             error = "failed to send mail message";
@@ -348,50 +373,30 @@ public class MailQueue {
                 // Ignore this
             }
         }
-
-        // Dequeue sent message
-        dequeue();
-        LOG.trace("finished processing of mail message to '" +
-                  message.getRecipients() + "'");
     }
 
     /**
-     * Returns the first mail message in the queue. This method is
-     * thread-safe.
-     *
-     * @return the first mail message in the queue, or
-     *         null if the queue was empty
-     */
-    private synchronized MailMessage getFirst() {
-        if (queue.isEmpty()) {
-            return null;
-        } else {
-            return (MailMessage) queue.getFirst();
-        }
-    }
-
-    /**
-     * Adds a new message last in the queue. This method is
+     * Adds a new message last in the wait queue. This method is
      * thread-safe.
      *
      * @param message        the mail message to add
      */
     private synchronized void enqueue(MailMessage message) {
-        queue.addLast(message);
+        waitQueue.addLast(message);
     }
 
     /**
-     * Removes the first message in the queue and returns it. This
-     * method is thread-safe.
+     * Removes the first message in the wait queue and returns it.
+     * This method is thread-safe.
      *
-     * @return the removed mail message, or
+     * @return the dequeued mail message, or
      *         null if the queue was empty
      */
     private synchronized MailMessage dequeue() {
-        if (queue.isEmpty()) {
+        if (waitQueue.isEmpty()) {
             return null;
         } else {
-            return (MailMessage) queue.removeFirst();
+            return (MailMessage) waitQueue.removeFirst();
         }
     }
 }
