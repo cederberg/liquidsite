@@ -167,6 +167,15 @@
 
     <p style="indent"><code>groupAdd(name) &#8594; nothing</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>name</code> -- the string containing the group
+        name</text>
+      </item>
+    </list>
+
     <h3>Example:</h3>
 
     <p>This code adds a group "Newslist" from the current user:</p>
@@ -189,6 +198,15 @@
     <h3>Syntax:</h3>
 
     <p style="indent"><code>groupRemove(name) &#8594; nothing</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>name</code> -- the string containing the group
+        name</text>
+      </item>
+    </list>
 
     <h3>Example:</h3>
 
@@ -214,7 +232,8 @@
 
     <list style="compact">
       <item>
-        <text><code>name</code> -- the group name</text>
+        <text><code>name</code> -- the string containing the group
+        name</text>
       </item>
     </list>
 
@@ -322,6 +341,15 @@ ${user.setEmail("info@liquidsite.net")}
 
     <p style="indent"><code>setEmail(email) &#8594; nothing</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>email</code> -- the string containing the new
+        email address</text>
+      </item>
+    </list>
+
     <h3>Example:</h3>
 
     <p>This code modifies the current user email address:</p>
@@ -345,6 +373,15 @@ ${user.setEmail("info@liquidsite.net")}
     <h3>Syntax:</h3>
 
     <p style="indent"><code>setLogin(login) &#8594; nothing</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>login</code> -- the string containing the login
+        name</text>
+      </item>
+    </list>
 
     <h3>Example:</h3>
 
@@ -371,6 +408,15 @@ ${user.setEmail("info@liquidsite.net")}
 
     <p style="indent"><code>setPassword(password) &#8594; nothing</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>password</code> -- the string containing the new
+        password</text>
+      </item>
+    </list>
+
     <h3>Example:</h3>
 
     <p>This code modifies the password for the current user:</p>
@@ -391,6 +437,15 @@ ${user.setEmail("info@liquidsite.net")}
     <h3>Syntax:</h3>
 
     <p style="indent"><code>setRealName(name) &#8594; nothing</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>name</code> -- the string containing the new
+        user real name</text>
+      </item>
+    </list>
 
     <h3>Example:</h3>
 
@@ -451,6 +506,23 @@ ${user.setEmail("info@liquidsite.net")}
 
     <p style="indent"><code>sendEmailVerification(subject, text, replaceText) &#8594; boolean</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>subject</code> -- the string containing the email
+        subject text (and possibly text for replacement)</text>
+      </item>
+      <item>
+        <text><code>text</code> -- the string containing the email
+        body text (and text for replacement)</text>
+      </item>
+      <item>
+        <text><code>replaceText</code> -- the string containing the
+        text pattern to replace with the generated validation key</text>
+      </item>
+    </list>
+
     <h3>Returns:</h3>
 
     <p style="indent">True if the email was sent, or false
@@ -490,6 +562,15 @@ ${user.setEmail("info@liquidsite.net")}
     <h3>Syntax:</h3>
 
     <p style="indent"><code>verifyEmail(key) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>key</code> -- the string containing the
+        validation key from the user</text>
+      </item>
+    </list>
 
     <h3>Returns:</h3>
 
