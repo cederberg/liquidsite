@@ -16,13 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
 
 import java.util.ArrayList;
 
+import org.liquidsite.core.content.Group;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -228,6 +229,34 @@ public class LiquidSiteBean {
     public boolean mailTo(String receiver, String subject, String text) {
         LOG.trace("call to mailTo: " + receiver + "," + subject + ",...");
         return context.sendMail(receiver, subject, text);
+    }
+
+    /**
+     * Sends an email to all members of a group. The email will not
+     * be sent immediately, but rather queued in the outgoing mail
+     * queue.
+     *
+     * @param receiver       the message recipient group name
+     * @param subject        the message subject line
+     * @param text           the message text
+     *
+     * @return true if the mail could be queued correctly, or
+     *         false otherwise
+     */
+    public boolean mailToGroup(String receiver,
+                               String subject,
+                               String text) {
+
+        Group group;
+
+        LOG.trace("call to mailToGroup: " + receiver + "," +
+                  subject + ",...");
+        group = context.findGroup(receiver);
+        if (group != null) {
+            return context.sendMail(group, subject, text);
+        } else {
+            return false;
+        }
     }
 
     /**

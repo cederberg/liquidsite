@@ -19,6 +19,14 @@
         subsections specified by a path.</text>
       </item>
       <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the Liquid Site build date.</text>
+      </item>
+      <item>
+        <title><ref id="doc">doc</ref></title>
+        <text>Returns the document matched by a translator.</text>
+      </item>
+      <item>
         <title><ref
         id="findDocument">findDocument(path)</ref></title>
         <text>Returns the document corresponding to a specified
@@ -48,16 +56,21 @@
         name.</text>
       </item>
       <item>
-        <title><ref id="date">date</ref></title>
-        <text>Returns the Liquid Site build date.</text>
-      </item>
-      <item>
-        <title><ref id="doc">doc</ref></title>
-        <text>Returns the document matched by a translator.</text>
-      </item>
-      <item>
         <title><ref id="forum">forum</ref></title>
         <text>Returns the forum matched by a translator.</text>
+      </item>
+      <item>
+        <title><ref id="linkTo">linkTo</ref></title>
+        <text>Returns a relative link to an object in the same
+        site.</text>
+      </item>
+      <item>
+        <title><ref id="mailTo">mailTo</ref></title>
+        <text>Sends an email to a specified receiver.</text>
+      </item>
+      <item>
+        <title><ref id="mailToGroup">mailToGroup</ref></title>
+        <text>Sends an email to all members in a group.</text>
       </item>
       <item>
         <title><ref id="request">request</ref></title>
@@ -86,15 +99,6 @@
       <item>
         <title><ref id="version">version</ref></title>
         <text>Returns the Liquid Site version.</text>
-      </item>
-      <item>
-        <title><ref id="linkTo">linkTo</ref></title>
-        <text>Returns a relative link to an object in the same
-        site.</text>
-      </item>
-      <item>
-        <title><ref id="mailTo">mailTo</ref></title>
-        <text>Sends an email to a specified receiver.</text>
       </item>
     </list>
 
@@ -814,6 +818,49 @@ ${liquidsite.countDocuments("Section1")}.&lt;p&gt;</preformat>
 
     <example>
       <preformat>&lt;#if liquidsite.mailTo("info@liquidsite.org", "About Liquid Site" "Liquid Site rocks!")/&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="mailToGroup" style="inner">mailToGroup</h2>
+
+    <p>Sends an email to all members in a group. The email will not
+    be sent immediately, but rather queued in the outgoing mail
+    queue.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>mailToGroup(receiver, subject, text) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>receiver</code> -- the string containing the group
+        name</text>
+      </item>
+      <item>
+        <text><code>subject</code> -- the string containing the
+        subject of the email</text>
+      </item>
+      <item>
+        <text><code>text</code> -- the string containing the text
+        of the email</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">A boolean value of true if the email was queued
+    correctly, and false otherwise</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code sends an email to a group:</p>
+
+    <example>
+      <preformat>&lt;#assign res = liquidsite.mailToGroup("Newsletter", "News" "Blah blah")&gt;</preformat>
     </example>
 
   </body>
