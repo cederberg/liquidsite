@@ -219,7 +219,7 @@ class BeanContext {
             if (content instanceof ContentSection) {
                 return countDocuments((ContentSection) content);
             } else {
-                LOG.error("failed to find section: " + path);
+                LOG.info("failed to find section: " + path);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -434,7 +434,7 @@ class BeanContext {
                                         (ContentDocument) content,
                                         (ContentSection) content.getParent());
             } else {
-                LOG.warning("failed to find document: " + path);
+                LOG.info("failed to find document: " + path);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -470,7 +470,7 @@ class BeanContext {
                                      offset,
                                      count);
             } else {
-                LOG.error("failed to find section: " + path);
+                LOG.info("failed to find section: " + path);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -582,7 +582,7 @@ class BeanContext {
             if (content instanceof ContentSection) {
                 return new SectionBean(this, (ContentSection) content);
             } else {
-                LOG.error("failed to find section: " + path);
+                LOG.info("failed to find section: " + path);
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -677,7 +677,7 @@ class BeanContext {
             MailQueue.getInstance().add(msg);
             return true;
         } catch (MailMessageException e) {
-            LOG.warning("couldn't send mail", e);
+            LOG.info("couldn't send mail", e);
             return false;
         }
     }
@@ -706,7 +706,7 @@ class BeanContext {
             MailQueue.getInstance().add(msg);
             return true;
         } catch (MailMessageException e) {
-            LOG.warning("couldn't send mail", e);
+            LOG.info("couldn't send mail", e);
             return false;
         }
     }
