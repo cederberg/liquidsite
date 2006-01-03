@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -12,36 +12,6 @@
 
     <list style="compact">
       <item>
-        <title><ref id="findTopics">findTopics(offset,
-        count)</ref></title>
-        <text>Returns a number of topics in the forum.</text>
-      </item>
-      <item>
-        <title><ref id="description">description</ref></title>
-        <text>Returns the forum description.</text>
-      </item>
-      <item>
-        <title><ref id="first">first</ref></title>
-        <text>Returns the first topic in the forum.</text>
-      </item>
-      <item>
-        <title><ref id="last">last</ref></title>
-        <text>Returns the last topic in the forum.</text>
-      </item>
-      <item>
-        <title><ref id="moderator">moderator</ref></title>
-        <text>Checks whether the current logged in user is a forum
-        moderator.</text>
-      </item>
-      <item>
-        <title><ref id="realName">realName</ref></title>
-        <text>Returns the real forum name.</text>
-      </item>
-      <item>
-        <title><ref id="topicCount">topicCount</ref></title>
-        <text>Returns the number of topics in the forum.</text>
-      </item>
-      <item>
         <title><ref id="created">created</ref></title>
         <text>Returns the forum created date.</text>
       </item>
@@ -50,12 +20,43 @@
         <text>Returns the forum revision date.</text>
       </item>
       <item>
+        <title><ref id="description">description</ref></title>
+        <text>Returns the forum description.</text>
+      </item>
+      <item>
+        <title><ref id="findTopics">findTopics(offset,
+        count)</ref></title>
+        <text>Returns a number of topics in the forum.</text>
+      </item>
+      <item>
+        <title><ref id="first">first</ref></title>
+        <text>Returns the first topic in the forum.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the forum.</text>
+      </item>
+      <item>
         <title><ref id="id">id</ref></title>
         <text>Returns the forum id.</text>
       </item>
       <item>
+        <title><ref id="last">last</ref></title>
+        <text>Returns the last topic in the forum.</text>
+      </item>
+      <item>
         <title><ref id="lock">lock</ref></title>
         <text>Returns the forum lock object.</text>
+      </item>
+      <item>
+        <title><ref id="moderator">moderator</ref></title>
+        <text>Checks whether the current logged in user is a forum
+        moderator.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the forum name.</text>
       </item>
       <item>
         <title><ref id="online">online</ref></title>
@@ -70,17 +71,20 @@
         <text>Returns the forum path.</text>
       </item>
       <item>
+        <title><ref id="realName">realName</ref></title>
+        <text>Returns the real forum name.</text>
+      </item>
+      <item>
         <title><ref id="revision">revision</ref></title>
         <text>Returns the forum revision number.</text>
       </item>
       <item>
-        <title><ref id="user">user</ref></title>
-        <text>Returns the forum revision author.</text>
+        <title><ref id="topicCount">topicCount</ref></title>
+        <text>Returns the number of topics in the forum.</text>
       </item>
       <item>
-        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
-        <text>Checks whether the current logged in user has a
-        specified permission over the forum.</text>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the forum revision author.</text>
       </item>
     </list>
 
@@ -225,6 +229,29 @@
 
     <example>
       <preformat>&lt;#id liquidsite.findDocument("Section1/forum1").moderator&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="name" style="inner">name</h2>
+
+    <p>Returns the forum name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>name &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The forum name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code outputs the forum name:</p>
+
+    <example>
+      <preformat>The forum name is ${liquidsite.forum.name}.</preformat>
     </example>
 
 

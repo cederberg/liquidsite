@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -43,6 +43,10 @@
       </item>
       <item>
         <text>The <ref file="session.xml">session object</ref></text>
+      </item>
+      <item>
+        <text>The <ref file="sessiondata.xml">session data
+        object</ref></text>
       </item>
       <item>
         <text>The <ref file="topic.xml">topic object</ref></text>

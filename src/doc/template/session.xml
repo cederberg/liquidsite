@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -11,21 +11,17 @@
 
     <list style="compact">
       <item>
+        <title><ref id="get">[property name]</ref></title>
+        <text>Returns the session data object associated with a
+        specified property name.</text>
+      </item>
+      <item>
         <title><ref id="clear">clear()</ref></title>
         <text>Clears all data in the user session.</text>
       </item>
       <item>
         <title><ref id="destroy">destroy()</ref></title>
         <text>Destroys the user session.</text>
-      </item>
-      <item>
-        <title><ref id="get">[property name]</ref></title>
-        <text>Returns the session data value associated to a specified
-        property name.</text>
-      </item>
-      <item>
-        <title><ref id="isEmpty">isEmpty</ref></title>
-        <text>Checks whether the user session is empty.</text>
       </item>
     </list>
 
@@ -72,13 +68,14 @@
 
     <h2 id="get" style="inner">[property name]</h2>
 
-    <p>Returns the session data value associated to a specified
-    property name.</p>
+    <p>Returns the session data object associated with a specified
+    property name. If a new property name is used, the session data
+    object is created.</p>
 
     <h3>Syntax:</h3>
 
-    <p style="indent"><code>[property name] &#8594; freemarker
-    document model</code></p>
+    <p style="indent"><code>[property name] &#8594;
+    <ref file="sessiondata.xml">session data object</ref></code></p>
 
     <h3>Returns:</h3>
 
@@ -94,30 +91,6 @@
 &lt;#assign lang = session.preferences.lang&gt;
 &lt;#assign theme = session.preferences.theme&gt;
 &lt;#assign themeName = session.preferences.theme["name"]&gt;</preformat>
-    </example>
-
-
-    <separator/>
-
-    <h2 id="isEmpty" style="inner">isEmpty</h2>
-
-    <p>Checks whether the user session is empty.</p>
-
-    <h3>Syntax:</h3>
-
-    <p style="indent"><code>isEmpty &#8594; boolean</code></p>
-
-    <h3>Returns:</h3>
-
-    <p style="indent">True if the user session is empty, false
-    otherwise.</p>
-
-    <h3>Example:</h3>
-
-    <p>This code checks whether the user session is empty:</p>
-
-    <example>
-      <preformat>&lt;#if session.isEmpty&gt;</preformat>
     </example>
 
   </body>

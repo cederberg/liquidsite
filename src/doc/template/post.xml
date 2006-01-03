@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -11,22 +11,6 @@
 
     <list style="compact">
       <item>
-        <title><ref id="subject">subject</ref></title>
-        <text>Returns the post subject.</text>
-      </item>
-      <item>
-        <title><ref id="subjectSource">subjectSource</ref></title>
-        <text>Returns the unprocessed post subject.</text>
-      </item>
-      <item>
-        <title><ref id="text">text</ref></title>
-        <text>Returns the post text.</text>
-      </item>
-      <item>
-        <title><ref id="textSource">textSource</ref></title>
-        <text>Returns the unprocessed post text.</text>
-      </item>
-      <item>
         <title><ref id="created">created</ref></title>
         <text>Returns the post created date.</text>
       </item>
@@ -35,12 +19,21 @@
         <text>Returns the post revision date.</text>
       </item>
       <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the post.</text>
+      </item>
+      <item>
         <title><ref id="id">id</ref></title>
         <text>Returns the post id.</text>
       </item>
       <item>
         <title><ref id="lock">lock</ref></title>
         <text>Returns the post lock object.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the post name.</text>
       </item>
       <item>
         <title><ref id="online">online</ref></title>
@@ -59,13 +52,24 @@
         <text>Returns the post revision number.</text>
       </item>
       <item>
-        <title><ref id="user">user</ref></title>
-        <text>Returns the post revision author.</text>
+        <title><ref id="subject">subject</ref></title>
+        <text>Returns the post subject.</text>
       </item>
       <item>
-        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
-        <text>Checks whether the current logged in user has a
-        specified permission over the post.</text>
+        <title><ref id="subjectSource">subjectSource</ref></title>
+        <text>Returns the unprocessed post subject.</text>
+      </item>
+      <item>
+        <title><ref id="text">text</ref></title>
+        <text>Returns the post text.</text>
+      </item>
+      <item>
+        <title><ref id="textSource">textSource</ref></title>
+        <text>Returns the unprocessed post text.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the post revision author.</text>
       </item>
     </list>
 
@@ -272,17 +276,35 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the id of the first post in "forum1":</p>
+    <p>This following code outputs the first post id:</p>
 
     <example>
-      <preformat>&lt;#assign post = liquidsite.findDocument("Section1/forum1")&gt;
-&lt;p&gt;The post id is ${post.id}.&lt;/p&gt;</preformat>
+      <preformat>&lt;#assign post = liquidsite.forum.first.first&gt;
+The post id is ${post.id}.</preformat>
     </example>
 
-    <p>Which will result in something like:</p>
+
+    <separator/>
+
+    <h2 id="name" style="inner">name</h2>
+
+    <p>Returns the post name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>name &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The post name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code outputs the first post name:</p>
 
     <example>
-      <p>The post id is 123.</p>
+      <preformat>&lt;#assign post = liquidsite.forum.first.first&gt;
+The post name is ${post.name}.</preformat>
     </example>
 
 

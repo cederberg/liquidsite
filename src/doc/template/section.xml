@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -14,6 +14,18 @@
         <title><ref id="countDocuments">countDocuments</ref></title>
         <text>Returns the number of documents in the section and any
         subsections.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the section created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the section revision date.</text>
+      </item>
+      <item>
+        <title><ref id="description">description</ref></title>
+        <text>Returns the section description in HTML format.</text>
       </item>
       <item>
         <title><ref
@@ -39,24 +51,13 @@
         <text>Returns the named forum in this section.</text>
       </item>
       <item>
-        <title><ref id="description">description</ref></title>
-        <text>Returns the section description in HTML format.</text>
-      </item>
-      <item>
         <title><ref id="forums">forums</ref></title>
         <text>Returns all the section forums.</text>
       </item>
       <item>
-        <title><ref id="sections">sections</ref></title>
-        <text>Returns all the section subsections.</text>
-      </item>
-      <item>
-        <title><ref id="created">created</ref></title>
-        <text>Returns the section created date.</text>
-      </item>
-      <item>
-        <title><ref id="date">date</ref></title>
-        <text>Returns the section revision date.</text>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the section.</text>
       </item>
       <item>
         <title><ref id="id">id</ref></title>
@@ -65,6 +66,10 @@
       <item>
         <title><ref id="lock">lock</ref></title>
         <text>Returns the section lock object.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the section name.</text>
       </item>
       <item>
         <title><ref id="online">online</ref></title>
@@ -83,13 +88,12 @@
         <text>Returns the section revision number.</text>
       </item>
       <item>
-        <title><ref id="user">user</ref></title>
-        <text>Returns the section revision author.</text>
+        <title><ref id="sections">sections</ref></title>
+        <text>Returns all the section subsections.</text>
       </item>
       <item>
-        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
-        <text>Checks whether the current logged in user has a
-        specified permission over the section.</text>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the section revision author.</text>
       </item>
     </list>
 
@@ -518,6 +522,30 @@ ${sec1.description}</preformat>
 
     <example>
       <preformat>&lt;#assign lock = liquidsite.findSection("Section1").lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="name" style="inner">name</h2>
+
+    <p>Returns the section name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>name &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The section name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code obtains the name of a section and assigns
+    it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign name = liquidsite.findSection("Section1").name&gt;</preformat>
     </example>
 
 

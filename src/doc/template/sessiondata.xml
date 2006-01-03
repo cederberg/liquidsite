@@ -1,0 +1,111 @@
+<doc>
+  <head>
+    <title>Liquid Site Template API</title>
+  </head>
+
+  <body>
+
+    <h1>The session data object</h1>
+
+    <p>The session data object contains a single property from the
+    user session. The user session can be used to store generic
+    string data, but not objects. The data is structured as
+    properties that can each have values being strings, hash maps
+    (of other session data object properties) or arrays.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="get">[property name]</ref></title>
+        <text>Returns the session data object associated with a
+        specified property name.</text>
+      </item>
+      <item>
+        <title><ref id="add">add(value)</ref></title>
+        <text>Adds a data value to this session property.</text>
+      </item>
+      <item>
+        <title><ref id="remove">remove()</ref></title>
+        <text>Removes a session property value.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="get" style="inner">[property name]</h2>
+
+    <p>Returns the session data object associated with a specified
+    property name. If a new property name is used, the session data
+    object is created.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>[property name] &#8594;
+    <ref file="sessiondata.xml">session data object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The session data value associated to a specified
+    property name.</p>
+
+    <h3>Example:</h3>
+
+    <p>Here are some examples of how to obtain session data values:</p>
+
+    <example>
+      <preformat>&lt;#assign pref = session.preferences&gt;
+&lt;#assign lang = session.preferences.lang&gt;
+&lt;#assign theme = session.preferences.theme&gt;
+&lt;#assign themeName = session.preferences.theme["name"]&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="add" style="inner">add</h2>
+
+    <p>Adds a data value to this session property. If several values
+    are added to a property, all the values can be retrieved by
+    handling the property as an array.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>add(value) &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>The following code adds several values for the session
+    property "test" and then prints all the values:</p>
+
+    <example>
+      <preformat>${liquidsite.session.test.add("one"}
+${liquidsite.session.test.add("two"}
+&lt;#list liquidsite.session.test as value&gt;
+  Value: ${value}
+&lt;/#list&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="remove" style="inner">remove</h2>
+
+    <p>Removes a session property value. This method can also be
+    used to remove individual values in a list of property values
+    by first indexing the values.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>remove() &#8594; nothing</code></p>
+
+    <h3>Example:</h3>
+
+    <p>This following code removes the first value for the session
+    property "test":</p>
+
+    <example>
+      <preformat>${liquidsite.session.test[0].remove(}</preformat>
+    </example>
+
+  </body>
+</doc>

@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -11,24 +11,25 @@
 
     <list style="compact">
       <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the document created date.</text>
+      </item>
+      <item>
         <title><ref id="data">data</ref></title>
         <text>Returns the document data.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the document revision date.</text>
       </item>
       <item>
         <title><ref id="files">files</ref></title>
         <text>Returns the document associated files.</text>
       </item>
       <item>
-        <title><ref id="name">name</ref></title>
-        <text>Returns the document name.</text>
-      </item>
-      <item>
-        <title><ref id="created">created</ref></title>
-        <text>Returns the document created date.</text>
-      </item>
-      <item>
-        <title><ref id="date">date</ref></title>
-        <text>Returns the document revision date.</text>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the document.</text>
       </item>
       <item>
         <title><ref id="id">id</ref></title>
@@ -37,6 +38,10 @@
       <item>
         <title><ref id="lock">lock</ref></title>
         <text>Returns the document lock object.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the document name.</text>
       </item>
       <item>
         <title><ref id="online">online</ref></title>
@@ -58,11 +63,6 @@
         <title><ref id="user">user</ref></title>
         <text>Returns the document revision author.</text>
       </item>
-      <item>
-        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
-        <text>Checks whether the current logged in user has a
-        specified permission over the document.</text>
-      </item>
     </list>
 
     <separator/>
@@ -82,8 +82,8 @@
 
     <h3>Example:</h3>
 
-    <p>This code obtains the data from a document and assigns it to a
-    variable:</p>
+    <p>The following code finds a document and stores the data object
+    in a variable:</p>
 
     <example>
       <preformat>&lt;#assign data = liquidsite.findDocument("Section1/doc1").data&gt;</preformat>
@@ -107,10 +107,13 @@
 
     <h3>Example:</h3>
 
-    <p>This code loops through the files associated to a document:</p>
+    <p>The following code iterates through the files associated with
+    a document:</p>
 
     <example>
-      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;</preformat>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file: ${file.name} (${file.size} bytes, ${file.mimeType})
+&lt;/#list&gt;</preformat>
     </example>
 
 
@@ -130,8 +133,8 @@
 
     <h3>Example:</h3>
 
-    <p>This code obtains the name of a document and assigns it to a
-    variable:</p>
+    <p>The following code obtains the name of a document and assigns
+    it to a variable:</p>
 
     <example>
       <preformat>&lt;#assign name = liquidsite.findDocument("Section1/doc1").name&gt;</preformat>
@@ -154,17 +157,11 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the document created date:</p>
+    <p>The following code outputs the document creation date:</p>
 
     <example>
       <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
-&lt;p&gt;The document created date is ${doc.created}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will result in something like:</p>
-
-    <example>
-      <p>The document created date is 2005-01-15.</p>
+The document was created {doc.created}.</preformat>
     </example>
 
 
@@ -184,17 +181,11 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the document revision date:</p>
+    <p>The following code outputs the document revision date:</p>
 
     <example>
       <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
-&lt;p&gt;The document revision date is ${doc.date}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will result in something like:</p>
-
-    <example>
-      <p>The document revision date is 2005-01-21.</p>
+The document was revided ${doc.date}.</preformat>
     </example>
 
 
@@ -202,7 +193,7 @@
 
     <h2 id="id" style="inner">id</h2>
 
-    <p>Returns the document id.</p>
+    <p>Returns the unique document content id.</p>
 
     <h3>Syntax:</h3>
 
@@ -214,17 +205,11 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the document id:</p>
+    <p>The following code outputs the document id:</p>
 
     <example>
       <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
 &lt;p&gt;The document id is ${doc.id}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will result in something like:</p>
-
-    <example>
-      <p>The document id is 123.</p>
     </example>
 
 
@@ -245,7 +230,7 @@
 
     <h3>Example:</h3>
 
-    <p>This code gets the lock object of a document and stores it in a
+    <p>The following code stores the document lock object in a
     variable:</p>
 
     <example>
@@ -270,11 +255,13 @@
 
     <h3>Example:</h3>
 
-    <p>This code gets the online flag of a document and stores it in a
-    variable:</p>
+    <p>The following code checks the online flag of a document:</p>
 
     <example>
-      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/doc1").online&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#if doc.online&gt;
+  Document has been published and is currently online
+&lt;/#if&gt;</preformat>
     </example>
 
 
@@ -296,14 +283,12 @@
 
     <h3>Example:</h3>
 
-    <p>This code gets the parent of a document and stores it in a
+    <p>The following code stores the parent of a document in a
     variable:</p>
 
     <example>
       <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/doc1").parent&gt;</preformat>
     </example>
-
-    <p>In this case the parent of "doc1" is "Section1".</p>
 
 
     <separator/>
@@ -322,17 +307,11 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the path of a document:</p>
+    <p>The following code outputs the path of a document:</p>
 
     <example>
-      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/doc1").path&gt;
-&lt;p&gt;The path of "doc1" is ${path}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>The result will be:</p>
-
-    <example>
-      <p>The path of "doc1" is Section1/doc1.</p>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+The document path is ${doc.path}</preformat>
     </example>
 
 
@@ -349,21 +328,15 @@
     <h3>Returns:</h3>
 
     <p style="indent">The document revision number, or zero (0) if the
-    document doesn't exist.</p>
+    current revision is an unpublished work revision.</p>
 
     <h3>Example:</h3>
 
-    <p>This code outputs the revision of a document:</p>
+    <p>The following code outputs the revision of a document:</p>
 
     <example>
-      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/doc1").revision&gt;
-&lt;p&gt;The revision of "doc1" is ${revision}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>The result will be something like:</p>
-
-    <example>
-      <p>The revision of "doc1" is 2.</p>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+The document revision is ${doc.revision}</preformat>
     </example>
 
 
@@ -381,12 +354,12 @@
     <h3>Returns:</h3>
 
     <p style="indent">The document revision author, or an empty user
-    if the document doesn't exist.</p>
+    if the user cannot be found any more.</p>
 
     <h3>Example:</h3>
 
-    <p>This code gets the revision author of a document and assigns it
-    to a variable:</p>
+    <p>The following code assigns the document revision author to a
+    variable:</p>
 
     <example>
       <preformat>&lt;#assign user = liquidsite.findDocument("Section1/doc1").user&gt;</preformat>
@@ -397,22 +370,21 @@
 
     <h2 id="hasAccess" style="inner">hasAccess</h2>
 
-    <p>Checks whether the current logged in user has a specified
-    permission over the document. The different permission values
-    available are:</p>
+    <p>Checks if the current user has a specified access permission
+    to the document. The input permission types available are:</p>
 
     <list style="compact">
       <item>
-        <text>read, for reading permission</text>
+        <text>read -- for reading permission (always true)</text>
       </item>
       <item>
-        <text>write, for writing permission</text>
+        <text>write -- for writing permission</text>
       </item>
       <item>
-        <text>publish, for publishing permission</text>
+        <text>publish -- for publishing permission</text>
       </item>
       <item>
-        <text>admin, for administration permission</text>
+        <text>admin -- for administration permission</text>
       </item>
     </list>
 
@@ -420,18 +392,30 @@
 
     <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>permission</code> -- the string containing the
+        permission type (as above)</text>
+      </item>
+    </list>
+
     <h3>Returns:</h3>
 
-    <p style="indent">True if the current logged in user has the
-    specified permission over the document, false otherwise.</p>
+    <p style="indent">True if the current user has the specified
+    permission, or false otherwise.</p>
 
     <h3>Example:</h3>
 
-    <p>This code checks whether the current logged in user has read
-    access to a document:</p>
+    <p>The following code checks if the current user has write access
+    to a document:</p>
 
     <example>
-      <preformat>&lt;#if liquidsite.findDocument("Section1/doc1").hasAccess("read")&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#if doc.hasAccess("write")&gt;
+  The current user has write access.
+&lt;/#if&gt;</preformat>
     </example>
 
   </body>

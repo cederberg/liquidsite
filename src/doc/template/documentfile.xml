@@ -1,6 +1,6 @@
 <doc>
   <head>
-    <title>Liquid Site Release Documentation</title>
+    <title>Liquid Site Template API</title>
   </head>
 
   <body>
@@ -8,17 +8,9 @@
     <h1>The document file object</h1>
 
     <p>The document file object is used to access the content of a
-    file.</p>
+    file associated with a document.</p>
 
     <list style="compact">
-      <item>
-        <title><ref id="mimeType">mimeType</ref></title>
-        <text>Returns the MIME type of the file.</text>
-      </item>
-      <item>
-        <title><ref id="size">size</ref></title>
-        <text>Returns the size of the file in bytes.</text>
-      </item>
       <item>
         <title><ref id="created">created</ref></title>
         <text>Returns the file created date.</text>
@@ -28,12 +20,25 @@
         <text>Returns the file revision date.</text>
       </item>
       <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks whether the current logged in user has a
+        specified permission over the file.</text>
+      </item>
+      <item>
         <title><ref id="id">id</ref></title>
         <text>Returns the file id.</text>
       </item>
       <item>
         <title><ref id="lock">lock</ref></title>
         <text>Returns the file lock object.</text>
+      </item>
+      <item>
+        <title><ref id="mimeType">mimeType</ref></title>
+        <text>Returns the MIME type of the file.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the file name.</text>
       </item>
       <item>
         <title><ref id="online">online</ref></title>
@@ -52,13 +57,12 @@
         <text>Returns the file revision number.</text>
       </item>
       <item>
-        <title><ref id="user">user</ref></title>
-        <text>Returns the file revision author.</text>
+        <title><ref id="size">size</ref></title>
+        <text>Returns the size of the file in bytes.</text>
       </item>
       <item>
-        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
-        <text>Checks whether the current logged in user has a
-        specified permission over the file.</text>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the file revision author.</text>
       </item>
     </list>
 
@@ -79,16 +83,13 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the MIME type of a file:</p>
+    <p>The following code iterates through the files associated with
+    a document and prints the mime types:</p>
 
     <example>
-      <preformat>&lt;p&gt;The MIME type of "file1" is ${liquidsite.findDocument("Section1/file1").mimeType}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will output something like:</p>
-
-    <example>
-      <p>The MIME type of "file1" is application/pdf.</p>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file: ${file.name} (${file.size} bytes, ${file.mimeType})
+&lt;/#list&gt;</preformat>
     </example>
 
 
@@ -108,16 +109,13 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the size of a file:</p>
+    <p>The following code iterates through the files associated with
+    a document and prints the file sizes:</p>
 
     <example>
-      <preformat>&lt;p&gt;The size of "file1" is ${liquidsite.findDocument("Section1/file1").size} bytes.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will output something like:</p>
-
-    <example>
-      <p>The size of "file1" is 134500 bytes.</p>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file: ${file.name} (${file.size} bytes, ${file.mimeType})
+&lt;/#list&gt;</preformat>
     </example>
 
 
@@ -137,17 +135,13 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the file created date:</p>
+    <p>The following code iterates through the files associated with
+    a document and prints the creation dates:</p>
 
     <example>
-      <preformat>&lt;#assign file = liquidsite.findDocument("Section1/file1")&gt;
-&lt;p&gt;The file created date is ${file.created}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will result in something like:</p>
-
-    <example>
-      <p>The file created date is 2005-01-15.</p>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file created: ${file.created}
+&lt;/#list&gt;</preformat>
     </example>
 
 
@@ -167,17 +161,13 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the file revision date:</p>
+    <p>The following code iterates through the files associated with
+    a document and prints the revision dates:</p>
 
     <example>
-      <preformat>&lt;#assign file = liquidsite.findDocument("Section1/file1")&gt;
-&lt;p&gt;The file revision date is ${file.date}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will result in something like:</p>
-
-    <example>
-      <p>The file revision date is 2005-01-21.</p>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file revided: ${file.date}
+&lt;/#list&gt;</preformat>
     </example>
 
 
@@ -197,17 +187,39 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the file id:</p>
+    <p>The following code iterates through the files associated with
+    a document and prints the file ids:</p>
 
     <example>
-      <preformat>&lt;#assign file = liquidsite.findDocument("Section1/file1")&gt;
-&lt;p&gt;The file id is ${file.id}.&lt;/p&gt;</preformat>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file id: ${file.id}
+&lt;/#list&gt;</preformat>
     </example>
 
-    <p>Which will result in something like:</p>
+
+    <separator/>
+
+    <h2 id="name" style="inner">name</h2>
+
+    <p>Returns the file name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>name &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The file name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code iterates through the files associated with
+    a document and prints the file names:</p>
 
     <example>
-      <p>The file id is 123.</p>
+      <preformat>&lt;#list liquidsite.findDocument("Section1/doc1").files as file&gt;
+  Document file: ${file.name} (${file.size} bytes, ${file.mimeType})
+&lt;/#list&gt;</preformat>
     </example>
 
 
@@ -228,11 +240,12 @@
 
     <h3>Example:</h3>
 
-    <p>This code gets the lock object of a file and stores it in a
-    variable:</p>
+    <p>The following code retrieves the lock from the first document
+    file:</p>
 
     <example>
-      <preformat>&lt;#assign lock = liquidsite.findDocument("Section1/file1").lock&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#assign fileLock = doc.files[0].lock&gt;</preformat>
     </example>
 
 
@@ -253,11 +266,12 @@
 
     <h3>Example:</h3>
 
-    <p>This code gets the online flag of a file and stores it in a
-    variable:</p>
+    <p>The following code retrieves the online flag from the first
+    document file:</p>
 
     <example>
-      <preformat>&lt;#assign online = liquidsite.findDocument("Section1/file1").online&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#assign fileOnline = doc.files[0].online&gt;</preformat>
     </example>
 
 
@@ -265,28 +279,28 @@
 
     <h2 id="parent" style="inner">parent</h2>
 
-    <p>Returns the parent section of the file.</p>
+    <p>Returns the parent document of the file.</p>
 
     <h3>Syntax:</h3>
 
     <p style="indent"><code>parent &#8594; <ref
-    file="section.xml">section object</ref></code></p>
+    file="document.xml">document object</ref></code></p>
 
     <h3>Returns:</h3>
 
-    <p style="indent">The parent section under which the file is
+    <p style="indent">The parent document under which the file is
     located.</p>
 
     <h3>Example:</h3>
 
-    <p>This code gets the parent of a file and stores it in a
-    variable:</p>
+    <p>The following code retrieves the document from the first
+    document file:</p>
 
     <example>
-      <preformat>&lt;#assign parent = liquidsite.findDocument("Section1/file1").parent&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#assign fileParent = doc.files[0].parent&gt;
+Behold, ${doc.id} and ${fileParent.id} are identical!</preformat>
     </example>
-
-    <p>In this case the parent of "file1" is "Section1".</p>
 
 
     <separator/>
@@ -305,17 +319,12 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the path of a file:</p>
+    <p>The following code outputs the file path from the first
+    document file:</p>
 
     <example>
-      <preformat>&lt;#assign path = liquidsite.findDocument("Section1/file1").path&gt;
-&lt;p&gt;The path of "file1" is ${path}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>The result will be:</p>
-
-    <example>
-      <p>The path of "file1" is Section1/file1.</p>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+The file path is ${doc.files[0].path}.</preformat>
     </example>
 
 
@@ -336,17 +345,12 @@
 
     <h3>Example:</h3>
 
-    <p>This code outputs the revision of a file:</p>
+    <p>The following code outputs the revision from the first
+    document file:</p>
 
     <example>
-      <preformat>&lt;#assign revision = liquidsite.findDocument("Section1/file1").revision&gt;
-&lt;p&gt;The revision of "file1" is ${revision}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>The result will be something like:</p>
-
-    <example>
-      <p>The revision of "file1" is 2.</p>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+The file revision is ${doc.files[0].revision}.</preformat>
     </example>
 
 
@@ -368,11 +372,12 @@
 
     <h3>Example:</h3>
 
-    <p>This code gets the revision author of a file and assigns it
-    to a variable:</p>
+    <p>The following code stores the file revision user from the
+    first document file:</p>
 
     <example>
-      <preformat>&lt;#assign user = liquidsite.findDocument("Section1/file1").user&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#assign user = doc.files[0].user&gt;</preformat>
     </example>
 
 
@@ -380,27 +385,53 @@
 
     <h2 id="hasAccess" style="inner">hasAccess</h2>
 
-    <p>Checks whether the current logged in user has a specified
-    permission over the file. See the <ref file="document.xml"
-    id="hasAccess">document object</ref> for information about the
-    allowed permission values.</p>
+    <p>Checks if the current user has a specified access permission
+    to the document file. The input permission types available
+    are:</p>
+
+    <list style="compact">
+      <item>
+        <text>read -- for reading permission (always true)</text>
+      </item>
+      <item>
+        <text>write -- for writing permission</text>
+      </item>
+      <item>
+        <text>publish -- for publishing permission</text>
+      </item>
+      <item>
+        <text>admin -- for administration permission</text>
+      </item>
+    </list>
 
     <h3>Syntax:</h3>
 
     <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>permission</code> -- the string containing the
+        permission type (as above)</text>
+      </item>
+    </list>
+
     <h3>Returns:</h3>
 
-    <p style="indent">True if the current logged in user has the
-    specified permission over the file, false otherwise.</p>
+    <p style="indent">True if the current user has the specified
+    permission, or false otherwise.</p>
 
     <h3>Example:</h3>
 
-    <p>This code checks whether the current logged in user has read
-    access to a file:</p>
+    <p>The following code checks if the current user has write access
+    to the first document file:</p>
 
     <example>
-      <preformat>&lt;#if liquidsite.findDocument("Section1/file1").hasAccess("read")&gt;</preformat>
+      <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
+&lt;#if doc.files[0].hasAccess("write")&gt;
+  The current user has write access.
+&lt;/#if&gt;</preformat>
     </example>
 
   </body>
