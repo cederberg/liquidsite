@@ -182,7 +182,7 @@ function objectAddProperty(name, value, style, link) {
  * @param url                 the URL to visit
  */
 function objectAddNewButton(url) {
-    var script = "location='" + url + "'";
+    var script = "utilOpenUrl('" + url + "')";
 
     objectInternalAddButton("New", "add.png", script);
 }
@@ -193,7 +193,7 @@ function objectAddNewButton(url) {
  * @param url                 the URL to visit
  */
 function objectAddEditButton(url) {
-    var script = "location='" + url + "'";
+    var script = "utilOpenUrl('" + url + "')";
 
     objectInternalAddButton("Edit", "edit.png", script);
 }

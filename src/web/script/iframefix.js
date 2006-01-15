@@ -21,6 +21,7 @@
 
 
 // Utility API function mappings
+utilOpenUrl = window.parent.utilOpenUrl;
 utilOpenDialog = window.parent.utilOpenDialog;
 
 // Tree API function mappings

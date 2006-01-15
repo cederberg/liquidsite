@@ -44,6 +44,15 @@ var UTIL_REMOVE_LIST = new Array();
 var UTIL_IFRAME_COUNT = 0;
 
 /**
+ * Opens a URL in the main window.
+ *
+ * @param url                the URL to visit 
+ */
+function utilOpenUrl(url) {
+    window.location = url;
+}
+
+/**
  * Opens a new dialog window.
  *
  * @param url                the URL to visit
