@@ -33,7 +33,7 @@
         <text>Removes the user from the specified group.</text>
       </item>
       <item>
-        <title><ref id="isGroup">isGroup(name)</ref></title>
+        <title><ref id="inGroup">inGroup(name)</ref></title>
         <text>Checks if the user is member of a named group.</text>
       </item>
       <item>
@@ -220,13 +220,13 @@
 
     <separator/>
  
-    <h2 id="isGroup" style="inner">isGroup</h2>
+    <h2 id="inGroup" style="inner">inGroup</h2>
 
     <p>Checks if the user is member of a named group.</p>
 
     <h3>Syntax:</h3>
 
-    <p style="indent"><code>isGroup(name) &#8594; boolean</code></p>
+    <p style="indent"><code>inGroup(name) &#8594; boolean</code></p>
 
     <h3>Parameters:</h3>
 
@@ -248,7 +248,7 @@
 
     <example>
       <preformat>&lt;#assign user = liquidsite.findUser("liquidsite").lock&gt;
-&lt;#if user.isGroup("editors")&gt;</preformat>
+&lt;#if user.inGroup("editors")&gt;</preformat>
     </example>
 
 
