@@ -15,13 +15,13 @@
         utilLoadScript("loadcontent.js?type=" + type + "&id=" + id +
                        "&open=" + open,
                        "iframe",
-                       "script/tree-iframe.js");
+                       "script/iframefix.js");
     }
 
     function openItem(type, id) {
         utilLoadScript("opencontent.js?type=" + type + "&id=" + id,
                        "iframe",
-                       "script/object-iframe.js");
+                       "script/iframefix.js");
     }
     </script>
 
