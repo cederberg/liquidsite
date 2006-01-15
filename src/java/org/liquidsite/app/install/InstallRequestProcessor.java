@@ -795,6 +795,7 @@ public class InstallRequestProcessor extends RequestProcessor {
         MySQLDatabaseConnector  con = null;
         Configuration           config;
         Configuration           oldConfig;
+        File                    dir;
 
         // Create database connector
         con = new MySQLDatabaseConnector(host,
@@ -823,6 +824,11 @@ public class InstallRequestProcessor extends RequestProcessor {
             config.set(Configuration.UPLOAD_MAX_SIZE, 10000000);
         }
         config.write(con);
+
+        // Create temporary upload directory
+        dir = new File(config.get(Configuration.UPLOAD_DIRECTORY,
+        		          application.getBaseDir() + "/tmp"));
+        dir.mkdirs();
     }
 
     /**
@@ -845,7 +851,7 @@ public class InstallRequestProcessor extends RequestProcessor {
             user.setRealName("Administrator");
             user.setPassword(adminPassword);
             user.save(user);
-            site.setName("Admin Site");
+            site.setName("Admin");
             site.setRevisionNumber(1);
             site.setProtocol(protocol);
             site.setHost("*");

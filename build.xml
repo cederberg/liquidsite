@@ -17,7 +17,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
   USA
 
-  Copyright (c) 2003 Per Cederberg. All rights reserved.
+  Copyright (c) 2003-2006 Per Cederberg. All rights reserved.
 -->
 
 <project name="liquidsite" default="package" basedir=".">
