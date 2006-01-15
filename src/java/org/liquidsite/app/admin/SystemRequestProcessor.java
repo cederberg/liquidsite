@@ -420,6 +420,9 @@ class SystemRequestProcessor {
         out.print(group.getName());
         out.print("\" description=\"");
         out.print(AdminUtils.getXmlString(group.getDescription()));
+        if (group.isPublic()) {
+            out.print("\" public=\"public");
+        }
         out.print("\" comment=\"");
         out.print(AdminUtils.getXmlString(group.getComment()));
         out.println("\" />");

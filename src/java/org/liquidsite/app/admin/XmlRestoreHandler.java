@@ -216,6 +216,9 @@ class XmlRestoreHandler extends DefaultHandler {
                 str = attrs.getValue("name");
                 group = new Group(manager, currentDomain, str);
                 group.setDescription(attrs.getValue("description"));
+                if (attrs.getValue("public") != null) {
+                    group.setPublic(true);
+                }
                 group.setComment(attrs.getValue("comment"));
                 group.restore(managerUser);
             } else if (qName.equals("user")) {
