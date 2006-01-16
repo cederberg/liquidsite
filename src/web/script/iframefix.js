@@ -27,6 +27,7 @@ utilOpenDialog = window.parent.utilOpenDialog;
 // Tree API function mappings
 treeAddItem = window.parent.treeAddItem;
 treeAddContainer = window.parent.treeAddContainer;
+treeToggle = window.parent.treeToggle;
 treeOpen = window.parent.treeOpen;
 
 // Object API function mappings
