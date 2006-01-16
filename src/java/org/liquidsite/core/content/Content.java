@@ -751,7 +751,9 @@ public class Content extends PersistentObject {
                                            "'does not exist");
             }
             validateSize("content name", getName(), 1, 200);
-            validateChars("content name", getName(), NAME_CHARS);
+            if (getCategory() != SITE_CATEGORY) {
+                validateChars("content name", getName(), NAME_CHARS);
+            }
         }
         validateSize("content comment", getComment(), 0, 200);
     }
