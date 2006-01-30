@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import freemarker.cache.TemplateLoader;
+import freemarker.core.Configurable;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 
@@ -92,11 +93,18 @@ public class TemplateManager {
 
         buildVersion = version;
         buildDate = date;
-        fileConfig = Configuration.getDefaultConfiguration();
+        fileConfig = new Configuration();
         fileConfig.setObjectWrapper(ObjectWrapper.BEANS_WRAPPER);
-        fileConfig.clearTemplateCache();
         fileConfig.setStrictSyntaxMode(true);
         fileConfig.setDefaultEncoding("UTF-8");
+        fileConfig.setLocalizedLookup(false);
+        try {
+            fileConfig.setSetting(Configurable.OUTPUT_ENCODING_KEY, "UTF-8");
+		} catch (freemarker.template.TemplateException e) {
+            LOG.error(e.getMessage());
+            throw new TemplateException("couldn't set output encoding: " +
+            		                       e.getMessage());
+		}
         try {
             fileConfig.setDirectoryForTemplateLoading(baseDir);
         } catch (IOException e) {
@@ -108,6 +116,13 @@ public class TemplateManager {
         pageConfig.setStrictSyntaxMode(true);
         pageConfig.setDefaultEncoding("UTF-8");
         pageConfig.setLocalizedLookup(false);
+        try {
+            pageConfig.setSetting(Configurable.OUTPUT_ENCODING_KEY, "UTF-8");
+        } catch (freemarker.template.TemplateException e) {
+            LOG.error(e.getMessage());
+            throw new TemplateException("couldn't set output encoding: " +
+                                        e.getMessage());
+        }
         pageConfig.setTemplateLoader(pageLoader);
     }
 
