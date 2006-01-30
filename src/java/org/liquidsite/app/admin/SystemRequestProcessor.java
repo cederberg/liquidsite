@@ -341,6 +341,7 @@ class SystemRequestProcessor {
             zip.closeEntry();
             backupFile(zip, "", domain.getDirectory());
             zip.close();
+            manager.reset();
         } catch (IOException e) {
             dest.delete();
             message = "IO error while writing to " + dest;
@@ -696,6 +697,7 @@ class SystemRequestProcessor {
                 entry = zip.getEntry(name);
                 restoreFile(zip, entry, (File) files.get(name));
             }
+            AdminUtils.getContentManager().reset();
             return handler.isCompleteRestore();
         } catch (IOException e) {
             message = "IO error while reading " + file;
