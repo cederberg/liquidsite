@@ -238,7 +238,7 @@ public class LiquidSiteServlet extends HttpServlet
      */
     public void shutdown() {
         processor.destroy();
-        contentManager.close();
+        contentManager.reset();
         database.setPoolSize(0);
         try {
             database.update();

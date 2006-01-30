@@ -801,13 +801,14 @@ public class ContentManager {
     }
 
     /**
-     * Closes this content manager and frees all resources. This
-     * method should be called in order to garbage collect the
-     * resources used by this manager.
+     * Resets this content manager and frees all cached resources.
+     * This method should be called in order to garbage collect the
+     * resources used by this manager. It may have a negative effect
+     * on performance and should therefore be avoided if possible.
      */
-    public void close() {
+    public void reset() {
         CacheManager.getInstance().removeAll();
-        LOG.trace("closed content manager");
+        LOG.trace("reset content manager");
     }
 
     /**
