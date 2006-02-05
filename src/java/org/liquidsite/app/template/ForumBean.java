@@ -84,6 +84,46 @@ public class ForumBean extends ContentBean {
     }
 
     /**
+     * Checks if the current user is a forum moderator.
+     *
+     * @return true if the current user is a forum moderator, or
+     *         false otherwise
+     */
+    public boolean isModerator() {
+        return isModerator("");
+    }
+
+    /**
+     * Checks if the specified user is a forum moderator.
+     *
+     * @param user           the name of the user to check
+     *
+     * @return true if the specified user is a forum moderator, or
+     *         false otherwise
+     */
+    public boolean isModerator(String user) {
+        return isModerator(getContext().findUser(user));
+    }
+
+    /**
+     * Checks if the specified user is a forum moderator.
+     *
+     * @param user           the user to check
+     *
+     * @return true if the specified user is a forum moderator, or
+     *         false otherwise
+     */
+    public boolean isModerator(UserBean user) {
+        String  moderator;
+
+        if (getContent() != null) {
+            moderator = ((ContentForum) getContent()).getModeratorName();
+            return user.getSuperuser() || user.inGroup(moderator);
+        }
+        return false;
+    }
+
+    /**
      * Returns the real forum name.
      *
      * @return the real forum name, or
@@ -107,22 +147,6 @@ public class ForumBean extends ContentBean {
             return ((ContentForum) getContent()).getDescription();
         }
         return "";
-    }
-
-    /**
-     * Checks if the current user is a forum moderator.
-     *
-     * @return true if the current user is a forum moderator, or
-     *         false otherwise
-     */
-    public boolean getModerator() {
-        String  moderator;
-
-        if (getContent() != null) {
-            moderator = ((ContentForum) getContent()).getModeratorName();
-            return getContext().findUser("").inGroup(moderator);
-        }
-        return false;
     }
 
     /**

@@ -42,6 +42,10 @@
         <text>Returns the forum id.</text>
       </item>
       <item>
+        <title><ref id="isModerator">isModerator(user)</ref></title>
+        <text>Checks whether a user is a forum moderator.</text>
+      </item>
+      <item>
         <title><ref id="last">last</ref></title>
         <text>Returns the last topic in the forum.</text>
       </item>
@@ -229,6 +233,42 @@
 
     <example>
       <preformat>&lt;#id liquidsite.findDocument("Section1/forum1").moderator&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="isModerator" style="inner">isModerator</h2>
+
+    <p>Checks whether the specified user is a forum moderator.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>isModerator(user) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>user</code> -- the user login name string or the user
+        object</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the specified user is a
+    moderator of the forum, or false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code checks whether the user "test" is a moderator of the current
+    forum:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.forum.isModerator("test")&gt;
+    Moderator
+&lt;/#if&gt;</preformat>
     </example>
 
 
@@ -567,27 +607,48 @@
 
     <h2 id="hasAccess" style="inner">hasAccess</h2>
 
-    <p>Checks whether the current logged in user has a specified
-    permission over the forum. See the <ref file="document.xml"
-    id="hasAccess">document object</ref> for information about the
-    allowed permission values.</p>
+    <p>Checks if the current user has a specified access permission
+    to the forum. The input permission types available are:</p>
+
+    <list style="compact">
+      <item>
+        <text>read -- for reading permission (always true)</text>
+      </item>
+      <item>
+        <text>write -- for writing permission</text>
+      </item>
+      <item>
+        <text>publish -- for publishing permission</text>
+      </item>
+      <item>
+        <text>admin -- for administration permission</text>
+      </item>
+    </list>
 
     <h3>Syntax:</h3>
 
     <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
 
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>permission</code> -- the string containing the
+        permission type (as above)</text>
+      </item>
+    </list>
+
     <h3>Returns:</h3>
 
-    <p style="indent">True if the current logged in user has the
-    specified permission over the forum, false otherwise.</p>
+    <p style="indent">True if the current user has the specified permission,
+    or false otherwise.</p>
 
     <h3>Example:</h3>
 
-    <p>This code checks whether the current logged in user has read
-    access to a forum:</p>
+    <p>This code checks whether the current user has read access to a forum:</p>
 
     <example>
-      <preformat>&lt;#if liquidsite.findDocument("Section1/forum1").hasAccess("read")&gt;</preformat>
+      <preformat>&lt;#if liquidsite.forum1.hasAccess("read")&gt;</preformat>
     </example>
 
   </body>
