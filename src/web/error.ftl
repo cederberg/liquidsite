@@ -14,9 +14,15 @@
                alt="Error" />
         </td>
         <td>
-          <h2>${heading}</h2>
+          <h2>${heading?html}</h2>
 
-          <p>${text?cap_first}</p>
+          <p>${text?cap_first?html}</p>
+
+<#if detail?has_content>
+          <div class="example">
+            <p><code>${detail?html}</code></p>
+          </div>
+</#if>
 
           <p>Try going to the
           <a href="${liquidsite.linkTo("/index.html")}">site start

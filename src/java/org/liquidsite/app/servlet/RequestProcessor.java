@@ -134,14 +134,14 @@ public abstract class RequestProcessor {
         throws RequestException {
 
         Content  content;
-        String   revision;
+        String   str;
 
         try {
             content = locateContent(request, site, path);
             if (preview) {
-                revision = request.getParameter("revision");
-                if (content != null && revision != null) {
-                    content = content.getRevision(Integer.parseInt(revision));
+                str = request.getParameter("revision");
+                if (content != null && str != null) {
+                    content = content.getRevision(Integer.parseInt(str));
                 }
             }
             sendContent(request, content);
@@ -152,8 +152,23 @@ public abstract class RequestProcessor {
             LOG.info(e.getMessage());
             throw RequestException.FORBIDDEN;
         } catch (TemplateException e) {
-            LOG.error(e.getMessage());
-            throw RequestException.INTERNAL_ERROR;
+            if (preview) {
+                request.setAttribute("heading", "Template/Page Error");
+                str = "An error was found in the page or template. See the " +
+                      "detailed error message below.";
+                request.setAttribute("text", str);
+                request.setAttribute("detail", e.getMessage());
+                try {
+                    sendTemplate(request, "error.ftl");
+                } catch (TemplateException ex) {
+                    LOG.error(e.getMessage());
+                    LOG.error(ex.getMessage());
+                    throw RequestException.INTERNAL_ERROR;
+                }
+            } else {
+                LOG.error(e.getMessage());
+                throw RequestException.INTERNAL_ERROR;
+            }
         }
     }
 
