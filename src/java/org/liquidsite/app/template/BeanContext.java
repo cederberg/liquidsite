@@ -40,6 +40,7 @@ import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
 import org.liquidsite.util.log.Log;
+import org.liquidsite.util.mail.MailMessage;
 import org.liquidsite.util.mail.MailMessageException;
 import org.liquidsite.util.mail.MailQueue;
 import org.liquidsite.util.mail.SimpleMailMessage;
@@ -672,8 +673,7 @@ class BeanContext {
             msg.setRecipients(receiver);
             msg.setSubject(subject);
             msg.setText(text);
-            msg.setAttribute("URL", request.getUrl() );
-            msg.setAttribute("IP", request.getRemoteAddr());
+            setMailAttributes(msg);
             MailQueue.getInstance().add(msg);
             return true;
         } catch (MailMessageException e) {
@@ -701,13 +701,29 @@ class BeanContext {
             msg.setRecipient(receiver);
             msg.setSubject(subject);
             msg.setText(text);
-            msg.setAttribute("URL", request.getUrl() );
-            msg.setAttribute("IP", request.getRemoteAddr());
+            setMailAttributes(msg);
             MailQueue.getInstance().add(msg);
             return true;
         } catch (MailMessageException e) {
             LOG.info("couldn't send mail", e);
             return false;
+        }
+    }
+
+    /**
+     * Sets the default attributes on a mail message. These attributes
+     * are added for security reasons, to be able to track any page or
+     * user sending spam email through this service.
+     *
+     * @param msg            the mail message
+     */
+    private void setMailAttributes(MailMessage msg) {
+        if (request.getUser() == null) {
+            msg.setAttribute("URL", request.getUrl() );
+            msg.setAttribute("IP", request.getRemoteAddr());
+        } else {
+            msg.setAttribute("Domain", request.getUser().getDomainName());
+            msg.setAttribute("User", request.getUser().getName());
         }
     }
 
