@@ -296,13 +296,8 @@ function utilDisableEnterSubmitForIE() {
  * every ten minutes.
  */
 function utilSessionKeepAlive() {
-    var  script
-
-    script = document.createElement('script');
-    script.type = "text/javascript";
-    script.src = "sessionping.js";
-    document.getElementsByTagName("head")[0].appendChild(script);
-	setTimeout("utilSessionKeepAlive();", 600000);
+    utilLoadScript("sessionping.js", null);
+    setTimeout("utilSessionKeepAlive();", 600000);
 }
 
 /**
@@ -310,15 +305,13 @@ function utilSessionKeepAlive() {
  * function will return *before* the script has been executed, as the
  * script loading and execution is run in the background. Due to the
  * lack of proper DHTML support in some browsers, iframe elements may
- * be used. In that case an empty div element where the frames will
- * be stored must be provided, as well as a "glue" JavaScript that
- * diverts function calls to the "window.parent" evironment.
+ * be used. In that case a "glue" JavaScript that diverts relevant
+ * function calls to the "window.parent" evironment can be provided.
  *
  * @param url                the JavaScript URL
- * @param iframeParentId     the id of the iframe parent element
- * @param iframeScriptUrl    the JavaScript URL for a glue script
+ * @param glueUrl            the JavaScript URL for a glue script
  */
-function utilLoadScript(url, iframeParentId, iframeScriptUrl) {
+function utilLoadScript(url, glueUrl) {
     var parent;
     var script;
     var iframe;
@@ -330,7 +323,7 @@ function utilLoadScript(url, iframeParentId, iframeScriptUrl) {
         script.src = url;
         parent.appendChild(script);
     } else {
-        parent = document.getElementById(iframeParentId);
+        parent = document.getElementsByTagName("body")[0];
         iframe = document.createElement("iframe");
         iframe.id = "util.iframe." + UTIL_IFRAME_COUNT++;
         iframe.style.border = "0px";
@@ -341,15 +334,17 @@ function utilLoadScript(url, iframeParentId, iframeScriptUrl) {
             iframe = iframe.contentWindow;
         }
         script = "<html>\n" +
-                 "<head>\n" +
-                 "<script type='text/javascript' src='" +
-                 iframeScriptUrl + "'></script>\n" +
-                 "<script type='text/javascript' src='" + url +
-                 "'></script>\n" +
-                 "</head>\n" +
-                 "<body>\n" +
-                 "</body>\n" +
-                 "</html>\n";
+                 "<head>\n";
+        if (glueUrl != null) {
+            script += "<script type='text/javascript' src='" +
+                      glueUrl + "'></script>\n";
+        }
+        script += "<script type='text/javascript' src='" + url +
+                  "'></script>\n" +
+                  "</head>\n" +
+                  "<body>\n" +
+                  "</body>\n" +
+                  "</html>\n";
         iframe.document.write(script);
         iframe.document.close();
     }

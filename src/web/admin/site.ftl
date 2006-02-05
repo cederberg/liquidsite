@@ -14,13 +14,11 @@
     function loadItem(type, id, open) {
         utilLoadScript("loadsite.js?type=" + type + "&id=" + id +
                        "&open=" + open,
-                       "iframe",
                        "script/iframefix.js");
     }
 
     function openItem(type, id) {
         utilLoadScript("opensite.js?type=" + type + "&id=" + id,
-                       "iframe",
                        "script/iframefix.js");
     }
     </script>
