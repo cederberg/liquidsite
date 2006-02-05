@@ -56,6 +56,11 @@
         name.</text>
       </item>
       <item>
+        <title><ref id="findUserByEmail">findUserByEmail(email)</ref></title>
+        <text>Returns the user corresponding to a specified
+        email address.</text>
+      </item>
+      <item>
         <title><ref id="forum">forum</ref></title>
         <text>Returns the forum matched by a translator.</text>
       </item>
@@ -419,6 +424,49 @@ ${liquidsite.countDocuments("Section1")}.&lt;p&gt;</preformat>
 
     <example>
       <preformat>&lt;#assign user = liquidsite.findUser("liquidsite")&gt;</preformat>
+    </example>
+
+    <p>If the user was not found, <code>user</code> will contain an
+    empty user. This line checks whether <code>user</code> is
+    empty:</p>
+
+    <example>
+      <preformat>&lt;#if user.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="findUserByEmail" style="inner">findUserByEmail</h2>
+
+    <p>Returns a user corresponding to a specified email address.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>findUserByEmail(email) &#8594; <ref
+    file="user.xml">user object</ref></code></p>
+
+    <h3>Parameters:</h3>
+
+    <list>
+      <item>
+        <text><code>email</code> -- the string containing the email address
+        of the user</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The user specified by <code>email</code> address or an
+    empty user if not found. If several users have the same email address any
+    one of them may be returned.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code finds a user and assigns it to a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.findUserByEmail("info@liquidsite.org")&gt;</preformat>
     </example>
 
     <p>If the user was not found, <code>user</code> will contain an

@@ -666,6 +666,32 @@ public class ContentManager {
     }
 
     /**
+     * Returns a user with a specified email address. If the user
+     * couldn't be found in the specified domain, this method also
+     * checks for superusers with the specified email address.
+     *
+     * @param domain         the domain
+     * @param email          the user email address
+     *
+     * @return the user found, or
+     *         null if no matching user existed
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public User getUserByEmail(Domain domain, String email)
+        throws ContentException {
+
+        User  user;
+
+        user = User.findByEmail(this, domain, email);
+        if (user == null) {
+            user = User.findByEmail(this, null, email);
+        }
+        return user;
+    }
+
+    /**
      * Returns the number of users in a specified domain. Only users
      * with matching names will be counted.
      *

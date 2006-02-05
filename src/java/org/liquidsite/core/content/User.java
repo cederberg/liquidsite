@@ -255,6 +255,46 @@ public class User extends PersistentObject {
     }
 
     /**
+     * Returns a user with a specified email address.
+     *
+     * @param manager        the content manager to use
+     * @param domain         the domain, or null for superusers
+     * @param email          the user email address
+     *
+     * @return the user found, or
+     *         null if no matching user existed
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    static User findByEmail(ContentManager manager,
+                            Domain domain,
+                            String email)
+        throws ContentException {
+
+        DataSource  src = getDataSource(manager);
+        UserData    data;
+        String      domainName = "";
+
+        try {
+            if (domain != null) {
+                domainName = domain.getName();
+            }
+            data = UserPeer.doSelectByEmail(src, domainName, email);
+        } catch (DataObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            src.close();
+        }
+        if (data == null) {
+            return null;
+        } else {
+            return new User(manager, data);
+        }
+    }
+
+    /**
      * Returns an array of all users in a certain group. Only a
      * limited interval of the matching users will be returned.
      *

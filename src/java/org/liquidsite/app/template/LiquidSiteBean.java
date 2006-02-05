@@ -347,4 +347,17 @@ public class LiquidSiteBean {
         LOG.trace("call to findUser: " + name);
         return context.findUser(name);
     }
+
+    /**
+     * Returns the user corresponding to the specified email address.
+     *
+     * @param email          the user email address
+     *
+     * @return the user found, or
+     *         an empty user if not found
+     */
+    public UserBean findUserByEmail(String email) {
+        LOG.trace("call to findUserByEmail: " + email);
+        return context.findUserByEmail(email);
+    }
 }

@@ -619,6 +619,36 @@ class BeanContext {
     }
 
     /**
+     * Finds a specified user by email address. All users found will
+     * be added to an internal cache, making queries for user name
+     * efficient.
+     *
+     * @param email          the user email address
+     *
+     * @return the user bean for the specified user, or
+     *         an empty bean if no such user could be found
+     */
+    public UserBean findUserByEmail(String email) {
+        Domain   domain;
+        User     user = null;
+
+        try {
+            domain = request.getEnvironment().getDomain();
+            user = manager.getUserByEmail(domain, email);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+        }
+        if (user == null) {
+            return new UserBean(this, null);
+        } else {
+            if (!usersCache.containsKey(user.getName())) {
+                usersCache.put(user.getName(), new UserBean(this, user));
+            }
+            return (UserBean) usersCache.get(user.getName());
+        }
+    }
+
+    /**
      * Finds a specified group.
      *
      * @param name           the group name

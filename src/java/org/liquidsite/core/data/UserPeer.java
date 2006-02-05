@@ -128,6 +128,31 @@ public class UserPeer extends AbstractPeer {
     }
 
     /**
+     * Returns a user with a specified email address.
+     *
+     * @param src            the data source to use
+     * @param domain         the domain name
+     * @param name           the user email address
+     *
+     * @return the user found, or
+     *         null if no matching user existed
+     *
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
+     */
+    public static UserData doSelectByEmail(DataSource src,
+                                           String domain,
+                                           String email)
+        throws DataObjectException {
+
+        DatabaseQuery  query = new DatabaseQuery("user.select.email");
+
+        query.addParameter(domain);
+        query.addParameter(email);
+        return (UserData) PEER.select(src, query);
+    }
+
+    /**
      * Inserts a new user into the data source.
      *
      * @param src            the data source to use
