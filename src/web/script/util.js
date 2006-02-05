@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2003-2006 Per Cederberg. All rights reserved.
  */
 
 
@@ -24,17 +24,6 @@
  * The icon location path.
  */
 var UTIL_ICON_PATH = "images/icons/24x24/";
-
-/**
- * The list of HTML nodes to be removed. This is used as IE 5.0 (at
- * least) require a short delay after removing a form element
- * (textarea or input). If all elements are removed instantly, the IE
- * browser will crash. So, elements are first flagged for removal and
- * added to this list, then they are removed in the background. To
- * make this process invisible to the user, a style="display: none;"
- * CSS can be added to the elements to be removed.
- */
-var UTIL_REMOVE_LIST = new Array();
 
 /**
  * The number of inner frames that have been added. This number is
@@ -227,46 +216,22 @@ function utilAddLinkElement(parent, text, image, alt, script) {
 }
 
 /**
- * Flags an HTML element for removal. All subelements will be flagged
- * for removal too.
+ * Removes an HTML element.
  *
  * @param elem               the element to remove
  */
-function utilSetRemovalFlag(elem) {
-    var  child;
-
-    UTIL_REMOVE_LIST[UTIL_REMOVE_LIST.length] = elem;
-    for (var i = 0; i < elem.childNodes.length; i++) {
-        child = elem.childNodes.item(i);
-        if (child.tagName != undefined) {
-            utilSetRemovalFlag(child);
-        }
-    }
+function utilRemoveElement(elem) {
+    utilRemoveChildElements(elem);
+    elem.parentNode.removeChild(elem);
 }
 
 /**
- * Removes all elements flagged for removal. This function may return
- * prior to all elements being removed, due to processing some
- * removals after a delay. When removing form elements in IE, a delay
- * must be added to avoid a browser crash.
+ * Removes all children from an HTML element.
+ *
+ * @param elem               the element whose children to remove
  */
-function utilRemoveElements() {
-    var  elem;
-    var  tag;
-
-    if (UTIL_REMOVE_LIST.length <= 0) {
-        return;
-    }
-    elem = UTIL_REMOVE_LIST[UTIL_REMOVE_LIST.length - 1];
-    tag = elem.tagName.toLowerCase();
-    elem.parentNode.removeChild(elem);
-    UTIL_REMOVE_LIST.length = UTIL_REMOVE_LIST.length - 1;
-    if (tag == "textarea" || tag == "input" || tag == "select") {
-        elem.name = "";
-        setTimeout("utilRemoveElements();", 1);
-    } else {
-        utilRemoveElements();
-    }
+function utilRemoveChildElements(elem) {
+    elem.innerHTML = "";
 }
 
 /**

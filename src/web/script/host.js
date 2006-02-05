@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 /**
@@ -63,12 +63,7 @@ function hostDisplay() {
     var  input;
     var  script;
 
-    for (var i = 1; i < HOST_ROOT.childNodes.length; i++) {
-        tr = HOST_ROOT.childNodes.item(i);
-        utilSetRemovalFlag(tr);
-        tr.style.display = "none";
-    }
-    utilRemoveElements();
+    utilRemoveChildElements(HOST_ROOT);
     for (var i = 0; i < HOST_VALUES.length; i++) {
         hostInternalDisplayHost(i, HOST_VALUES[i]);
     }
