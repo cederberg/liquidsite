@@ -272,6 +272,28 @@ public class DialogView extends AdminView {
     }
 
     /**
+     * Shows the statistics summary page.
+     *
+     * @param request         the request object
+     * @param domain          the domain object
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public void viewStatistics(Request request, Domain domain)
+        throws ContentException {
+
+        request.setAttribute("domain", domain.getName());
+        request.setAttribute("domainsize", AdminUtils.formatFileSize(domain.getSize()));
+        if (AdminUtils.getStatisticsDir(domain) != null) {
+            request.setAttribute("accessStatsUrl",
+                                 "stats/" + domain.getName() + "/index.html");
+        }
+        AdminUtils.sendTemplate(request,
+                                "admin/dialog/statistics.ftl");
+    }
+
+    /**
      * Shows the content unlock dialog.
      *
      * @param request        the request object

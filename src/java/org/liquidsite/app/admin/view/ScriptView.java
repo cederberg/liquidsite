@@ -262,19 +262,6 @@ public class ScriptView {
         str = domain.getDescription();
         buffer.append(AdminUtils.getScriptString(str));
         buffer.append(");\n");
-        if (domain.hasAdminAccess(user)) {
-            buffer.append("objectAddProperty('Size', '");
-            buffer.append(AdminUtils.formatFileSize(domain.getSize()));
-            buffer.append("');\n");
-            buffer.append("objectAddProperty('Statistics', ");
-            if (AdminUtils.getStatisticsDir(domain) == null) {
-                buffer.append("'Unavailable'");
-            } else {
-                str = "stats/" + domain.getName() + "/index.html";
-                buffer.append("'Available', null, '" + str + "'");
-            }
-            buffer.append(");\n");
-        }
         buffer.append(getButtons(user, domain, view));
         buffer.append(getHosts(domain));
         buffer.append(getPermissions(domain));
@@ -417,6 +404,11 @@ public class ScriptView {
         }
         if (domain.hasAdminAccess(user)) {
             buffer.append("objectAddPermissionsButton('permissions.html");
+            buffer.append(getLinkParameters(domain));
+            buffer.append("');\n");
+        }
+        if (domain.hasPublishAccess(user)) {
+            buffer.append("objectAddStatisticsButton('statistics.html");
             buffer.append(getLinkParameters(domain));
             buffer.append("');\n");
         }

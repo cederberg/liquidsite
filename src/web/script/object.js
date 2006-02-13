@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 
@@ -251,6 +251,17 @@ function objectAddPermissionsButton(url) {
     var script = "utilOpenDialog('" + url + "',650,500)";
 
     objectInternalAddButton("Permissions", "permissions.png", script);
+}
+
+/**
+ * Adds a statistics button to the object view.
+ *
+ * @param url                 the URL to visit
+ */
+function objectAddStatisticsButton(url) {
+    var script = "utilOpenDialog('" + url + "', 700, 800)";
+
+    objectInternalAddButton("Statistics", "info.png", script);
 }
 
 /**

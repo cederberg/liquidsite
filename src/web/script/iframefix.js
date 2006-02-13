@@ -43,6 +43,7 @@ objectAddPublishButton = window.parent.objectAddPublishButton;
 objectAddUnpublishButton = window.parent.objectAddUnpublishButton;
 objectAddRevertButton = window.parent.objectAddRevertButton;
 objectAddPermissionsButton = window.parent.objectAddPermissionsButton;
+objectAddStatisticsButton = window.parent.objectAddStatisticsButton;
 objectAddUnlockButton = window.parent.objectAddUnlockButton;
 objectAddRevision = window.parent.objectAddRevision;
 objectAddPermission = window.parent.objectAddPermission;

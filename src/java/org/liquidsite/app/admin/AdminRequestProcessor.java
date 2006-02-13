@@ -144,6 +144,8 @@ public class AdminRequestProcessor extends RequestProcessor {
             processViewUserDetails(request);
         } else if (path.equals("system.html")) {
             system.process(request, path);
+        } else if (path.equals("statistics.html")) {
+            processViewStatistics(request);
         } else if (path.equals("logout.html")) {
             processLogout(request);
         } else if (path.equals("loadsite.js")) {
@@ -296,6 +298,35 @@ public class AdminRequestProcessor extends RequestProcessor {
     private void processViewUserDetails(Request request) {
         try {
             AdminView.USER.viewGroup(request);
+        } catch (ContentException e) {
+            LOG.error(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
+        } catch (ContentSecurityException e) {
+            LOG.warning(e.getMessage());
+            AdminView.BASE.viewError(request, e.getMessage(), "index.html");
+        }
+    }
+
+    /**
+     * Processes a view statistics request.
+     *
+     * @param request        the request object
+     */
+    private void processViewStatistics(Request request) throws RequestException {
+        PersistentObject  obj;
+
+        try {
+            obj = AdminUtils.getReference(request);
+            if (!obj.hasPublishAccess(request.getUser())) {
+                throw RequestException.FORBIDDEN;
+            }
+            if (obj instanceof Domain) {
+                AdminView.DIALOG.viewStatistics(request, (Domain) obj);
+            } else {
+                AdminView.BASE.viewError(request,
+                                         "Cannot display statistics for object",
+                                         "index.html");
+            }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
             AdminView.BASE.viewError(request, e.getMessage(), "index.html");
@@ -702,7 +733,7 @@ public class AdminRequestProcessor extends RequestProcessor {
             str = path.substring(0, pos);
             path = path.substring(pos + 1);
             domain = getContentManager().getDomain(user, str);
-            if (!domain.hasAdminAccess(user)) {
+            if (!domain.hasPublishAccess(user)) {
                 throw RequestException.FORBIDDEN;
             }
             file = AdminUtils.getStatisticsDir(domain);
