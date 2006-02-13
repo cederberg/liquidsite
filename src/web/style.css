@@ -482,6 +482,9 @@ div.border {
 }
 
 /* Semantic markers */
+.number {
+        text-align: right;
+}
 .draft {
         background: rgb(255, 204, 204);
         color: red;
