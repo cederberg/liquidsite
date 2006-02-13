@@ -56,7 +56,7 @@ function utilOpenDialog(url, width, height) {
     var left = (screen.width - width) / 2;
     var attr = "top=" + top + ",left=" + left +
                ",width=" + width + ",height=" + height +
-               ",resizable=yes";
+               ",resizable=yes,scrollbars=yes";
 
     return window.open(url, "", attr);
 }
