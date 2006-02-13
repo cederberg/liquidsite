@@ -64,7 +64,7 @@
         </td>
   <#else>
         <td class="inactive"
-            onclick="window.location='${link}'"
+            onclick="location='${link}'"
             onmouseover="this.className='hover'"
             onmouseout="this.className='inactive'">
           <a href="${link}">${name}</a>
