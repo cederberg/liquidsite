@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
@@ -144,6 +144,24 @@ public abstract class AbstractData {
     }
 
     /**
+     * Returns a parameter long value.
+     *
+     * @param param          the parameter name
+     *
+     * @return the parameter long value, or
+     *         zero (0) if the parameter doesn't exist
+     */
+    public long getLong(Parameter param) {
+        Object  obj = getObject(param);
+
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * Returns a parameter string value.
      *
      * @param param          the parameter name
@@ -199,6 +217,16 @@ public abstract class AbstractData {
      */
     public void setInt(Parameter param, int value) {
         setObject(param, new Integer(value));
+    }
+
+    /**
+     * Sets a parameter long value.
+     *
+     * @param param          the parameter name
+     * @param value          the parameter value
+     */
+    public void setLong(Parameter param, long value) {
+        setObject(param, new Long(value));
     }
 
     /**
@@ -518,6 +546,62 @@ public abstract class AbstractData {
             throws DatabaseDataException {
 
             data.setInt(this, row.getInt(getColumn()));
+        }
+    }
+
+
+    /**
+     * A long data object parameter. A parameter corresponds to a column in
+     * the database table.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    protected static class LongParameter extends Parameter {
+
+        /**
+         * The default parameter value.
+         */
+        private long defaultValue;
+
+        /**
+         * Creates a new long parameter.
+         *
+         * @param dataClass      the data object class
+         * @param column         the column name
+         * @param defaultValue   the default value
+         */
+        public LongParameter(Class dataClass,
+                             String column,
+                             long defaultValue) {
+            super(dataClass, column);
+            this.defaultValue = defaultValue;
+        }
+
+        /**
+         * Initializes a data object with the default value for this
+         * parameter.
+         *
+         * @param data           the data object
+         */
+        public void initialize(AbstractData data) {
+            data.setLong(this, defaultValue);
+        }
+
+        /**
+         * Transfers this parameter from a database row to a data
+         * object.
+         *
+         * @param row            the database row
+         * @param data           the data object
+         *
+         * @throws DatabaseDataException if the database row
+         *             contained malformed data
+         */
+        public void transfer(DatabaseResults.Row row, AbstractData data)
+            throws DatabaseDataException {
+
+            data.setLong(this, row.getLong(getColumn()));
         }
     }
 
