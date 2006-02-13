@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
@@ -38,28 +38,6 @@ public class AttributePeer extends AbstractPeer {
      * The attribute peer instance.
      */
     private static final AttributePeer PEER = new AttributePeer();
-
-    /**
-     * Calculates the aggregate size in the database of all attributes
-     * in a domain.
-     *
-     * @param src            the data source to use
-     * @param domain         the domain name
-     *
-     * @return the size in bytes of all the attributes in the domain
-     *
-     * @throws DataObjectException if the data source couldn't be
-     *             accessed properly
-     */
-    public static long doCalculateDomainSize(DataSource src, String domain)
-        throws DataObjectException {
-
-        DatabaseQuery  query;
-
-        query = new DatabaseQuery("attribute.select.domainsize");
-        query.addParameter(domain);
-        return PEER.count(src, query);
-    }
 
     /**
      * Returns a list of all attribute objects with the specified

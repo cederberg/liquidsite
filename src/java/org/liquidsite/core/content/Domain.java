@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -29,6 +29,8 @@ import org.liquidsite.core.data.DataObjectException;
 import org.liquidsite.core.data.DataSource;
 import org.liquidsite.core.data.DomainData;
 import org.liquidsite.core.data.DomainPeer;
+import org.liquidsite.core.data.DomainSizeData;
+import org.liquidsite.core.data.DomainSizePeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -317,8 +319,24 @@ public class Domain extends PersistentObject implements Comparable {
      *             properly
      */
     public long getSize() throws ContentException {
-        return getSize(getDirectory()) +
-               InternalContent.calculateDomainSize(getContentManager(), this);
+        DataSource     src = getDataSource(getContentManager());
+        ArrayList      list;
+        DomainSizeData data;
+        long           size = 0;
+
+        try {
+            list = DomainSizePeer.doSelectByDomain(src, getName());
+        } catch (DataObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        } finally {
+            src.close();
+        }
+        for (int i = 0; i < list.size(); i++) {
+            data = (DomainSizeData) list.get(i);
+            size += data.getLong(DomainSizeData.SIZE);
+        }
+        return size + getSize(getDirectory());
     }
 
     /**

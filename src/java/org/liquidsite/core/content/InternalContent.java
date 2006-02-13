@@ -16,14 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
 
 import java.util.ArrayList;
 
-import org.liquidsite.core.data.AttributePeer;
 import org.liquidsite.core.data.ContentData;
 import org.liquidsite.core.data.ContentPeer;
 import org.liquidsite.core.data.ContentQuery;
@@ -46,33 +45,6 @@ class InternalContent {
      * The class logger.
      */
     private static final Log LOG = new Log(InternalContent.class);
-
-    /**
-     * Calculates the approximate size in the database of all the
-     * content in a domain.
-     *
-     * @param manager        the content manager to use
-     * @param domain         the domain name
-     *
-     * @return the approx. size in bytes of the content in the domain
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    static long calculateDomainSize(ContentManager manager, Domain domain)
-        throws ContentException {
-
-        DataSource  src = getDataSource(manager);
-
-        try {
-            return AttributePeer.doCalculateDomainSize(src, domain.getName());
-        } catch (DataObjectException e) {
-            LOG.error(e.getMessage());
-            throw new ContentException(e);
-        } finally {
-            src.close();
-        }
-    }
 
     /**
      * Returns the number of content objects matching the specified
