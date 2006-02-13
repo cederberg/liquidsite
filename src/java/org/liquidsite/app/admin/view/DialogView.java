@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin.view;
@@ -30,6 +30,7 @@ import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.DomainSize;
 import org.liquidsite.core.content.Group;
 import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
@@ -283,8 +284,70 @@ public class DialogView extends AdminView {
     public void viewStatistics(Request request, Domain domain)
         throws ContentException {
 
+        ArrayList  list = domain.getSize();
+        DomainSize data;
+        int        domainCount = 0;
+        long       domainSize = 0;
+        int        siteCount = 0;
+        long       siteSize = 0;
+        int        pageCount = 0;
+        long       pageSize = 0;
+        int        fileCount = 0;
+        long       fileSize = 0;
+        int        docCount = 0;
+        long       docSize = 0;
+        int        forumCount = 0;
+        long       forumSize = 0;
+
         request.setAttribute("domain", domain.getName());
-        request.setAttribute("domainsize", AdminUtils.formatFileSize(domain.getSize()));
+        for (int i = 0; i < list.size(); i++) {
+            data = (DomainSize) list.get(i);
+            domainCount += data.getCount();
+            domainSize += data.getSize();
+            switch (data.getCategory()) {
+            case Content.PAGE_CATEGORY:
+            case Content.TEMPLATE_CATEGORY:
+                pageCount += data.getCount();
+                pageSize += data.getSize();
+                break;
+            case Content.FILE_CATEGORY:
+                fileCount += data.getCount();
+                fileSize += data.getSize();
+                break;
+            case Content.SECTION_CATEGORY:
+            case Content.DOCUMENT_CATEGORY:
+                docCount += data.getCount();
+                docSize += data.getSize();
+                break;
+            case Content.FORUM_CATEGORY:
+            case Content.TOPIC_CATEGORY:
+            case Content.POST_CATEGORY:
+                forumCount += data.getCount();
+                forumSize += data.getSize();
+                break;
+            default:
+                siteCount += data.getCount();
+                siteSize += data.getSize();
+            }
+        }
+        request.setAttribute("domainCount", domainCount);
+        request.setAttribute("domainSize",
+                             AdminUtils.formatFileSize(domainSize));
+        request.setAttribute("siteCount", siteCount);
+        request.setAttribute("siteSize",
+                             AdminUtils.formatFileSize(siteSize));
+        request.setAttribute("pageCount", pageCount);
+        request.setAttribute("pageSize",
+                             AdminUtils.formatFileSize(pageSize));
+        request.setAttribute("fileCount", fileCount);
+        request.setAttribute("fileSize",
+                             AdminUtils.formatFileSize(fileSize));
+        request.setAttribute("docCount", docCount);
+        request.setAttribute("docSize",
+                             AdminUtils.formatFileSize(docSize));
+        request.setAttribute("forumCount", forumCount);
+        request.setAttribute("forumSize",
+                             AdminUtils.formatFileSize(forumSize));
         if (AdminUtils.getStatisticsDir(domain) != null) {
             request.setAttribute("accessStatsUrl",
                                  "stats/" + domain.getName() + "/index.html");

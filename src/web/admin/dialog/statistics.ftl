@@ -12,24 +12,53 @@
         </tr>
         <tr>
           <td>
-            <p>This is a statistical summary for the domain ${domain}.<br/>
+            <p>Statistical summary for the domain ${domain}.<br/>
             Generated on
             ${liquidsite.util.currentTime?string("yyyy-MM-dd HH:mm")}.</p>
-            
+
+            <p><strong>Visitor Statistics:</strong>
+<#if accessStatsUrl?has_content>
+            <a href="${accessStatsUrl}">Available</a>
+<#else>
+            Unavailable
+</#if>
+            </p>
+
             <table class="border">
               <tr>
-                <th>Size:</th>
-                <td>${domainsize}</td>
+                <th>Type</th>
+                <th>Objects</th>
+                <th>Size</th>
               </tr>
               <tr>
-                <th>Visitor Stats:</th>
-                <td>
-<#if accessStatsUrl?has_content>
-                  <a href="${accessStatsUrl}">Available</a>
-<#else>
-                  Unavailable
-</#if>
-                </td>
+                <td>Site Structure</th>
+                <td class="number">${siteCount}</td>
+                <td>${siteSize}</td>
+              </tr>
+              <tr>
+                <td>Pages &amp; Templates</th>
+                <td class="number">${pageCount}</td>
+                <td>${pageSize}</td>
+              </tr>
+              <tr>
+                <td>Files</th>
+                <td class="number">${fileCount}</td>
+                <td>${fileSize}</td>
+              </tr>
+              <tr>
+                <td>Documents</th>
+                <td class="number">${docCount}</td>
+                <td>${docSize}</td>
+              </tr>
+              <tr>
+                <td>Forums</th>
+                <td class="number">${forumCount}</td>
+                <td>${forumSize}</td>
+              </tr>
+              <tr>
+                <th>Total</th>
+                <th class="number">${domainCount}</th>
+                <th>${domainSize}</th>
               </tr>
             </table>
           </td>

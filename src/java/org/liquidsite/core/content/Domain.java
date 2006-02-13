@@ -308,21 +308,23 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Calculates the approximate size of a domain. This calculation
-     * will sum the the size of all files in the domain with an
-     * approximate lower estimate for the size of all content in the
-     * domain.
+     * Calculates the approximate size of a domain per category. This
+     * calculation will sum the the size of all files in the domain with
+     * an approximate lower estimate for the size of all content in the
+     * domain. All values are calculated per content category.
      *
-     * @return the approx. size in bytes of the domain
+     * @return a list with domain size objects 
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
+     *
+     * @see DomainSize
      */
-    public long getSize() throws ContentException {
+    public ArrayList getSize() throws ContentException {
+        ArrayList      res = new ArrayList();
         DataSource     src = getDataSource(getContentManager());
         ArrayList      list;
         DomainSizeData data;
-        long           size = 0;
 
         try {
             list = DomainSizePeer.doSelectByDomain(src, getName());
@@ -334,9 +336,13 @@ public class Domain extends PersistentObject implements Comparable {
         }
         for (int i = 0; i < list.size(); i++) {
             data = (DomainSizeData) list.get(i);
-            size += data.getLong(DomainSizeData.SIZE);
+            if (data.getInt(DomainSizeData.CATEGORY) == Content.FILE_CATEGORY) {
+                res.add(new DomainSize(data, getSize(getDirectory())));
+            } else {
+                res.add(new DomainSize(data));
+            }
         }
-        return size + getSize(getDirectory());
+        return res;
     }
 
     /**

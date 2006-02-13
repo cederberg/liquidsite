@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -352,33 +352,46 @@ public class AdminUtils {
         if (obj instanceof Domain) {
             return "domain";
         } else if (obj instanceof Content) {
-            switch (((Content) obj).getCategory()) {
-            case Content.SITE_CATEGORY:
-                return "site";
-            case Content.TRANSLATOR_CATEGORY:
-                return "translator";
-            case Content.FOLDER_CATEGORY:
-                return "folder";
-            case Content.PAGE_CATEGORY:
-                return "page";
-            case Content.FILE_CATEGORY:
-                return "file";
-            case Content.TEMPLATE_CATEGORY:
-                return "template";
-            case Content.SECTION_CATEGORY:
-                return "section";
-            case Content.DOCUMENT_CATEGORY:
-                return "document";
-            case Content.FORUM_CATEGORY:
-                return "forum";
-            case Content.TOPIC_CATEGORY:
-                return "topic";
-            case Content.POST_CATEGORY:
-                return "post";
-            default:
-                return null;
-            }
+            return getCategory(((Content) obj).getCategory());
         } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns a content category name. The category name is used in
+     * various places to identify incoming or outgoing objects.
+     *
+     * @param category       the content category number
+     *
+     * @return the category name, or
+     *         null if unknown
+     */
+    public static String getCategory(int category) {
+        switch (category) {
+        case Content.SITE_CATEGORY:
+            return "site";
+        case Content.TRANSLATOR_CATEGORY:
+            return "translator";
+        case Content.FOLDER_CATEGORY:
+            return "folder";
+        case Content.PAGE_CATEGORY:
+            return "page";
+        case Content.FILE_CATEGORY:
+            return "file";
+        case Content.TEMPLATE_CATEGORY:
+            return "template";
+        case Content.SECTION_CATEGORY:
+            return "section";
+        case Content.DOCUMENT_CATEGORY:
+            return "document";
+        case Content.FORUM_CATEGORY:
+            return "forum";
+        case Content.TOPIC_CATEGORY:
+            return "topic";
+        case Content.POST_CATEGORY:
+            return "post";
+        default:
             return null;
         }
     }
