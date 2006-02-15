@@ -220,7 +220,6 @@ public class UserPeer extends AbstractPeer {
         query.addParameter(domain);
         query.addParameter(name);
         PEER.delete(src, query);
-        PreferencePeer.doDeleteUser(src, domain, name);
         UserGroupPeer.doDeleteUser(src, domain, name);
         PermissionPeer.doDeleteUser(src, domain, name);
     }
@@ -242,7 +241,6 @@ public class UserPeer extends AbstractPeer {
 
         query.addParameter(domain);
         PEER.delete(src, query);
-        PreferencePeer.doDeleteDomain(src, domain);
         UserGroupPeer.doDeleteDomain(src, domain);
     }
 
