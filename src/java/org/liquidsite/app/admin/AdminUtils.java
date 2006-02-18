@@ -236,13 +236,13 @@ public class AdminUtils {
         String  unit;
 
         if (size > 1000000) {
-            value /= 1000000;
-            unit = " MB";
+            value /= 1048576;
+            unit = " MiB";
         } else if (size > 2000) {
-            value /= 1000;
-            unit = " kB";
+            value /= 1024;
+            unit = " KiB";
         } else {
-            unit = " bytes";
+            unit = " Bytes";
         }
         value = Math.round(value * 10) / 10.0f;
         if (value == (int) value) {
