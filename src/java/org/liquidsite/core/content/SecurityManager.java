@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -169,12 +169,6 @@ class SecurityManager {
 
         if (obj instanceof Domain) {
             return hasAccess(user, (Domain) obj, access);
-        } else if (obj instanceof Host) {
-            if (access == READ || access == WRITE) {
-                return hasAccess(user, ((Host) obj).getDomain(), access);
-            } else {
-                return false;
-            }
         } else if (obj instanceof Content) {
             return hasAccess(user, (Content) obj, access);
         } else if (obj instanceof PermissionList) {
@@ -432,8 +426,6 @@ class SecurityManager {
 
         if (obj instanceof Domain) {
             checkSuperUserAccess(user, (Domain) obj);
-        } else if (obj instanceof Host) {
-            checkSuperUserAccess(user, ((Host) obj).getDomain());
         } else if (obj instanceof Content) {
             if (((Content) obj).getRevisionNumber() > 0) {
                 checkPublishAccess(user, (Content) obj);
@@ -475,8 +467,6 @@ class SecurityManager {
 
         if (obj instanceof Domain) {
             checkSuperUserAccess(user, (Domain) obj);
-        } else if (obj instanceof Host) {
-            checkSuperUserAccess(user, ((Host) obj).getDomain());
         } else if (obj instanceof Content) {
             if (((Content) obj).getRevisionNumber() > 0) {
                 checkPublishAccess(user, (Content) obj);
@@ -546,8 +536,6 @@ class SecurityManager {
 
         if (obj instanceof Domain) {
             checkSuperUserAccess(user, (Domain) obj);
-        } else if (obj instanceof Host) {
-            checkSuperUserAccess(user, ((Host) obj).getDomain());
         } else if (obj instanceof Content) {
             checkPublishAccess(user, (Content) obj);
         } else if (obj instanceof PermissionList) {

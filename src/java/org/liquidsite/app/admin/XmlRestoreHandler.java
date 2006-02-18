@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -36,7 +36,6 @@ import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.Group;
-import org.liquidsite.core.content.Host;
 import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
 import org.liquidsite.core.content.User;
@@ -201,11 +200,10 @@ class XmlRestoreHandler extends DefaultHandler {
                              Attributes attrs)
         throws SAXException {
 
-        Group           group;
-        User            user;
-        Host            host;
-        Permission      perm;
-        String          str;
+        Group       group;
+        User        user;
+        Permission  perm;
+        String      str;
 
         try {
             if (qName.equals("domain")) {
@@ -236,11 +234,10 @@ class XmlRestoreHandler extends DefaultHandler {
                 group = manager.getGroup(currentDomain, str);
                 currentUser.addToGroup(group);
             } else if (qName.equals("host")) {
-                str = attrs.getValue("name");
-                host = new Host(manager, currentDomain, str);
-                host.setDescription(attrs.getValue("description"));
                 try {
-                    host.restore(managerUser);
+                    currentDomain.addHost(attrs.getValue("name"),
+                                          attrs.getValue("description"));
+                    currentDomain.save(managerUser);
                 } catch (ContentException e) {
                     LOG.error("skipping restore", e);
                     complete = false;

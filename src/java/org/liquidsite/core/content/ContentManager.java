@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -245,7 +245,6 @@ public class ContentManager {
         domain = CacheManager.getInstance().getDomain(name);
         if (domain == null) {
             CacheManager.getInstance().addAll(Domain.findAll(this));
-            CacheManager.getInstance().addAll(Host.findAll(this));
             domain = CacheManager.getInstance().getDomain(name);
         }
         return domain;
@@ -274,6 +273,18 @@ public class ContentManager {
             throw new ContentSecurityException(user, "read", domain);
         }
         return domain;
+    }
+
+    /**
+     * Returns a domain having the specified host name.
+     *
+     * @param hostname       the host name
+     *
+     * @return the domain having the host name, or
+     *         null if the host wasn't found
+     */
+    Domain getHostDomain(String hostname) {
+        return CacheManager.getInstance().getHostDomain(hostname);
     }
 
     /**
@@ -780,7 +791,7 @@ public class ContentManager {
         int            max = 0;
         int            match;
 
-        domain = CacheManager.getInstance().getHostDomain(hostname);
+        domain = getHostDomain(hostname);
         if (domain == null) {
             domain = getDomain("ROOT");
         }

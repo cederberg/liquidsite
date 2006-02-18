@@ -21,6 +21,7 @@
 
 package org.liquidsite.app.admin.view;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -41,7 +42,7 @@ import org.liquidsite.core.content.ContentTemplate;
 import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.Domain;
-import org.liquidsite.core.content.Host;
+import org.liquidsite.core.content.DomainHost;
 import org.liquidsite.core.content.Lock;
 import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
@@ -512,19 +513,20 @@ public class ScriptView {
         throws ContentException {
 
         StringBuffer  buffer = new StringBuffer();
-        Host[]        hosts;
-        String        str;
+        ArrayList     list;
+        DomainHost    host;
 
-        hosts = domain.getHosts();
-        if (hosts.length == 0) {
+        list = domain.getHosts();
+        Collections.sort(list);
+        if (list.size() == 0) {
             buffer.append("objectAddHost('N/A', 'No hosts registered');\n");
         }
-        for (int i = 0; i < hosts.length; i++) {
+        for (int i = 0; i < list.size(); i++) {
+            host = (DomainHost) list.get(i);
             buffer.append("objectAddHost(");
-            buffer.append(AdminUtils.getScriptString(hosts[i].getName()));
+            buffer.append(AdminUtils.getScriptString(host.getName()));
             buffer.append(", ");
-            str = hosts[i].getDescription();
-            buffer.append(AdminUtils.getScriptString(str));
+            buffer.append(AdminUtils.getScriptString(host.getDescription()));
             buffer.append(");\n");
         }
         return buffer.toString();

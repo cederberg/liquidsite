@@ -35,6 +35,8 @@ import org.liquidsite.core.data.DomainData;
 import org.liquidsite.core.data.DomainPeer;
 import org.liquidsite.core.data.DomainSizeData;
 import org.liquidsite.core.data.DomainSizePeer;
+import org.liquidsite.core.data.HostData;
+import org.liquidsite.core.data.HostPeer;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -62,6 +64,12 @@ public class Domain extends PersistentObject implements Comparable {
         UPPER_CASE + NUMBERS + BINDERS + ".";
 
     /**
+     * The permitted host name characters.
+     */
+    public static final String HOST_NAME_CHARS =
+        LOWER_CASE + NUMBERS + BINDERS + ".";
+
+    /**
      * The domain data object.
      */
     private DomainData data;
@@ -72,6 +80,13 @@ public class Domain extends PersistentObject implements Comparable {
      * the database upon reading and writing the domain.
      */
     private HashMap attributes;
+
+    /**
+     * The host map. The hosts are indexed by their host names and
+     * the value stored is the description.
+     */
+    // TODO: remove this once hosts are stored as attributes
+    private HashMap hosts;
 
     /**
      * Returns an array of all domains in the database.
@@ -151,6 +166,7 @@ public class Domain extends PersistentObject implements Comparable {
         this.data.setDate(DomainData.CREATED, new Date());
         this.data.setDate(DomainData.MODIFIED, new Date());
         this.attributes = new HashMap();
+        this.hosts = new HashMap();
     }
 
     /**
@@ -172,8 +188,10 @@ public class Domain extends PersistentObject implements Comparable {
         super(manager, true);
         this.data = data;
         this.attributes = new HashMap();
+        this.hosts = new HashMap();
         try {
             doReadAttributes(src);
+            doReadHosts(src);
         } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -340,15 +358,61 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Returns the hosts registered to this domain object.
+     * Returns the hosts belonging to this domain. The returned list can be
+     * modified freely, as it is only a copy of the actual host data.
      *
      * @return an array of hosts in this domain
      *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
+     * @see DomainHost
      */
-    public Host[] getHosts() throws ContentException {
-        return Host.findByDomain(getContentManager(), this);
+    public ArrayList getHosts() {
+        ArrayList  list = new ArrayList();
+        Iterator   iter = hosts.keySet().iterator();
+        String     name;
+
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            list.add(new DomainHost(name, (String) hosts.get(name)));
+        }
+        return list;
+    }
+
+    /**
+     * Adds a new host to the domain. In order to modify a host, all
+     * hosts must first be removed and then added through this
+     * method.
+     *
+     * @param name           the host name
+     * @param description    the host description
+     *
+     * @throws ContentException if the new host couldn't be added due
+     *             to a validation error
+     */
+    public void addHost(String name, String description)
+        throws ContentException {
+
+        Domain  domain;
+
+        validateSize("host name", name, 1, 100);
+        validateChars("host name", name, HOST_NAME_CHARS);
+        validateSize("host description", description, 0, 100);
+        if (hosts.get(name) != null) {
+            throw new ContentException("host '" + getName() +
+                                       "' already exists");
+        }
+        domain = getContentManager().getHostDomain(name);
+        if (domain != null && !domain.equals(this)) {
+            throw new ContentException("host '" + getName() +
+                                       "' already exists");
+        }
+        hosts.put(name, description);
+    }
+
+    /**
+     * Removes all hosts belonging to the domain.
+     */
+    public void removeAllHosts() {
+        hosts.clear();
     }
 
     /**
@@ -489,6 +553,7 @@ public class Domain extends PersistentObject implements Comparable {
         try {
             DomainPeer.doInsert(src, data);
             doWriteAttributes(src);
+            doWriteHosts(src);
         } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -511,6 +576,7 @@ public class Domain extends PersistentObject implements Comparable {
         try {
             DomainPeer.doUpdate(src, data);
             doWriteAttributes(src);
+            doWriteHosts(src);
         } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -615,6 +681,59 @@ public class Domain extends PersistentObject implements Comparable {
             attr.setString(DomainAttributeData.DATA,
                            attributes.get(name).toString());
             DomainAttributePeer.doInsert(src, attr);
+        }
+    }
+
+
+    /**
+     * Reads the hosts from the database. This method will add all
+     * the hosts to the hosts map.
+     *
+     * @param src            the data source to use
+     *
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
+     */
+    private void doReadHosts(DataSource src)
+        throws DataObjectException {
+
+        ArrayList  list;
+        HostData   host;
+
+        list = HostPeer.doSelectByDomain(src, getName());
+        for (int i = 0; i < list.size(); i++) {
+            host = (HostData) list.get(i);
+            hosts.put(host.getString(HostData.NAME),
+                      host.getString(HostData.DESCRIPTION));
+        }
+    }
+
+    /**
+     * Writes the hosts to the database. This method will first remove
+     * all existing hosts for the  domain, and then insert all the
+     * currently existing hosts.
+     *
+     * @param src            the data source to use
+     *
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
+     */
+    private void doWriteHosts(DataSource src)
+        throws DataObjectException {
+
+        Iterator  iter = hosts.keySet().iterator();
+        HostData  host;
+        String    name;
+
+        HostPeer.doDeleteDomain(src, getName());
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            host = new HostData();
+            host.setString(HostData.DOMAIN, getName());
+            host.setString(HostData.NAME, name);
+            host.setString(HostData.DESCRIPTION, (String) hosts.get(name));
+            host.setString(HostData.OPTIONS, "");
+            HostPeer.doInsert(src, host);
         }
     }
 }

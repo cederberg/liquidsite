@@ -23,7 +23,6 @@ package org.liquidsite.app.admin;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -32,14 +31,12 @@ import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentFile;
 import org.liquidsite.core.content.ContentFolder;
-import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentPage;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTemplate;
 import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.Domain;
-import org.liquidsite.core.content.Host;
 import org.liquidsite.core.web.FormValidationException;
 import org.liquidsite.core.web.FormValidator;
 import org.liquidsite.core.web.Request;
@@ -137,19 +134,19 @@ class SiteEditFormHandler extends AdminFormHandler {
         domainValidator.addRequiredConstraint("description", error);
         error = "Host name must be lower-case, invalid character";
         domainValidator.addCharacterConstraint("host.0.name",
-                                               Host.NAME_CHARS,
+                                               Domain.HOST_NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.1.name",
-                                               Host.NAME_CHARS,
+                                               Domain.HOST_NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.2.name",
-                                               Host.NAME_CHARS,
+                                               Domain.HOST_NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.3.name",
-                                               Host.NAME_CHARS,
+                                               Domain.HOST_NAME_CHARS,
                                                error);
         domainValidator.addCharacterConstraint("host.4.name",
-                                               Host.NAME_CHARS,
+                                               Domain.HOST_NAME_CHARS,
                                                error);
 
         // Add and edit site validator
@@ -164,7 +161,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         siteValidator.addRequiredConstraint("host", error);
         error = "Host name must be lower-case, invalid character";
         siteValidator.addCharacterConstraint("host",
-                                             Host.NAME_CHARS + "*",
+                                             Domain.HOST_NAME_CHARS + "*",
                                              error);
         error = "No port number specified";
         siteValidator.addRequiredConstraint("port", error);
@@ -401,43 +398,25 @@ class SiteEditFormHandler extends AdminFormHandler {
     private void handleEditDomain(Request request, Domain domain)
         throws ContentException, ContentSecurityException {
 
-        ContentManager  manager = AdminUtils.getContentManager();
-        Host[]          hosts;
-        Host            host;
-        HashMap         unprocessed = new HashMap();
-        Iterator        iter;
-        String          param;
-        String          str;
+        Iterator  iter;
+        String    param;
+        String    name;
+        String    descr;
 
         domain.setDescription(request.getParameter("description"));
         domain.setMailFrom(request.getParameter("mailaddress"));
-        domain.save(request.getUser());
-        hosts = domain.getHosts();
-        for (int i = 0; i < hosts.length; i++) {
-            unprocessed.put(hosts[i].getName(), hosts[i]);
-        }
+        domain.removeAllHosts();
         iter = request.getAllParameters().keySet().iterator();
         while (iter.hasNext()) {
             param = iter.next().toString();
             if (param.startsWith("host.") && param.endsWith(".name")) {
                 param = param.substring(0, param.length() - 5);
-                str = request.getParameter(param + ".name");
-                host = (Host) unprocessed.get(str);
-                if (host == null) {
-                    host = new Host(manager, domain, str);
-                } else {
-                    unprocessed.remove(str);
-                }
-                str = request.getParameter(param + ".description");
-                host.setDescription(str);
-                host.save(request.getUser());
+                name = request.getParameter(param + ".name");
+                descr = request.getParameter(param + ".description");
+                domain.addHost(name, descr);
             }
         }
-        iter = unprocessed.values().iterator();
-        while (iter.hasNext()) {
-            host = (Host) iter.next();
-            host.delete(request.getUser());
-        }
+        domain.save(request.getUser());
     }
 
     /**

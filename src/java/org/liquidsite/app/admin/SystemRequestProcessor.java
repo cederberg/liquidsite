@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,8 +50,8 @@ import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSelector;
 import org.liquidsite.core.content.Domain;
+import org.liquidsite.core.content.DomainHost;
 import org.liquidsite.core.content.Group;
-import org.liquidsite.core.content.Host;
 import org.liquidsite.core.content.Lock;
 import org.liquidsite.core.content.Permission;
 import org.liquidsite.core.content.PermissionList;
@@ -366,7 +367,8 @@ class SystemRequestProcessor {
         ContentManager   manager = AdminUtils.getContentManager();
         Group[]          groups;
         User[]           users;
-        Host[]           hosts;
+        ArrayList        hosts;
+        DomainHost       host;
         Content[]        content;
         ContentSelector  selector;
         int              count;
@@ -379,6 +381,15 @@ class SystemRequestProcessor {
         out.print("\" description=\"");
         out.print(AdminUtils.getXmlString(domain.getDescription()));
         out.println("\">");
+        hosts = domain.getHosts();
+        for (int i = 0; i < hosts.size(); i++) {
+            host = (DomainHost) hosts.get(i);
+            out.print("    <host name=\"");
+            out.print(host.getName());
+            out.print("\" description=\"");
+            out.print(AdminUtils.getXmlString(host.getDescription()));
+            out.println("\" />");
+        }
         groups = manager.getGroups(domain, "");
         for (int i = 0; i < groups.length; i++) {
             backupXml(out, groups[i]);
@@ -389,10 +400,6 @@ class SystemRequestProcessor {
             for (int j = 0; j < users.length; j++) {
                 backupXml(out, users[j]);
             }
-        }
-        hosts = domain.getHosts();
-        for (int i = 0; i < hosts.length; i++) {
-            backupXml(out, hosts[i]);
         }
         backupXml(out, domain.getPermissions());
         selector = new ContentSelector(domain);
@@ -464,20 +471,6 @@ class SystemRequestProcessor {
             out.println("\" />");
         }
         out.println("    </user>");
-    }
-
-    /**
-     * Creates an XML backup for the specified host.
-     *
-     * @param out            the output stream
-     * @param host           the host to backup
-     */
-    private void backupXml(PrintWriter out, Host host) {
-        out.print("    <host name=\"");
-        out.print(host.getName());
-        out.print("\" description=\"");
-        out.print(AdminUtils.getXmlString(host.getDescription()));
-        out.println("\" />");
     }
 
     /**

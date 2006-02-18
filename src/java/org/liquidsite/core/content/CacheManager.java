@@ -21,6 +21,7 @@
 
 package org.liquidsite.core.content;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -63,10 +64,10 @@ class CacheManager {
     private HashMap domains = new HashMap();
 
     /**
-     * The host cache. This is a map of all hosts in the system. The
-     * hosts are indexed by their names.
+     * The domain host cache. This is a map of all domains in the
+     * system, indexed by all the host names.
      */
-    private HashMap hosts = new HashMap();
+    private HashMap domainHosts = new HashMap();
 
     /**
      * The site cache. This is a map of site arrays, containing the
@@ -123,7 +124,6 @@ class CacheManager {
      */
     public boolean isCached(PersistentObject obj) {
         Domain          domain;
-        Host            host;
         Content         content;
         PermissionList  perms;
         Object          key;
@@ -131,9 +131,6 @@ class CacheManager {
         if (obj instanceof Domain) {
             domain = (Domain) obj;
             return domains.containsKey(domain.getName());
-        } else if (obj instanceof Host) {
-            host = (Host) obj;
-            return hosts.containsKey(host.getName());
         } else if (obj instanceof Content) {
             content = (Content) obj;
             if (content.isLatestRevision() && content.isPublishedRevision()) {
@@ -165,7 +162,8 @@ class CacheManager {
      */
     public synchronized void add(PersistentObject obj) {
         Domain          domain;
-        Host            host;
+        ArrayList       hosts;
+        DomainHost      host;
         Content         content;
         PermissionList  perms;
         Object          key;
@@ -173,11 +171,13 @@ class CacheManager {
         if (obj instanceof Domain) {
             domain = (Domain) obj;
             domains.put(domain.getName(), obj);
+            hosts = domain.getHosts();
+            for (int i = 0; i < hosts.size(); i++) {
+                host = (DomainHost) hosts.get(i);
+                domainHosts.put(host.getName(), domain);
+                LOG.trace("cached host " + host.getName());
+            }
             LOG.trace("cached domain " + domain.getName());
-        } else if (obj instanceof Host) {
-            host = (Host) obj;
-            hosts.put(host.getName(), obj);
-            LOG.trace("cached host " + host.getName());
         } else if (obj instanceof Content) {
             content = (Content) obj;
             if (content instanceof ContentSite) {
@@ -244,7 +244,6 @@ class CacheManager {
      * @param obj            the object to remove
      */
     public synchronized void remove(PersistentObject obj) {
-        Host            host;
         Content         content;
         PermissionList  perms;
 
@@ -252,10 +251,6 @@ class CacheManager {
             // TODO: this is not optimal for efficiency, but required
             //       for cache consistency (currently)
             removeAll();
-        } else if (obj instanceof Host) {
-            host = (Host) obj;
-            hosts.remove(host.getName());
-            LOG.trace("uncached host " + host.getName());
         } else if (obj instanceof Content) {
             content = (Content) obj;
             if (obj instanceof ContentSite) {
@@ -291,7 +286,7 @@ class CacheManager {
      */
     public synchronized void removeAll() {
         domains.clear();
-        hosts.clear();
+        domainHosts.clear();
         sites.clear();
         parents.clear();
         contents.clear();
@@ -329,16 +324,15 @@ class CacheManager {
      *         null if not present in the cache
      */
     public Domain getHostDomain(String name) {
-        Host  host;
+        Domain  domain;
 
-        host = (Host) hosts.get(name);
-        if (host == null) {
+        domain = (Domain) domainHosts.get(name);
+        if (domain == null) {
             LOG.trace("cache miss on host " + name);
-            return null;
         } else {
             LOG.trace("cache hit on host " + name);
-            return getDomain(host.getDomainName());
         }
+        return domain;
     }
 
     /**

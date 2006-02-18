@@ -44,7 +44,6 @@ import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTemplate;
 import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.Domain;
-import org.liquidsite.core.content.Host;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.FormValidationException;
@@ -260,27 +259,25 @@ class SiteAddFormHandler extends AdminFormHandler {
 
         ContentManager  manager = AdminUtils.getContentManager();
         Domain          domain;
-        Host            host;
         Iterator        iter;
         String          param;
-        String          str;
+        String          name;
+        String          descr;
 
         domain = new Domain(manager, request.getParameter("name"));
         domain.setDescription(request.getParameter("description"));
         domain.setMailFrom(request.getParameter("mailaddress"));
-        domain.save(request.getUser());
         iter = request.getAllParameters().keySet().iterator();
         while (iter.hasNext()) {
             param = iter.next().toString();
             if (param.startsWith("host.") && param.endsWith(".name")) {
                 param = param.substring(0, param.length() - 5);
-                str = request.getParameter(param + ".name");
-                host = new Host(manager, domain, str);
-                str = request.getParameter(param + ".description");
-                host.setDescription(str);
-                host.save(request.getUser());
+                name = request.getParameter(param + ".name");
+                descr = request.getParameter(param + ".description");
+                domain.addHost(name, descr);
             }
         }
+        domain.save(request.getUser());
         AdminView.SITE.setSiteTreeFocus(request, domain);
     }
 

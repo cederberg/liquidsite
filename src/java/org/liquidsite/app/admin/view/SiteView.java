@@ -41,7 +41,7 @@ import org.liquidsite.core.content.ContentSite;
 import org.liquidsite.core.content.ContentTemplate;
 import org.liquidsite.core.content.ContentTranslator;
 import org.liquidsite.core.content.Domain;
-import org.liquidsite.core.content.Host;
+import org.liquidsite.core.content.DomainHost;
 import org.liquidsite.core.content.PersistentObject;
 import org.liquidsite.core.content.User;
 import org.liquidsite.core.web.Request;
@@ -180,7 +180,8 @@ public class SiteView extends AdminView {
         String     description;
         ArrayList  hosts = new ArrayList();
         String     mailAddress;
-        Host[]     hostArray;
+        ArrayList  list;
+        DomainHost host;
         Iterator   iter;
         HashMap    map;
         String     param;
@@ -191,12 +192,13 @@ public class SiteView extends AdminView {
             AdminUtils.setReference(request, domain);
             name = domain.getName();
             description = domain.getDescription();
-            hostArray = domain.getHosts();
-            for (int i = 0; i < hostArray.length; i++) {
+            list = domain.getHosts();
+            Collections.sort(list);
+            for (int i = 0; i < list.size(); i++) {
+                host = (DomainHost) list.get(i);
                 map = new HashMap(2);
-                value = hostArray[i].getName();
-                map.put("name", AdminUtils.getScriptString(value));
-                value = hostArray[i].getDescription();
+                map.put("name", AdminUtils.getScriptString(host.getName()));
+                value = host.getDescription();
                 map.put("description", AdminUtils.getScriptString(value));
                 hosts.add(map);
             }
@@ -254,7 +256,7 @@ public class SiteView extends AdminView {
 
         Domain       domain;
         ContentSite  site;
-        Host[]       hosts;
+        ArrayList    hosts;
         ArrayList    list = new ArrayList();
         String       defaultName;
         String       defaultProtocol;
@@ -289,8 +291,8 @@ public class SiteView extends AdminView {
         }
         publish = reference.hasPublishAccess(request.getUser());
         hosts = domain.getHosts();
-        for (int i = 0; i < hosts.length; i++) {
-            list.add(hosts[i].getName());
+        for (int i = 0; i < hosts.size(); i++) {
+            list.add(((DomainHost) hosts.get(i)).getName());
         }
         AdminUtils.setReference(request, reference);
         request.setAttribute("hostnames", list);
