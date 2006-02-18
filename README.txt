@@ -32,7 +32,7 @@ LIQUID SITE README
   See the following web page for further information about reporting
   errors:
 
-    http://www.nongnu.org/liquidsite/support.html
+    http://www.liquidsite.org/support/
 
 
 5. Contributing
@@ -43,11 +43,11 @@ LIQUID SITE README
   is to report errors or problems encountered when using this 
   software. Please see the project web site for more information:
 
-    http://www.nongnu.org/liquidsite/
+    http://www.liquidsite.org/
 
   
 _____________________________________________________________________
 
-Copyright (c) 2003 Per Cederberg. Permission is granted to copy this 
-document verbatim in any medium, provided that this copyright notice 
-is left intact.
+Copyright (c) 2003-2006 Per Cederberg. Permission is granted to copy
+this document verbatim in any medium, provided that this copyright
+notice is left intact.
