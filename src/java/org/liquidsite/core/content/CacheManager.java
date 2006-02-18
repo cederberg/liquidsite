@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -244,25 +244,14 @@ class CacheManager {
      * @param obj            the object to remove
      */
     public synchronized void remove(PersistentObject obj) {
-        Domain          domain;
         Host            host;
         Content         content;
         PermissionList  perms;
 
         if (obj instanceof Domain) {
-            domain = (Domain) obj;
-            domains.remove(domain.getName());
-            LOG.trace("uncached domain " + domain.getName());
-            hosts.clear();
-            LOG.trace("uncached all hosts");
-            sites.remove(domain.getName());
-            LOG.trace("uncached site list for " + domain.getName());
-            parents.clear();
-            LOG.trace("uncached all content parents");
-            contents.clear();
-            LOG.trace("uncached all content objects");
-            permissions.clear();
-            LOG.trace("uncached all permission lists");
+            // TODO: this is not optimal for efficiency, but required
+            //       for cache consistency (currently)
+            removeAll();
         } else if (obj instanceof Host) {
             host = (Host) obj;
             hosts.remove(host.getName());
@@ -332,23 +321,24 @@ class CacheManager {
     }
 
     /**
-     * Returns a host from the cache.
+     * Returns a host domain from the cache.
      *
      * @param name           the host name
      *
-     * @return the host found, or
+     * @return the domain found, or
      *         null if not present in the cache
      */
-    public Host getHost(String name) {
+    public Domain getHostDomain(String name) {
         Host  host;
 
         host = (Host) hosts.get(name);
         if (host == null) {
             LOG.trace("cache miss on host " + name);
+            return null;
         } else {
             LOG.trace("cache hit on host " + name);
+            return getDomain(host.getDomainName());
         }
-        return host;
     }
 
     /**

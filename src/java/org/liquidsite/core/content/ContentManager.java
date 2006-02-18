@@ -205,7 +205,7 @@ public class ContentManager {
         // Retrieve domain collection
         domains = cache.getAllDomains();
         if (domains.isEmpty()) {
-            cache.addAll(Domain.findAll(this));
+            getDomain("ROOT");
             domains = cache.getAllDomains();
         }
 
@@ -245,6 +245,7 @@ public class ContentManager {
         domain = CacheManager.getInstance().getDomain(name);
         if (domain == null) {
             CacheManager.getInstance().addAll(Domain.findAll(this));
+            CacheManager.getInstance().addAll(Host.findAll(this));
             domain = CacheManager.getInstance().getDomain(name);
         }
         return domain;
@@ -273,28 +274,6 @@ public class ContentManager {
             throw new ContentSecurityException(user, "read", domain);
         }
         return domain;
-    }
-
-    /**
-     * Returns a host with the specified name.
-     *
-     * @param name           the host name
-     *
-     * @return the host found, or
-     *         null if no such host exists
-     *
-     * @throws ContentException if the database couldn't be accessed
-     *             properly
-     */
-    Host getHost(String name) throws ContentException {
-        Host  host;
-
-        host = CacheManager.getInstance().getHost(name);
-        if (host == null) {
-            CacheManager.getInstance().addAll(Host.findAll(this));
-            host = CacheManager.getInstance().getHost(name);
-        }
-        return host;
     }
 
     /**
@@ -795,18 +774,15 @@ public class ContentManager {
                                 String path)
         throws ContentException {
 
-        Host           host;
         Domain         domain;
         ContentSite[]  sites;
         ContentSite    res = null;
         int            max = 0;
         int            match;
 
-        host = getHost(hostname);
-        if (host == null) {
+        domain = CacheManager.getInstance().getHostDomain(hostname);
+        if (domain == null) {
             domain = getDomain("ROOT");
-        } else {
-            domain = getDomain(host.getDomainName());
         }
         sites = getSites(domain);
         LOG.trace("evaluating " + sites.length + " sites");

@@ -272,7 +272,7 @@ public class Host extends PersistentObject {
             }
             validateSize("host name", getName(), 1, 100);
             validateChars("host name", getName(), NAME_CHARS);
-            if (getContentManager().getHost(getName()) != null) {
+            if (findByName(getContentManager(), getName()) != null) {
                 throw new ContentException("host '" + getName() +
                                            "' already exists");
             }
