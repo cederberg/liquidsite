@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
@@ -135,6 +135,7 @@ public final class DomainPeer extends AbstractPeer {
 
         query.addParameter(domain);
         PEER.delete(src, query);
+        DomainAttributePeer.doDeleteDomain(src, domain);
         UserPeer.doDeleteDomain(src, domain);
         GroupPeer.doDeleteDomain(src, domain);
         HostPeer.doDeleteDomain(src, domain);

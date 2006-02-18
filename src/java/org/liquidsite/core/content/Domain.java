@@ -24,9 +24,12 @@ package org.liquidsite.core.content;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.liquidsite.core.data.DataObjectException;
 import org.liquidsite.core.data.DataSource;
+import org.liquidsite.core.data.DomainAttributeData;
+import org.liquidsite.core.data.DomainAttributePeer;
 import org.liquidsite.core.data.DomainData;
 import org.liquidsite.core.data.DomainPeer;
 import org.liquidsite.core.data.DomainSizeData;
@@ -47,6 +50,11 @@ public class Domain extends PersistentObject implements Comparable {
     private static final Log LOG = new Log(Domain.class);
 
     /**
+     * The mail sender address attribute name.
+     */
+    private static final String MAIL_FROM_ATTRIBUTE = "MAIL.FROM";
+
+    /**
      * The permitted domain name characters.
      */
     public static final String NAME_CHARS =
@@ -58,10 +66,11 @@ public class Domain extends PersistentObject implements Comparable {
     private DomainData data;
 
     /**
-     * The domain options. These options are read from and stored to
-     * the data object upon reading and writing.
+     * The domain attributes. The attributes are indexed by their
+     * unique names. All attributes are read from and stored to
+     * the database upon reading and writing the domain.
      */
-    private HashMap options;
+    private HashMap attributes;
 
     /**
      * Returns an array of all domains in the database.
@@ -84,7 +93,7 @@ public class Domain extends PersistentObject implements Comparable {
             list = DomainPeer.doSelectAll(src);
             res = new Domain[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                res[i] = new Domain(manager, (DomainData) list.get(i));
+                res[i] = new Domain(manager, (DomainData) list.get(i), src);
             }
         } catch (DataObjectException e) {
             LOG.error(e.getMessage());
@@ -124,7 +133,7 @@ public class Domain extends PersistentObject implements Comparable {
         if (data == null) {
             return null;
         } else {
-            return new Domain(manager, data);
+            return new Domain(manager, data, src);
         }
     }
 
@@ -138,19 +147,34 @@ public class Domain extends PersistentObject implements Comparable {
         super(manager, false);
         this.data = new DomainData();
         this.data.setString(DomainData.NAME, name);
-        this.options = new HashMap();
+        this.attributes = new HashMap();
     }
 
     /**
-     * Creates a new domain from a data object.
+     * Creates a new domain from a data object. This constructor will
+     * also read all domain attributes from the database.
      *
      * @param manager        the content manager to use
      * @param data           the domain data object
+     * @param src            the data source to use
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
      */
-    private Domain(ContentManager manager, DomainData data) {
+    private Domain(ContentManager manager,
+                   DomainData data,
+                   DataSource src)
+        throws ContentException {
+
         super(manager, true);
         this.data = data;
-        this.options = decodeMap(data.getString(DomainData.OPTIONS));
+        this.attributes = new HashMap();
+        try {
+            doReadAttributes(src);
+        } catch (DataObjectException e) {
+            LOG.error(e.getMessage());
+            throw new ContentException(e);
+        }
     }
 
     /**
@@ -247,6 +271,37 @@ public class Domain extends PersistentObject implements Comparable {
      */
     public void setDescription(String description) {
         data.setString(DomainData.DESCRIPTION, description);
+    }
+
+    /**
+     * Returns the mail sender address. This address will be used
+     * for all mails sent from the domain. If this address is not set,
+     * the server default address should be used.
+     *
+     * @return the mail sender address, or
+     *         null for none
+     */
+    public String getMailFrom() {
+        return (String) attributes.get(MAIL_FROM_ATTRIBUTE);
+    }
+
+    /**
+     * Sets the mail sender address. This address will be used for
+     * all mails sent from the domain. If this address is not set,
+     * the server default address should be used. The address should
+     * be formatted as a correct internet mail address, optionally
+     * containing both the name and email address. 
+     *
+     * @param address        the new address, or null to remove
+     *
+     * @see javax.mail.internet.InternetAddress
+     */
+    public void setMailFrom(String address) {
+        if (address == null || address.trim().length() == 0) {
+            attributes.remove(MAIL_FROM_ATTRIBUTE);
+        } else {
+            attributes.put(MAIL_FROM_ATTRIBUTE, address);
+        }
     }
 
     /**
@@ -408,9 +463,9 @@ public class Domain extends PersistentObject implements Comparable {
     protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
-        data.setString(DomainData.OPTIONS, encodeMap(options));
         try {
             DomainPeer.doInsert(src, data);
+            doWriteAttributes(src);
         } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -429,9 +484,9 @@ public class Domain extends PersistentObject implements Comparable {
     protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
-        data.setString(DomainData.OPTIONS, encodeMap(options));
         try {
             DomainPeer.doUpdate(src, data);
+            doWriteAttributes(src);
         } catch (DataObjectException e) {
             LOG.error(e.getMessage());
             throw new ContentException(e);
@@ -484,6 +539,58 @@ public class Domain extends PersistentObject implements Comparable {
                       ": " + e.getMessage());
             throw new ContentException(
                 "access denied while deleting domain file directory");
+        }
+    }
+
+    /**
+     * Reads the domain attributes from the database. This method
+     * will add all the attributes to the attributes map.
+     *
+     * @param src            the data source to use
+     *
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
+     */
+    private void doReadAttributes(DataSource src)
+        throws DataObjectException {
+
+        ArrayList            list;
+        DomainAttributeData  attr;
+
+        list = DomainAttributePeer.doSelectByDomain(src, getName());
+        for (int i = 0; i < list.size(); i++) {
+            attr = (DomainAttributeData) list.get(i);
+            attributes.put(attr.getString(DomainAttributeData.NAME),
+                           attr.getString(DomainAttributeData.DATA));
+        }
+    }
+
+    /**
+     * Writes the domain attributes to the database. This method
+     * will first remove all existing attributes for the  domain,
+     * and then insert all the currently existing attributes.
+     *
+     * @param src            the data source to use
+     *
+     * @throws DataObjectException if the data source couldn't be
+     *             accessed properly
+     */
+    private void doWriteAttributes(DataSource src)
+        throws DataObjectException {
+
+        Iterator             iter = attributes.keySet().iterator();
+        DomainAttributeData  attr;
+        String               name;
+
+        DomainAttributePeer.doDeleteDomain(src, getName());
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            attr = new DomainAttributeData();
+            attr.setString(DomainAttributeData.DOMAIN, getName());
+            attr.setString(DomainAttributeData.NAME, name);
+            attr.setString(DomainAttributeData.DATA,
+                           attributes.get(name).toString());
+            DomainAttributePeer.doInsert(src, attr);
         }
     }
 }

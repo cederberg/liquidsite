@@ -91,6 +91,44 @@
       </primarykey>
     </table>
 
+    <table name="LS_DOMAIN_ATTRIBUTE">
+      <description>
+        The domain attribute table. The domain attributes contain
+        genric data and configuration properties associated with a
+        particular domain. All attributes are identified by a
+        name and contain text data values.
+      </description>
+      <column name="DOMAIN">
+        <description>
+          The name of the domain the attribute belongs to.
+        </description>
+        <type name="VARCHAR" size="30" required="true" />
+        <ref table="LS_DOMAIN" column="NAME" />
+      </column>
+      <column name="NAME">
+        <description>
+          The domain attribute name. The attribute name must be
+          unique for the specific domain.
+        </description>
+        <type name="VARCHAR" size="200" required="true" />
+      </column>
+      <column name="DATA">
+        <description>
+          The attribute text data. This may be set to blank if the
+          attribute has no data.
+        </description>
+        <type name="MEDIUMTEXT" required="true" />
+      </column>
+      <primarykey>
+        <description>
+          The domain attributes are uniquely indexed by the domain
+          and attribute names.
+        </description>
+        <ref column="DOMAIN" />
+        <ref column="NAME" />
+      </primarykey>
+    </table>
+
     <table name="LS_USER">
       <description>
         The user table. Each user belongs to a single domain and zero
