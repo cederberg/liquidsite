@@ -179,6 +179,7 @@ public class SiteView extends AdminView {
         String     name;
         String     description;
         ArrayList  hosts = new ArrayList();
+        String     mailAddress;
         Host[]     hostArray;
         Iterator   iter;
         HashMap    map;
@@ -199,10 +200,15 @@ public class SiteView extends AdminView {
                 map.put("description", AdminUtils.getScriptString(value));
                 hosts.add(map);
             }
+            mailAddress = domain.getMailFrom();
+            if (mailAddress == null) {
+                mailAddress = "";
+            }
         } else {
             AdminUtils.setReference(request, parent);
             name = "";
             description = "";
+            mailAddress = "";
         }
 
         // Adjust for incoming request
@@ -223,12 +229,14 @@ public class SiteView extends AdminView {
                     hosts.add(map);
                 }
             }
+            mailAddress = request.getParameter("mailAddress", "");
         }
 
         // Set request parameters
         request.setAttribute("name", name);
         request.setAttribute("description", description);
         request.setAttribute("hosts", hosts);
+        request.setAttribute("mailaddress", mailAddress);
         AdminUtils.sendTemplate(request, "admin/edit-domain.ftl");
     }
 

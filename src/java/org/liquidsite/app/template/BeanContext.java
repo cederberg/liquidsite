@@ -698,8 +698,11 @@ class BeanContext {
      */
     public boolean sendMail(String receiver, String subject, String text) {
         SimpleMailMessage  msg = new SimpleMailMessage();
+        Domain             domain;
 
         try {
+            domain = request.getEnvironment().getDomain();
+            msg.setFrom(domain.getMailFrom());
             msg.setRecipients(receiver);
             msg.setSubject(subject);
             msg.setText(text);
@@ -726,8 +729,11 @@ class BeanContext {
      */
     public boolean sendMail(Group receiver, String subject, String text) {
         GroupMailMessage  msg = new GroupMailMessage();
+        Domain            domain;
 
         try {
+            domain = request.getEnvironment().getDomain();
+            msg.setFrom(domain.getMailFrom());
             msg.setRecipient(receiver);
             msg.setSubject(subject);
             msg.setText(text);

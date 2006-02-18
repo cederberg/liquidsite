@@ -81,9 +81,22 @@
           </th>
           <td class="field">
             <input type="text" tabindex="2" size="50"
-                   name="description" value="${description}" />
+                   name="description" value="${description?html}" />
             <p>The description of the domain. This description is
             only visible in the administration application.</p>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Mail Address:
+          </th>
+          <td class="field">
+            <input type="text" tabindex="3" size="50"
+                   name="mailaddress" value="${mailaddress?html}" />
+            <p>The mail sender address to use for the domain. This address
+            is used on all outgoing emails. To include both a sender name
+            and address, use the format
+            "<code>Name &lt;email@domain&gt;</code>".</p>
           </td>
         </tr>
         <tr>

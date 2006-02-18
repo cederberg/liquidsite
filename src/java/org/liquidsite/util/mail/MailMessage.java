@@ -58,6 +58,11 @@ public abstract class MailMessage {
     private static final String CHARACTER_SET = "ISO-8859-1";
 
     /**
+     * The message from address.
+     */
+    private InternetAddress from = null;
+
+    /**
      * The message reply-to address.
      */
     private InternetAddress replyTo = null;
@@ -100,6 +105,54 @@ public abstract class MailMessage {
     public abstract String getRecipient();
 
     /**
+     * Returns the message from address.
+     *
+     * @return the message from address, or
+     *         null if none has been set
+     */
+    public String getFrom() {
+        if (from == null) {
+            return null;
+        } else {
+            return from.toString();
+        }
+    }
+
+    /**
+     * Returns the message from address.
+     *
+     * @return the message from address, or
+     *         null if none has been set
+     */
+    public InternetAddress getFromAddress() {
+        return from;
+    }
+
+    /**
+     * Sets the message from address.
+     *
+     * @param address        the from address
+     *
+     * @throws MailMessageException if the address wasn't possible to
+     *             parse correctly
+     */
+    public void setFrom(String address) throws MailMessageException {
+        String  error;
+
+        try {
+            if (address == null) {
+                this.from = null;
+            } else {
+                this.from = new InternetAddress(address);
+            }
+        } catch (AddressException e) {
+            error = "failed to parse mail from address '" + address + "'";
+            LOG.info(error, e);
+            throw new MailMessageException(error, e);
+        }
+    }
+
+    /**
      * Returns the message reply to address.
      *
      * @return the message reply to address, or
@@ -135,7 +188,11 @@ public abstract class MailMessage {
         String  error;
 
         try {
-            this.replyTo = new InternetAddress(address);
+            if (address == null) {
+                this.replyTo = null;
+            } else {
+                this.replyTo = new InternetAddress(address);
+            }
         } catch (AddressException e) {
             error = "failed to parse mail reply-to address '" + address + "'";
             LOG.info(error, e);
@@ -264,7 +321,11 @@ public abstract class MailMessage {
 
         try {
             msg.setSentDate(new Date());
-            msg.setFrom();
+            if (getFromAddress() == null) {
+                msg.setFrom();
+            } else {
+                msg.setFrom(getFromAddress());
+            }
             if (getReplyToAddress() != null) {
                 addresses = new InternetAddress[1];
                 addresses[0] = getReplyToAddress();

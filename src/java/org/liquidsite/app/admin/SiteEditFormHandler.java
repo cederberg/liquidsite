@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.admin;
@@ -410,6 +410,7 @@ class SiteEditFormHandler extends AdminFormHandler {
         String          str;
 
         domain.setDescription(request.getParameter("description"));
+        domain.setMailFrom(request.getParameter("mailaddress"));
         domain.save(request.getUser());
         hosts = domain.getHosts();
         for (int i = 0; i < hosts.length; i++) {
