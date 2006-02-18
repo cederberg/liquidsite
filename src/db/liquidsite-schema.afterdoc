@@ -322,51 +322,6 @@
       </index>
     </table>
 
-    <table name="LS_HOST">
-      <description>
-        The web host table. A web host is a fully qualified host name
-        that is used on the web. Each host name can only pertain to a
-        single domain, limiting the possible sites that can be
-        created within that domain.
-      </description>
-      <column name="DOMAIN">
-        <description>
-          The name of the domain the host belongs to.
-        </description>
-        <type name="VARCHAR" size="30" required="true" />
-        <ref table="LS_DOMAIN" column="NAME" />
-      </column>
-      <column name="NAME">
-        <description>
-          The host name. The host name is the fully qualified host
-          name, i.e. including any Internet domain name.
-        </description>
-        <type name="VARCHAR" size="100" required="true" />
-      </column>
-      <column name="DESCRIPTION">
-        <description>
-          The host description. The host description may contain
-          notes regarding the usage of the host.
-        </description>
-        <type name="VARCHAR" size="100" required="true" />
-      </column>
-      <column name="OPTIONS">
-        <description>
-          The host options. The host options is a short list of
-          name-value pairs. Each entry is separated by a ':'
-          character, and the values are placed after a '=' character.
-          An example option string could be "secure:transfer=255".
-        </description>
-        <type name="VARCHAR" size="200" required="true" />
-      </column>
-      <primarykey>
-        <description>
-          The hosts are indexed by the unique name.
-        </description>
-        <ref column="NAME" />
-      </primarykey>
-    </table>
-
     <table name="LS_CONTENT">
       <description>
         The content object table. The content objects are all sites,

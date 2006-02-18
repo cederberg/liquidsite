@@ -139,7 +139,6 @@ public final class DomainPeer extends AbstractPeer {
         DomainAttributePeer.doDeleteDomain(src, domain);
         UserPeer.doDeleteDomain(src, domain);
         GroupPeer.doDeleteDomain(src, domain);
-        HostPeer.doDeleteDomain(src, domain);
         ContentPeer.doDeleteDomain(src, domain);
     }
 

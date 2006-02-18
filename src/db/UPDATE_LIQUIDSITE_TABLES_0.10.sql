@@ -30,5 +30,13 @@ CREATE TABLE `LS_DOMAIN_ATTRIBUTE` (
     PRIMARY KEY (`DOMAIN`, `NAME`)
 );
 
+-- Move host data to domain attribute table
+INSERT INTO `LS_DOMAIN_ATTRIBUTE` (`DOMAIN`, `NAME`, `DATA`)
+    SELECT DOMAIN, CONCAT('HOST.',NAME), DESCRIPTION
+    FROM `LS_HOST`;
+
+-- Remove old host table
+DROP TABLE `LS_HOST`;
+
 -- Remove unused user preference table
 DROP TABLE `LS_PREFERENCE`;
