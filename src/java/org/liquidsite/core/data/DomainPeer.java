@@ -94,7 +94,8 @@ public final class DomainPeer extends AbstractPeer {
 
         query.addParameter(data.getString(DomainData.NAME));
         query.addParameter(data.getString(DomainData.DESCRIPTION));
-        query.addParameter(data.getString(DomainData.OPTIONS));
+        query.addParameter(data.getDate(DomainData.CREATED));
+        query.addParameter(data.getDate(DomainData.MODIFIED));
         PEER.insert(src, query);
     }
 
@@ -113,7 +114,7 @@ public final class DomainPeer extends AbstractPeer {
         DatabaseQuery  query = new DatabaseQuery("domain.update");
 
         query.addParameter(data.getString(DomainData.DESCRIPTION));
-        query.addParameter(data.getString(DomainData.OPTIONS));
+        query.addParameter(data.getDate(DomainData.MODIFIED));
         query.addParameter(data.getString(DomainData.NAME));
         PEER.update(src, query);
     }

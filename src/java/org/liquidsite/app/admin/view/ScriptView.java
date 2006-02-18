@@ -252,6 +252,7 @@ public class ScriptView {
 
         StringBuffer  buffer = new StringBuffer();
         String        str;
+        Date          date;
 
         buffer.append("objectShow('domain', '");
         buffer.append(domain.getName());
@@ -261,6 +262,14 @@ public class ScriptView {
         buffer.append("objectAddProperty('Description', ");
         str = domain.getDescription();
         buffer.append(AdminUtils.getScriptString(str));
+        buffer.append(");\n");
+        buffer.append("objectAddProperty('Created', ");
+        date = domain.getCreatedDate();
+        buffer.append(AdminUtils.getScriptDate(user, date));
+        buffer.append(");\n");
+        buffer.append("objectAddProperty('Modified', ");
+        date = domain.getModifiedDate();
+        buffer.append(AdminUtils.getScriptDate(user, date));
         buffer.append(");\n");
         buffer.append(getButtons(user, domain, view));
         buffer.append(getHosts(domain));

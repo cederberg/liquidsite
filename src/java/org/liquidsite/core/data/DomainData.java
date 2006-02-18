@@ -16,10 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.data;
+
+import java.util.Date;
 
 /**
  * A domain data object. This object encapsulates a row of data from
@@ -43,10 +45,16 @@ public class DomainData extends AbstractData {
         new StringParameter(DomainData.class, "DESCRIPTION", "");
 
     /**
-     * The options parameter.
+     * The created parameter.
      */
-    public static final Parameter OPTIONS =
-        new StringParameter(DomainData.class, "OPTIONS", "");
+    public static final Parameter CREATED =
+        new DateParameter(DomainData.class, "CREATED", new Date(0));
+
+    /**
+     * The modified parameter.
+     */
+    public static final Parameter MODIFIED =
+        new DateParameter(DomainData.class, "MODIFIED", new Date(0));
 
     /**
      * Creates a new domain data object with default values.

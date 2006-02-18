@@ -23,6 +23,7 @@ package org.liquidsite.core.content;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -147,6 +148,8 @@ public class Domain extends PersistentObject implements Comparable {
         super(manager, false);
         this.data = new DomainData();
         this.data.setString(DomainData.NAME, name);
+        this.data.setDate(DomainData.CREATED, new Date());
+        this.data.setDate(DomainData.MODIFIED, new Date());
         this.attributes = new HashMap();
     }
 
@@ -271,6 +274,24 @@ public class Domain extends PersistentObject implements Comparable {
      */
     public void setDescription(String description) {
         data.setString(DomainData.DESCRIPTION, description);
+    }
+
+    /**
+     * Returns the domain creation date.
+     *
+     * @return the domain creation date
+     */
+    public Date getCreatedDate() {
+        return data.getDate(DomainData.CREATED);
+    }
+
+    /**
+     * Returns the domain last modification date.
+     *
+     * @return the domain last modification date
+     */
+    public Date getModifiedDate() {
+        return data.getDate(DomainData.MODIFIED);
     }
 
     /**
@@ -463,6 +484,8 @@ public class Domain extends PersistentObject implements Comparable {
     protected void doInsert(DataSource src, User user, boolean restore)
         throws ContentException {
 
+        data.setDate(DomainData.CREATED, new Date());
+        data.setDate(DomainData.MODIFIED, new Date());
         try {
             DomainPeer.doInsert(src, data);
             doWriteAttributes(src);
@@ -484,6 +507,7 @@ public class Domain extends PersistentObject implements Comparable {
     protected void doUpdate(DataSource src, User user)
         throws ContentException {
 
+        data.setDate(DomainData.MODIFIED, new Date());
         try {
             DomainPeer.doUpdate(src, data);
             doWriteAttributes(src);

@@ -74,14 +74,21 @@
         </description>
         <type name="VARCHAR" size="100" required="true" />
       </column>
-      <column name="OPTIONS">
+      <column name="CREATED">
         <description>
-          The domain options. The domain options is a short list of
-          name-value pairs. Each entry is separated by a ':'
-          character, and the values are placed after a '=' character.
-          An example option string could be "secure:transfer=255".
+          The domain creation date and time. This is the date when the
+          domain was added.
         </description>
-        <type name="VARCHAR" size="200" required="true" />
+        <type name="DATETIME" required="true" />
+      </column>
+      <column name="MODIFIED">
+        <description>
+          The domain modification date and time. This is the date of the
+          last modification to this domain. Each time the domain or its
+          attributes are modified, this value will be updated to the
+          current date and time.
+        </description>
+        <type name="DATETIME" required="true" />
       </column>
       <primarykey>
         <description>
