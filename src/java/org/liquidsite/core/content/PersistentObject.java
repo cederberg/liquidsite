@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -362,20 +362,20 @@ public abstract class PersistentObject {
     public final void save(DataSource src, User user)
         throws ContentException, ContentSecurityException {
 
-        // Save to database
-        if (!isPersistent()) {
-            SecurityManager.getInstance().checkInsert(user, this);
-            doValidate();
-            doInsert(src, user, false);
-            persistent = true;
-        } else {
-            SecurityManager.getInstance().checkUpdate(user, this);
-            doValidate();
-            doUpdate(src, user);
+        try {
+            if (!isPersistent()) {
+                SecurityManager.getInstance().checkInsert(user, this);
+                doValidate();
+                doInsert(src, user, false);
+                persistent = true;
+            } else {
+                SecurityManager.getInstance().checkUpdate(user, this);
+                doValidate();
+                doUpdate(src, user);
+            }
+        } finally {
+            CacheManager.getInstance().remove(this);
         }
-
-        // Remove from cache
-        CacheManager.getInstance().remove(this);
     }
 
     /**
@@ -418,14 +418,14 @@ public abstract class PersistentObject {
     public final void restore(DataSource src, User user)
         throws ContentException, ContentSecurityException {
 
-        // Store to database
-        SecurityManager.getInstance().checkRestore(user, this);
-        doValidate();
-        doInsert(src, user, true);
-        persistent = true;
-
-        // Remove from cache
-        CacheManager.getInstance().remove(this);
+        try {
+            SecurityManager.getInstance().checkRestore(user, this);
+            doValidate();
+            doInsert(src, user, true);
+            persistent = true;
+        } finally {
+            CacheManager.getInstance().remove(this);
+        }
     }
 
     /**
@@ -465,15 +465,15 @@ public abstract class PersistentObject {
     public final void delete(DataSource src, User user)
         throws ContentException, ContentSecurityException {
 
-        // Delete from database
-        if (isPersistent()) {
-            SecurityManager.getInstance().checkDelete(user, this);
-            doDelete(src, user);
-            persistent = false;
+        try {
+            if (isPersistent()) {
+                SecurityManager.getInstance().checkDelete(user, this);
+                doDelete(src, user);
+                persistent = false;
+            }
+        } finally {
+            CacheManager.getInstance().remove(this);
         }
-
-        // Remove from cache
-        CacheManager.getInstance().remove(this);
     }
 
     /**

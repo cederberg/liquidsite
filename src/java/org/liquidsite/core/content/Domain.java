@@ -375,33 +375,12 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
-     * Adds a new host to the domain. In order to modify a host, all
-     * hosts must first be removed and then added through this
-     * method.
+     * Adds or overwrites a host in the domain.
      *
      * @param name           the host name
      * @param description    the host description
-     *
-     * @throws ContentException if the new host couldn't be added due
-     *             to a validation error
      */
-    public void addHost(String name, String description)
-        throws ContentException {
-
-        Domain  domain;
-
-        validateSize("host name", name, 1, 100);
-        validateChars("host name", name, HOST_NAME_CHARS);
-        validateSize("host description", description, 0, 100);
-        if (attributes.get(HOST_ATTRIBUTE + name) != null) {
-            throw new ContentException("host '" + getName() +
-                                       "' already exists");
-        }
-        domain = getContentManager().getHostDomain(name);
-        if (domain != null && !domain.equals(this)) {
-            throw new ContentException("host '" + getName() +
-                                       "' already exists");
-        }
+    public void addHost(String name, String description) {
         attributes.put(HOST_ATTRIBUTE + name, description);
     }
 
@@ -527,6 +506,10 @@ public class Domain extends PersistentObject implements Comparable {
      * @throws ContentException if the object data wasn't valid
      */
     protected void doValidate() throws ContentException {
+        Iterator  iter;
+        String    name;
+        Domain    domain;
+
         if (!isPersistent()) {
             validateSize("domain name", getName(), 1, 30);
             validateChars("domain name", getName(), NAME_CHARS);
@@ -536,6 +519,20 @@ public class Domain extends PersistentObject implements Comparable {
             }
         }
         validateSize("domain description", getDescription(), 0, 100);
+        iter = attributes.keySet().iterator();
+        while (iter.hasNext()) {
+            name = (String) iter.next();
+            if (name.startsWith(HOST_ATTRIBUTE)) {
+                name = name.substring(HOST_ATTRIBUTE.length());
+                validateSize("host name", name, 1, 100);
+                validateChars("host name", name, HOST_NAME_CHARS);
+                domain = getContentManager().getHostDomain(name);
+                if (domain != null && !domain.equals(this)) {
+                    throw new ContentException("host '" + name +
+                                               "' already exists");
+                }
+            }
+        }
     }
 
     /**
