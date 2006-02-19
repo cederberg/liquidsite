@@ -132,7 +132,7 @@ public class UserPeer extends AbstractPeer {
      *
      * @param src            the data source to use
      * @param domain         the domain name
-     * @param name           the user email address
+     * @param email          the user email address
      *
      * @return the user found, or
      *         null if no matching user existed
