@@ -209,7 +209,17 @@ class XmlRestoreHandler extends DefaultHandler {
             if (qName.equals("domain")) {
                 currentDomainName = attrs.getValue("name");
                 currentDomain.setDescription(attrs.getValue("description"));
+                currentDomain.setMailFrom(attrs.getValue("mailfrom"));
                 currentDomain.restore(managerUser);
+            } else if (qName.equals("host")) {
+                try {
+                    currentDomain.addHost(attrs.getValue("name"),
+                                          attrs.getValue("description"));
+                    currentDomain.save(managerUser);
+                } catch (ContentException e) {
+                    LOG.error("skipping restore", e);
+                    complete = false;
+                }
             } else if (qName.equals("group")) {
                 str = attrs.getValue("name");
                 group = new Group(manager, currentDomain, str);
@@ -233,15 +243,6 @@ class XmlRestoreHandler extends DefaultHandler {
                 str = attrs.getValue("group");
                 group = manager.getGroup(currentDomain, str);
                 currentUser.addToGroup(group);
-            } else if (qName.equals("host")) {
-                try {
-                    currentDomain.addHost(attrs.getValue("name"),
-                                          attrs.getValue("description"));
-                    currentDomain.save(managerUser);
-                } catch (ContentException e) {
-                    LOG.error("skipping restore", e);
-                    complete = false;
-                }
             } else if (qName.equals("content")) {
                 if (currentPermissions != null) {
                     createPermissions();

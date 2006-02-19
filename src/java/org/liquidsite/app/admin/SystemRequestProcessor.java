@@ -380,6 +380,14 @@ class SystemRequestProcessor {
         out.print(domain.getName());
         out.print("\" description=\"");
         out.print(AdminUtils.getXmlString(domain.getDescription()));
+        out.print("\" created=\"");
+        out.print(domain.getCreatedDate().getTime());
+        out.print("\" modified=\"");
+        out.print(domain.getModifiedDate().getTime());
+        if (domain.getMailFrom() != null) {
+            out.print("\" mailfrom=\"");
+            out.print(AdminUtils.getXmlString(domain.getMailFrom()));
+        }
         out.println("\">");
         hosts = domain.getHosts();
         for (int i = 0; i < hosts.size(); i++) {
