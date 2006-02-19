@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.install;
@@ -482,6 +482,9 @@ public class InstallRequestProcessor extends RequestProcessor {
             } else if (databases.get(i).equals("mysql")) {
                 info.put("status", new Integer(0));
                 info.put("info", "MySQL administration database");
+            } else if (databases.get(i).equals("information_schema")) {
+                info.put("status", new Integer(0));
+                info.put("info", "MySQL information schema");
             } else if (version != null) {
                 str = "Liquid Site version " + version;
                 if (installer.canUpdate(version)) {
