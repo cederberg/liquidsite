@@ -402,9 +402,11 @@ public class ScriptView {
                 buffer.append(getLinkParameters(domain));
                 buffer.append("');\n");
             }
-            buffer.append("objectAddDeleteButton('delete.html");
-            buffer.append(getLinkParameters(domain));
-            buffer.append("');\n");
+            if (!domain.getName().equals("ROOT")) {
+                buffer.append("objectAddDeleteButton('delete.html");
+                buffer.append(getLinkParameters(domain));
+                buffer.append("');\n");
+            }
         }
         if (domain.hasAdminAccess(user)) {
             buffer.append("objectAddPermissionsButton('permissions.html");
