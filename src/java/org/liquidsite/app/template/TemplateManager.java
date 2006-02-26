@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Date;
 
+import freemarker.cache.MruCacheStorage;
 import freemarker.cache.TemplateLoader;
 import freemarker.core.Configurable;
 import freemarker.template.Configuration;
@@ -128,6 +130,8 @@ public class TemplateManager {
                                         e.getMessage());
         }
         pageConfig.setTemplateLoader(pageLoader);
+        pageConfig.setCacheStorage(new MruCacheStorage(0, 100));
+        pageConfig.setTemplateUpdateDelay(0);
     }
 
     /**
@@ -382,15 +386,34 @@ public class TemplateManager {
 
         /**
          * Returns the last modification time for a template. This
-         * method always returns the current system time to avoid
-         * caching.
+         * method always returns the current system time for all
+         * template sources except for root templates.
          *
          * @param source         the template source
          *
          * @return the current system time
          */
         public long getLastModified(Object source) {
-            return System.currentTimeMillis();
+            ContentManager  manager;
+            TemplateSource  template;
+            Date            date = null;
+
+            if (source instanceof TemplateSource) {
+                template = (TemplateSource) source;
+                manager = getPage().getContentManager();
+                try {
+                    date = template.getLastModified(manager);
+                } catch (ContentException ignore) {
+                    // Defaults to not use cache
+                } catch (ContentSecurityException ignore) {
+                    // Defaults to not use cache
+                }
+            }
+            if (date == null) {
+                return System.currentTimeMillis();
+            } else {
+                return date.getTime();
+            }
         }
 
         /**
@@ -466,6 +489,61 @@ public class TemplateManager {
         public TemplateSource(ContentTemplate template, String name) {
             this.id = template.getId();
             this.name = name;
+        }
+
+        /**
+         * Compares this object with another one. This method will
+         * only return true if the other object points to the same
+         * template source.
+         *
+         * @param obj            the object to compare with
+         *
+         * @return true if the objects are equal, or
+         *         false otherwise
+         */
+        public boolean equals(Object obj) {
+            if (obj instanceof TemplateSource) {
+                return id == ((TemplateSource) obj).id &&
+                       name.equals(((TemplateSource) obj).name);
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * Returns the template element last modification date.
+         *
+         * @param manager        the content manager
+         *
+         * @return the last modification date, or
+         *         null if the element shouldn't be cached
+         *
+         * @throws ContentException if the template element couldn't
+         *             be read properly
+         * @throws ContentSecurityException if the anonymous user
+         *             didn't have access to the template
+         */
+        public Date getLastModified(ContentManager manager)
+            throws ContentException, ContentSecurityException {
+
+            Content  content;
+            Date     date = null;
+
+            content = manager.getContent(null, id);
+            while (content != null) {
+                if (!content.isLatestRevision() ||
+                    !content.isPublishedRevision()) {
+
+                    return null;
+                }
+                if (date == null ||
+                    date.compareTo(content.getModifiedDate()) < 0) {
+
+                    date = content.getModifiedDate();
+                }
+                content = content.getParent();
+            }
+            return date;
         }
 
         /**
