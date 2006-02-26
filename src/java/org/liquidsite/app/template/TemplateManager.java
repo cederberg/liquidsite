@@ -31,9 +31,13 @@ import freemarker.core.Configurable;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 
+import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentPage;
 import org.liquidsite.core.content.ContentSecurityException;
+import org.liquidsite.core.content.ContentTemplate;
+import org.liquidsite.core.content.Domain;
 import org.liquidsite.core.content.User;
 import org.liquidsite.util.log.Log;
 
@@ -189,9 +193,9 @@ public class TemplateManager {
             pageLoader.setUser(user);
             pageLoader.setPage(page);
             if (page.getContentManager().isAdmin()) {
-                name = "preview/" + page.getId() + "/root";
+                name = "$preview/" + page.getId() + "/root";
             } else {
-                name = "normal/" + page.getId() + "/root";
+                name = "$normal/" + page.getId() + "/root";
             }
             template = new Template(pageConfig.getTemplate(name));
             return template;
@@ -277,12 +281,13 @@ public class TemplateManager {
 
         /**
          * Returns the page element data. The template name specified
-         * consists of the page content identifier and the page
-         * element name.
+         * either uniquely identifies a root template and page element,
+         * or ends with a page element name.
          *
          * @param name           the template name
          *
-         * @return the page element data
+         * @return the page element data, or
+         *         null if not found
          *
          * @throws IOException if the page element couldn't be read
          *             properly
@@ -293,6 +298,7 @@ public class TemplateManager {
             String       message;
 
             // Check for missing page
+            LOG.trace("template lookup for page element " + name);
             if (page == null) {
                 message = "page not found for page element " + name;
                 LOG.error(message);
@@ -301,18 +307,76 @@ public class TemplateManager {
 
             // Extract page element data
             try {
-                elemName = name.substring(name.lastIndexOf("/") + 1);
-                return page.getElement(getUser(), elemName);
+                if (name.startsWith("$")) {
+                    elemName = name.substring(name.lastIndexOf("/") + 1);
+                    return page.getElement(getUser(), elemName);
+                } else {
+                    return findRootTemplateSource(page.getContentManager(),
+                                                  name);
+                }
             } catch (ContentException e) {
                 message = "while reading page element " + name +
                           ": " + e.getMessage();
                 LOG.error(message);
-                throw new IOException(message);
+                throw new IOException(e.getMessage());
             } catch (ContentSecurityException e) {
                 message = "while reading page element " + name +
                           ": " + e.getMessage();
                 LOG.error(message);
-                throw new IOException(message);
+                throw new IOException(e.getMessage());
+            }
+        }
+
+        /**
+         * Returns the root template element data. The template name
+         * specified must uniquely identify a root template and page
+         * element,
+         *
+         * @param manager        the content manager
+         * @param name           the template name
+         *
+         * @return the template source element found, or
+         *         null if not found
+         *
+         * @throws ContentException if the template element couldn't
+         *             be read properly
+         * @throws ContentSecurityException if the anonymous user
+         *             didn't have access to the template
+         */
+        public Object findRootTemplateSource(ContentManager manager,
+                                             String name)
+            throws ContentException, ContentSecurityException {
+
+            Domain           root = manager.getDomain(null, "ROOT");
+            ContentTemplate  template = null;
+            Content          content;
+            String           elemName;
+            int              pos;
+
+            while (name.indexOf("/") > 0) {
+                pos = name.indexOf("/");
+                elemName = name.substring(0, pos);
+                name = name.substring(pos + 1);
+                if (template == null) {
+                    content = manager.getContentChild(null, root, elemName);
+                } else {
+                    content = manager.getContentChild(null, template, elemName);
+                }
+                if (content instanceof ContentTemplate) {
+                    template = (ContentTemplate) content;
+                } else {
+                    throw new ContentException("failed to locate template " +
+                                               elemName + " in ROOT domain");
+                }
+            }
+            if (template == null) {
+                throw new ContentException("invalid template import " + name +
+                                           " does not refer to page element");
+            }
+            if (template.getElement(name) == null) {
+                return null;
+            } else {
+                return new TemplateSource(template, name);
             }
         }
 
@@ -343,10 +407,23 @@ public class TemplateManager {
         public Reader getReader(Object source, String encoding)
             throws IOException {
 
-            if (source == null) {
-                return new StringReader("");
-            } else {
-                return new StringReader(source.toString());
+            TemplateSource  template;
+            String          data;
+
+            try {
+                if (source == null) {
+                    data = "";
+                } else if (source instanceof TemplateSource) {
+                    template = (TemplateSource) source;
+                    data = template.getData(getPage().getContentManager());
+                } else {
+                    data = source.toString();
+                }
+                return new StringReader(data);
+            } catch (ContentException e) {
+                throw new IOException(e.getMessage());
+            } catch (ContentSecurityException e) {
+                throw new IOException(e.getMessage());
             }
         }
 
@@ -357,6 +434,63 @@ public class TemplateManager {
          */
         public void closeTemplateSource(Object source) {
             // Nothing to do here
+        }
+    }
+
+
+    /**
+     * A template source element. This class is only a container for
+     * a template page element.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    private static class TemplateSource {
+
+        /**
+         * The unique template content id.
+         */
+        private int id;
+
+        /**
+         * The template page element name.
+         */
+        private String name;
+
+        /**
+         * Creates a new template element.
+         *
+         * @param template       the content template
+         * @param name           the page element name
+         */
+        public TemplateSource(ContentTemplate template, String name) {
+            this.id = template.getId();
+            this.name = name;
+        }
+
+        /**
+         * Returns the template element data.
+         *
+         * @param manager        the content manager
+         *
+         * @return the template element data
+         *
+         * @throws ContentException if the template element couldn't
+         *             be read properly
+         * @throws ContentSecurityException if the anonymous user
+         *             didn't have access to the template
+         */
+        public String getData(ContentManager manager)
+            throws ContentException, ContentSecurityException {
+
+            Content  content;
+
+            content = manager.getContent(null, id);
+            if (content instanceof ContentTemplate) {
+                return ((ContentTemplate) content).getElement(name);
+            } else {
+                return "";
+            }
         }
     }
 }

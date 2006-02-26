@@ -122,32 +122,23 @@ public class ContentManager {
     }
 
     /**
-     * Checks if a persistent object is readable by a user. This
-     * method will check the read permissions in the database. If the
-     * admin flag is set, the user must also be in the same domain as
-     * the object requested.
+     * Checks if a domain object is visible by a user. This method
+     * will check if the user belongs to the same domain and has
+     * read permissions on the domain object.
      *
      * @param user           the user
-     * @param obj            the persistent object
+     * @param domain         the domain object
      *
-     * @return true if the object is readable, or
+     * @return true if the domain is visible, or
      *         false otherwise
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private boolean isReadable(User user, PersistentObject obj)
+    private boolean isVisible(User user, Domain domain)
         throws ContentException {
 
-        String   domain = "";
         boolean  sameDomain;
-
-        // Find domain name
-        if (obj instanceof Domain) {
-            domain = ((Domain) obj).getName();
-        } else if (obj instanceof Content) {
-            domain = ((Content) obj).getDomainName();
-        }
 
         // Compare to user domain name
         if (user == null) {
@@ -155,14 +146,14 @@ public class ContentManager {
         } else if (user.isSuperUser()) {
             sameDomain = true;
         } else {
-            sameDomain = user.getDomainName().equals(domain);
+            sameDomain = user.getDomainName().equals(domain.getName());
         }
 
-        // Check read access if not admin or same domain
-        if (!admin || sameDomain) {
-            return obj.hasReadAccess(user);
-        } else {
+        // Skip access check if not same domain
+        if (!sameDomain) {
             return false;
+        } else {
+            return domain.hasReadAccess(user);
         }
     }
 
@@ -185,7 +176,11 @@ public class ContentManager {
     }
 
     /**
-     * Returns an array of all domains readable by a user.
+     * Returns an array of all domains visible by a user. Note that
+     * this list will not contain all domains allowing read access
+     * for the user, but only those domains that the user belongs
+     * to (or all domains for a super user). This method should only
+     * be used from the admin application.
      *
      * @param user           the user requesting the list
      *
@@ -213,7 +208,7 @@ public class ContentManager {
         iter = domains.iterator();
         for (int i = 0; iter.hasNext(); i++) {
             domain = (Domain) iter.next();
-            if (isReadable(user, domain)) {
+            if (isVisible(user, domain)) {
                 list.add(domain);
             }
         }
@@ -269,7 +264,7 @@ public class ContentManager {
 
         Domain  domain = getDomain(name);
 
-        if (domain != null && !isReadable(user, domain)) {
+        if (domain != null && !domain.hasReadAccess(user)) {
             throw new ContentSecurityException(user, "read", domain);
         }
         return domain;
@@ -842,7 +837,7 @@ public class ContentManager {
     private Content postProcess(User user, Content content)
         throws ContentException, ContentSecurityException {
 
-        if (content != null && !isReadable(user, content)) {
+        if (content != null && !content.hasReadAccess(user)) {
             throw new ContentSecurityException(user, "read", content);
         } else if (content != null && !isOnline(content)) {
             return null;
@@ -871,7 +866,7 @@ public class ContentManager {
         Content[]  res;
 
         for (int i = 0; i < content.length; i++) {
-            if (isReadable(user, content[i])) {
+            if (content[i].hasReadAccess(user)) {
                 list.add(content[i]);
             }
         }
