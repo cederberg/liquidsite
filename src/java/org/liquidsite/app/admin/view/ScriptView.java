@@ -35,6 +35,7 @@ import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentFile;
 import org.liquidsite.core.content.ContentFolder;
 import org.liquidsite.core.content.ContentForum;
+import org.liquidsite.core.content.ContentManager;
 import org.liquidsite.core.content.ContentPage;
 import org.liquidsite.core.content.ContentSection;
 import org.liquidsite.core.content.ContentSite;
@@ -442,7 +443,8 @@ public class ScriptView {
                               Lock lock)
         throws ContentException {
 
-        StringBuffer  buffer = new StringBuffer();
+        ContentManager manager = AdminUtils.getContentManager();
+        StringBuffer   buffer = new StringBuffer();
 
         if (lock != null) {
             if (content.hasWriteAccess(user)) {
@@ -471,7 +473,7 @@ public class ScriptView {
                     buffer.append("unpublish.html");
                     buffer.append(getLinkParameters(content));
                     buffer.append("');\n");
-                } else if (AdminUtils.isOnline(content.getParent())) {
+                } else if (AdminUtils.isOnline(content.getParent(manager))) {
                     buffer.append("objectAddPublishButton('");
                     buffer.append("publish.html");
                     buffer.append(getLinkParameters(content));
@@ -708,25 +710,26 @@ public class ScriptView {
      *             properly
      */
     private String getContentUrl(Content content) throws ContentException {
-        String  str;
+        ContentManager manager = AdminUtils.getContentManager();
+        String         str;
 
         if (content instanceof ContentSite) {
             return content.toString();
         } else if (content instanceof ContentFolder) {
-            return getContentUrl(content.getParent()) +
+            return getContentUrl(content.getParent(manager)) +
                    content.toString() + "/";
         } else if (content instanceof ContentPage) {
-            return getContentUrl(content.getParent()) +
+            return getContentUrl(content.getParent(manager)) +
                    content.toString();
         } else if (content instanceof ContentFile) {
-            str = getContentUrl(content.getParent());
+            str = getContentUrl(content.getParent(manager));
             if (str.endsWith("/")) {
                 return str + content.toString();
             } else {
                 return str;
             }
         } else if (content instanceof ContentTranslator) {
-            return getContentUrl(content.getParent()) + "*/";
+            return getContentUrl(content.getParent(manager)) + "*/";
         } else {
             return "N/A";
         }
@@ -744,7 +747,8 @@ public class ScriptView {
      *             properly
      */
     private String getPreviewUrl(Content content) throws ContentException {
-        String  str;
+        ContentManager manager = AdminUtils.getContentManager();
+        String         str;
 
         if (content instanceof ContentSite) {
             if (((ContentSite) content).isAdmin()) {
@@ -753,17 +757,17 @@ public class ScriptView {
                 return "preview/" + content.getId() + "/";
             }
         } else if (content instanceof ContentFolder) {
-            return getPreviewUrl(content.getParent()) +
+            return getPreviewUrl(content.getParent(manager)) +
                    content.toString() + "/";
         } else if (content instanceof ContentPage) {
-            str = getPreviewUrl(content.getParent());
+            str = getPreviewUrl(content.getParent(manager));
             if (str != null) {
                 return str + content.toString();
             } else {
                 return null;
             }
         } else if (content instanceof ContentFile) {
-            str = getPreviewUrl(content.getParent());
+            str = getPreviewUrl(content.getParent(manager));
             if (str != null) {
                 return str + content.toString();
             } else {
@@ -836,15 +840,16 @@ public class ScriptView {
     public String getTemplateElements(ContentTemplate template)
         throws ContentException {
 
-        StringBuffer  buffer = new StringBuffer();
-        List          names;
-        Iterator      iter = null;
-        String        name;
-        String        str;
+        ContentManager manager = AdminUtils.getContentManager();
+        StringBuffer   buffer = new StringBuffer();
+        List           names;
+        Iterator       iter = null;
+        String         name;
+        String         str;
 
         buffer.append("templateRemoveAllInherited();\n");
         if (template != null) {
-            names = template.getAllElementNames();
+            names = template.getAllElementNames(manager);
             Collections.sort(names);
             iter = names.iterator();
         }
@@ -853,7 +858,7 @@ public class ScriptView {
             buffer.append("templateAddInherited(");
             buffer.append(AdminUtils.getScriptString(name));
             buffer.append(", ");
-            str = template.getElement(name);
+            str = template.getElement(manager, name);
             buffer.append(AdminUtils.getScriptString(str));
             buffer.append(");\n");
         }

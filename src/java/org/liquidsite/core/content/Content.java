@@ -387,12 +387,27 @@ public class Content extends PersistentObject {
      *             properly
      */
     public Content getParent() throws ContentException {
+        return getParent(getContentManager());
+    }
+
+    /**
+     * Returns the content parent.
+     *
+     * @param manager        the content manager to use
+     *
+     * @return the content parent, or
+     *         null if the object has no parent
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly
+     */
+    public Content getParent(ContentManager manager) throws ContentException {
         int  parent = getParentId();
 
         if (parent <= 0) {
             return null;
         } else {
-            return getContentManager().getContent(parent);
+            return manager.getContent(parent);
         }
     }
 

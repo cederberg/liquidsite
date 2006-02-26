@@ -377,7 +377,7 @@ public class TemplateManager {
                 throw new ContentException("invalid template import " + name +
                                            " does not refer to page element");
             }
-            if (template.getElement(name) == null) {
+            if (template.getElement(manager, name) == null) {
                 return null;
             } else {
                 return new TemplateSource(template, name);
@@ -541,7 +541,7 @@ public class TemplateManager {
 
                     date = content.getModifiedDate();
                 }
-                content = content.getParent();
+                content = content.getParent(manager);
             }
             return date;
         }
@@ -565,7 +565,7 @@ public class TemplateManager {
 
             content = manager.getContent(null, id);
             if (content instanceof ContentTemplate) {
-                return ((ContentTemplate) content).getElement(name);
+                return ((ContentTemplate) content).getElement(manager, name);
             } else {
                 return "";
             }

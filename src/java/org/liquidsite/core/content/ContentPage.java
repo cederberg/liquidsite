@@ -168,7 +168,7 @@ public class ContentPage extends Content {
 
         template = getTemplate(user);
         if (template != null) {
-            iter = template.getAllElementNames().iterator();
+            iter = template.getAllElementNames(getContentManager()).iterator();
             while (iter.hasNext()) {
                 obj = iter.next();
                 if (!res.contains(obj)) {
@@ -229,7 +229,7 @@ public class ContentPage extends Content {
             if (template == null) {
                 data = null;
             } else {
-                data = template.getElement(name);
+                data = template.getElement(getContentManager(), name);
             }
         }
         return data;

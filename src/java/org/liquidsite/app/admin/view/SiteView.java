@@ -92,7 +92,7 @@ public class SiteView extends AdminView {
             if (content != null) {
                 str = getTreeScript(user,
                                     content.getDomain(),
-                                    content.getParent(),
+                                    content.getParent(manager),
                                     true,
                                     true);
                 buffer.append(str);
@@ -325,6 +325,7 @@ public class SiteView extends AdminView {
     public void viewEditTranslator(Request request, Content reference)
         throws ContentException {
 
+        ContentManager     manager = AdminUtils.getContentManager();
         User               user = request.getUser();
         ContentTranslator  translator;
         String             name;
@@ -351,7 +352,7 @@ public class SiteView extends AdminView {
                 comment = "";
             }
             publish = translator.hasPublishAccess(request.getUser()) &&
-                      AdminUtils.isOnline(translator.getParent());
+                      AdminUtils.isOnline(translator.getParent(manager));
         } else {
             name = "";
             parent = 0;
@@ -406,21 +407,22 @@ public class SiteView extends AdminView {
     public void viewEditPage(Request request, Content reference)
         throws ContentException, ContentSecurityException {
 
-        User          user = request.getUser();
-        ContentPage   page;
-        ContentSite   site;
-        String        name;
-        int           parent;
-        ArrayList     folders = null;
-        String        template;
-        ArrayList     templates;
-        String        comment;
-        boolean       publish;
-        List          localNames;
-        LinkedHashMap locals = new LinkedHashMap();
-        Iterator      iter;
-        String        value;
-        String        str;
+        ContentManager  manager = AdminUtils.getContentManager();
+        User            user = request.getUser();
+        ContentPage     page;
+        ContentSite     site;
+        String          name;
+        int             parent;
+        ArrayList       folders = null;
+        String          template;
+        ArrayList       templates;
+        String          comment;
+        boolean         publish;
+        List            localNames;
+        LinkedHashMap   locals = new LinkedHashMap();
+        Iterator        iter;
+        String          value;
+        String          str;
 
         // Find default values
         AdminUtils.setReference(request, reference);
@@ -446,7 +448,7 @@ public class SiteView extends AdminView {
                 locals.put(str, AdminUtils.getScriptString(value));
             }
             publish = page.hasPublishAccess(request.getUser()) &&
-                      AdminUtils.isOnline(page.getParent());
+                      AdminUtils.isOnline(page.getParent(manager));
         } else {
             name = "";
             parent = 0;
@@ -505,6 +507,7 @@ public class SiteView extends AdminView {
         throws ContentException {
 
         Application    app = AdminUtils.getApplication();
+        ContentManager manager = AdminUtils.getContentManager();
         ContentFile    file;
         ContentSite    site;
         String         name;
@@ -532,7 +535,7 @@ public class SiteView extends AdminView {
                 comment = "";
             }
             publish = file.hasPublishAccess(request.getUser()) &&
-                      AdminUtils.isOnline(file.getParent());
+                      AdminUtils.isOnline(file.getParent(manager));
         } else {
             name = "";
             parent = 0;
@@ -589,13 +592,14 @@ public class SiteView extends AdminView {
                                ContentFolder folder)
         throws ContentException {
 
-        ContentSite  site;
-        String       name;
-        int          parentId;
-        ArrayList    folders = null;
-        String       comment;
-        boolean      publish;
-        String       str;
+        ContentManager manager = AdminUtils.getContentManager();
+        ContentSite    site;
+        String         name;
+        int            parentId;
+        ArrayList      folders = null;
+        String         comment;
+        boolean        publish;
+        String         str;
 
         // Find default values
         if (parent != null) {
@@ -617,7 +621,7 @@ public class SiteView extends AdminView {
                 comment = "";
             }
             publish = folder.hasPublishAccess(request.getUser()) &&
-                      AdminUtils.isOnline(folder.getParent());
+                      AdminUtils.isOnline(folder.getParent(manager));
         }
 
         // Adjust for incoming request
@@ -657,16 +661,17 @@ public class SiteView extends AdminView {
                                  ContentTemplate template)
         throws ContentException {
 
-        String        name;
-        String        comment;
-        List          localNames;
-        LinkedHashMap locals = new LinkedHashMap();
-        int           inherited;
-        ArrayList     templates = null;
-        boolean       publish;
-        Iterator      iter;
-        String        value;
-        String        str;
+        ContentManager manager = AdminUtils.getContentManager();
+        String         name;
+        String         comment;
+        List           localNames;
+        LinkedHashMap  locals = new LinkedHashMap();
+        int            inherited;
+        ArrayList      templates = null;
+        boolean        publish;
+        Iterator       iter;
+        String         value;
+        String         str;
 
         // Find default values
         if (parent != null) {
@@ -698,11 +703,11 @@ public class SiteView extends AdminView {
             iter = localNames.iterator();
             while (iter.hasNext()) {
                 str = iter.next().toString();
-                value = template.getElement(str);
+                value = template.getElement(manager, str);
                 locals.put(str, AdminUtils.getScriptString(value));
             }
             publish = template.hasPublishAccess(request.getUser()) &&
-                      AdminUtils.isOnline(template.getParent());
+                      AdminUtils.isOnline(template.getParent(manager));
         }
 
         // Adjust for incoming request
@@ -752,26 +757,27 @@ public class SiteView extends AdminView {
                                     ContentTemplate template)
         throws ContentException {
 
-        LinkedHashMap locals = new LinkedHashMap();
-        LinkedHashMap inherited = new LinkedHashMap();
-        List          names;
-        Iterator      iter;
-        String        name;
+        ContentManager manager = AdminUtils.getContentManager();
+        LinkedHashMap  locals = new LinkedHashMap();
+        LinkedHashMap  inherited = new LinkedHashMap();
+        List           names;
+        Iterator       iter;
+        String         name;
 
         names = template.getLocalElementNames();
         Collections.sort(names);
         iter = names.iterator();
         while (iter.hasNext()) {
             name = iter.next().toString();
-            locals.put(name, template.getElement(name));
+            locals.put(name, template.getElement(manager, name));
         }
-        names = template.getAllElementNames();
+        names = template.getAllElementNames(manager);
         Collections.sort(names);
         iter = names.iterator();
         while (iter.hasNext()) {
             name = iter.next().toString();
             if (!locals.containsKey(name)) {
-                inherited.put(name, template.getElement(name));
+                inherited.put(name, template.getElement(manager, name));
             }
         }
         request.setAttribute("locals", locals);
@@ -862,8 +868,10 @@ public class SiteView extends AdminView {
      *             properly
      */
     private ContentSite findSite(Content page) throws ContentException {
+        ContentManager  manager = AdminUtils.getContentManager();
+
         while (page != null && !(page instanceof ContentSite)) {
-            page = page.getParent();
+            page = page.getParent(manager);
         }
         return (ContentSite) page;
     }
@@ -909,7 +917,11 @@ public class SiteView extends AdminView {
             buffer.append(SCRIPT.getTreeView(domain, children, open));
         } else if (recursive) {
             children = manager.getContentChildren(user, content);
-            str = getTreeScript(user, domain, content.getParent(), true, open);
+            str = getTreeScript(user,
+                                domain,
+                                content.getParent(manager),
+                                true,
+                                open);
             buffer.append(str);
             buffer.append(SCRIPT.getTreeView(content, children, open));
         } else {

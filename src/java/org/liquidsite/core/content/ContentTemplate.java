@@ -90,20 +90,24 @@ public class ContentTemplate extends Content {
      * parents. The returned collection is guaranteed to not contain
      * any duplicates.
      *
+     * @param manager        the content manager to use
+     *
      * @return a collection of page element names
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public List getAllElementNames() throws ContentException {
+    public List getAllElementNames(ContentManager manager)
+        throws ContentException {
+
         ContentTemplate  parent;
         List             res = getLocalElementNames();
         Iterator         iter;
         Object           obj;
 
         if (getParentId() > 0) {
-            parent = (ContentTemplate) getParent();
-            iter = parent.getAllElementNames().iterator();
+            parent = (ContentTemplate) getParent(manager);
+            iter = parent.getAllElementNames(manager).iterator();
             while (iter.hasNext()) {
                 obj = iter.next();
                 if (!res.contains(obj)) {
@@ -142,6 +146,7 @@ public class ContentTemplate extends Content {
      * parent templates. The templates will be searched in the
      * inheritance order, starting from this template.
      *
+     * @param manager        the content manager to use
      * @param name           the page element name
      *
      * @return the page element data, or
@@ -150,14 +155,16 @@ public class ContentTemplate extends Content {
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    public String getElement(String name) throws ContentException {
+    public String getElement(ContentManager manager, String name)
+        throws ContentException {
+
         ContentTemplate  parent;
         String           data;
 
         data = getAttribute(ELEMENT_PREFIX + name.toLowerCase());
         if (data == null && getParentId() > 0) {
-            parent = (ContentTemplate) getParent();
-            data = parent.getElement(name);
+            parent = (ContentTemplate) getParent(manager);
+            data = parent.getElement(manager, name);
         }
         return data;
     }
