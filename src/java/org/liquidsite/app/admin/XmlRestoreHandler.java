@@ -132,12 +132,14 @@ class XmlRestoreHandler extends DefaultHandler {
     private ArrayList currentPermissions = null;
 
     /**
-     * The complete restore flag. This flag is set to false if some
-     * element of the backup was skipped, due to conflicting data
-     * already in the database. An example would be if an identical
-     * hostname was already defined for another domain.
+     * The restore error log. This log is filled with information
+     * about elements from the backup that were skipped, due to
+     * conflicting data already in the database. An example could be
+     * if an identical hostname was already defined for another
+     * domain. The log will be empty if the data could be completely
+     * restored.
      */
-    private boolean complete = true;
+    private StringBuffer errorLog = new StringBuffer();
 
     /**
      * Creates a new XML backup restore handler.
@@ -159,17 +161,18 @@ class XmlRestoreHandler extends DefaultHandler {
     }
 
     /**
-     * Checks if a complete restore operation was made. This flag is
-     * set to false if some element of the backup was skipped, due to
-     * conflicting data already in the database. An example would be
+     * Returns the restore error log. This log is filled with information
+     * about elements from the backup that were skipped, due to
+     * conflicting data already in the database. An example could be
      * if an identical hostname was already defined for another
-     * domain.
+     * domain. The log will be empty if the data could be completely
+     * restored.
      *
-     * @return true if the restore was complete, or
-     *         false otherwise
+     * @return the restore error log, or
+     *         an empty string if no errors occurred
      */
-    public boolean isCompleteRestore() {
-        return complete;
+    public String getLog() {
+        return errorLog.toString();
     }
 
     /**
@@ -217,8 +220,11 @@ class XmlRestoreHandler extends DefaultHandler {
                                           attrs.getValue("description"));
                     currentDomain.save(managerUser);
                 } catch (ContentException e) {
+                    currentDomain.removeHost(attrs.getValue("name"));
+                    errorLog.append("skipping restore: ");
+                    errorLog.append(e.getMessage());
+                    errorLog.append("\n");
                     LOG.error("skipping restore", e);
-                    complete = false;
                 }
             } else if (qName.equals("group")) {
                 str = attrs.getValue("name");

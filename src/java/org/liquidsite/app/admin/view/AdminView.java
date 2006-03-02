@@ -118,10 +118,16 @@ public class AdminView {
      *
      * @param request        the request object
      * @param message        the information message
+     * @param detail         the detail information message
      * @param page           the redirect page
      */
-    public void viewInfo(Request request, String message, String page) {
+    public void viewInfo(Request request,
+                         String message,
+                         String detail,
+                         String page) {
+
         request.setAttribute("message", message);
+        request.setAttribute("detail", detail);
         request.setAttribute("page", page);
         AdminUtils.sendTemplate(request, "admin/info.ftl");
     }

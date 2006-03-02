@@ -148,6 +148,7 @@ class SystemRequestProcessor {
         AdminUtils.getApplication().restart();
         AdminView.BASE.viewInfo(request,
                                 "System restarted successfully",
+                                null,
                                 "system.html");
     }
 
@@ -175,6 +176,7 @@ class SystemRequestProcessor {
                 backup(file, domain, request.getUser());
                 AdminView.BASE.viewInfo(request,
                                         "Backup stored successfully",
+                                        null,
                                         "system.html");
             }
         } catch (ContentException e) {
@@ -200,6 +202,7 @@ class SystemRequestProcessor {
         File     file;
         String   domain;
         int      mode;
+        String   log;
         String   str;
 
         try {
@@ -217,14 +220,15 @@ class SystemRequestProcessor {
                 } else {
                     mode = 0;
                 }
-                if (restore(file, domain, mode, request.getUser())) {
+                log = restore(file, domain, mode, request.getUser());
+                if (log == null || log.length() == 0) {
                     str = "Successfully restored backup";
+                    log = null;
                 } else {
                     str = "Successfully restored backup, but some " +
-                          "elements were omitted. Check logs " +
-                          "for details.";
+                          "elements were omitted:";
                 }
-                AdminView.BASE.viewInfo(request, str, "system.html");
+                AdminView.BASE.viewInfo(request, str, log, "system.html");
             }
         } catch (ContentException e) {
             LOG.error(e.getMessage());
@@ -662,13 +666,13 @@ class SystemRequestProcessor {
      * @param mode           the content revision policy 
      * @param user           the user performing the operation
      *
-     * @return true if the restore was complete, or 
-     *         false otherwise
+     * @return the restore error log, or 
+     *         an empty string if no error occurred
      *
      * @throws ContentException if the database couldn't be accessed
      *             properly
      */
-    private boolean restore(File file, String domain, int mode, User user)
+    private String restore(File file, String domain, int mode, User user)
         throws ContentException {
 
         ZipFile            zip = null;
@@ -699,7 +703,7 @@ class SystemRequestProcessor {
                 restoreFile(zip, entry, (File) files.get(name));
             }
             AdminUtils.getContentManager().reset();
-            return handler.isCompleteRestore();
+            return handler.getLog();
         } catch (IOException e) {
             message = "IO error while reading " + file;
             LOG.error(message, e);

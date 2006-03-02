@@ -385,6 +385,15 @@ public class Domain extends PersistentObject implements Comparable {
     }
 
     /**
+     * Removes a host belonging to the domain.
+     *
+     * @param name           the host name
+     */
+    public void removeHost(String name) {
+        attributes.remove(HOST_ATTRIBUTE + name);
+    }
+
+    /**
      * Removes all hosts belonging to the domain.
      */
     public void removeAllHosts() {

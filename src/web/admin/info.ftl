@@ -13,6 +13,11 @@
         <tr>
           <td>
             <p>${message?cap_first}</p>
+<#if detail?has_content>
+            <div class="example">
+              <p><code>${detail?html?replace("\n","<br/>")}</code></p>
+            </div>
+</#if>
           </td>
         </tr>
         <tr>
