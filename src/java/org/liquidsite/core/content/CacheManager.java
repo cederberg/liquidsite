@@ -24,6 +24,7 @@ package org.liquidsite.core.content;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.liquidsite.util.log.Log;
 
@@ -244,13 +245,25 @@ class CacheManager {
      * @param obj            the object to remove
      */
     public synchronized void remove(PersistentObject obj) {
+        Domain          domain;
         Content         content;
         PermissionList  perms;
+        Iterator        iter;
 
         if (obj instanceof Domain) {
-            // TODO: this is not optimal for efficiency, but required
-            //       for cache consistency (currently)
-            removeAll();
+            domain = (Domain) obj;
+            domains.remove(domain.getName());
+            iter = domainHosts.keySet().iterator();
+            while (iter.hasNext()) {
+                if (domain.equals(domainHosts.get(iter.next()))) {
+                    iter.remove();
+                }
+            }
+            sites.remove(domain.getName());
+            parents.clear();
+            contents.clear();
+            permissions.clear();
+            LOG.trace("uncached domain " + domain.getName());
         } else if (obj instanceof Content) {
             content = (Content) obj;
             if (obj instanceof ContentSite) {
