@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.web;
@@ -79,6 +79,13 @@ public class Request {
     private static final int REDIRECT_RESPONSE = 4;
 
     /**
+     * The error response type. This type is used when a response
+     * error code should be sent. The response code, MIME type and
+     * data string may be set when sending this response.
+     */
+    private static final int ERROR_RESPONSE = 5;
+
+    /**
      * The HTTP servlet context.
      */
     private ServletContext context;
@@ -98,6 +105,11 @@ public class Request {
      * response object has been modified.
      */
     private int responseType = NO_RESPONSE;
+
+    /**
+     * The response HTTP code. Only used when sending error responses.
+     */
+    private int responseCode = HttpServletResponse.SC_OK;
 
     /**
      * The response MIME type.
@@ -490,6 +502,20 @@ public class Request {
     }
 
     /**
+     * Sends the specified error code and data as the request response.
+     *
+     * @param code           the HTTP response code to send
+     * @param mimeType       the data MIME type
+     * @param data           the data to send
+     */
+    public void sendError(int code, String mimeType, String data) {
+        responseType = ERROR_RESPONSE;
+        responseCode = code;
+        responseMimeType = mimeType;
+        responseData = data;
+    }
+
+    /**
      * Disposes of all resources used by this request object. This
      * method shouldn't be called until a response has been written.
      */
@@ -497,6 +523,7 @@ public class Request {
         request = null;
         response = null;
         responseType = NO_RESPONSE;
+        responseCode = HttpServletResponse.SC_OK;
         responseMimeType = null;
         responseData = null;
         environment = null;
@@ -530,6 +557,9 @@ public class Request {
             break;
         case REDIRECT_RESPONSE:
             commitRedirect();
+            break;
+        case ERROR_RESPONSE:
+            commitError(content);
             break;
         default:
             throw new ServletException("No request response available: " +
@@ -657,6 +687,34 @@ public class Request {
         LOG.info("Redirecting request for " + this + " to " + responseData);
         commitDynamicHeaders();
         response.sendRedirect(responseData);
+    }
+
+    /**
+     * Sends the error response to the underlying HTTP response object.
+     * The response can be committed either completely or solely with
+     * the response headers.
+     *
+     * @param content        the complete content response flag
+     *
+     * @throws IOException if an IO error occured while attempting to
+     *             commit the response
+     */
+    private void commitError(boolean content) throws IOException {
+        PrintWriter  out;
+
+        LOG.info("Handling request for " + this + " with error code");
+        response.setStatus(responseCode);
+        commitDynamicHeaders();
+        if (responseMimeType.indexOf("charset") > 0) {
+            response.setContentType(responseMimeType);
+        } else {
+            response.setContentType(responseMimeType + "; charset=UTF-8");
+        }
+        if (content) {
+            out = response.getWriter();
+            out.write(responseData);
+            out.close();
+        }
     }
 
 

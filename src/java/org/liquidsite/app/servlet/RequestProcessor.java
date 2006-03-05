@@ -548,6 +548,28 @@ public abstract class RequestProcessor {
     }
 
     /**
+     * Processes an error response. The default error template file
+     * will be used and the response headers will be set with the
+     * specified error code.
+     *
+     * @param request        the request object
+     * @param code           the response HTTP error code
+     *
+     * @throws TemplateException if the file template couldn't be
+     *             processed correctly
+     */
+    protected void sendError(Request request, int code)
+        throws TemplateException {
+
+        Template      template;
+        StringWriter  buffer = new StringWriter();
+
+        template = TemplateManager.getFileTemplate("error.ftl");
+        template.process(request, getContentManager(), buffer);
+        request.sendError(code, "text/html", buffer.toString());
+    }
+
+    /**
      * Checks if the specified content object represents a directory.
      *
      * @param content        the content object to check

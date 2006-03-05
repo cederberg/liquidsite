@@ -415,9 +415,10 @@ public class LiquidSiteServlet extends HttpServlet
         }
         request.setAttribute("text", text);
         try {
-            processor.sendTemplate(request, "error.ftl");
+            processor.sendError(request, error.getCode());
         } catch (TemplateException e) {
-            request.sendData("text/plain", "Error: " + e.getMessage());
+            text = "Error: " + e.getMessage();
+            request.sendError(error.getCode(), "text/plain", text);
         }
     }
 
