@@ -157,8 +157,15 @@ public class DefaultRequestProcessor extends RequestProcessor {
         } else if (action.startsWith("forum.")) {
             forum.process(request);
         } else {
-            LOG.warning(request + ": request action '" + action +
-                        "' is undefined");
+            if (action.length() > 30) {
+                // Log on info level, this is probably just random spam
+                LOG.info(request + ": request action '" +
+                         action.substring(0, 30) + "...' is undefined");
+            } else {
+                // Log on warning level, could be spelling error in page
+                LOG.warning(request + ": request action '" + action +
+                            "' is undefined");
+            }
             throw RequestException.INTERNAL_ERROR;
         }
     }
