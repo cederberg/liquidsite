@@ -158,10 +158,12 @@ public class DefaultRequestProcessor extends RequestProcessor {
             forum.process(request);
         } else {
             if (action.indexOf("@") >= 0) {
-                LOG.warning(request + ": request action '" +
-                            action.substring(0, 30) + "...' is undefined, " +
-                            "possibly containing email virus/spam from " +
-                            request.getRemoteAddr());
+                if (action.length() > 20) {
+                    action = action.substring(0, 20) + "...";
+                }
+                LOG.warning(request + ": request action '" + action +
+                            "' is undefined and contains email address, " +
+                            "sent from " + request.getRemoteAddr());
             } else {
                 LOG.warning(request + ": request action '" + action +
                             "' is undefined");
