@@ -261,7 +261,7 @@ function objectAddPermissionsButton(url) {
 function objectAddStatisticsButton(url) {
     var script = "utilOpenDialog('" + url + "', 700, 800)";
 
-    objectInternalAddButton("Statistics", "info.png", script);
+    objectInternalAddButton("Statistics", "statistics.png", script);
 }
 
 /**

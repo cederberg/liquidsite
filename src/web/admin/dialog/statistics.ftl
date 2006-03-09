@@ -4,7 +4,7 @@
     <table class="dialog">
       <tr>
         <td class="decoration" rowspan="4">
-          <img src="images/icons/48x48/info.png" alt="Statistics" />
+          <img src="images/icons/48x48/statistics.png" alt="Statistics" />
         </td>
           <td colspan="2">
             <h2>Statistics for ${domain}</h2>
