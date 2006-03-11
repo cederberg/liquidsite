@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.content;
@@ -292,6 +292,42 @@ public class ContentSite extends Content {
             flags = (flags & ~ADMIN_FLAG);
         }
         setAttribute(FLAGS_ATTRIBUTE, String.valueOf(flags));
+    }
+
+    /**
+     * Checks if a set of request parameters matches this site.
+     *
+     * @param protocol       the request protocol
+     * @param host           the request host name (server name)
+     * @param port           the request (server) port
+     *
+     * @return true if the request parameters match this site, or
+     *         false otherwise
+     */
+    public boolean isMatch(String protocol, String host, int port) {
+        return getProtocol().equals(protocol)
+            && (getHost().equals(host) || getHost().equals("*"))
+            && (getPort() == port || getPort() == 0);
+    }
+
+    /**
+     * Checks if a set of request parameters matches this site.
+     *
+     * @param protocol       the request protocol
+     * @param host           the request host name (server name)
+     * @param port           the request (server) port
+     * @param path           the request path
+     *
+     * @return true if the request parameters match this site, or
+     *         false otherwise
+     */
+    public boolean isMatch(String protocol,
+                           String host,
+                           int port,
+                           String path) {
+
+        return isMatch(protocol, host, port)
+            && path.startsWith(getDirectory());
     }
 
     /**

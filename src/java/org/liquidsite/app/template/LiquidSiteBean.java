@@ -51,6 +51,11 @@ public class LiquidSiteBean {
     private RequestBean requestBean = null;
 
     /**
+     * The site bean.
+     */
+    private SiteBean siteBean = null;
+
+    /**
      * The user session bean.
      */
     private SessionBean sessionBean = null;
@@ -127,6 +132,18 @@ public class LiquidSiteBean {
     }
 
     /**
+     * Returns the site bean.
+     *
+     * @return the site bean
+     */
+    public SiteBean getSite() {
+        if (siteBean == null) {
+            siteBean = new SiteBean(context);
+        }
+        return siteBean;
+    }
+
+    /**
      * Returns the section bean.
      *
      * @return the section bean
@@ -198,7 +215,8 @@ public class LiquidSiteBean {
      * the site root directory, otherwise it is assumed to be
      * relative to the page directory. Note that the page directory
      * is NOT always an empty string (consider dynamic pages linked
-     * to sections).
+     * to sections). If the specified path contains a full URL (with
+     * "http://" or another protocol), the same URL will be returned.
      *
      * @param path           the site- or page-relative link path
      *

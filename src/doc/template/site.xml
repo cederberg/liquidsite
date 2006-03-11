@@ -1,0 +1,433 @@
+<doc>
+  <head>
+    <title>Liquid Site Template API</title>
+  </head>
+
+  <body>
+
+    <h1>The site object</h1>
+
+    <p>The site object represents a content site.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="admin">admin</ref></title>
+        <text>Returns the administration site flag.</text>
+      </item>
+      <item>
+        <title><ref id="created">created</ref></title>
+        <text>Returns the site created date.</text>
+      </item>
+      <item>
+        <title><ref id="date">date</ref></title>
+        <text>Returns the site revision date.</text>
+      </item>
+      <item>
+        <title><ref id="directory">directory</ref></title>
+        <text>Returns the site root directory path.</text>
+      </item>
+      <item>
+        <title><ref id="hasAccess">hasAccess(permission)</ref></title>
+        <text>Checks if the current user has a specified access permission
+        to the site</text>
+      </item>
+      <item>
+        <title><ref id="host">host</ref></title>
+        <text>Returns the site host name.</text>
+      </item>
+      <item>
+        <title><ref id="id">id</ref></title>
+        <text>Returns the site id.</text>
+      </item>
+      <item>
+        <title><ref id="lock">lock</ref></title>
+        <text>Returns the site lock object.</text>
+      </item>
+      <item>
+        <title><ref id="name">name</ref></title>
+        <text>Returns the site name.</text>
+      </item>
+      <item>
+        <title><ref id="online">online</ref></title>
+        <text>Returns the site online flag.</text>
+      </item>
+      <item>
+        <title><ref id="port">port</ref></title>
+        <text>Returns the site port number.</text>
+      </item>
+      <item>
+        <title><ref id="protocol">protocol</ref></title>
+        <text>Returns the site protocol name.</text>
+      </item>
+      <item>
+        <title><ref id="revision">revision</ref></title>
+        <text>Returns the site revision number.</text>
+      </item>
+      <item>
+        <title><ref id="user">user</ref></title>
+        <text>Returns the site revision author.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="id" style="inner">id</h2>
+
+    <p>Returns the site id.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>id &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site id.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code outputs the site id:</p>
+
+    <example>
+      <preformat>&lt;p&gt;The site id is ${liquidsite.site.id?c}.&lt;/p&gt;</preformat>
+    </example>
+
+    <p>Which will output something like:</p>
+
+    <example>
+      &lt;p&gt;The section id is 1234.&lt;/p&gt;
+    </example>
+
+
+    <separator/>
+
+    <h2 id="name" style="inner">name</h2>
+
+    <p>Returns the site name.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>name &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site name:</p>
+
+    <example>
+      <preformat>The site name is ${liquidsite.site.name}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revision" style="inner">revision</h2>
+
+    <p>Returns the site revision number.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revision &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site revision number, or zero (0) if the
+    current revision is a work revision.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site revision number:</p>
+
+    <example>
+      <preformat>The site revision is ${liquidsite.site.revision}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="created" style="inner">created</h2>
+
+    <p>Returns the site creation date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>created &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site creation date.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site creation date:</p>
+
+    <example>
+      <preformat>The site creation date is ${liquidsite.site.created}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="date" style="inner">date</h2>
+
+    <p>Returns the site revision date.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>date &#8594; date</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site revision date.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site revision date:</p>
+
+    <example>
+      <preformat>The site revision date is ${liquidsite.site.date}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="online" style="inner">online</h2>
+
+    <p>Returns the site online flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>online &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the site is online, false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code checks if the site is online:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.site.online&gt;
+    Online
+&lt;#else&gt;
+    Offline
+&lt;/#if&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="lock" style="inner">lock</h2>
+
+    <p>Returns the site lock object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>lock &#8594; <ref file="lock.xml">lock
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site lock object.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code stores the lock object in a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign lock = liquidsite.site.lock&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="user" style="inner">user</h2>
+
+    <p>Returns the site revision author.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>user &#8594; <ref file="user.xml">user
+    object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site revision author.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code stores the revision author in a variable:</p>
+
+    <example>
+      <preformat>&lt;#assign user = liquidsite.site.user&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="protocol" style="inner">protocol</h2>
+
+    <p>Returns the site protocol name. This string is identical to the
+    protocol specified in the URL, i.e. "http" or "https".</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>protocol &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site protocol name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site protocol name:</p>
+
+    <example>
+      <preformat>The site protocol name is ${liquidsite.site.protocol}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="host" style="inner">host</h2>
+
+    <p>Returns the site host name. Note that if this site has a default
+    host name, the current request host name will be returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>host &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site or request host name.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site host name:</p>
+
+    <example>
+      <preformat>The site host name is ${liquidsite.site.host}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="port" style="inner">port</h2>
+
+    <p>Returns the site port number. Note that if this site has a default
+    port number, the current request port number will be returned.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>host &#8594; number</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site or request port number.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site port number:</p>
+
+    <example>
+      <preformat>The site port number is ${liquidsite.site.port?c}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="directory" style="inner">directory</h2>
+
+    <p>Returns the site root directory path.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>directory &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The site root directory path.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the site root directory:</p>
+
+    <example>
+      <preformat>The site root directory is ${liquidsite.site.directory}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="admin" style="inner">admin</h2>
+
+    <p>Returns the administration site flag.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>admin &#8594; boolean</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the site is an administration site, or
+    false otherwise.</p>
+
+
+    <separator/>
+
+    <h2 id="hasAccess" style="inner">hasAccess</h2>
+
+    <p>Checks if the current user has a specified access permission
+    to the site. The permission types available are:</p>
+
+    <list style="compact">
+      <item>
+        <text>read -- for reading permission (always true)</text>
+      </item>
+      <item>
+        <text>write -- for writing permission</text>
+      </item>
+      <item>
+        <text>publish -- for publishing permission</text>
+      </item>
+      <item>
+        <text>admin -- for administration permission</text>
+      </item>
+    </list>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>hasAccess(permission) &#8594; boolean</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>permission</code> -- the string containing the
+        permission type (as above)</text>
+      </item>
+    </list>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">True if the current user has the specified
+    permission, or false otherwise.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code checks if the current user has write access
+    to a site:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.site.hasAccess("write")&gt;
+  The current user has write access.
+&lt;/#if&gt;</preformat>
+    </example>
+
+  </body>
+</doc>

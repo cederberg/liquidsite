@@ -90,6 +90,10 @@
         <text>Returns the HTTP session object.</text>
       </item>
       <item>
+        <title><ref id="site">site</ref></title>
+        <text>Returns the current site object.</text>
+      </item>
+      <item>
         <title><ref id="topic">topic</ref></title>
         <text>Returns the topic matched by a translator.</text>
       </item>
@@ -599,6 +603,31 @@ ${liquidsite.countDocuments("Section1")}.&lt;p&gt;</preformat>
 
     <example>
       <preformat>&lt;#assign request = liquidsite.request&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="site" style="inner">site</h2>
+
+    <p>Returns the current site object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>site &#8594; <ref
+    file="site.xml">site object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The content site object.</p>
+
+    <h3>Example:</h3>
+
+    <p>This code obtains the current site object and assigns it to a
+    variable:</p>
+
+    <example>
+      <preformat>&lt;#assign site = liquidsite.site&gt;</preformat>
     </example>
 
 

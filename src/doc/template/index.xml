@@ -49,6 +49,9 @@
         object</ref></text>
       </item>
       <item>
+        <text>The <ref file="site.xml">site object</ref></text>
+      </item>
+      <item>
         <text>The <ref file="topic.xml">topic object</ref></text>
       </item>
       <item>
