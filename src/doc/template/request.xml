@@ -11,6 +11,10 @@
 
     <list style="compact">
       <item>
+        <title><ref id="header">header</ref></title>
+        <text>Returns the request headers.</text>
+      </item>
+      <item>
         <title><ref id="ip">ip</ref></title>
         <text>Returns the remote IP address.</text>
       </item>
@@ -31,30 +35,6 @@
         <text>Returns the complete request url.</text>
       </item>
     </list>
-
-
-    <separator/>
-
-    <h2 id="param" style="inner">param</h2>
-
-    <p>Returns the request parameters.</p>
-
-    <h3>Syntax:</h3>
-
-    <p style="indent"><code>param &#8594; hash model</code></p>
-
-    <h3>Returns:</h3>
-
-    <p style="indent">The request parameters.</p>
-
-    <h3>Example:</h3>
-
-    <p>The following prints the value of the "hello" request parameter:</p>
-
-    <example>
-      <preformat>${liquidsite.request.param.hello} is identical to
-${liquidsite.request.param["hello"]}.</preformat>
-    </example>
 
 
     <separator/>
@@ -150,6 +130,53 @@ ${liquidsite.request.param["hello"]}.</preformat>
 
     <example>
       <preformat>${liquidsite.request.ip}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="header" style="inner">header</h2>
+
+    <p>Returns the request headers.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>header &#8594; hash model</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The request headers.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following prints the value of the "Accept-Language" request header:</p>
+
+    <example>
+      <preformat>${liquidsite.request.header["Accept-Language"]}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="param" style="inner">param</h2>
+
+    <p>Returns the request parameters.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>param &#8594; hash model</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The request parameters.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following prints the value of the "hello" request parameter:</p>
+
+    <example>
+      <preformat>${liquidsite.request.param.hello} is identical to
+${liquidsite.request.param["hello"]}.</preformat>
     </example>
 
   </body>

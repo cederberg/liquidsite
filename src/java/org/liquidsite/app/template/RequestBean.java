@@ -42,6 +42,11 @@ public class RequestBean {
     private Request request;
 
     /**
+     * The request header bean.
+     */
+    private RequestHeaderBean headerBean = null;
+
+    /**
      * The request parameter bean.
      */
     private RequestParameterBean paramBean = null;
@@ -92,6 +97,18 @@ public class RequestBean {
     public String getIp() {
         return request.getRemoteAddr();
     }
+    
+    /**
+     * Returns a map with all the request header names and values.
+     *
+     * @return the map with request header names and values
+     */
+    public TemplateHashModel getHeader() {
+        if (headerBean == null) {
+            headerBean = new RequestHeaderBean(request);
+        }
+        return headerBean;
+    }
 
     /**
      * Returns a map with all the request parameter names and values.
@@ -107,8 +124,59 @@ public class RequestBean {
 
 
     /**
+     * A request header bean. This bean exposes all the request
+     * headers as a template hash model with the header names as
+     * keys, and their values always returned as strings.
+     *
+     * @author   Per Cederberg, <per at percederberg dot net>
+     * @version  1.0
+     */
+    public class RequestHeaderBean implements TemplateHashModel {
+        
+        /**
+         * The request containing the headers.
+         */
+        private Request request;
+
+        /**
+         * Creates a new request header bean.
+         *
+         * @param request        the request containing headers
+         */
+        RequestHeaderBean(Request request) {
+            this.request = request;
+        }
+
+        /**
+         * Checks if the header hash model is empty.
+         *
+         * @return this method always returns false
+         */
+        public boolean isEmpty() {
+            return false;
+        }
+
+        /**
+         * Returns a header value. If the header didn't exist, a
+         * null template model will be returned. Existing header
+         * values will be returned as scalar strings.
+         *
+         * @param name           the header name
+         *
+         * @return the template model for the value, or
+         *         null if the header didn't exist
+         */
+        public TemplateModel get(String name) {
+            String  value = request.getHeader(name);
+
+            return (value == null) ? null : new SimpleScalar(value);
+        }
+    }
+
+
+    /**
      * A request parameter bean. This bean exposes all the request
-     * parameters as a template hash model with the parameter names a
+     * parameters as a template hash model with the parameter names as
      * keys, and their values always returned as strings.
      *
      * @author   Per Cederberg, <per at percederberg dot net>

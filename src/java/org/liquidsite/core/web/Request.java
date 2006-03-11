@@ -349,6 +349,18 @@ public class Request {
     }
 
     /**
+     * Returns the value of a request header.
+     *
+     * @param name           the request header name
+     *
+     * @return the request header value, or
+     *         null if no such header was found
+     */
+    public String getHeader(String name) {
+        return request.getHeader(name);
+    }
+
+    /**
      * Returns a map with all the request parameter names and values.
      *
      * @return the map with request parameter names and values
