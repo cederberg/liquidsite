@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import freemarker.template.TemplateBooleanModel;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateModel;
@@ -88,15 +89,21 @@ public class SessionBean implements TemplateHashModel {
      * @return the template model object
      */
     public TemplateModel get(String name) {
-        RequestSession  session = getSession();
-        Object          obj;
-        HashMap         map;
+        Object   obj;
+        HashMap  map;
 
-        // Handle methods
+        // Handle default methods & properties
         if (name.equals("clear")) {
             return new TemplateMethodModel() {
                 public Object exec(List args) {
                     clear();
+                    return NOTHING;
+                }
+            };
+        } else if (name.equals("create")) {
+            return new TemplateMethodModel() {
+                public Object exec(List args) {
+                    create();
                     return NOTHING;
                 }
             };
@@ -107,15 +114,21 @@ public class SessionBean implements TemplateHashModel {
                     return NOTHING;
                 }
             };
+        } else if (name.equals("exists")) {
+            if (context.getRequest().hasSession()) {
+                return TemplateBooleanModel.TRUE;
+            } else {
+                return TemplateBooleanModel.FALSE;
+            }
         }
 
         // Handle hash values
-        obj = session.getAttribute(DATA_ATTRIBUTE);
+        obj = getSession().getAttribute(DATA_ATTRIBUTE);
         if (obj instanceof HashMap) {
             map = (HashMap) obj;
         } else {
             map = new HashMap();
-            session.setAttribute(DATA_ATTRIBUTE, map);
+            getSession().setAttribute(DATA_ATTRIBUTE, map);
         }
         return new SessionDataBean(map, name, -1);
     }
@@ -125,6 +138,13 @@ public class SessionBean implements TemplateHashModel {
      */
     public void clear() {
         getSession().setAttribute(DATA_ATTRIBUTE, null);
+    }
+
+    /**
+     * Creates a user session if none existed previously.
+     */
+    public void create() {
+        getSession();
     }
 
     /**

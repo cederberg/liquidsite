@@ -169,6 +169,19 @@ public class Request {
     }
 
     /**
+     * Checks if this request was sent in a session. If a new session
+     * was created as a result of processing, this method will still
+     * return false. 
+     *
+     * @return true if the request has an associated session, or
+     *         false otherwise
+     */
+    public boolean hasSession() {
+        return request.getSession(false) != null
+            && !request.getSession().isNew();
+    }
+
+    /**
      * Checks if this request contains a response.
      *
      * @return true if the request contains a response, or

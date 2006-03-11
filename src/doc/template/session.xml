@@ -11,17 +11,25 @@
 
     <list style="compact">
       <item>
-        <title><ref id="get">[property name]</ref></title>
-        <text>Returns the session data object associated with a
-        specified property name.</text>
-      </item>
-      <item>
         <title><ref id="clear">clear()</ref></title>
         <text>Clears all data in the user session.</text>
       </item>
       <item>
+        <title><ref id="create">create()</ref></title>
+        <text>Creates a new user session if one didn't already exist.</text>
+      </item>
+      <item>
         <title><ref id="destroy">destroy()</ref></title>
         <text>Destroys the user session.</text>
+      </item>
+      <item>
+        <title><ref id="exists">exists</ref></title>
+        <text>Checks if a user session exists.</text>
+      </item>
+      <item>
+        <title><ref id="get">[property name]</ref></title>
+        <text>Returns the session data object associated with a
+        specified property name.</text>
       </item>
     </list>
 
@@ -38,10 +46,29 @@
 
     <h3>Example:</h3>
 
-    <p>This code clears all data in the user session:</p>
+    <p>The following code clears all data in the user session:</p>
 
     <example>
-      <preformat>${session.clear()}</preformat>
+      <preformat>${liquidsite.session.clear()}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="create" style="inner">create</h2>
+
+    <p>Creates a new user session if one didn't already exist.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>create()</code></p>
+
+    <h3>Example:</h3>
+
+    <p>The following code creates a new user session:</p>
+
+    <example>
+      <preformat>${liquidsite.session.create()}</preformat>
     </example>
 
 
@@ -57,10 +84,35 @@
 
     <h3>Example:</h3>
 
-    <p>This code destroys the user session:</p>
+    <p>The following code destroys the user session:</p>
 
     <example>
-      <preformat>${session.destroy()}</preformat>
+      <preformat>${liquidsite.session.destroy()}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="exists" style="inner">exists</h2>
+
+    <p>Checks if a user session exists. If a new session was created
+    as a result of processing the request, this flag will still be
+    false.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>exists</code> &#8594; boolean</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code checks if a user session exists:</p>
+
+    <example>
+      <preformat>&lt;#if liquidsite.session.exists&gt;
+    Session exists.
+&lt;#else&gt;
+    Session does not exist.
+&lt;/#if&gt;</preformat>
     </example>
 
 
@@ -87,10 +139,10 @@
     <p>Here are some examples of how to obtain session data values:</p>
 
     <example>
-      <preformat>&lt;#assign pref = session.preferences&gt;
-&lt;#assign lang = session.preferences.lang&gt;
-&lt;#assign theme = session.preferences.theme&gt;
-&lt;#assign themeName = session.preferences.theme["name"]&gt;</preformat>
+      <preformat>&lt;#assign pref = liquidsite.session.preferences&gt;
+&lt;#assign lang = liquidsite.session.preferences.lang&gt;
+&lt;#assign theme = liquidsite.session.preferences.theme&gt;
+&lt;#assign themeName = liquidsite.session.preferences.theme["name"]&gt;</preformat>
     </example>
 
   </body>
