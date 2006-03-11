@@ -84,6 +84,16 @@ public class RequestBean {
     }
 
     /**
+     * Returns the remote IP address. This is the IP address from where
+     * the request was supposedly sent.
+     *
+     * @return the remote IP address
+     */
+    public String getIp() {
+        return request.getRemoteAddr();
+    }
+
+    /**
      * Returns a map with all the request parameter names and values.
      *
      * @return the map with request parameter names and values

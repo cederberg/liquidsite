@@ -11,6 +11,10 @@
 
     <list style="compact">
       <item>
+        <title><ref id="ip">ip</ref></title>
+        <text>Returns the remote IP address.</text>
+      </item>
+      <item>
         <title><ref id="param">param</ref></title>
         <text>Returns the request parameters.</text>
       </item>
@@ -28,6 +32,7 @@
       </item>
     </list>
 
+
     <separator/>
 
     <h2 id="param" style="inner">param</h2>
@@ -44,24 +49,11 @@
 
     <h3>Example:</h3>
 
-    <p>This code loops through all the request parameters:</p>
+    <p>The following prints the value of the "hello" request parameter:</p>
 
     <example>
-      <preformat>&lt;#list request.param as param&gt;</preformat>
-    </example>
-
-    <p>Accessing the value of a specific parameter can be done in two
-    ways:</p>
-
-    <example>
-      <preformat>&lt;p&gt;The value of parameter "helloworld" is ${request.param.helloworld}, 
-but it is also ${request.param["helloworld"]}.&lt;/p&gt;</preformat>
-    </example>
-
-    <p>Which will output something like:</p>
-
-    <example>
-      <p>The value of parameter "helloworld" is Hello World!, but it is also Hello World!.</p>
+      <preformat>${liquidsite.request.param.hello} is identical to
+${liquidsite.request.param["hello"]}.</preformat>
     </example>
 
 
@@ -81,11 +73,10 @@ but it is also ${request.param["helloworld"]}.&lt;/p&gt;</preformat>
 
     <h3>Example:</h3>
 
-    <p>This code gets the request path and assigns it to a
-    variable:</p>
+    <p>The following code prints the request path:</p>
 
     <example>
-      <preformat>&lt;#assign path = request.path&gt;</preformat>
+      <preformat>${liquidsite.request.path}</preformat>
     </example>
 
 
@@ -105,10 +96,10 @@ but it is also ${request.param["helloworld"]}.&lt;/p&gt;</preformat>
 
     <h3>Example:</h3>
 
-    <p>This code gets the site path and assigns it to a variable:</p>
+    <p>The following code prints the site path:</p>
 
     <example>
-      <preformat>&lt;#assign site = request.site&gt;</preformat>
+      <preformat>${liquidsite.request.site}</preformat>
     </example>
 
 
@@ -129,11 +120,36 @@ but it is also ${request.param["helloworld"]}.&lt;/p&gt;</preformat>
 
     <h3>Example:</h3>
 
-    <p>This code gets the request url and assigns it to a
-    variable:</p>
+    <p>The following code prints the request URL:</p>
 
     <example>
-      <preformat>&lt;#assign url = request.url&gt;</preformat>
+      <preformat>${liquidsite.request.url}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="ip" style="inner">ip</h2>
+
+    <p>Returns the remote IP address. This is the IP address from where
+    the request was supposedly sent. Note that the IP address may be in
+    either IPv4 or IPv6 format depending on which protocol was used for
+    the HTTP connection.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>ip &#8594; string</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The remote IP address.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the remote IP address:</p>
+
+    <example>
+      <preformat>${liquidsite.request.ip}</preformat>
     </example>
 
   </body>
