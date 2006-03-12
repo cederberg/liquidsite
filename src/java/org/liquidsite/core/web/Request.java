@@ -486,12 +486,24 @@ public class Request {
     }
 
     /**
+     * Clears any previously sent but non-committed response.
+     */
+    public void sendClear() {
+        responseType = NO_RESPONSE;
+        responseCode = HttpServletResponse.SC_OK;
+        responseMimeType = null;
+        responseData = null;
+        responseLimitCache = false;
+    }
+
+    /**
      * Sends the specified data as the request response.
      *
      * @param mimeType       the data MIME type
      * @param data           the data to send
      */
     public void sendData(String mimeType, String data) {
+        sendClear();
         responseType = DATA_RESPONSE;
         responseMimeType = mimeType;
         responseData = data;
@@ -507,6 +519,7 @@ public class Request {
      * @param limitCache     the limited cache flag
      */
     public void sendFile(File file, boolean limitCache) {
+        sendClear();
         responseType = FILE_RESPONSE;
         responseMimeType = null;
         responseData = file.toString();
@@ -522,6 +535,7 @@ public class Request {
      * @param location       the destination location
      */
     public void sendRedirect(String location) {
+        sendClear();
         responseType = REDIRECT_RESPONSE;
         responseData = location;
     }
@@ -534,6 +548,7 @@ public class Request {
      * @param data           the data to send
      */
     public void sendError(int code, String mimeType, String data) {
+        sendClear();
         responseType = ERROR_RESPONSE;
         responseCode = code;
         responseMimeType = mimeType;
@@ -545,12 +560,9 @@ public class Request {
      * method shouldn't be called until a response has been written.
      */
     public void dispose() {
+        sendClear();
         request = null;
         response = null;
-        responseType = NO_RESPONSE;
-        responseCode = HttpServletResponse.SC_OK;
-        responseMimeType = null;
-        responseData = null;
         environment = null;
         session = null;
     }

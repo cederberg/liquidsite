@@ -522,7 +522,9 @@ public abstract class RequestProcessor {
 
         template = TemplateManager.getPageTemplate(user, page);
         template.process(request, getContentManager(), buffer);
-        request.sendData("text/html", buffer.toString());
+        if (!request.hasResponse()) {
+            request.sendData("text/html", buffer.toString());
+        }
     }
 
     /**
@@ -544,7 +546,9 @@ public abstract class RequestProcessor {
 
         template = TemplateManager.getFileTemplate(templateName);
         template.process(request, getContentManager(), buffer);
-        request.sendData("text/html", buffer.toString());
+        if (!request.hasResponse()) {
+            request.sendData("text/html", buffer.toString());
+        }
     }
 
     /**

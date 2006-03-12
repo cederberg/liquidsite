@@ -65,17 +65,21 @@
         <text>Returns the forum matched by a translator.</text>
       </item>
       <item>
-        <title><ref id="linkTo">linkTo</ref></title>
+        <title><ref id="linkTo">linkTo(path)</ref></title>
         <text>Returns a relative link to an object in the same
         site.</text>
       </item>
       <item>
-        <title><ref id="mailTo">mailTo</ref></title>
+        <title><ref id="mailTo">mailTo(receiver, subject, text)</ref></title>
         <text>Sends an email to a specified receiver.</text>
       </item>
       <item>
-        <title><ref id="mailToGroup">mailToGroup</ref></title>
+        <title><ref id="mailToGroup">mailToGroup(receiver, subject, text)</ref></title>
         <text>Sends an email to all members in a group.</text>
+      </item>
+      <item>
+        <title><ref id="redirect">redirect(location)</ref></title>
+        <text>Returns the HTTP request object.</text>
       </item>
       <item>
         <title><ref id="request">request</ref></title>
@@ -938,6 +942,38 @@ ${liquidsite.countDocuments("Section1")}.&lt;p&gt;</preformat>
 
     <example>
       <preformat>&lt;#assign res = liquidsite.mailToGroup("Newsletter", "News" "Blah blah")&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="redirect" style="inner">redirect</h2>
+
+    <p>Redirects the users web browser to the specified location. The
+    location specified may be either a relative or an absolute URL.
+    Note that page processing does not stop after calling this
+    method. Also, a previous redirect may be cancelled by calling
+    this method with an empty string.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>redirect(location)</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>location</code> -- the new location, or an empty
+        string</text>
+      </item>
+    </list>
+
+    <h3>Example:</h3>
+
+    <p>The following code redirects to "www.liquidsite.net":</p>
+
+    <example>
+      <preformat>${liquidsite.redirect("http://www.liquidsite.net/")}</preformat>
     </example>
 
   </body>

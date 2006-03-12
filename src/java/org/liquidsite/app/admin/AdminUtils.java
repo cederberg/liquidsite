@@ -496,7 +496,9 @@ public class AdminUtils {
         try {
             template = TemplateManager.getFileTemplate(templateName);
             template.process(request, getContentManager(), buffer);
-            request.sendData("text/html", buffer.toString());
+            if (!request.hasResponse()) {
+                request.sendData("text/html", buffer.toString());
+            }
         } catch (ContentException e) {
             request.sendData("text/plain", "Error: " + e.getMessage());
         } catch (TemplateException e) {
