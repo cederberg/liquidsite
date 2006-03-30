@@ -401,6 +401,7 @@ public class InstallRequestProcessor extends RequestProcessor {
                 installer.updateTables(database, updateVersion);
             }
             writeConfiguration();
+            createDirs();
             application.restart();
             if (updateVersion == null) {
                 writeDefaultData(request.getProtocol(),
@@ -798,7 +799,6 @@ public class InstallRequestProcessor extends RequestProcessor {
         MySQLDatabaseConnector  con = null;
         Configuration           config;
         Configuration           oldConfig;
-        File                    dir;
 
         // Create database connector
         con = new MySQLDatabaseConnector(host,
@@ -827,10 +827,24 @@ public class InstallRequestProcessor extends RequestProcessor {
             config.set(Configuration.UPLOAD_MAX_SIZE, 10000000);
         }
         config.write(con);
+    }
+
+    /**
+     * Creates various required application directories.
+     */
+    private void createDirs()
+    {
+        Configuration  config;
+        File           dir;
 
         // Create temporary upload directory
+        config = application.getConfig();
         dir = new File(config.get(Configuration.UPLOAD_DIRECTORY,
-        		          application.getBaseDir() + "/tmp"));
+        		                     application.getBaseDir() + "/tmp"));
+        dir.mkdirs();
+
+        // Create plugin directory
+        dir = new File(application.getBaseDir(), "plugins");
         dir.mkdirs();
     }
 

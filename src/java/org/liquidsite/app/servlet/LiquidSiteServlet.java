@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2003-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2003-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.servlet;
@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.liquidsite.app.install.InstallRequestProcessor;
+import org.liquidsite.app.plugin.PluginException;
+import org.liquidsite.app.plugin.PluginLoader;
 import org.liquidsite.app.template.TemplateException;
 import org.liquidsite.app.template.TemplateManager;
 import org.liquidsite.core.content.ContentManager;
@@ -76,6 +78,11 @@ public class LiquidSiteServlet extends HttpServlet
      * The application configuration.
      */
     private Configuration config = null;
+
+    /**
+     * The application plugin loader.
+     */
+    private PluginLoader pluginLoader = null;
 
     /**
      * The application database connector.
@@ -221,6 +228,15 @@ public class LiquidSiteServlet extends HttpServlet
             LOG.error(e.getMessage());
         }
 
+        // Initialize plugin loader
+        pluginLoader = new PluginLoader();
+        try {
+            pluginLoader.startup(new File(getBaseDir(), "plugins"));
+        } catch (PluginException e) {
+            errors++;
+            LOG.error(e.getMessage());
+        }
+
         // Initialize request processor
         if (!config.isInitialized()) {
             processor = new InstallRequestProcessor(this);
@@ -238,6 +254,7 @@ public class LiquidSiteServlet extends HttpServlet
      */
     public void shutdown() {
         processor.destroy();
+        pluginLoader.shutdown();
         contentManager.reset();
         database.setPoolSize(0);
         try {
