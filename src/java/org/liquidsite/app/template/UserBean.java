@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -38,7 +38,7 @@ import org.liquidsite.util.log.Log;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class UserBean {
+public class UserBean extends TemplateBean {
 
     /**
      * The class logger.
@@ -79,11 +79,6 @@ public class UserBean {
      * The request user.
      */
     private User user;
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
 
     /**
      * The modified login username.
@@ -134,7 +129,7 @@ public class UserBean {
      * @param user           the request user
      */
     UserBean(BeanContext context, User user) {
-        this.context = context;
+        super(context);
         this.user = user;
         this.login = null;
         this.password = null;
@@ -324,7 +319,7 @@ public class UserBean {
      * @param name           the group name
      */
     public void groupAdd(String name) {
-        Group  group = context.findGroup(name);
+        Group  group = getContext().findGroup(name);
 
         if (group != null && group.isPublic()) {
             if (groupAdds == null) {
@@ -342,7 +337,7 @@ public class UserBean {
      * @param name           the group name
      */
     public void groupRemove(String name) {
-        Group  group = context.findGroup(name);
+        Group  group = getContext().findGroup(name);
 
         if (group != null && group.isPublic()) {
             if (groupRemoves == null) {
@@ -359,7 +354,7 @@ public class UserBean {
      *         false otherwise
      */
     public boolean save() {
-        Domain  domain = context.getRequest().getEnvironment().getDomain();
+        Domain  domain = getContextRequest().getEnvironment().getDomain();
         User    currentUser;
         boolean created = false;
         String  msg;
@@ -370,7 +365,7 @@ public class UserBean {
                 LOG.info("failed to create user, no login name given");
                 return false;
             }
-            user = context.createUser(login);
+            user = getContext().createUser(login);
             if (user == null) {
                 LOG.error("couldn't create user with login " + login +
                           " in domain " + domain);
@@ -398,7 +393,7 @@ public class UserBean {
             }
         }
         try {
-            currentUser = context.findUser("").user;
+            currentUser = getContext().findUser("").user;
             if (currentUser == null && (created || emailVerified)) {
                 user.save(user);
             } else {
@@ -470,12 +465,12 @@ public class UserBean {
             return false;
         }
         key = User.generatePassword();
-        session = context.getRequest().getSession();
+        session = getContextRequest().getSession();
         session.setAttribute(VERIFY_USER_ATTRIBUTE, user.getName());
         session.setAttribute(VERIFY_KEY_ATTRIBUTE, key);
         subject = replace(subject, replaceText, key);
         text = replace(text, replaceText, key);
-        return context.sendMail(user.getEmail(), subject, text);
+        return getContext().sendMail(user.getEmail(), subject, text);
     }
 
     /**
@@ -495,7 +490,7 @@ public class UserBean {
         String         verificationUser;
         String         verificationKey;
 
-        session = context.getRequest().getSession();
+        session = getContextRequest().getSession();
         verificationUser = (String) session.getAttribute(VERIFY_USER_ATTRIBUTE);
         verificationKey = (String) session.getAttribute(VERIFY_KEY_ATTRIBUTE);
         emailVerified = user != null &&

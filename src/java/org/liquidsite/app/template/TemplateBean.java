@@ -1,5 +1,5 @@
 /*
- * UtilBean.java
+ * TemplateBean.java
  *
  * This work is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -16,47 +16,51 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
+ * Copyright (c) 2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
 
-import java.util.Date;
-
-import org.liquidsite.core.content.User;
+import org.liquidsite.core.web.Request;
 
 /**
- * A utility template bean. This class is used to provide utility data
- * and functions to the template data model.
+ * The base class for all template beans. This class serves as the
+ * superclass for all template beans.
  *
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class UtilBean extends TemplateBean {
+public abstract class TemplateBean {
 
     /**
-     * Creates a new utility bean.
+     * The bean context.
      */
-    UtilBean() {
-        super(null);
+    private BeanContext context;
+
+    /**
+     * Creates a new template bean.
+     *
+     * @param context        the bean context
+     */
+    protected TemplateBean(BeanContext context) {
+        this.context = context;
     }
 
     /**
-     * Returns the current date and time.
+     * Returns the bean context.
      *
-     * @return the current date and time
+     * @return the bean context
      */
-    public Date getCurrentTime() {
-        return new Date();
+    protected BeanContext getContext() {
+        return context;
     }
 
     /**
-     * Returns a new random password. The generated password can be
-     * used for various types of authentication.
+     * Returns the bean context request.
      *
-     * @return the new random password
+     * @return the bean context request
      */
-    public String getRandomPassword() {
-        return User.generatePassword();
+    protected Request getContextRequest() {
+        return context.getRequest();
     }
 }

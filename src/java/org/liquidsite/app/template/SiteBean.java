@@ -71,10 +71,9 @@ public class SiteBean extends ContentBean {
      */
     public String getHost() {
         ContentSite site = (ContentSite) getContent();
-        Request     request = getContext().getRequest();
 
         if (site.getHost().equals("*")) {
-            return request.getHost();
+            return getContextRequest().getHost();
         } else {
             return site.getHost();
         }
@@ -89,10 +88,9 @@ public class SiteBean extends ContentBean {
      */
     public int getPort() {
         ContentSite site = (ContentSite) getContent();
-        Request     request = getContext().getRequest();
 
         if (site.getPort() == 0) {
-            return request.getPort();
+            return getContextRequest().getPort();
         } else {
             return site.getPort();
         }
@@ -130,7 +128,7 @@ public class SiteBean extends ContentBean {
     protected String linkTo(String path) {
         // TODO: either remove this method or find some use for it
         ContentSite site = (ContentSite) getContent();
-        Request     request = getContext().getRequest();
+        Request     request = getContextRequest();
         String      protocol = request.getProtocol();
         String      host = request.getHost();
         int         port = request.getPort();

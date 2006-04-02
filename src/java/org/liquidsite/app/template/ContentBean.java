@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -39,17 +39,12 @@ import org.liquidsite.util.log.Log;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public abstract class ContentBean {
+public abstract class ContentBean extends TemplateBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(ContentBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
 
     /**
      * The parent content bean.
@@ -79,7 +74,7 @@ public abstract class ContentBean {
      * @param content        the content, or null
      */
     ContentBean(BeanContext context, ContentBean parent, Content content) {
-        this.context = context;
+        super(context);
         this.parent = parent;
         this.content = content;
     }
@@ -92,15 +87,6 @@ public abstract class ContentBean {
      */
     public String toString() {
         return getName();
-    }
-
-    /**
-     * Returns the bean context.
-     *
-     * @return the bean context
-     */
-    protected BeanContext getContext() {
-        return context;
     }
 
     /**
@@ -146,7 +132,7 @@ public abstract class ContentBean {
      *         an empty string if the content doesn't exist
      */
     public String getPath() {
-        String  path = context.getContentPath(content);
+        String  path = getContext().getContentPath(content);
 
         if (path.endsWith("/")) {
             return path.substring(0, path.length() - 1);
@@ -173,13 +159,13 @@ public abstract class ContentBean {
             try {
                 contentParent = content.getParent();
                 if (contentParent instanceof ContentSection) {
-                    parent = new SectionBean(context,
+                    parent = new SectionBean(getContext(),
                                              (ContentSection) contentParent);
                 } else if (contentParent instanceof ContentForum) {
-                    parent = new ForumBean(context,
+                    parent = new ForumBean(getContext(),
                                            (ContentForum) contentParent);
                 } else if (contentParent instanceof ContentTopic) {
-                    parent = new TopicBean(context,
+                    parent = new TopicBean(getContext(),
                                            (ContentTopic) contentParent);
                 } else {
                     parent = new SectionBean();
@@ -251,9 +237,9 @@ public abstract class ContentBean {
      */
     public UserBean getUser() {
         if (content == null) {
-            return new UserBean(context, null);
+            return new UserBean(getContext(), null);
         } else {
-            return context.findUser(content.getAuthorName());
+            return getContext().findUser(content.getAuthorName());
         }
     }
 
@@ -280,7 +266,7 @@ public abstract class ContentBean {
     public LockBean getLock() {
         if (content != null) {
             try {
-                return new LockBean(context, content.getLock());
+                return new LockBean(getContext(), content.getLock());
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
             }
@@ -303,7 +289,7 @@ public abstract class ContentBean {
 
         if (content != null) {
             try {
-                user = context.getRequest().getUser();
+                user = getContextRequest().getUser();
                 if (permission.equals("read")) {
                     return content.hasReadAccess(user);
                 } else if (permission.equals("write")) {

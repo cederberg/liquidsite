@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -77,7 +77,7 @@ public class DocumentFileBean extends ContentBean {
     public String getMimeType() {
         ServletContext  context;
 
-        context = getContext().getRequest().getServletContext();
+        context = getContextRequest().getServletContext();
         return ((ContentFile) getContent()).getMimeType(context);
     }
 }

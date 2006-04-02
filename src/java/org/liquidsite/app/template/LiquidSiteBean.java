@@ -33,17 +33,12 @@ import org.liquidsite.util.log.Log;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class LiquidSiteBean {
+public class LiquidSiteBean extends TemplateBean {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(LiquidSiteBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
 
     /**
      * The request bean.
@@ -86,7 +81,7 @@ public class LiquidSiteBean {
      * @param context        the bean context
      */
     LiquidSiteBean(BeanContext context) {
-        this.context = context;
+        super(context);
     }
 
     /**
@@ -114,7 +109,7 @@ public class LiquidSiteBean {
      */
     public RequestBean getRequest() {
         if (requestBean == null) {
-            requestBean = new RequestBean(context);
+            requestBean = new RequestBean(getContext());
         }
         return requestBean;
     }
@@ -126,7 +121,7 @@ public class LiquidSiteBean {
      */
     public SessionBean getSession() {
         if (sessionBean == null) {
-            sessionBean = new SessionBean(context);
+            sessionBean = new SessionBean(getContext());
         }
         return sessionBean;
     }
@@ -138,7 +133,7 @@ public class LiquidSiteBean {
      */
     public SiteBean getSite() {
         if (siteBean == null) {
-            siteBean = new SiteBean(context);
+            siteBean = new SiteBean(getContext());
         }
         return siteBean;
     }
@@ -150,7 +145,7 @@ public class LiquidSiteBean {
      */
     public SectionBean getSection() {
         if (sectionBean == null) {
-            sectionBean = new SectionBean(context);
+            sectionBean = new SectionBean(getContext());
         }
         return sectionBean;
     }
@@ -162,7 +157,7 @@ public class LiquidSiteBean {
      */
     public DocumentBean getDoc() {
         if (docBean == null) {
-            docBean = new DocumentBean(context);
+            docBean = new DocumentBean(getContext());
         }
         return docBean;
     }
@@ -174,7 +169,7 @@ public class LiquidSiteBean {
      */
     public ForumBean getForum() {
         if (forumBean == null) {
-            forumBean = new ForumBean(context);
+            forumBean = new ForumBean(getContext());
         }
         return forumBean;
     }
@@ -186,7 +181,7 @@ public class LiquidSiteBean {
      */
     public TopicBean getTopic() {
         if (topicBean == null) {
-            topicBean = new TopicBean(context);
+            topicBean = new TopicBean(getContext());
         }
         return topicBean;
     }
@@ -197,7 +192,7 @@ public class LiquidSiteBean {
      * @return the user bean for the current user
      */
     public UserBean getUser() {
-        return context.findUser("");
+        return getContext().findUser("");
     }
 
     /**
@@ -227,7 +222,7 @@ public class LiquidSiteBean {
         if (path.indexOf(":") >= 0) {
             return path;
         } else if (path.startsWith("/")) {
-            return context.getSitePath() + path.substring(1);
+            return getContext().getSitePath() + path.substring(1);
         } else {
             return path;
         }
@@ -246,7 +241,7 @@ public class LiquidSiteBean {
      */
     public boolean mailTo(String receiver, String subject, String text) {
         LOG.trace("call to mailTo: " + receiver + "," + subject + ",...");
-        return context.sendMail(receiver, subject, text);
+        return getContext().sendMail(receiver, subject, text);
     }
 
     /**
@@ -269,9 +264,9 @@ public class LiquidSiteBean {
 
         LOG.trace("call to mailToGroup: " + receiver + "," +
                   subject + ",...");
-        group = context.findGroup(receiver);
+        group = getContext().findGroup(receiver);
         if (group != null) {
-            return context.sendMail(group, subject, text);
+            return getContext().sendMail(group, subject, text);
         } else {
             return false;
         }
@@ -287,7 +282,7 @@ public class LiquidSiteBean {
      */
     public int countDocuments(String path) {
         LOG.trace("call to countDocuments: " + path);
-        return context.countDocuments(path);
+        return getContext().countDocuments(path);
     }
 
     /**
@@ -300,7 +295,7 @@ public class LiquidSiteBean {
      */
     public DocumentBean findDocument(String path) {
         LOG.trace("call to findDocument: " + path);
-        return context.findDocument(path);
+        return getContext().findDocument(path);
     }
 
     /**
@@ -337,7 +332,7 @@ public class LiquidSiteBean {
 
         LOG.trace("call to findDocuments: " + path + "," + sorting +
                   "," + offset + "," + count);
-        return context.findDocuments(path, sorting, offset, count);
+        return getContext().findDocuments(path, sorting, offset, count);
     }
 
     /**
@@ -350,7 +345,7 @@ public class LiquidSiteBean {
      */
     public SectionBean findSection(String path) {
         LOG.trace("call to findSection: " + path);
-        return context.findSection(path);
+        return getContext().findSection(path);
     }
 
     /**
@@ -363,7 +358,7 @@ public class LiquidSiteBean {
      */
     public UserBean findUser(String name) {
         LOG.trace("call to findUser: " + name);
-        return context.findUser(name);
+        return getContext().findUser(name);
     }
 
     /**
@@ -376,7 +371,7 @@ public class LiquidSiteBean {
      */
     public UserBean findUserByEmail(String email) {
         LOG.trace("call to findUserByEmail: " + email);
-        return context.findUserByEmail(email);
+        return getContext().findUserByEmail(email);
     }
 
     /**
@@ -390,12 +385,12 @@ public class LiquidSiteBean {
      */
     public void redirect(String location) {
         if (location == null || location.trim().length() == 0) {
-            context.getRequest().sendClear();
+            getContextRequest().sendClear();
         } else {
             if (location.startsWith("/")) {
-                location = context.getSitePath() + location.substring(1);
+                location = getContext().getSitePath() + location.substring(1);
             }
-            context.getRequest().sendRedirect(location);
+            getContextRequest().sendRedirect(location);
         }
     }
 }

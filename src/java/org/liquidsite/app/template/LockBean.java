@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2005 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -31,12 +31,7 @@ import org.liquidsite.core.content.Lock;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class LockBean {
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
+public class LockBean extends TemplateBean {
 
     /**
      * The lock being encapsulated.
@@ -57,7 +52,7 @@ public class LockBean {
      * @param lock           the content lock, or null for empty
      */
     LockBean(BeanContext context, Lock lock) {
-        this.context = context;
+        super(context);
         this.lock = lock;
     }
 
@@ -93,9 +88,9 @@ public class LockBean {
      */
     public UserBean getUser() {
         if (lock == null) {
-            return new UserBean(context, null);
+            return new UserBean(getContext(), null);
         } else {
-            return context.findUser(lock.getUserName());
+            return getContext().findUser(lock.getUserName());
         }
     }
 }

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -34,12 +34,7 @@ import org.liquidsite.core.web.Request;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class RequestBean {
-
-    /**
-     * The request being processed.
-     */
-    private Request request;
+public class RequestBean extends TemplateBean {
 
     /**
      * The request header bean.
@@ -57,7 +52,7 @@ public class RequestBean {
      * @param context        the bean context
      */
     RequestBean(BeanContext context) {
-        this.request = context.getRequest();
+        super(context);
     }
 
     /**
@@ -66,7 +61,7 @@ public class RequestBean {
      * @return the site path
      */
     public String getSite() {
-        return request.getEnvironment().getSite().getDirectory();
+        return getContextRequest().getEnvironment().getSite().getDirectory();
     }
 
     /**
@@ -75,7 +70,7 @@ public class RequestBean {
      * @return the request path
      */
     public String getPath() {
-        return request.getPath();
+        return getContextRequest().getPath();
     }
 
     /**
@@ -85,7 +80,7 @@ public class RequestBean {
      * @return the complete request URL
      */
     public String getUrl() {
-        return request.getUrl();
+        return getContextRequest().getUrl();
     }
 
     /**
@@ -95,7 +90,7 @@ public class RequestBean {
      * @return the remote IP address
      */
     public String getIp() {
-        return request.getRemoteAddr();
+        return getContextRequest().getRemoteAddr();
     }
     
     /**
@@ -105,7 +100,7 @@ public class RequestBean {
      */
     public TemplateHashModel getHeader() {
         if (headerBean == null) {
-            headerBean = new RequestHeaderBean(request);
+            headerBean = new RequestHeaderBean(getContextRequest());
         }
         return headerBean;
     }
@@ -117,7 +112,7 @@ public class RequestBean {
      */
     public TemplateHashModel getParam() {
         if (paramBean == null) {
-            paramBean = new RequestParameterBean(request);
+            paramBean = new RequestParameterBean(getContextRequest());
         }
         return paramBean;
     }

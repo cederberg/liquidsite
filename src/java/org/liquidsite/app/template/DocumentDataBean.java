@@ -39,17 +39,13 @@ import org.liquidsite.util.log.Log;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class DocumentDataBean implements TemplateHashModel {
+public class DocumentDataBean extends TemplateBean
+    implements TemplateHashModel {
 
     /**
      * The class logger.
      */
     private static final Log LOG = new Log(DocumentDataBean.class);
-
-    /**
-     * The bean context.
-     */
-    private BeanContext context;
 
     /**
      * The document being encapsulated.
@@ -68,7 +64,7 @@ public class DocumentDataBean implements TemplateHashModel {
      * @param document       the content document, or null
      */
     DocumentDataBean(BeanContext context, ContentDocument document) {
-        this.context = context;
+        super(context);
         this.document = document;
     }
 
@@ -125,7 +121,7 @@ public class DocumentDataBean implements TemplateHashModel {
      */
     private DocumentFormattingContext getDocContext() {
         if (docContext == null) {
-            docContext = new DocumentFormattingContext(context, document);
+            docContext = new DocumentFormattingContext(getContext(), document);
         }
         return docContext;
     }

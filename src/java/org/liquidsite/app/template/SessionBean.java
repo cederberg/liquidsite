@@ -42,7 +42,7 @@ import org.liquidsite.core.web.RequestSession;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-public class SessionBean implements TemplateHashModel {
+public class SessionBean extends TemplateBean implements TemplateHashModel {
 
     /**
      * The session data attribute.
@@ -50,17 +50,12 @@ public class SessionBean implements TemplateHashModel {
     private static final String DATA_ATTRIBUTE = "template.data";
 
     /**
-     * The bean context.
-     */
-    private BeanContext context;
-
-    /**
      * Creates a new session template bean.
      *
      * @param context        the bean context
      */
     SessionBean(BeanContext context) {
-        this.context = context;
+        super(context);
     }
 
     /**
@@ -69,7 +64,7 @@ public class SessionBean implements TemplateHashModel {
      * @return the request session
      */
     private RequestSession getSession() {
-        return context.getRequest().getSession();
+        return getContextRequest().getSession();
     }
 
     /**
@@ -115,7 +110,7 @@ public class SessionBean implements TemplateHashModel {
                 }
             };
         } else if (name.equals("exists")) {
-            if (context.getRequest().hasSession()) {
+            if (getContextRequest().hasSession()) {
                 return TemplateBooleanModel.TRUE;
             } else {
                 return TemplateBooleanModel.FALSE;
