@@ -137,12 +137,13 @@ public class PluginLoader {
      * plugins.
      */
     public void shutdown() {
+        PluginBean.removeAll();
         try {
-            PluginBean.removeAll();
             manager.shutdown();
         } catch (Exception e) {
             LOG.error("plugin shutdown error", e);
         }
+        manager = null;
     }
 
     /**
