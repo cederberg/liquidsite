@@ -53,7 +53,7 @@ import org.liquidsite.util.mail.SimpleMailMessage;
  * @author   Per Cederberg, <per at percederberg dot net>
  * @version  1.0
  */
-class BeanContext {
+public class BeanContext {
 
     /**
      * The class logger.
@@ -91,7 +91,7 @@ class BeanContext {
      * @param request        the request object
      * @param manager        the content manager to use
      */
-    public BeanContext(Request request, ContentManager manager) {
+    BeanContext(Request request, ContentManager manager) {
         UserBean  user;
 
         this.request = request;
