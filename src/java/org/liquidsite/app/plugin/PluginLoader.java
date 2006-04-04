@@ -28,10 +28,15 @@ import java.net.URL;
 import java.util.Iterator;
 
 import org.java.plugin.ObjectFactory;
+import org.java.plugin.PluginLifecycleException;
 import org.java.plugin.PluginManager;
+import org.java.plugin.registry.Extension;
+import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.util.ExtendedProperties;
 
+import org.liquidsite.app.template.PluginBean;
+import org.liquidsite.app.template.TemplateException;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -47,6 +52,16 @@ public class PluginLoader {
      * The class logger.
      */
     private static final Log LOG = new Log(PluginLoader.class);
+
+    /**
+     * The core plugin identifier.
+     */
+    private static final String CORE_PLUGIN_ID = "core";
+
+    /**
+     * The core plugin manifest location.
+     */
+    private static final String CORE_PLUGIN_MANIFEST = "core-plugin.xml";
 
     /**
      * The plugin manager used.
@@ -89,30 +104,31 @@ public class PluginLoader {
     public void startup(File dir) throws PluginException {
         Iterator          iter;
         PluginDescriptor  desc;
+        ExtensionPoint    point;
         String            msg;
 
+        // Initialize plugin manager
         if (manager == null) {
             initialize(new File(dir, "tmp"));
         }
         try {
             manager.publishPlugins(getLocations(dir));
-            iter = manager.getRegistry().getPluginDescriptors().iterator();
-            while (iter.hasNext()) {
-                desc = (PluginDescriptor) iter.next();
-                LOG.info("activating plugin " + desc.getId() +
-                         ", version " + desc.getVersion());
-                if (!manager.isPluginActivated(desc)) {
-                    manager.activatePlugin(desc.getId());
-                }
-            }
         } catch (MalformedURLException e) {
             msg = "invalid plugin URL";
             LOG.error(msg, e);
             throw new PluginException(msg, e);
         } catch (Exception e) {
             msg = "plugin startup error";
-            LOG.error(msg, e);
+            LOG.error(msg + ": " + e.toString());
             throw new PluginException(msg, e);
+        }
+
+        // Load extension points
+        desc = manager.getRegistry().getPluginDescriptor(CORE_PLUGIN_ID);
+        point = desc.getExtensionPoint("TemplateBean");
+        iter = point.getConnectedExtensions().iterator();
+        while (iter.hasNext()) {
+            loadTemplateBean((Extension) iter.next());
         }
     }
 
@@ -121,19 +137,9 @@ public class PluginLoader {
      * plugins.
      */
     public void shutdown() {
-        Iterator          iter;
-        PluginDescriptor  desc;
-
         try {
-            iter = manager.getRegistry().getPluginDescriptors().iterator();
-            while (iter.hasNext()) {
-                desc = (PluginDescriptor) iter.next();
-                LOG.info("deactivating plugin " + desc.getId() +
-                         ", version " + desc.getVersion());
-                if (manager.isPluginActivated(desc)) {
-                    manager.deactivatePlugin(desc.getId());
-                }
-            }
+            PluginBean.removeAll();
+            manager.shutdown();
         } catch (Exception e) {
             LOG.error("plugin shutdown error", e);
         }
@@ -141,6 +147,7 @@ public class PluginLoader {
 
     /**
      * Finds all the plugin locations from the specified directory.
+     * The core plugin location will be added to the array returned. 
      *
      * @param dir            the plugin directory
      *
@@ -149,19 +156,80 @@ public class PluginLoader {
      * @throws MalformedURLException if some plugin URL couldn't be
      *             created
      */
-    private StandardZipPluginLocation[] getLocations(File dir)
+    private PluginManager.PluginLocation[] getLocations(File dir)
         throws MalformedURLException {
 
-        StandardZipPluginLocation[] locations;
-        File[]                      files;
+        PluginManager.PluginLocation[] locations;
+        File[]                         files;
 
         files = dir.listFiles(new PluginFilter());
-        locations = new StandardZipPluginLocation[files.length];
+        locations = new PluginManager.PluginLocation[1 + files.length];
+        locations[0] = getCoreLocation();
         for (int i = 0; i < files.length; i++) {
             LOG.info("found plugin " + files[i].getName());
-            locations[i] = new StandardZipPluginLocation(files[i]);
+            locations[i + 1] = new StandardZipPluginLocation(files[i]);
         }
         return locations;
+    }
+
+    /**
+     * Returns the location of the core plugin. The core plugin is used to
+     * define the extension points available for normal plugins.
+     *
+     * @return the location of the core plugin
+     */
+    private StandardPluginLocation getCoreLocation() {
+        URL  url;
+
+        url = getClass().getResource(CORE_PLUGIN_MANIFEST);
+        return new StandardPluginLocation(url, url);
+    }
+
+    /**
+     * Loads a template bean extension.
+     *
+     * @param ext            the template bean extension
+     *
+     * @throws PluginException if the extension couldn't be loaded
+     */
+    private void loadTemplateBean(Extension ext) throws PluginException {
+        PluginDescriptor  desc;
+        String            name;
+        String            className;
+        Class             cls;
+        String            msg;
+
+        desc = ext.getDeclaringPluginDescriptor();
+        name = ext.getParameter("name").valueAsString();
+        className = ext.getParameter("class").valueAsString();
+        LOG.info("loading plugin template bean '" + name + "' as " +
+                 className + " from plugin " + desc.getId() +
+                 ", version " + desc.getVersion());
+        if (!manager.isPluginActivated(desc)) {
+            try {
+                manager.activatePlugin(desc.getId());
+            } catch (PluginLifecycleException e) {
+                msg = "failed to activate plugin " + desc.getId();
+                LOG.error(msg, e);
+                throw new PluginException(msg, e);
+            }
+        }
+        try {
+            cls = manager.getPluginClassLoader(desc).loadClass(className);
+        } catch (ClassNotFoundException e) {
+            msg = "failed to load class '" + className + "' in plugin " +
+                  desc.getId();
+            LOG.error(msg, e);
+            throw new PluginException(msg, e);
+        }
+        try {
+            PluginBean.add(name, cls);
+        } catch (TemplateException e) {
+            msg = "failed to plugin mapping '" + name + "' in plugin " +
+                  desc.getId();
+            LOG.error(msg, e);
+            throw new PluginException(msg, e);
+        }
     }
 
     /**
@@ -184,91 +252,6 @@ public class PluginLoader {
          */
         public boolean accept(File dir, String name) {
             return name.endsWith(".jar") || name.endsWith(".zip");
-        }
-    }
-
-    /**
-     * A standard jar or zip file plugin location.
-     *
-     * @author   Per Cederberg, <per at percederberg dot net>
-     * @version  1.0
-     */
-    private class StandardZipPluginLocation
-        implements PluginManager.PluginLocation {
-
-        /**
-         * The context URL.
-         */
-        private URL context;
-
-        /**
-         * The plugin manifest URL.
-         */
-        private URL manifest;
-
-        /**
-         * Creates a new plugin location from a jar or a zip file.
-         * This constructor assumes that the plugin manifest file is
-         * named "plugin.xml" and is present in the root directory of
-         * the jar file.
-         *
-         * @param file           the zip file
-         *
-         * @throws MalformedURLException if the plugin URL:s couldn't
-         *             be created 
-         */
-        public StandardZipPluginLocation(File file)
-            throws MalformedURLException {
-
-            this(file, "plugin.xml");
-        }
-
-        /**
-         * Creates a new plugin location from a jar or a zip file.
-         * This plugin manifest file path specified is relative to
-         * the root directory of the jar or zip file.
-         *
-         * @param file           the zip file
-         * @param path           the relative manifest path
-         *
-         * @throws MalformedURLException if the plugin URL:s couldn't
-         *             be created 
-         */
-        public StandardZipPluginLocation(File file, String path)
-            throws MalformedURLException {
-
-            if (path != null && path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            context = new URL("jar:file:" + file.getAbsolutePath() + "!/");
-            manifest = new URL(context, path);
-        }
-
-        /**
-         * Returns a string representation of this object.
-         *
-         * @return a string representation of this object
-         */
-        public String toString() {
-            return context.toString();
-        }
-
-        /**
-         * Returns the location of the plugin context directory.
-         *
-         * @return the location of the plugin context directory
-         */
-        public URL getContextLocation() {
-            return context;
-        }
-
-        /**
-         * Returns the location of the plugin manifest file.
-         *
-         * @return the location of the plugin manifest file
-         */
-        public URL getManifestLocation() {
-            return manifest;
         }
     }
 }

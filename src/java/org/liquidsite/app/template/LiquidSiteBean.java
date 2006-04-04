@@ -76,6 +76,11 @@ public class LiquidSiteBean extends TemplateBean {
     private TopicBean topicBean = null;
 
     /**
+     * The plugin bean.
+     */
+    private PluginBean pluginBean = null;
+
+    /**
      * Creates a new LiquidSite template bean.
      *
      * @param context        the bean context
@@ -100,6 +105,18 @@ public class LiquidSiteBean extends TemplateBean {
      */
     public String getDate() {
         return TemplateManager.getBuildDate();
+    }
+
+    /**
+     * Returns the plugin bean.
+     *
+     * @return the plugin bean
+     */
+    public PluginBean getPlugin() {
+        if (pluginBean == null) {
+            pluginBean = new PluginBean(getContext());
+        }
+        return pluginBean;
     }
 
     /**

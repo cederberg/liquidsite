@@ -52,12 +52,7 @@
 <!-- COMPILATION TARGETS -->
   <target name="compile"
           depends="init,compile-clean,compile-db,compile-java">
-    <echo file="${build.dir}/classes/org/liquidsite/build.properties">
-build.version=${build.version}
-build.date=${build.printdate}
-    </echo>
-    <jar jarfile="${build.dir}/lib/liquidsite-${build.version}.jar"
-         includesfile="${build.dir}/LICENSE.txt">
+    <jar jarfile="${build.dir}/lib/liquidsite-${build.version}.jar">
       <fileset dir="${build.dir}" includes="*.txt" />
       <fileset dir="${build.dir}/classes" />
     </jar>
@@ -118,6 +113,13 @@ build.date=${build.printdate}
            target="1.1"
            debug="on"
            deprecation="on" />
+    <copy todir="${build.dir}/classes">
+      <fileset dir="${build.dir}/src/java" includes="**/*.xml" />
+    </copy>
+    <echo file="${build.dir}/classes/org/liquidsite/build.properties">
+build.version=${build.version}
+build.date=${build.printdate}
+    </echo>
   </target>
 
 
