@@ -231,7 +231,15 @@ function utilRemoveElement(elem) {
  * @param elem               the element whose children to remove
  */
 function utilRemoveChildElements(elem) {
-    elem.innerHTML = "";
+    var  name = elem.tagName.toLowerCase();
+
+    if (name == "table" || name == "tbody" || name == "tr") {
+        while (elem.childNodes.length > 0) {
+            utilRemoveElement(elem.firstChild);
+        }
+    } else {
+        elem.innerHTML = "";
+    }
 }
 
 /**
