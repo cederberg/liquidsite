@@ -52,19 +52,9 @@ var PERMISSION_SHOW_LOCAL = false;
  */
 function permissionInitialize(id) {
     var  table;
-    var  tbody;
-    var  tr;
 
     table = document.getElementById(id);
-    tbody = utilAddElement(table, "tbody");
-    tr = utilAddElement(tbody, "tr");
-    utilAddElement(tr, "th", "User/Group");
-    utilAddElement(tr, "th", "Read");
-    utilAddElement(tr, "th", "Write");
-    utilAddElement(tr, "th", "Publish");
-    utilAddElement(tr, "th", "Admin");
-    utilAddElement(tr, "th", "");
-    PERMISSION_ROOT = tbody;
+    PERMISSION_ROOT = utilAddElement(table, "tbody");
 }
 
 /**
@@ -78,6 +68,13 @@ function permissionDisplay() {
     var  i;
 
     utilRemoveChildElements(PERMISSION_ROOT);
+    tr = utilAddElement(PERMISSION_ROOT, "tr");
+    utilAddElement(tr, "th", "User/Group");
+    utilAddElement(tr, "th", "Read");
+    utilAddElement(tr, "th", "Write");
+    utilAddElement(tr, "th", "Publish");
+    utilAddElement(tr, "th", "Admin");
+    utilAddElement(tr, "th", "");
     if (PERMISSION_SHOW_LOCAL) {
         for (i = 0; i < PERMISSION_LOCAL.length; i++) {
             permissionInternalDisplayPermission(i, PERMISSION_LOCAL[i], false);
@@ -280,7 +277,7 @@ function permissionInternalDisplayPermission(index, perm, inherited) {
         input = document.createElement("input");
         input.size = 15;
         input.name = "perm_" + index + "_user";
-        input.value = perm.user;
+        input.value = (perm.user == null) ? "" : perm.user;
         if (inherited) {
             input.disabled = "disabled";
         } else {
