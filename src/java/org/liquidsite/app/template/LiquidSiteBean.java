@@ -390,24 +390,4 @@ public class LiquidSiteBean extends TemplateBean {
         LOG.trace("call to findUserByEmail: " + email);
         return getContext().findUserByEmail(email);
     }
-
-    /**
-     * Redirects the users web browser to the specified location. The
-     * location specified may be either a relative or an absolute URL.
-     * Note that page processing does not stop after calling this
-     * method. Also, a previous redirect may be cancelled by calling
-     * this method with an empty string.
-     *
-     * @param location       the new location, or an empty string
-     */
-    public void redirect(String location) {
-        if (location == null || location.trim().length() == 0) {
-            getContextRequest().sendClear();
-        } else {
-            if (location.startsWith("/")) {
-                location = getContext().getSitePath() + location.substring(1);
-            }
-            getContextRequest().sendRedirect(location);
-        }
-    }
 }

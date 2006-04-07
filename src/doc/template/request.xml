@@ -27,6 +27,14 @@
         <text>Returns the request path.</text>
       </item>
       <item>
+        <title><ref id="redirect">redirect(location)</ref></title>
+        <text>Redirects the users web browser to the specified location.</text>
+      </item>
+      <item>
+        <title><ref id="responseMimeType">responseMimeType(mimeType)</ref></title>
+        <text>Sets the response content MIME type.</text>
+      </item>
+      <item>
         <title><ref id="site">site</ref></title>
         <text>Returns the site path.</text>
       </item>
@@ -177,6 +185,66 @@
     <example>
       <preformat>${liquidsite.request.param.hello} is identical to
 ${liquidsite.request.param["hello"]}.</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="responseMimeType" style="inner">responseMimeType</h2>
+
+    <p>Sets the response content MIME type. By default the HTML MIME
+    type will be used.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>responseMimeType(mimeType)</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>mimeType</code> -- the new MIME type string</text>
+      </item>
+    </list>
+
+    <h3>Example:</h3>
+
+    <p>The following code modifies the output MIME type to normal text:</p>
+
+    <example>
+      <preformat>${liquidsite.request.responseMimeType("text/plain")}</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="redirect" style="inner">redirect</h2>
+
+    <p>Redirects the users web browser to the specified location. The
+    location specified may be either a relative or an absolute URL.
+    Note that page processing does not stop after calling this
+    method. Also, a previous redirect may be cancelled by calling
+    this method with an empty string.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>redirect(location)</code></p>
+
+    <h3>Parameters:</h3>
+
+    <list style="compact">
+      <item>
+        <text><code>location</code> -- the new location, or an empty
+        string</text>
+      </item>
+    </list>
+
+    <h3>Example:</h3>
+
+    <p>The following code redirects to "www.liquidsite.net":</p>
+
+    <example>
+      <preformat>${liquidsite.request.redirect("http://www.liquidsite.net/")}</preformat>
     </example>
 
   </body>
