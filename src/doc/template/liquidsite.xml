@@ -78,8 +78,12 @@
         <text>Sends an email to all members in a group.</text>
       </item>
       <item>
+        <title><ref id="plugin">plugin</ref></title>
+        <text>Returns the plugin object.</text>
+      </item>
+      <item>
         <title><ref id="redirect">redirect(location)</ref></title>
-        <text>Returns the HTTP request object.</text>
+        <text>Redirects the users web browser to the specified location.</text>
       </item>
       <item>
         <title><ref id="request">request</ref></title>
@@ -582,6 +586,30 @@ ${liquidsite.countDocuments("Section1")}.&lt;p&gt;</preformat>
 
     <example>
       <preformat>&lt;#if forum.name == ""&gt;</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="plugin" style="inner">plugin</h2>
+
+    <p>Returns the plugin object.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>plugin &#8594; <ref
+    file="plugin.xml">plugin object</ref></code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The plugin object.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code calls the HTTP plugin get method:</p>
+
+    <example>
+      <preformat>${liquidsite.plugin.http.get("http://www.liquidsite.org/")}</preformat>
     </example>
 
 

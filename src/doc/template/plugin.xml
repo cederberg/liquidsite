@@ -1,0 +1,46 @@
+<doc>
+  <head>
+    <title>Liquid Site Template API</title>
+  </head>
+
+  <body>
+
+    <h1>The plugin object</h1>
+
+    <p>The plugin object is used to access the currently loaded plugins.</p>
+
+    <list style="compact">
+      <item>
+        <title><ref id="get">[plugin name]</ref></title>
+        <text>Returns the plugin object with the specified name.</text>
+      </item>
+    </list>
+
+
+    <separator/>
+
+    <h2 id="get" style="inner">[plugin name]</h2>
+
+    <p>Returns the plugin object with the specified name. Plugin objects are
+    documented separately for each plugin. Only the currently loaded plugins
+    will be available and a null value will be returned for any plugin name
+    that is not loaded.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>[property name] &#8594; plugin object</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The plugin object, or null if not found.</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code calls the HTTP plugin get method:</p>
+
+    <example>
+      <preformat>${liquidsite.plugin.http.get("http://www.liquidsite.org/")}</preformat>
+    </example>
+
+  </body>
+</doc>
