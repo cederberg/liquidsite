@@ -86,6 +86,11 @@ public class BeanContext {
     private HashMap usersCache = new HashMap();
 
     /**
+     * The output content MIME type.
+     */
+    private String mimeType = "text/html";
+
+    /**
      * Creates a new bean context.
      *
      * @param request        the request object
@@ -101,6 +106,25 @@ public class BeanContext {
         if (!user.getLogin().equals("")) {
             usersCache.put("", user);
         }
+    }
+
+    /**
+     * Returns the response content MIME type. By default the content
+     * type is set to "text/html".
+     *
+     * @return the response content MIME type
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    /**
+     * Sets the response content MIME type.
+     *
+     * @param mimeType       the new MIME type
+     */
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     /**

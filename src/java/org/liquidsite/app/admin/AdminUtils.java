@@ -22,7 +22,6 @@
 package org.liquidsite.app.admin;
 
 import java.io.File;
-import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -490,15 +489,11 @@ public class AdminUtils {
      * @param templateName   the template file name
      */
     public static void sendTemplate(Request request, String templateName) {
-        Template      template;
-        StringWriter  buffer = new StringWriter();
+        Template  template;
 
         try {
             template = TemplateManager.getFileTemplate(templateName);
-            template.process(request, getContentManager(), buffer);
-            if (!request.hasResponse()) {
-                request.sendData("text/html", buffer.toString());
-            }
+            template.processNormal(request, getContentManager());
         } catch (ContentException e) {
             request.sendData("text/plain", "Error: " + e.getMessage());
         } catch (TemplateException e) {

@@ -22,7 +22,6 @@
 package org.liquidsite.app.servlet;
 
 import java.io.File;
-import java.io.StringWriter;
 
 import org.liquidsite.app.template.Template;
 import org.liquidsite.app.template.TemplateException;
@@ -516,15 +515,11 @@ public abstract class RequestProcessor {
     private void sendContentPage(Request request, ContentPage page)
         throws TemplateException {
 
-        User          user = request.getUser();
-        Template      template;
-        StringWriter  buffer = new StringWriter();
+        User      user = request.getUser();
+        Template  template;
 
         template = TemplateManager.getPageTemplate(user, page);
-        template.process(request, getContentManager(), buffer);
-        if (!request.hasResponse()) {
-            request.sendData("text/html", buffer.toString());
-        }
+        template.processNormal(request, getContentManager());
     }
 
     /**
@@ -541,14 +536,10 @@ public abstract class RequestProcessor {
     protected void sendTemplate(Request request, String templateName)
         throws TemplateException {
 
-        Template      template;
-        StringWriter  buffer = new StringWriter();
+        Template  template;
 
         template = TemplateManager.getFileTemplate(templateName);
-        template.process(request, getContentManager(), buffer);
-        if (!request.hasResponse()) {
-            request.sendData("text/html", buffer.toString());
-        }
+        template.processNormal(request, getContentManager());
     }
 
     /**
@@ -565,12 +556,10 @@ public abstract class RequestProcessor {
     protected void sendError(Request request, int code)
         throws TemplateException {
 
-        Template      template;
-        StringWriter  buffer = new StringWriter();
+        Template  template;
 
         template = TemplateManager.getFileTemplate("error.ftl");
-        template.process(request, getContentManager(), buffer);
-        request.sendError(code, "text/html", buffer.toString());
+        template.processError(request, getContentManager(), code);
     }
 
     /**

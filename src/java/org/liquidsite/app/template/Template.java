@@ -22,7 +22,7 @@
 package org.liquidsite.app.template;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.StringWriter;
 import java.util.Map;
 
 import freemarker.core.Environment;
@@ -52,6 +52,16 @@ public class Template {
     private freemarker.template.Template template;
 
     /**
+     * The template output MIME type.
+     */
+    private String mimeType = null;
+
+    /**
+     * The template output data.
+     */
+    private String output = null;
+
+    /**
      * Creates a new template
      *
      * @param template       the FreeMarker template to use
@@ -65,27 +75,67 @@ public class Template {
     }
 
     /**
-     * Processes the template with a request and an output stream.
+     * Processes the template with a request and a content manager.
      * All the attributes in the request will be exposed in the
-     * template data model.
+     * template data model. The processing result will be sent as
+     * data to the request.
      *
      * @param request        the request object
      * @param manager        the content manager to use
-     * @param out            the output stream writer
      *
      * @throws TemplateException if the template processing failed
      */
-    public void process(Request request, ContentManager manager, Writer out)
+    public void processNormal(Request request, ContentManager manager)
+        throws TemplateException {
+
+        process(request, manager);
+        if (!request.hasResponse()) {
+            request.sendData(mimeType, output);
+        }
+    }
+
+    /**
+     * Processes the template with a request and a content manager.
+     * All the attributes in the request will be exposed in the
+     * template data model. The processing result will be sent as
+     * an error to the request.
+     *
+     * @param request        the request object
+     * @param manager        the content manager to use
+     * @param code           the error code
+     *
+     * @throws TemplateException if the template processing failed
+     */
+    public void processError(Request request, ContentManager manager, int code)
+        throws TemplateException {
+
+        process(request, manager);
+        request.sendError(code, mimeType, output);
+    }
+
+    /**
+     * Processes the template with a request and a content manager.
+     * All the attributes in the request will be exposed in the
+     * template data model. The processing result will be stored in
+     * the corresponding instance variables.
+     *
+     * @param request        the request object
+     * @param manager        the content manager to use
+     *
+     * @throws TemplateException if the template processing failed
+     */
+    private void process(Request request, ContentManager manager)
         throws TemplateException {
 
         Map          data = request.getAllAttributes();
         Environment  env;
         BeanContext  context;
+        StringWriter buffer = new StringWriter();
 
         context = new BeanContext(request, manager);
         data.put("liquidsite", new LiquidSiteBean(context));
         try {
-            env = template.createProcessingEnvironment(data, out);
+            env = template.createProcessingEnvironment(data, buffer);
             if (request.getUser() != null) {
                 env.setTimeZone(request.getUser().getTimeZone());
             }
@@ -100,5 +150,7 @@ public class Template {
             LOG.error(e.getMessage());
             throw new TemplateException(e);
         }
+        mimeType = context.getMimeType();
+        output = buffer.toString();
     }
 }
