@@ -21,7 +21,6 @@
 
 package org.liquidsite.app.plugin;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.java.plugin.PluginManager;
@@ -45,15 +44,10 @@ class StandardPluginLocation implements PluginManager.PluginLocation {
     private URL manifest;
 
     /**
-     * Creates a new plugin location from a jar or a zip file.
-     * This plugin manifest file path specified is relative to
-     * the root directory of the jar or zip file.
+     * Creates a new standard plugin location.
      *
-     * @param file           the zip file
-     * @param path           the relative manifest path
-     *
-     * @throws MalformedURLException if the plugin URL:s couldn't
-     *             be created 
+     * @param context        the location of the plugin context directory
+     * @param manifest       the location of the plugin manifest file
      */
     public StandardPluginLocation(URL context, URL manifest) {
         this.context = context;
