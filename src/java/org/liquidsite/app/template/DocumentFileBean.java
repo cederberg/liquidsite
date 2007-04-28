@@ -45,6 +45,16 @@ public class DocumentFileBean extends ContentBean {
      * Creates a new document file template bean.
      *
      * @param context        the bean context
+     * @param file           the content file
+     */
+    DocumentFileBean(BeanContext context, ContentFile file) {
+        this(context, null, file);
+    }
+
+    /**
+     * Creates a new document file template bean.
+     *
+     * @param context        the bean context
      * @param parent         the parent document
      * @param file           the content file
      */
