@@ -432,7 +432,7 @@ class CacheManager {
         perms = (PermissionList) permissions.get(key);
         if (inherit) {
             while (perms == null && permissions.containsKey(key)) {
-                key = (Integer) parents.get(key);
+                key = parents.get(key);
                 if (key == null) {
                     LOG.trace("cache miss on permission list for " +
                               content.getId() + " due to uncached parents");
