@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2007 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.legacy;
@@ -202,7 +202,7 @@ public class ForumRequestProcessor extends RequestProcessor {
             request.setAttribute("previewtext",
                                  PlainFormatter.formatHtml(text));
         } else {
-            edit(post, subject, text, request.getUser());
+            edit(forum, post, subject, text, request.getUser());
             request.setAttribute("redirect", "true");
         }
     }
@@ -433,6 +433,7 @@ public class ForumRequestProcessor extends RequestProcessor {
     /**
      * Edits a posted message.
      *
+     * @param forum          the content forum
      * @param post           the content post
      * @param subject        the message subject
      * @param text           the message text
@@ -441,21 +442,26 @@ public class ForumRequestProcessor extends RequestProcessor {
      * @throws RequestException if an error occurred while storing
      *             the message
      */
-    private void edit(ContentPost post,
+    private void edit(ContentForum forum,
+                      ContentPost post,
                       String subject,
                       String text,
                       User user)
         throws RequestException {
 
+        boolean  moderator;
+
         if (user == null) {
             LOG.info("anonymous user cannot delete posts");
             throw RequestException.FORBIDDEN;
-        } else if (!user.getName().equals(post.getAuthorName())) {
-            LOG.info("user '" + user + "' cannot edit post " + 
-                     post + " from '" + post.getAuthorName() + "'");
-            throw RequestException.FORBIDDEN;
         }
         try {
+            moderator = user.isSuperUser() || forum.isModerator(user);
+            if (!moderator && !user.equals(post.getAuthor())) {
+                LOG.info("user '" + user + "' cannot edit post " + 
+                         post + " from '" + post.getAuthorName() + "'");
+                throw RequestException.FORBIDDEN;
+            }
             post.setSubject(subject);
             post.setTextType(ContentPost.PLAIN_TEXT_TYPE);
             post.setText(text);
