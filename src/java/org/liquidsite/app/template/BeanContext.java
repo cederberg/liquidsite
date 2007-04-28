@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2007 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -27,9 +27,11 @@ import java.util.HashMap;
 import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentDocument;
 import org.liquidsite.core.content.ContentException;
+import org.liquidsite.core.content.ContentFile;
 import org.liquidsite.core.content.ContentFolder;
 import org.liquidsite.core.content.ContentForum;
 import org.liquidsite.core.content.ContentManager;
+import org.liquidsite.core.content.ContentPost;
 import org.liquidsite.core.content.ContentSection;
 import org.liquidsite.core.content.ContentSecurityException;
 import org.liquidsite.core.content.ContentSelector;
@@ -277,6 +279,42 @@ public class BeanContext {
     }
 
     /**
+     * Creates a content bean from a content object. The default bean
+     * constructors will be used in most cases.
+     *
+     * @param content        the content object
+     *
+     * @return the content bean created, or
+     *         null if the content type was unsupported
+     *
+     * @throws ContentException if the database couldn't be accessed
+     *             properly (for document parent retrieval)
+     */
+    public ContentBean createContentBean(Content content)
+        throws ContentException {
+
+        if (content instanceof ContentDocument) {
+            return new DocumentBean(this,
+                                    (ContentDocument) content,
+                                    (ContentSection) content.getParent());
+        } else if (content instanceof ContentFile) {
+            return new DocumentFileBean(this, (ContentFile) content);
+        } else if (content instanceof ContentSection) {
+            return new SectionBean(this, (ContentSection) content);
+        } else if (content instanceof ContentForum) {
+            return new ForumBean(this, (ContentForum) content);
+        } else if (content instanceof ContentTopic) {
+            return new TopicBean(this, (ContentTopic) content);
+        } else if (content instanceof ContentPost) {
+            return new PostBean(this, (ContentPost) content);
+        } else if (content instanceof ContentSite) {
+            return new SiteBean(this, (ContentSite) content);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Finds a content object from a specified content id.
      *
      * @param id             the content identifier
@@ -455,9 +493,7 @@ public class BeanContext {
         try {
             content = findContent(parent, path);
             if (content instanceof ContentDocument) {
-                return new DocumentBean(this,
-                                        (ContentDocument) content,
-                                        (ContentSection) content.getParent());
+                return (DocumentBean) createContentBean(content);
             } else {
                 LOG.info("failed to find document: " + path);
             }
@@ -565,8 +601,7 @@ public class BeanContext {
                                                  Content.FORUM_CATEGORY);
             for (int i = 0; i < content.length; i++) {
                 if (content[i].getName().equals(name)) {
-                    return new ForumBean(this,
-                                         (ContentForum) content[i]);
+                    return (ForumBean) createContentBean(content[i]);
                 }
             }
         } catch (ContentException e) {
@@ -605,7 +640,7 @@ public class BeanContext {
         try {
             content = findContent(parent, path);
             if (content instanceof ContentSection) {
-                return new SectionBean(this, (ContentSection) content);
+                return (SectionBean) createContentBean(content);
             } else {
                 LOG.info("failed to find section: " + path);
             }

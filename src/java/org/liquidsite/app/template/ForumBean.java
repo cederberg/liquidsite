@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2007 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.app.template;
@@ -27,7 +27,6 @@ import org.liquidsite.core.content.Content;
 import org.liquidsite.core.content.ContentException;
 import org.liquidsite.core.content.ContentForum;
 import org.liquidsite.core.content.ContentSelector;
-import org.liquidsite.core.content.ContentTopic;
 import org.liquidsite.util.log.Log;
 
 /**
@@ -243,8 +242,7 @@ public class ForumBean extends ContentBean {
                 selector.limitResults(offset, count);
                 content = getContext().findContent(selector);
                 for (int i = 0; i < content.length; i++) {
-                    results.add(new TopicBean(getContext(),
-                                              (ContentTopic) content[i]));
+                    results.add(getContext().createContentBean(content[i]));
                 }
             } catch (ContentException e) {
                 LOG.error(e.getMessage());
@@ -292,7 +290,7 @@ public class ForumBean extends ContentBean {
 
         content = getContext().findContent(selector);
         if (content.length > 0) {
-            return new TopicBean(getContext(), (ContentTopic) content[0]);
+            return (TopicBean) getContext().createContentBean(content[0]);
         } else {
             return null;
         }
