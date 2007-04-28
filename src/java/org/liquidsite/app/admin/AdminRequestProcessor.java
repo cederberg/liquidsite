@@ -311,6 +311,9 @@ public class AdminRequestProcessor extends RequestProcessor {
      * Processes a view statistics request.
      *
      * @param request        the request object
+     *
+     * @throws RequestException if the request couldn't be processed
+     *             correctly
      */
     private void processViewStatistics(Request request) throws RequestException {
         PersistentObject  obj;
