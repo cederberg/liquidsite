@@ -54,6 +54,7 @@ public class DomainSize {
      * Creates a new domain size from a data object.
      *
      * @param data           the domain size data object
+     * @param extraSize      the extra size value
      */
     DomainSize(DomainSizeData data, long extraSize) {
         this.data = data;
