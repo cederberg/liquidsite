@@ -47,7 +47,7 @@ public class SiteBean extends ContentBean {
      * Creates a new forum template bean.
      *
      * @param context        the bean context
-     * @param forum          the content forum, or null
+     * @param site           the content site, or null
      */
     SiteBean(BeanContext context, ContentSite site) {
         super(context, site);
