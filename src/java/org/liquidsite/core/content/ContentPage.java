@@ -226,9 +226,7 @@ public class ContentPage extends Content {
         data = getAttribute(ELEMENT_PREFIX + name.toLowerCase());
         if (data == null && getTemplateId() > 0) {
             template = getTemplate(user);
-            if (template == null) {
-                data = null;
-            } else {
+            if (template != null) {
                 data = template.getElement(getContentManager(), name);
             }
         }
