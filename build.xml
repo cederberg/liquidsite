@@ -110,7 +110,8 @@
     <javac srcdir="${build.dir}/src/java"
            destdir="${build.dir}/classes"
            classpathref="project.class.path"
-           target="1.1"
+           target="1.4"
+    	   source="1.4"
            debug="on"
            deprecation="on" />
     <copy todir="${build.dir}/classes">
