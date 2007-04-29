@@ -57,6 +57,10 @@
         <text>Returns the file revision number.</text>
       </item>
       <item>
+        <title><ref id="revisions">revisions</ref></title>
+        <text>Returns a list of all revisions.</text>
+      </item>
+      <item>
         <title><ref id="size">size</ref></title>
         <text>Returns the size of the file in bytes.</text>
       </item>
@@ -351,6 +355,31 @@ The file path is ${doc.files[0].path}.</preformat>
     <example>
       <preformat>&lt;#assign doc = liquidsite.findDocument("Section1/doc1")&gt;
 The file revision is ${doc.files[0].revision}.</preformat>
+    </example>
+
+
+    <separator/>
+
+    <h2 id="revisions" style="inner">revisions</h2>
+
+    <p>Returns a list of all revisions. The list will be ordered in revision
+    order, i.e. the oldest revision will be first.</p>
+
+    <h3>Syntax:</h3>
+
+    <p style="indent"><code>revisions &#8594; sequence of objects</code></p>
+
+    <h3>Returns:</h3>
+
+    <p style="indent">The list of all revisions</p>
+
+    <h3>Example:</h3>
+
+    <p>The following code prints the date and author of the first revision:</p>
+
+    <example>
+      <preformat>&lt;#assign rev = bean.revisions?first&gt;
+&lt;p&gt;First revision created ${rev.date} by ${rev.user}.&lt;/p&gt;</preformat>
     </example>
 
 

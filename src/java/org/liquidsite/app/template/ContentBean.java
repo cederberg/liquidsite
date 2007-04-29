@@ -21,6 +21,7 @@
 
 package org.liquidsite.app.template;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.liquidsite.core.content.Content;
@@ -52,6 +53,11 @@ public abstract class ContentBean extends TemplateBean {
      * The content being encapsulated.
      */
     private Content content;
+
+    /**
+     * The revision content beans. Used for caching.
+     */
+    private ArrayList revisions = null;
 
     /**
      * Creates a new content template bean.
@@ -178,6 +184,35 @@ public abstract class ContentBean extends TemplateBean {
         } else {
             return content.getRevisionNumber();
         }
+    }
+
+    /**
+     * Returns a list of content beans for all revisions. The list
+     * will be ordered in revision order, i.e. the oldest revision
+     * will be first.
+     *
+     * @return a list of content beans for all revisions
+     */
+    public ArrayList getRevisions() {
+        Content[]  data;
+
+        if (revisions == null) {
+            if (content != null) {
+                try {
+                    data = content.getAllRevisions();
+                    revisions = new ArrayList(data.length);
+                    for (int i = data.length - 1; i >= 0; i--) {
+                        revisions.add(getContext().createContentBean(data[i]));
+                    }
+                } catch (ContentException e) {
+                    LOG.error(e.getMessage());
+                }
+            }
+            if (revisions == null) {
+                revisions = new ArrayList(0);
+            }
+        }
+        return revisions;
     }
 
     /**
