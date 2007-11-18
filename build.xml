@@ -244,6 +244,7 @@ build.date=${build.printdate}
         <include name="lib/**" />
         <include name="src/**" />
         <include name="doc/**" />
+        <exclude name="TODO.txt" />
       </tarfileset>
     </tar>
   </target>

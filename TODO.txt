@@ -1,0 +1,85 @@
+Liquid Site 0.11:
+=================
+* BUG: war file does not contain tmp directory (+ permission check)
+* BUG: wrong content type on inherited page elements (Safari)
+* BUG: template edit page does not always load JS scripts (Safari)
+* BUG: cached permission lists may have wrong content manager
+* BUG: failure to find site should either display default 404
+       error page or ROOT domain web page
+* BUG: handle zip files containing – or other non-ASCII chars
+* BUG: site name may contain characters to escape in backup XML
+* BUG: text files will always be reported as ISO-8859-1 in
+       HTTP Content-Type header
+* BUG: text file editing does not properly escape HTML text
+* Core: remove content manager reference from content objects
+* Core: update database creation scripts to use utf-8
+* Core: add support for named markers in tagged text format
+* Installer: convert existing database tables to utf-8
+* Installer: add check for MySQL 4.1 version
+* Admin: finalize Safari support in tagged editor
+* Admin: verify Safari support throughout
+* Admin: remember page when editing users or groups (ie display
+         the page where the user is present)
+* Admin: add tagedit list support in editor
+* Admin: add tagedit <pre> support
+* Admin: add tagedit box support in editor
+* Admin: add tagedit image text support in editor
+* Admin: add tagedit preview in editor
+* Admin: improve navigation when listing group members (back button)
+* Admin: display user creation and modification dates
+* Template: add domain name retrieval
+* Template: add support for setting absolute linking mode
+* Template: simplify preview linking from template API
+* Other: patch FreeMarker to remove synchronization on loading
+* Other: patch FreeMarker to allow secure caching and lookup
+* Other: RSS/Atom feed support
+* Other: support for section and file libraries
+
+Liquid Site Unscheduled:
+========================
+* General: rename 'Domain' to 'Realm'
+* General: support limiting superusers to a set of domains
+* General: support statistics access for non-admin users?
+* General: support boolean, date and set data types in documents
+* General: add data type column to content attribute table
+* General: move backup/restore serialization to core data layer
+* General: remove all backup/restore hacks from core content layer
+* General: add modular file serving from liquidsite.obj/<module>
+* General: add more user preferences
+* General: add support for alias translators
+* General: add support for error translators
+* General: add forum mail reminders on new posts and topics
+* General: add support for download ranges
+* General: create server application based on Jetty
+* General: add check for weak passwords
+* General: separate section inheritance from hierarchy
+* Template: add pagePath attribute (or processedPath)
+* Template: add access to last error message
+* Admin: add translator preview
+* Admin: add forum object previews
+* Admin: add possibility to choose local links from a site tree
+         view in tagged editor
+* Admin: remove env.page request attribute
+* Admin: support thousands of entries in a section (sorting,
+         filtering)
+* Admin: support operations (delete) on selected section entries
+* Admin: add text size and word count summaries to documents?
+* Admin: add tree right-click menu (with same options as the
+         current buttons)
+* Admin: display size information for all objects
+* Admin: add button to remove old revisions (prune)
+* Admin: new dialog onunload handler should call cancel
+* Admin: improve section inheritance display (show inherited
+         document attributes in grey)
+* Admin: improve page and template redraw speed by just hiding
+         and showing the inherited page elements
+* Admin: improve image upload in doc page to upload in background
+         and with progress bar
+* Other: create new better looking logotype
+* Other: add support for generic document and page search
+* Other: calendar support
+* Other: create graphical front page & news flow editing
+* Other: revise admin GUI and usability
+* Other: change to plugin based architecture
+* Other: patch FreeMarker to support assignment to hash elements
+         in BeanWrapper models
