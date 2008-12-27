@@ -1,0 +1,1 @@
+-- Updates Liquid Site Tables to version 0.11 (from 0.10.1)
