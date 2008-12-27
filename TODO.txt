@@ -1,32 +1,35 @@
 Liquid Site 0.11:
 =================
 * BUG: war file does not contain tmp directory (+ permission check)
-* BUG: wrong content type on inherited page elements (Safari)
-* BUG: template edit page does not always load JS scripts (Safari)
 * BUG: cached permission lists may have wrong content manager
-* BUG: failure to find site should either display default 404
-       error page or ROOT domain web page
-* BUG: handle zip files containing – or other non-ASCII chars
+* BUG: template edit page does not always load JS scripts (Safari)
 * BUG: site name may contain characters to escape in backup XML
-* BUG: text files will always be reported as ISO-8859-1 in
-       HTTP Content-Type header
 * BUG: text file editing does not properly escape HTML text
-* Core: remove content manager reference from content objects
 * Core: update database creation scripts to use utf-8
-* Core: add support for named markers in tagged text format
 * Installer: convert existing database tables to utf-8
 * Installer: add check for MySQL 4.1 version
 * Admin: finalize Safari support in tagged editor
 * Admin: verify Safari support throughout
-* Admin: remember page when editing users or groups (ie display
-         the page where the user is present)
 * Admin: add tagedit list support in editor
 * Admin: add tagedit <pre> support
 * Admin: add tagedit box support in editor
 * Admin: add tagedit image text support in editor
 * Admin: add tagedit preview in editor
-* Admin: improve navigation when listing group members (back button)
 * Admin: display user creation and modification dates
+
+Liquid Site 0.12:
+=================
+* BUG: wrong content type on inherited page elements (Safari)
+* BUG: failure to find site should either display default 404
+       error page or ROOT domain web page
+* BUG: handle zip files containing – or other non-ASCII chars
+* BUG: text files will always be reported as ISO-8859-1 in
+       HTTP Content-Type header
+* Core: remove content manager reference from content objects
+* Core: add support for named markers in tagged text format
+* Admin: remember page when editing users or groups (ie display
+         the page where the user is present)
+* Admin: improve navigation when listing group members (back button)
 * Template: add domain name retrieval
 * Template: add support for setting absolute linking mode
 * Template: simplify preview linking from template API
