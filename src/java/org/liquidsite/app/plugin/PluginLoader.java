@@ -240,7 +240,7 @@ public class PluginLoader {
      * @author   Per Cederberg, <per at percederberg dot net>
      * @version  1.0
      */
-    private class PluginFilter implements FilenameFilter {
+    class PluginFilter implements FilenameFilter {
 
         /**
          * Checks if a file is accepted by the filter.
