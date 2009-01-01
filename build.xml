@@ -17,7 +17,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
   USA
 
-  Copyright (c) 2003-2006 Per Cederberg. All rights reserved.
+  Copyright (c) 2003-2009 Per Cederberg. All rights reserved.
 -->
 
 <project name="liquidsite" default="package" basedir=".">
@@ -53,7 +53,10 @@
   <target name="compile"
           depends="init,compile-clean,compile-db,compile-java">
     <jar jarfile="${build.dir}/lib/liquidsite-${build.version}.jar">
-      <fileset dir="${build.dir}" includes="*.txt" />
+      <fileset dir="${build.dir}">
+        <include name="*.txt" />
+        <exclude name="TODO.txt" />
+      </fileset>
       <fileset dir="${build.dir}/classes" />
     </jar>
     <war destfile="${build.dir}/liquidsite.war"
