@@ -5,8 +5,6 @@ Liquid Site 0.11:
 * BUG: template edit page does not always load JS scripts (Safari)
 * BUG: site name may contain characters to escape in backup XML
 * BUG: text file editing does not properly escape HTML text
-* Core: update database creation scripts to use utf-8
-* Installer: convert existing database tables to utf-8
 * Installer: add check for MySQL 4.1 version
 * Admin: finalize Safari support in tagged editor
 * Admin: verify Safari support throughout
