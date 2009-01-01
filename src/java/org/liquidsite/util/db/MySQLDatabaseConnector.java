@@ -67,6 +67,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         setProperty("useUnicode", "true");
         setProperty("characterEncoding", "UTF-8");
         setProperty("useOldUTF8Behavior", "true");
+        setProperty("useGmtMillisForDatetimes", "true");
     }
 
     /**
@@ -88,6 +89,7 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
         setProperty("useUnicode", "true");
         setProperty("characterEncoding", "UTF-8");
         setProperty("useOldUTF8Behavior", "true");
+        setProperty("useGmtMillisForDatetimes", "true");
     }
 
     /**
