@@ -32,7 +32,7 @@
 
             <p>Select the category of the object you wish to add.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>

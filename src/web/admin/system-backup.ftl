@@ -28,7 +28,7 @@
 
             <p>Select the options for the backup operation.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -40,7 +40,7 @@
             <select tabindex="1" name="domain">
               <option value="">&lt; None &gt;</option>
 <#list domains as item>
-              <option value="${item}">${item}</option>
+              <option value="${item?html}">${item?html}</option>
 </#list>
             </select>
             <p>Only the single domain specified will be backed up.</p>

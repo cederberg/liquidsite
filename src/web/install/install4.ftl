@@ -26,7 +26,7 @@
             <p>Please enter the default configuration information for
             Liquid Site.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -34,7 +34,7 @@
         <tr>
           <td colspan="2">
             No configuration updates are needed. All the configuration
-            parameters from the previous version ${updateVersion} will
+            parameters from the previous version ${updateVersion?html} will
             be transferred without changes.
           </td>
         </tr>
@@ -45,7 +45,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="40"
-                   name="dir" value="${dir}" />
+                   name="dir" value="${dir?html}" />
             <p>This is the directory on the web server machine
             containing binary data files.</p>
           </td>
@@ -56,7 +56,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="2" size="20"
-                   name="user" value="${user}" />
+                   name="user" value="${user?html}" />
             <p>This is the default Liquid Site administrator user.
             This user cannot be removed unless a new Liquid Site
             administrator is created.</p>
@@ -68,7 +68,7 @@
           </th>
           <td class="field">
             <input type="password" tabindex="3" size="20"
-                   name="password1" value="${password}" />
+                   name="password1" value="${password?html}" />
             <p>The password for the admin user above.</p>
           </td>
         </tr>
@@ -78,7 +78,7 @@
           </th>
           <td class="field">
             <input type="password" tabindex="4" size="12"
-                   name="password2" value="${password}" />
+                   name="password2" value="${password?html}" />
             <p>Password verification for the admin user above.</p>
           </td>
         </tr>

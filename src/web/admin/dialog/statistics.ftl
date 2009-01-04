@@ -7,12 +7,12 @@
           <img src="images/icons/48x48/statistics.png" alt="Statistics" />
         </td>
           <td colspan="2">
-            <h2>Statistics for ${domain}</h2>
+            <h2>Statistics for ${domain?html}</h2>
           </td>
         </tr>
         <tr>
           <td>
-            <p>Statistical summary for the domain ${domain}.<br/>
+            <p>Statistical summary for the domain ${domain?html}.<br/>
             Generated on
             ${liquidsite.util.currentTime?string("yyyy-MM-dd HH:mm")}.</p>
 

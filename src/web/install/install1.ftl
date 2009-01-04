@@ -21,7 +21,7 @@
             installation guide, you will create or update a Liquid
             Site data repository and perform the basic setup.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -31,7 +31,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="20"
-                   name="host" value="${host}" />
+                   name="host" value="${host?html}" />
             <p>This is the machine name or IP address of the database
             to use for the Liquid Site repository.</p>
           </td>
@@ -42,7 +42,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="2" size="12"
-                   name="user" value="${user}" />
+                   name="user" value="${user?html}" />
             <p>This database user is ONLY used during the
             installation. If you wish to create a new database, use
             a user with full administration privileges here. The
@@ -56,7 +56,7 @@
           </th>
           <td class="field">
             <input type="password" tabindex="3" size="12"
-                   name="password" value="${password}" />
+                   name="password" value="${password?html}" />
             <p>The password for the database user above.</p>
           </td>
         </tr>

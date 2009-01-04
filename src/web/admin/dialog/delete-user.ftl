@@ -13,15 +13,15 @@
       <input type="hidden" name="liquidsite.step" value="1" />
       <input type="hidden" name="liquidsite.prev" value="" />
       <input type="hidden" name="type" value="${type}" />
-      <input type="hidden" name="domain" value="${domain}" />
-      <input type="hidden" name="name" value="${name}" />
+      <input type="hidden" name="domain" value="${domain?html}" />
+      <input type="hidden" name="name" value="${name?html}" />
       <table class="dialog">
         <tr>
           <td class="decoration" rowspan="4">
             <img src="images/icons/48x48/delete.png" alt="Delete" />
           </td>
           <td>
-            <h2>Delete ${type?cap_first} '${name}'</h2>
+            <h2>Delete ${type?cap_first} '${name?html}'</h2>
           </td>
         </tr>
         <tr>

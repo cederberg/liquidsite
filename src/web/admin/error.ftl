@@ -12,7 +12,7 @@
         </tr>
         <tr>
           <td>
-            <p><strong>Error:</strong> ${error?cap_first}</p>
+            <p><strong>Error:</strong> ${error?html?cap_first}</p>
           </td>
         </tr>
         <tr>

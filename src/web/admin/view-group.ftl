@@ -7,11 +7,11 @@
       <table class="compact">
         <tr>
           <th>Domain:</th>
-          <td>${domain}</td>
+          <td>${domain?html}</td>
         </tr>
         <tr>
           <th>Group:</th>
-          <td>${name}</td>
+          <td>${name?html}</td>
         </tr>
       </table>
 

@@ -42,7 +42,7 @@
             <p>Edit the details of the user.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -53,10 +53,10 @@
           <td class="field">
 <#if isadd>
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
 <#else>
-            <input type="hidden" name="name" value="${name}" />
-            <strong>${name}</strong>
+            <input type="hidden" name="name" value="${name?html}" />
+            <strong>${name?html}</strong>
 </#if>
             <p>The login name uniquely identifies the user in the
             domain. It cannot be modified once the user has been
@@ -84,7 +84,7 @@
           </th>
           <td class="field">
             <input type="password" tabindex="3" size="30"
-                   name="password" value="${password}" />
+                   name="password" value="${password?html}" />
             &nbsp;&nbsp;&nbsp;&nbsp;
             Suggestion: <strong>${passwordSuggestion?html}</strong>
 <#if isadd>
@@ -102,7 +102,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="4" size="30"
-                   name="realname" value="${realname}" />
+                   name="realname" value="${realname?html}" />
             <p>The user name to be presented on the site. This field
             can be modified by the user.</p>
           </td>
@@ -113,7 +113,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="5" size="30"
-                   name="email" value="${email}" />
+                   name="email" value="${email?html}" />
             <p>The user email address. This field can be modified by
             the user.</p>
           </td>
@@ -124,7 +124,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="6" size="30"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The user comment. This annotation area is only visible
             for the domain administrators and isn't shown for the
             user.</p>
@@ -138,14 +138,14 @@
 <#list groups as group>
   <#if memberships.containsKey(group.name)>
             <input type="checkbox" tabindex="7" checked="checked"
-                   name="member${group_index}" value="${group.name}" />
+                   name="member${group_index}" value="${group.name?html}" />
   <#else>
             <input type="checkbox" tabindex="7"
-                   name="member${group_index}" value="${group.name}" />
+                   name="member${group_index}" value="${group.name?html}" />
   </#if>
-            <strong>${group.name}</strong>
+            <strong>${group.name?html}</strong>
   <#if group.description?has_content>
-            &ndash; ${group.description}
+            &ndash; ${group.description?html}
   </#if>
             <br />
 </#list>

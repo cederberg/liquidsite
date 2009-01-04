@@ -42,7 +42,7 @@
             <p>Edit the details of the group.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -53,10 +53,10 @@
           <td class="field">
 <#if isadd>
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
 <#else>
-            <input type="hidden" name="name" value="${name}" />
-            <strong>${name}</strong>
+            <input type="hidden" name="name" value="${name?html}" />
+            <strong>${name?html}</strong>
 </#if>
             <p>The group name uniquely identifies the group in the
             domain. It cannot be modified once the group has been
@@ -69,7 +69,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="2" size="30"
-                   name="description" value="${description}" />
+                   name="description" value="${description?html}" />
             <p>The group description to be presented on the site.</p>
           </td>
         </tr>
@@ -97,7 +97,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="4" size="30"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The group comment. This annotation area is only visible
             for the domain administrators and isn't shown for users.</p>
           </td>

@@ -25,7 +25,7 @@
             <p>Please verify that all the information presented below
             is correct.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -34,7 +34,7 @@
             Database&nbsp;Host:
           </th>
           <td>
-            ${host}
+            ${host?html}
           </td>
         </tr>
         <tr>
@@ -42,11 +42,11 @@
             Database:
           </th>
           <td>
-            ${database}
+            ${database?html}
 <#if createDatabase>
             (create database)
 <#elseif updateVersion?has_content>
-            (update from version ${updateVersion})
+            (update from version ${updateVersion?html})
 <#else>
             (existing database)
 </#if>
@@ -57,7 +57,7 @@
             Database&nbsp;User:
           </th>
           <td>
-            ${databaseUser}
+            ${databaseUser?html}
 <#if createDatabaseUser>
             (create user)
 <#else>
@@ -71,7 +71,7 @@
             Data&nbsp;Directory:
           </th>
           <td>
-            ${dataDir}
+            ${dataDir?html}
           </td>
         </tr>
 </#if>
@@ -81,7 +81,7 @@
             Admin&nbsp;User:
           </th>
           <td>
-            ${adminUser}
+            ${adminUser?html}
           </td>
         </tr>
 </#if>

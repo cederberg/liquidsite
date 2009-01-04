@@ -13,7 +13,7 @@
         </tr>
         <tr>
           <td>
-            <p>${error}</p>
+            <p>${error?html}</p>
           </td>
         </tr>
         <tr>

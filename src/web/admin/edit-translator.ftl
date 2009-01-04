@@ -57,7 +57,7 @@
             <p>Edit the details of the translator.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -67,7 +67,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
             <p>The translator name is only used to identify the
             translator within the site. The translator name should use
             only English alphabet characters or numbers without any
@@ -124,7 +124,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="100" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

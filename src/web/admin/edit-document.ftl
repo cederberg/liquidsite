@@ -93,7 +93,7 @@
             <p>Edit the details of the document.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -103,7 +103,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
             <p>The document name is used to identify the document.
             As the name may form part of a URL it may only contain
             English alphabet characters or numbers without any
@@ -133,17 +133,17 @@
 <#list properties as prop>
         <tr>
           <th>
-            ${prop.name}:
+            ${prop.name?html}:
           </th>
           <td class="field">
           <input type="hidden"
                  name="propertytype.${prop.id}" value="${prop.type}" />
   <#if prop.type == 1>
-            ${prop.description}<br/><br/>
+            ${prop.description?html}<br/><br/>
             <textarea tabindex="10" rows="6" cols="60"
                       name="property.${prop.id}">${data[prop.id]?html}</textarea>
   <#elseif prop.type == 2>
-            ${prop.description}<br/><br/>
+            ${prop.description?html}<br/><br/>
             <div id="property.${prop.id}.toolbar"></div>
             <textarea id="property.${prop.id}.editor"
                       tabindex="10" rows="25" cols="60"
@@ -152,7 +152,7 @@
             tagEditInitialize('property.${prop.id}');
             </script>
   <#elseif prop.type == 3>
-            ${prop.description}<br/><br/>
+            ${prop.description?html}<br/><br/>
             <div id="property.${prop.id}.toolbar"></div>
             <div id="property.${prop.id}.editor"></div>
             <script type="text/javascript">
@@ -184,15 +184,15 @@
               <tr>
                 <td>
   <#if file.id = "0">
-                  <a href="sessionpreview/${file.name}"
-                     target="_blank">${file.name}</a> (New)
+                  <a href="sessionpreview/${file.name?html}"
+                     target="_blank">${file.name?html}</a> (New)
   <#else>
-                  <a href="preview/${file.id}/${file.name}"
-                     target="_blank">${file.name}</a>
+                  <a href="preview/${file.id}/${file.name?html}"
+                     target="_blank">${file.name?html}</a>
   </#if>
                 </td>
                 <td>${file.fileSize}</td>
-                <td>${file.mimeType}</td>
+                <td>${file.mimeType?html}</td>
                 <td>
                   <a href="#"
                      onclick="doDelete('${file.id}', '${file.name}'); return false;"
@@ -215,7 +215,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="100" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

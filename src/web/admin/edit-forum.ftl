@@ -59,7 +59,7 @@
             <p>Edit the details of the forum.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -69,7 +69,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
             <p>The forum name is used to identify the forum as part of
             a URL. The name may only contain English alphabet
             characters or numbers without any spaces.</p>
@@ -101,7 +101,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="3" size="30"
-                   name="realname" value="${realname}" />
+                   name="realname" value="${realname?html}" />
             <p>The real forum nane is the full name of the forum,
             complete with correct casing, spacing and similar. It can
             be used to present the forum in lists of several forums.</p>
@@ -143,7 +143,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="6" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

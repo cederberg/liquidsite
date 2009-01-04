@@ -20,7 +20,7 @@
             <img src="images/icons/48x48/delete.png" alt="Delete" />
           </td>
           <td>
-            <h2>Delete ${type?cap_first} '${name}'</h2>
+            <h2>Delete ${type?cap_first} '${name?html}'</h2>
           </td>
         </tr>
         <tr>

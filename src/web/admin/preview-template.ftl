@@ -7,7 +7,7 @@
 <#list locals.keySet() as elem>
       <tr>
         <th>
-          ${elem}:
+          ${elem?html}:
         </th>
         <td>
           <pre>${locals[elem]?html}</pre>
@@ -17,7 +17,7 @@
 <#list inherited.keySet() as elem>
       <tr class="inherited">
         <th>
-          ${elem}:
+          ${elem?html}:
         </th>
         <td>
           <pre>${inherited[elem]?html}</pre>

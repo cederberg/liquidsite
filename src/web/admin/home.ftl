@@ -30,7 +30,7 @@
             Name:
           </th>
           <td>
-            ${liquidsite.user.realName}
+            ${liquidsite.user.realName?html}
           </td>
         </tr>
         <tr>
@@ -38,7 +38,7 @@
             E-mail:
           </th>
           <td>
-            ${liquidsite.user.email}
+            ${liquidsite.user.email?html}
           </td>
         </tr>
         <tr>
@@ -46,7 +46,7 @@
             Login:
           </th>
           <td>
-            ${liquidsite.user.login}
+            ${liquidsite.user.login?html}
           </td>
         </tr>
 <#if liquidsite.user.superuser>

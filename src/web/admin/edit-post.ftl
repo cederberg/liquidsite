@@ -56,7 +56,7 @@
             <p>Edit the details of the post.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -66,7 +66,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="60"
-                   name="subject" value="${subject}" />
+                   name="subject" value="${subject?html}" />
             <p>The post subject.</p>
           </td>
         </tr>
@@ -86,7 +86,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="3" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

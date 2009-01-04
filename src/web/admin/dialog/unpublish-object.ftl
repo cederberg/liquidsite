@@ -28,7 +28,7 @@
           <td colspan="2">
             <h2>Unpublish  ${type?cap_first}</h2>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -47,7 +47,7 @@
           </th>
           <td>
             <textarea tabindex="2" rows="2" cols="30"
-                      name="comment">${comment}</textarea>
+                      name="comment">${comment?html}</textarea>
           </td>
         </tr>
         <tr>

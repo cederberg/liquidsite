@@ -41,7 +41,7 @@
             Site normally. It is highly recommended to create a new
             user with minimal privileges.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -58,7 +58,7 @@
   <#else>
     <#assign options = "">
   </#if>
-              <option value="${name}" ${options}>${name}</option>
+              <option value="${name?html}" ${options}>${name?html}</option>
 </#list>
 <#if found?exists>
   <#assign options = "">
@@ -70,7 +70,7 @@
 </#if>
             </select>
             <input type="text" tabindex="2" size="20"
-                   name="user2" value="${user}" />
+                   name="user2" value="${user?html}" />
             <p>This is the database user name to use for accessing
             the Liquid Site database.</p>
           </td>
@@ -81,7 +81,7 @@
           </th>
           <td class="field">
             <input type="password" tabindex="3" size="12"
-                   name="password1" value="${password}" />
+                   name="password1" value="${password?html}" />
             <p>The password for the database user above.</p>
           </td>
         </tr>
@@ -91,7 +91,7 @@
           </th>
           <td class="field">
             <input type="password" tabindex="4" size="12"
-                   name="password2" value="${password}" />
+                   name="password2" value="${password?html}" />
             <p>Verify the password for the database user. This field
             is only used when creating new users.</p>
           </td>

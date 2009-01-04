@@ -66,7 +66,7 @@
             <p>Edit the details of the file.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -76,7 +76,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
             <p>The file name is part of the URL by which the user
             will access the file contents. The file name should use
             only English alphabet characters or numbers without any
@@ -110,7 +110,7 @@
           </th>
           <td class="field">
             <input type="file" tabindex="3"
-                   name="upload" value="${upload}" />
+                   name="upload" value="${upload?html}" />
             <p>The file contents to upload. This is the local file
             that contains the data. The file will be uploaded and
             inserted into the system. Note that the file extension on
@@ -137,7 +137,7 @@
     </#if>
   </#list>
             <textarea tabindex="4" cols="70" rows="#{rows}"
-                      name="content">${content}</textarea>
+                      name="content">${content?html}</textarea>
             <p>The file content. The file data can either be edited
             here or being uploaded.</p>
           </td>
@@ -167,7 +167,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="5" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

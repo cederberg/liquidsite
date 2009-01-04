@@ -55,7 +55,7 @@
             <p>Edit the details of the site.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -65,7 +65,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
             <p>The site name is used to present the site in the admin
             application.</p>
           </td>
@@ -97,9 +97,9 @@
               <option value="*">&lt;Any Host&gt;</option>
 <#list hostnames as hostname>
   <#if host?has_content && hostname = host>
-              <option value="${hostname}" selected="selected">${hostname}</option>
+              <option value="${hostname?html}" selected="selected">${hostname?html}</option>
   <#else>
-              <option value="${hostname}">${hostname}</option>
+              <option value="${hostname?html}">${hostname?html}</option>
   </#if>
 </#list>
             </select>
@@ -126,7 +126,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="5" size="40"
-                   name="dir" value="${dir}" />
+                   name="dir" value="${dir?html}" />
             <p>The site base directory. If several sites are run on
             the same protocol, host and port, the base directory must
             be used to distinguish between them.</p>
@@ -153,7 +153,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="7" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

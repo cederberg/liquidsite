@@ -25,7 +25,7 @@
           ${prop.id}
         </td>
         <td>
-          ${prop.name}
+          ${prop.name?html}
         </td>
         <td>
   <#if prop.type == 1>
@@ -37,7 +37,7 @@
   </#if>
         </td>
         <td>
-          ${prop.description}
+          ${prop.description?html}
         </td>
       </tr>
 </#list>

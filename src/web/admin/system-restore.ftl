@@ -28,7 +28,7 @@
 
             <p>Select the options for the backup restore operation.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -41,9 +41,9 @@
               <option value="">&lt; None &gt;</option>
 <#list backups as item>
   <#if item = backup>
-              <option value="${item}" selected="selected">${item}</option>
+              <option value="${item?html}" selected="selected">${item?html}</option>
   <#else>
-              <option value="${item}">${item}</option>
+              <option value="${item?html}">${item?html}</option>
   </#if>
 </#list>
             </select>
@@ -56,7 +56,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="2" size="30"
-                   name="domain" value="${domain}" />
+                   name="domain" value="${domain?html}" />
             <p>The domain name uniquely identifies the new domain that
             will be created in the database. The domain name cannot be
             changed, and is normally a short UPPERCASE word.</p>

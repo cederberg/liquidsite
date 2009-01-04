@@ -32,9 +32,9 @@
 </#if>
 <#list domains as item>
   <#if domain = item>
-              <option selected="selected">${item}</option>
+              <option selected="selected">${item?html}</option>
   <#else>
-              <option>${item}</option>
+              <option>${item?html}</option>
   </#if>
 </#list>
             </select>

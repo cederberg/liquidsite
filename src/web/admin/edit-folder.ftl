@@ -55,7 +55,7 @@
             <p>Edit the details of the folder.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -65,7 +65,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
             <p>The folder name is part of the URL by which the user
             will access the folder contents. The folder name should
             use only English alphabet characters or numbers without
@@ -99,7 +99,7 @@
           </th>
           <td class="field">
             <input type="text" tabindex="3" size="40"
-                   name="comment" value="${comment}" />
+                   name="comment" value="${comment?html}" />
             <p>The revision comment.</p>
           </td>
         </tr>

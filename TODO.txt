@@ -1,8 +1,7 @@
 Liquid Site 0.11:
 =================
-* BUG: cached permission lists may have wrong content manager
+* BUG: wrong content type on inherited page elements (Safari)
 * BUG: template edit page does not always load JS scripts (Safari)
-* BUG: text file editing does not properly escape HTML text
 * Installer: add check for MySQL 4.1 version
 * Admin: finalize Safari support in tagged editor
 * Admin: verify Safari support throughout
@@ -15,10 +14,9 @@ Liquid Site 0.11:
 
 Liquid Site 0.12:
 =================
-* BUG: wrong content type on inherited page elements (Safari)
+* BUG: cached permission lists may have wrong content manager
 * BUG: failure to find site should either display default 404
        error page or ROOT domain web page
-* BUG: handle zip files containing – or other non-ASCII chars
 * BUG: text files will always be reported as ISO-8859-1 in
        HTTP Content-Type header
 * Core: remove content manager reference from content objects

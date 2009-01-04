@@ -54,7 +54,7 @@
             <p>Edit the details of the domain.</p>
 </#if>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -65,10 +65,10 @@
           <td class="field">
 <#if isadd>
             <input type="text" tabindex="1" size="30"
-                   name="name" value="${name}" />
+                   name="name" value="${name?html}" />
 <#else>
-            <input type="hidden" name="name" value="${name}" />
-            <strong>${name}</strong><br/>
+            <input type="hidden" name="name" value="${name?html}" />
+            <strong>${name?html}</strong><br/>
 </#if>
             <p>The domain name uniquely identifies the domain in the
             database. The domain name cannot be changed, and is

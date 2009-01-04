@@ -26,7 +26,7 @@
             Site data. Note that no information will be lost, even if
             an existing database is chosen.</p>
 <#if error?has_content>
-            <p class="incorrect">Error: ${error}</p>
+            <p class="incorrect">Error: ${error?html}</p>
 </#if>
           </td>
         </tr>
@@ -55,14 +55,14 @@
               <tr ${style}>
                 <td>
                   <input type="radio" tabindex="1" ${options}
-                         name="database1" value="${info.name}" />
-                  ${info.name}
+                         name="database1" value="${info.name?html}" />
+                  ${info.name?html}
                 </td>
                 <td>
-                  ${info.tables} Tables
+                  ${info.tables?html} Tables
                 </td>
                 <td>
-                  ${info.info}
+                  ${info.info?html}
                 </td>
               </tr>
 </#list>
