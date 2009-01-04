@@ -1,6 +1,5 @@
 Liquid Site 0.11:
 =================
-* BUG: war file does not contain tmp directory (+ permission check)
 * BUG: cached permission lists may have wrong content manager
 * BUG: template edit page does not always load JS scripts (Safari)
 * BUG: site name may contain characters to escape in backup XML
