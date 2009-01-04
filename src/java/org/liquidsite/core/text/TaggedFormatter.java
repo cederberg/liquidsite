@@ -16,13 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004-2006 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2009 Per Cederberg. All rights reserved.
  */
 
 package org.liquidsite.core.text;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A tagged text formatter. This class contains static methods for
@@ -34,6 +36,16 @@ import java.util.LinkedList;
 public class TaggedFormatter {
 
     /**
+     * The trailing whitespace regex.
+     */
+    private static Pattern SPACE_END = Pattern.compile("\\s+$");
+
+    /**
+     * The pre-formatted text tag regex.
+     */
+    private static Pattern TAG_PRE = Pattern.compile("<pre[^>]*>");
+
+    /**
      * Cleans a tagged text string. Unneeded line feeds and space
      * characters will be removed.
      *
@@ -42,6 +54,47 @@ public class TaggedFormatter {
      * @return the cleaned tagged text string
      */
     public static String clean(String text) {
+        StringBuffer  result = new StringBuffer();
+        int           pos = 0;
+        Matcher       m = TAG_PRE.matcher(text);
+
+        while (m.find(pos)) {
+            if (m.start() > 0) {
+                result.append(cleanMarkup(text.substring(pos, m.start())));
+                result.append("\n\n");
+            }
+            result.append(m.group());
+            pos = text.indexOf("</pre>", m.end());
+            if (pos < 0) {
+                result.append(text.substring(m.end()));
+                result.append("</pre>\n\n");
+                pos = text.length();
+            } else {
+                result.append(text.substring(m.end(), pos));
+                result.append("</pre>\n\n");
+                pos += 6;
+            }
+        }
+        if (pos < text.length()) {
+            result.append(cleanMarkup(text.substring(pos)));
+        }
+        m = SPACE_END.matcher(result);
+        if (m.find()) {
+            result.setLength(m.start());
+        }
+        return result.toString();
+    }
+
+    /**
+     * Cleans a tagged text string. Unneeded line feeds and space
+     * characters will be removed. This method doesn't handle
+     * pre-formatted text.
+     *
+     * @param text           the tagged text string
+     *
+     * @return the cleaned tagged text string
+     */
+    private static String cleanMarkup(String text) {
         StringBuffer  result = new StringBuffer();
         int           pos = 0;
 
@@ -153,6 +206,9 @@ public class TaggedFormatter {
                 } else if (tag.equals("<i>")) {
                     stack.addLast("</i>");
                     pos = newPos;
+                } else if (tag.equals("<code>")) {
+                    stack.addLast("</code>");
+                    pos = newPos;
                 } else if (tag.startsWith("<link")) {
                     stack.addLast("</link>");
                     pos = newPos;
@@ -160,6 +216,7 @@ public class TaggedFormatter {
                     pos = newPos;
                 } else if (tag.equals("</b>")
                         || tag.equals("</i>")
+                        || tag.equals("</code>")
                         || tag.equals("</link>")) {
 
                     result.setLength(backupLength);
@@ -230,6 +287,7 @@ public class TaggedFormatter {
                     break;
                 } else if (tag.equals("<b>")
                         || tag.equals("<i>")
+                        || tag.equals("<code>")
                         || tag.startsWith("<link")
                         || tag.startsWith("<image")) {
 
@@ -305,7 +363,7 @@ public class TaggedFormatter {
          && !name.equals("b") && !name.equals("i")
          && !name.equals("link") && !name.equals("image")
          && !name.equals("list") && !name.equals("item")
-         && !name.equals("box")) {
+         && !name.equals("box") && !name.equals("code")) {
 
             result.append("<");
             return start + 1;
@@ -496,6 +554,45 @@ public class TaggedFormatter {
      * @return the HTML encoded text
      */
     public static String formatHtml(String text, FormattingContext context) {
+        StringBuffer  result = new StringBuffer();
+        int           pos = 0;
+        Matcher       m = TAG_PRE.matcher(text);
+        String        str;
+
+        while (m.find(pos)) {
+            if (m.start() > 0) {
+                str = text.substring(pos, m.start());
+                result.append(formatHtmlMarkup(str, context));
+            }
+            result.append(m.group());
+            pos = text.indexOf("</pre>", m.end());
+            if (pos < 0) {
+                result.append(text.substring(m.end()));
+                result.append("</pre>");
+                pos = text.length();
+            } else {
+                result.append(text.substring(m.end(), pos));
+                result.append("</pre>");
+                pos += 6;
+            }
+        }
+        if (pos < text.length()) {
+            result.append(formatHtmlMarkup(text.substring(pos), context));
+        }
+        return result.toString();
+    }
+
+    /**
+     * Formats a tagged text string in HTML. This method will resolve
+     * any links in the tagged text and convert the tags to valid
+     * HTML tags. This method doesn't handle pre-formatted text.
+     *
+     * @param text           the tagged text string
+     * @param context        the formatting context
+     *
+     * @return the HTML encoded text
+     */
+    private static String formatHtmlMarkup(String text, FormattingContext context) {
         StringBuffer  result = new StringBuffer();
         int           pos = 0;
 
@@ -690,7 +787,8 @@ public class TaggedFormatter {
          || name.equals("h2") || name.equals("/h2")
          || name.equals("h3") || name.equals("/h3")
          || name.equals("b") || name.equals("/b")
-         || name.equals("i") || name.equals("/i")) {
+         || name.equals("i") || name.equals("/i")
+         || name.equals("code") || name.equals("/code")) {
 
             result.append("<");
             result.append(name);
@@ -747,14 +845,14 @@ public class TaggedFormatter {
             result.append("</li>");
         } else if (name.equals("box")) {
             attributes = parseTagAttributes(text, pos, end - 1);
-            result.append("<p class=\"box\"");
+            result.append("<p class=\"box-layout-");
             str = (String) attributes.get("layout");
             if (str != null && str.equals("right")) {
-                result.append(" style=\"float: right;\"");
+                result.append("right");
             } else if (str != null && str.equals("left")) {
-                result.append(" style=\"float: left;\"");
+                result.append("left");
             }
-            result.append(">");
+            result.append("\">");
         } else if (name.equals("/box")) {
             result.append("</p>");
         } else {

@@ -1,16 +1,10 @@
 Liquid Site 0.11:
 =================
-* BUG: wrong content type on inherited page elements (Safari)
-* BUG: template edit page does not always load JS scripts (Safari)
 * Installer: add check for MySQL 4.1 version
-* Admin: finalize Safari support in tagged editor
-* Admin: verify Safari support throughout
 * Admin: add tagedit list support in editor
-* Admin: add tagedit <pre> support
 * Admin: add tagedit box support in editor
 * Admin: add tagedit image text support in editor
 * Admin: add tagedit preview in editor
-* Admin: display user creation and modification dates
 
 Liquid Site 0.12:
 =================
@@ -21,6 +15,7 @@ Liquid Site 0.12:
        HTTP Content-Type header
 * Core: remove content manager reference from content objects
 * Core: add support for named markers in tagged text format
+* Core: add class attribute in tagged text format (or similar)
 * Admin: remember page when editing users or groups (ie display
          the page where the user is present)
 * Admin: improve navigation when listing group members (back button)
@@ -42,6 +37,7 @@ Liquid Site Unscheduled:
 * General: move backup/restore serialization to core data layer
 * General: remove all backup/restore hacks from core content layer
 * General: add modular file serving from liquidsite.obj/<module>
+* General: add user creation and modification dates
 * General: add more user preferences
 * General: add support for alias translators
 * General: add support for error translators
