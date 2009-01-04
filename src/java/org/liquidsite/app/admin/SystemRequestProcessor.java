@@ -381,7 +381,7 @@ class SystemRequestProcessor {
         out.println();
         out.println("<liquidsite-data version=\"1\">");
         out.print("  <domain name=\"");
-        out.print(domain.getName());
+        out.print(AdminUtils.getXmlString(domain.getName()));
         out.print("\" description=\"");
         out.print(AdminUtils.getXmlString(domain.getDescription()));
         out.print("\" created=\"");
@@ -397,7 +397,7 @@ class SystemRequestProcessor {
         for (int i = 0; i < hosts.size(); i++) {
             host = (DomainHost) hosts.get(i);
             out.print("    <host name=\"");
-            out.print(host.getName());
+            out.print(AdminUtils.getXmlString(host.getName()));
             out.print("\" description=\"");
             out.print(AdminUtils.getXmlString(host.getDescription()));
             out.println("\" />");
@@ -418,8 +418,8 @@ class SystemRequestProcessor {
         selector.requireRootParent();
         selector.sortByCategory(false);
         count = manager.getContentCount(selector);
-        for (int i = 0; i < count; i += 10) {
-            selector.limitResults(i, 10);
+        for (int i = 0; i < count; i += 100) {
+            selector.limitResults(i, 100);
             content = manager.getContentObjects(user, selector);
             for (int j = 0; j < content.length; j++) {
                 backupXml(out, content[j], user);
@@ -437,7 +437,7 @@ class SystemRequestProcessor {
      */
     private void backupXml(PrintWriter out, Group group) {
         out.print("    <group name=\"");
-        out.print(group.getName());
+        out.print(AdminUtils.getXmlString(group.getName()));
         out.print("\" description=\"");
         out.print(AdminUtils.getXmlString(group.getDescription()));
         if (group.isPublic()) {
@@ -463,7 +463,7 @@ class SystemRequestProcessor {
         Group[]  groups;
 
         out.print("    <user name=\"");
-        out.print(user.getName());
+        out.print(AdminUtils.getXmlString(user.getName()));
         out.print("\" password=\"");
         out.print(AdminUtils.getXmlString(user.getPassword()));
         if (!user.getEnabled()) {
@@ -479,7 +479,7 @@ class SystemRequestProcessor {
         groups = user.getGroups();
         for (int i = 0; i < groups.length; i++) {
             out.print("      <member group=\"");
-            out.print(groups[i].getName());
+            out.print(AdminUtils.getXmlString(groups[i].getName()));
             out.println("\" />");
         }
         out.println("    </user>");
@@ -516,7 +516,7 @@ class SystemRequestProcessor {
             out.print("      <revision nr=\"");
             out.print(contents[i].getRevisionNumber());
             out.print("\" name=\"");
-            out.print(contents[i].getName());
+            out.print(AdminUtils.getXmlString(contents[i].getName()));
             out.print("\" parent=\"");
             out.print(contents[i].getParentId());
             out.print("\" online=\"");
@@ -541,7 +541,7 @@ class SystemRequestProcessor {
                 out.print(date.getTime());
             }
             out.print("\" author=\"");
-            out.print(contents[i].getAuthorName());
+            out.print(AdminUtils.getXmlString(contents[i].getAuthorName()));
             out.print("\" comment=\"");
             out.print(AdminUtils.getXmlString(contents[i].getComment()));
             out.println("\">");
@@ -549,7 +549,7 @@ class SystemRequestProcessor {
             while (iter.hasNext()) {
                 str = iter.next().toString();
                 out.print("        <attribute name=\"");
-                out.print(str);
+                out.print(AdminUtils.getXmlString(str));
                 out.print("\">");
                 str = contents[i].getAttribute(str);
                 out.print(AdminUtils.getXmlString(str));
@@ -564,8 +564,8 @@ class SystemRequestProcessor {
         selector.requireParent(content);
         selector.sortById(true);
         count = manager.getContentCount(selector);
-        for (int i = 0; i < count; i += 10) {
-            selector.limitResults(i, 10);
+        for (int i = 0; i < count; i += 100) {
+            selector.limitResults(i, 100);
             contents = manager.getContentObjects(user, selector);
             for (int j = 0; j < contents.length; j++) {
                 backupXml(out, contents[j], user);
@@ -591,9 +591,9 @@ class SystemRequestProcessor {
                     out.print("      ");
                 }
                 out.print("<permission user=\"");
-                out.print(perms[i].getUserName());
+                out.print(AdminUtils.getXmlString(perms[i].getUserName()));
                 out.print("\" group=\"");
-                out.print(perms[i].getGroupName());
+                out.print(AdminUtils.getXmlString(perms[i].getGroupName()));
                 out.print("\" flags=\"");
                 out.print(perms[i].getRead() ? "r" : "");
                 out.print(perms[i].getWrite() ? "w" : "");
@@ -613,7 +613,7 @@ class SystemRequestProcessor {
     private void backupXml(PrintWriter out, Lock lock) {
         if (lock != null) {
             out.print("      <lock user=\"");
-            out.print(lock.getUserName());
+            out.print(AdminUtils.getXmlString(lock.getUserName()));
             out.print("\" acquired=\"");
             out.print(lock.getAcquiredDate().getTime());
             out.println("\" />");
