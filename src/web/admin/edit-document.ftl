@@ -8,9 +8,14 @@
     <script type="text/javascript">
     function initialize() {
 <#list files as file>
+  <#if file.id = "0">
+    <#assign url = "sessionpreview/" + file.name?html>
+  <#else>
+    <#assign url = "preview/" + file.id + "/" + file.name?html>
+  </#if>
   <#if file.mimeType?index_of("image/") = 0>
-        htmlEditAddImage("${file.name}");
-        tagEditAddImage("${file.name}");
+        htmlEditAddImage("${file.name}", "${url}");
+        tagEditAddImage("${file.name}", "${url}");
   </#if>
 </#list>
         utilGetElement("name").focus();
