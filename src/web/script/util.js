@@ -90,6 +90,10 @@ function utilCreateDialog(title, text, form, script, width, height) {
            "table  { font-size: 10pt; }\n" +
            "th, td { text-align: left; vertical-align: top; }\n" +
            "button { margin: 7px; font-weight: bold; }\n" +
+           ".box-layout-left { float: left; margin: 6px 10px 6px 0; }\n" +
+           ".box-layout-right { float: right; margin: 6px 0 6px 10px; }\n" +
+           ".box-layout-left,\n" +
+           ".box-layout-right { border: 1px solid #ccc; padding: 6px 10px 6px 10px; }\n" +
            "</style>\n" +
            "<script type='text/javascript'>\n" +
            "function doCancel() {\n" +

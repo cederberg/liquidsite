@@ -411,6 +411,20 @@ dl.compact dd {
         margin-bottom: 6px;
 }
 
+/* Box layout style */
+.box-layout-left {
+        float: left;
+        margin: 6px 10px 6px 0;
+}
+.box-layout-right {
+        float: right;
+        margin: 6px 0 6px 10px;
+}
+.box-layout-left,
+.box-layout-right {
+        border: 1px solid #cccccc;
+        padding: 6px 10px 6px 10px;
+}
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
