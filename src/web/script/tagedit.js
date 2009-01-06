@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
- * Copyright (c) 2004 Per Cederberg. All rights reserved.
+ * Copyright (c) 2004-2009 Per Cederberg. All rights reserved.
  */
 
 /**
@@ -27,34 +27,32 @@ var TAGEDIT_ICON_PATH = "images/icons/24x24/";
 /**
  * The tag editor textarea array.
  */
-var TAGEDIT_TEXTAREAS = new Array();
+var TAGEDIT_TEXTAREAS = [];
 
 /**
  * The tag editor images array.
  */
-var TAGEDIT_IMAGES = new Array();
+var TAGEDIT_IMAGES = [];
 
 /**
  * The tag editor undo information. Each editor may contain an array
  * of up to 10 stored states. This array contains the undo object for
  * each editor.
  */
-var TAGEDIT_UNDO = new Array();
+var TAGEDIT_UNDO = [];
 
 /**
  * Initializes the tag editor. Several tag editors can be used in
- * parallell on a single page.
+ * parallel on a single page.
  *
- * @param id                 the id of the editor (also form field name)
+ * @param {String} id the id of the editor (also form field name)
  */
 function tagEditInitialize(id) {
-    var  toolbar = document.getElementById(id + ".toolbar");
-    var  editor = document.getElementById(id + ".editor");
-    var  count = TAGEDIT_TEXTAREAS.length;
-    var  script;
-
+    var toolbar = document.getElementById(id + ".toolbar");
+    var editor = document.getElementById(id + ".editor");
+    var count = TAGEDIT_TEXTAREAS.length;
     tagEditInternalAddToolbar(toolbar, count);
-    script = "tagEditInternalStoreUndo(" + count + ");";
+    var script = "tagEditInternalStoreUndo(" + count + ");";
     editor.onchange = new Function(script);
     TAGEDIT_TEXTAREAS[count] = editor;
     tagEditInternalStoreUndo(count);
@@ -64,7 +62,7 @@ function tagEditInitialize(id) {
  * Adds an image to all the tag editors. The images are shared between
  * all the editors on a single page.
  *
- * @param name               the image file name
+ * @param {String} name the image file name
  */
 function tagEditAddImage(name) {
     TAGEDIT_IMAGES[TAGEDIT_IMAGES.length] = name;
@@ -73,26 +71,19 @@ function tagEditAddImage(name) {
 /**
  * Adds a tag editor toolbar.
  *
- * @param parent             the parent element
- * @param editor             the editor number
+ * @param {Node} parent the parent DOM node element
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalAddToolbar(parent, editor) {
-    var  table;
-    var  tbody;
-    var  tr;
-    var  td;
-    var  input;
-    var  img;
-
-    table = utilAddElement(parent, "table");
+    var table = utilAddElement(parent, "table");
     table.className = "toolbar";
-    tbody = utilAddElement(table, "tbody");
-    tr = utilAddElement(tbody, "tr");
-    td = utilAddElement(tr, "td");
+    var tbody = utilAddElement(table, "tbody");
+    var tr = utilAddElement(tbody, "tr");
+    var td = utilAddElement(tr, "td");
     td.width = "100%";
     tagEditInternalAddStyleSelector(td, editor);
     utilAddTextElement(td, "\u00A0\u00A0");
-    img = tagEditInternalAddButton(td, "Bold", "bold.png");
+    var img = tagEditInternalAddButton(td, "Bold", "bold.png");
     img.onclick = new Function("tagEditInternalFormat(" + editor +
                                ", '<b>', '</b>');");
     img = tagEditInternalAddButton(td, "Italic", "italic.png");
@@ -118,18 +109,15 @@ function tagEditInternalAddToolbar(parent, editor) {
 /**
  * Adds a toolbar style select control.
  *
- * @param parent             the parent element
- * @param editor             the editor number
+ * @param {Node} parent the parent DOM node element
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalAddStyleSelector(parent, editor) {
-    var  select;
-    var  option;
-
-    select = utilAddElement(parent, "select");
+    var select = utilAddElement(parent, "select");
     select.name = "tagedit.internal." + editor;
     select.onchange = new Function("tagEditInternalStyleSelect(" +
                                    editor + ", this);");
-    option = utilAddElement(select, "option", "< Select Style >");
+    var option = utilAddElement(select, "option", "< Select Style >");
     option.value = "";
     option = utilAddElement(select, "option", "Normal");
     option.value = "";
@@ -144,43 +132,53 @@ function tagEditInternalAddStyleSelector(parent, editor) {
 /**
  * Adds a toolbar image button.
  *
- * @param parent             the parent element
- * @param text               the button help text
- * @param image              the button image
+ * @param {Node} parent the parent DOM node element
+ * @param {String} text the button help text
+ * @param {String} image the button image URL (minus base URL path)
  */
 function tagEditInternalAddButton(parent, text, image) {
-    var  img;
-
-    img = utilAddElement(parent, "img");
+    var img = utilAddElement(parent, "img");
     img.className = "button";
     img.src = HTMLEDIT_ICON_PATH + image;
     img.alt = text;
     img.title = text;
-    img.onmouseover = tagEditInternalMouseOver;
-    img.onmouseout = tagEditInternalMouseOut;
-    img.onmousedown = tagEditInternalMouseDown;
-    img.onmouseup = tagEditInternalMouseUp;
+    img.onmouseover = function () {
+        this.className = "buttonup";
+    };
+    img.onmouseout = function () {
+        this.className = "button";
+    };
+    img.onmousedown = function (event) {
+        this.className = "buttondown";
+        if (event != null && event.stopPropagation) {
+            event.stopPropagation();
+            event.preventDefault();
+        } else {
+            // Hack to avoid script error on IE
+            window.event.cancelBubble = true;
+            window.event.returnValue = false;
+        }
+    };
+    img.onmouseup = function () {
+        this.className = "buttonup";
+    };
     return img;
 }
 
 /**
  * Handles a style select event.
  *
- * @param editor             the editor number
- * @param select             the select control
+ * @param {Number} editor the editor index (zero-based)
+ * @param {Node} select the select DOM node
  */
 function tagEditInternalStyleSelect(editor, select) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  selection;
-    var  tag;
-    var  endTag;
-    var  text;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var endTag;
     if (select.selectedIndex > 0) {
-        tag = select.value;
+        var tag = select.value;
         tagEditInternalAdjustSelection(editor, true);
-        selection = tagEditInternalGetSelection(editor);
-        text = area.value.substring(selection.start, selection.end);
+        var selection = tagEditInternalGetSelection(editor);
+        var text = area.value.substring(selection.start, selection.end);
         if (text.indexOf("<") == 0) {
             text = text.substring(0, text.indexOf(">") + 1);
         } else {
@@ -203,18 +201,15 @@ function tagEditInternalStyleSelect(editor, select) {
 /**
  * Inserts a format tag in an editor.
  *
- * @param editor             the editor number
- * @param start              the starting format tag
- * @param end                the ending format tag
+ * @param {Number} editor the editor index (zero-based)
+ * @param {String} start the starting format tag
+ * @param {String} end the ending format tag
  */
 function tagEditInternalFormat(editor, start, end) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  selection;
-    var  pos;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
     tagEditInternalAdjustSelection(editor, false);
-    selection = tagEditInternalGetSelection(editor);
-    pos = selection.start
+    var selection = tagEditInternalGetSelection(editor);
+    var pos = selection.start
     if (area.value.substring(pos, pos + start.length) == start) {
         tagEditInternalRemove(editor, selection, start, end);
     } else {
@@ -226,21 +221,17 @@ function tagEditInternalFormat(editor, start, end) {
 /**
  * Removes all format tags from an editor.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalUnformat(editor) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  selection;
-    var  text;
-    var  startPos = 0;
-    var  endPos;
-
-    selection = tagEditInternalGetSelection(editor);
-    text = area.value.substring(selection.start, selection.end);
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var selection = tagEditInternalGetSelection(editor);
+    var text = area.value.substring(selection.start, selection.end);
+    var startPos = 0;
     while (startPos >= 0) {
         startPos = text.indexOf("<");
         if (startPos >= 0) {
-            endPos = text.indexOf(">");
+            var endPos = text.indexOf(">");
             if (endPos > startPos) {
                 text = text.substring(0, startPos) +
                        text.substring(endPos + 1);
@@ -259,53 +250,47 @@ function tagEditInternalUnformat(editor) {
 /**
  * Handles an add link event.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalAddLink(editor) {
-    var  text;
-    var  html;
-    var  js;
-
-    text = "Enter link URL and type. External URLs must start with " +
-           "\"<code>http://</code>\" and site-relative URLs with " +
-           "\"<code>/</code>\".";
-    html = "<tr>\n" +
-           "<th width='20%'>URL:</th>\n" +
-           "<td width='80%'>\n" +
-           "<input name='url' size='40' tabindex='1' />\n" + 
-           "<script type='text/javascript'>\n" +
-           "document.getElementsByName('url').item(0).focus();\n" +
-           "</script>\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "<tr>\n" +
-           "<th>Type:</th>\n" +
-           "<td>\n" +
-           "<select name='type' tabindex='2'>\n" +
-           "<option value=''>Normal</option>\n" +
-           "<option value='new'>New Window</option>\n" +
-           "<option value='mail'>Mail Address</option>\n" +
-           "</select>\n" +
-           "</td>\n" +
-           "</tr>\n";
-    js = "var url = document.getElementsByName('url').item(0).value;\n" +
-         "var type = document.getElementsByName('type').item(0).value;\n" +
-         "opener.tagEditInternalInsertLink(" + editor + ", url, type);\n" +
-         "window.close();\n";
+    var text = "Enter link URL and type. External URLs must start with " +
+               "\"<code>http://</code>\" and site-relative URLs with " +
+               "\"<code>/</code>\".";
+    var html = "<tr>\n" +
+               "<th width='20%'>URL:</th>\n" +
+               "<td width='80%'>\n" +
+               "<input name='url' size='40' tabindex='1' />\n" + 
+               "<script type='text/javascript'>\n" +
+               "document.getElementsByName('url').item(0).focus();\n" +
+               "</script>\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>Type:</th>\n" +
+               "<td>\n" +
+               "<select name='type' tabindex='2'>\n" +
+               "<option value=''>Normal</option>\n" +
+               "<option value='new'>New Window</option>\n" +
+               "<option value='mail'>Mail Address</option>\n" +
+               "</select>\n" +
+               "</td>\n" +
+               "</tr>\n";
+    var js = "var url = document.getElementsByName('url').item(0).value;\n" +
+             "var type = document.getElementsByName('type').item(0).value;\n" +
+             "opener.tagEditInternalInsertLink(" + editor + ", url, type);\n" +
+             "window.close();\n";
     utilCreateDialog("Insert Link", text, html, js, 380, 190);
 }
 
 /**
  * Inserts a link.
  *
- * @param editor             the editor number
- * @param url                the URL
- * @param type               the link type
+ * @param {Number} editor the editor index (zero-based)
+ * @param {String} url the link URL
+ * @param {String} type the link type
  */
 function tagEditInternalInsertLink(editor, url, type) {
-    var  tag;
-    var  selection;
-
+    var tag;
     if (type == "new") {
         tag = "<link url=" + url + " window=new>";
     } else if (type == "mail") {
@@ -314,7 +299,7 @@ function tagEditInternalInsertLink(editor, url, type) {
         tag = "<link url=" + url + ">";
     }
     if (url != "") {
-        selection = tagEditInternalGetSelection(editor);
+        var selection = tagEditInternalGetSelection(editor);
         tagEditInternalInsert(editor, selection, tag, "</link>");
         tagEditInternalStoreUndo(editor);
     }
@@ -323,15 +308,12 @@ function tagEditInternalInsertLink(editor, url, type) {
 /**
  * Handles an add image event.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalAddImage(editor) {
-    var  html;
-    var  js;
-
-    html = "<tr>\n" +
-           "<th width='50%'>Image:</th>\n" +
-           "<td width='50%'><select name='url' tabindex='1'>\n";
+    var html = "<tr>\n" +
+               "<th width='50%'>Image:</th>\n" +
+               "<td width='50%'><select name='url' tabindex='1'>\n";
     for (var i = 0; i < TAGEDIT_IMAGES.length; i++) {
         html += "<option value='" + TAGEDIT_IMAGES[i] + "'>" +
                 TAGEDIT_IMAGES[i] + "</option>\n";
@@ -352,10 +334,10 @@ function tagEditInternalAddImage(editor) {
             "</select>\n" +
             "</td>\n" +
             "</tr>\n";
-    js = "var url = document.getElementsByName('url').item(0).value;\n" +
-         "var layout = document.getElementsByName('layout').item(0).value;\n" +
-         "opener.tagEditInternalInsertImage(" + editor + ", url, layout);\n" +
-         "window.close();\n";
+    var js = "var url = document.getElementsByName('url').item(0).value;\n" +
+             "var layout = document.getElementsByName('layout').item(0).value;\n" +
+             "opener.tagEditInternalInsertImage(" + editor + ", url, layout);\n" +
+             "window.close();\n";
     if (TAGEDIT_IMAGES.length > 0) {
         utilCreateDialog("Insert Image",
                          "Choose image to insert and it's layout.",
@@ -371,20 +353,18 @@ function tagEditInternalAddImage(editor) {
 /**
  * Inserts an image.
  *
- * @param editor             the editor number
- * @param url                the URL
- * @param layout             the layout style
+ * @param {Number} editor the editor index (zero-based)
+ * @param {String} url the image URL
+ * @param {String} layout the layout style
  */
 function tagEditInternalInsertImage(editor, url, layout) {
-    var  tag;
-    var  selection;
-
+    var tag;
     if (layout != "") {
         tag = "<image url=" + url + " layout=" + layout + ">";
     } else {
         tag = "<image url=" + url + ">";
     }
-    selection = tagEditInternalGetSelection(editor);
+    var selection = tagEditInternalGetSelection(editor);
     tagEditInternalInsert(editor, selection, tag, null);
     tagEditInternalStoreUndo(editor);
 }
@@ -393,70 +373,68 @@ function tagEditInternalInsertImage(editor, url, layout) {
  * Handles a help event.
  */
 function tagEditInternalHelp() {
-    var  html;
-
-    html = "<tr>\n" +
-           "<th width='15%'>text</th>\n" +
-           "<td width='85%' style='padding-bottom: 1em;'>\n" +
-           "Plain text. No special tags are needed for\n" +
-           "plain text. Linebreaks are respected so do not use unless\n" +
-           "required. A single empty line is used as a paragraph break.\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "<tr>\n" +
-           "<th style='padding-bottom: 1em;'>&lt;h1&gt;<br/>\n" +
-           "&lt;h2&gt;<br/>\n" +
-           "&lt;h3&gt;</th>\n" +
-           "<td style='padding-bottom: 1em;'>\n" +
-           "Heading levels 1 through 3. The heading levels control the\n" +
-           "size and formatting of the heading. Level 1 is usually\n" +
-           "reserved for the document title.\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "<tr>\n" +
-           "<th>&lt;b&gt;</th>\n" +
-           "<td style='padding-bottom: 1em;'>\n" +
-           "Bold text. This tag is used inside a paragraph to mark text\n" +
-           "that should be shown in boldface.\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "<tr>\n" +
-           "<th>&lt;i&gt;</th>\n" +
-           "<td style='padding-bottom: 1em;'>\n" +
-           "Italic text. This tag is used inside a paragraph to mark text\n" +
-           "that should be shown in italics.\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "<tr>\n" +
-           "<th>&lt;link&gt;</th>\n" +
-           "<td style='padding-bottom: 1em;'>\n" +
-           "Used for linking to web pages or mail addresses. The link tag\n" +
-           "has the attributes <strong>url</strong> for the link URL and\n" +
-           "<strong>window</strong> for the target browser window. The URL\n" +
-           "of the link is relative to the document unless it starts with\n" +
-           "a <code>/</code> character and becomes relative to the web\n" +
-           "site.<br/><br/>\n" +
-           "Examples:<br/>\n" +
-           "<code>&lt;link url=attach.pdf&gt;link text&lt;/link&gt;<br/>\n" +
-           "&lt;link url=/forums/index.html&gt;link text&lt;/link&gt;<br/>\n" +
-           "&lt;link url=http://www.liquidsite.org window=new&gt;link " +
-           "text&lt;/link&gt;</code>\n" +
-           "</td>\n" +
-           "</tr>\n" +
-           "<tr>\n" +
-           "<th>&lt;image&gt;</th>\n" +
-           "<td style='padding-bottom: 1em;'>\n" +
-           "Used for inserting images. The image tag has the attributes\n" +
-           "<strong>url</strong> for the image URL and\n" +
-           "<strong>layout</strong> for the layout style to use. The URL\n" +
-           "of the image is relative to the document unless it starts\n" +
-           "with a <code>/</code> character and becomes relative to the\n" +
-           "web site.<br/><br/>\n" +
-           "Examples:<br/>\n" +
-           "<code>&lt;image url=image.gif&gt;<br/>\n" +
-           "&lt;image url=/images/logo.jpeg layout=right&gt;</code>\n" +
-           "</td>\n" +
-           "</tr>\n";
+    var html = "<tr>\n" +
+               "<th width='15%'>text</th>\n" +
+               "<td width='85%' style='padding-bottom: 1em;'>\n" +
+               "Plain text. No special tags are needed for\n" +
+               "plain text. Linebreaks are respected so do not use unless\n" +
+               "required. A single empty line is used as a paragraph break.\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th style='padding-bottom: 1em;'>&lt;h1&gt;<br/>\n" +
+               "&lt;h2&gt;<br/>\n" +
+               "&lt;h3&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Heading levels 1 through 3. The heading levels control the\n" +
+               "size and formatting of the heading. Level 1 is usually\n" +
+               "reserved for the document title.\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;b&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Bold text. This tag is used inside a paragraph to mark text\n" +
+               "that should be shown in boldface.\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;i&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Italic text. This tag is used inside a paragraph to mark text\n" +
+               "that should be shown in italics.\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;link&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Used for linking to web pages or mail addresses. The link tag\n" +
+               "has the attributes <strong>url</strong> for the link URL and\n" +
+               "<strong>window</strong> for the target browser window. The URL\n" +
+               "of the link is relative to the document unless it starts with\n" +
+               "a <code>/</code> character and becomes relative to the web\n" +
+               "site.<br/><br/>\n" +
+               "Examples:<br/>\n" +
+               "<code>&lt;link url=attach.pdf&gt;link text&lt;/link&gt;<br/>\n" +
+               "&lt;link url=/forums/index.html&gt;link text&lt;/link&gt;<br/>\n" +
+               "&lt;link url=http://www.liquidsite.org window=new&gt;link " +
+               "text&lt;/link&gt;</code>\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;image&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Used for inserting images. The image tag has the attributes\n" +
+               "<strong>url</strong> for the image URL and\n" +
+               "<strong>layout</strong> for the layout style to use. The URL\n" +
+               "of the image is relative to the document unless it starts\n" +
+               "with a <code>/</code> character and becomes relative to the\n" +
+               "web site.<br/><br/>\n" +
+               "Examples:<br/>\n" +
+               "<code>&lt;image url=image.gif&gt;<br/>\n" +
+               "&lt;image url=/images/logo.jpeg layout=right&gt;</code>\n" +
+               "</td>\n" +
+               "</tr>\n";
     utilCreateDialog("Tag Editor Help",
                      "Quick reference for the tagged text editor.",
                      html,
@@ -470,15 +448,14 @@ function tagEditInternalHelp() {
  * selection does not exceed various paragraphs. It also enlarges
  * selections to the whole paragraph if the paragraph flag is set.
  *
- * @param editor             the editor number
- * @param paragraph          the paragraph flag
+ * @param {Number} editor the editor index (zero-based)
+ * @param {Boolean} paragraph the paragraph flag
  */
 function tagEditInternalAdjustSelection(editor, paragraph) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  selection = tagEditInternalGetSelection(editor);
-    var  pos = selection.start;
-    var  value = area.value;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var selection = tagEditInternalGetSelection(editor);
+    var pos = selection.start;
+    var value = area.value;
     while (pos < selection.end) {
         if (value.charAt(pos) == '\n' || value.charAt(pos) == '\r') {
             selection.end = pos;
@@ -509,15 +486,14 @@ function tagEditInternalAdjustSelection(editor, paragraph) {
 /**
  * Inserts text into an editor.
  *
- * @param editor             the editor number
- * @param selection          the editor selection to use
- * @param start              the starting text
- * @param end                the ending text, or null
+ * @param {Number} editor the editor index (zero-based)
+ * @param {Object} selection the editor selection (start and end properties)
+ * @param {String} start the starting text
+ * @param {String} [end] the ending text, or null
  */
 function tagEditInternalInsert(editor, selection, start, end) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  value = area.value;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var value = area.value;
     if (end == null) {
         area.value = value.substring(0, selection.start) + start +
                      value.substring(selection.start);
@@ -534,16 +510,15 @@ function tagEditInternalInsert(editor, selection, start, end) {
 /**
  * Removes text from an editor.
  *
- * @param editor             the editor number
- * @param selection          the editor selection to use
- * @param start              the starting text
- * @param end                the ending text
+ * @param {Number} editor the editor index (zero-based)
+ * @param {Object} selection the editor selection (start and end properties)
+ * @param {String} start the starting text
+ * @param {String} end the ending text
  */
 function tagEditInternalRemove(editor, selection, start, end) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  value = area.value;
-    var  text = value.substring(selection.start, selection.end);
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var value = area.value;
+    var text = value.substring(selection.start, selection.end);
     if (text.length >= start.length && text.indexOf(start) == 0) {
         text = text.substring(start.length);
     }
@@ -561,12 +536,11 @@ function tagEditInternalRemove(editor, selection, start, end) {
 /**
  * Undo changes in the specified tag editor.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalUndo(editor) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  undo = tagEditInternalGetUndo(editor);
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var undo = tagEditInternalGetUndo(editor);
     if (undo.pos > 1) {
         undo.pos--;
         area.value = undo.state[undo.pos - 1];
@@ -576,12 +550,11 @@ function tagEditInternalUndo(editor) {
 /**
  * Redo previously undone changes in the specified tag editor.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalRedo(editor) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  undo = tagEditInternalGetUndo(editor);
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var undo = tagEditInternalGetUndo(editor);
     if (undo.pos < undo.state.length) {
         undo.pos++;
         area.value = undo.state[undo.pos - 1];
@@ -591,16 +564,14 @@ function tagEditInternalRedo(editor) {
 /**
  * Store undo changes for the specified tag editor.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalStoreUndo(editor) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  undo = tagEditInternalGetUndo(editor);
-    var  i;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var undo = tagEditInternalGetUndo(editor);
     undo.state.length = undo.pos;
     if (undo.state.length >= 10) {
-        for (i = 0; i < 9; i++) {
+        for (var i = 0; i < 9; i++) {
             undo.state[i] = undo.state[i + 1];
         }
         undo.state.length = 9;
@@ -613,18 +584,11 @@ function tagEditInternalStoreUndo(editor) {
 /**
  * Returns the undo state object for the specified editor.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalGetUndo(editor) {
-    var  undo;
-
-    for (var i = 0; i <= editor; i++) {
-        if (TAGEDIT_UNDO.length <= i) {
-            undo = new Object();
-            undo.pos = 0;
-            undo.state = new Array();
-            TAGEDIT_UNDO[i] = undo;
-        }
+    while (TAGEDIT_UNDO.length <= editor) {
+        TAGEDIT_UNDO.push({ pos: 0, state: [] });
     }
     return TAGEDIT_UNDO[editor];
 }
@@ -632,9 +596,9 @@ function tagEditInternalGetUndo(editor) {
 /**
  * Checks if the specified tag is a block tag.
  *
- * @param tag                 the tag to check
+ * @param {String} tag the tag to check (including <> markers)
  *
- * @return true if the tag is a block tag, or
+ * @return {Boolean} true if the tag is a block tag, or
  *         false otherwise
  */
 function tagEditInternalIsBlockTag(tag) {
@@ -647,23 +611,19 @@ function tagEditInternalIsBlockTag(tag) {
 /**
  * Returns the current text selection within the tag editor.
  *
- * @param editor             the editor number
+ * @param {Number} editor the editor index (zero-based)
  *
- * @return an object containing the selection start and end
+ * @return {Object} the editor selection (start and end properties)
  */
 function tagEditInternalGetSelection(editor) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  selection = new Object();
-    var  range;
-    var  text;
-    var  length;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var selection = { start: 0, end: 0 };
     if (document.selection) {
         // IE selection handling
         area.focus();
-        range = document.selection.createRange().duplicate();
-        text = range.text;
-        length = text.length;
+        var range = document.selection.createRange().duplicate();
+        var text = range.text;
+        var length = text.length;
         for (var i = 0; i < text.length; i++) {
             if (text.charAt(i) == '\r') {
                 length--;
@@ -691,13 +651,12 @@ function tagEditInternalGetSelection(editor) {
 /**
  * Sets the current text selection within the tag editor.
  *
- * @param editor             the editor number
- * @param selection          the selection object
+ * @param {Number} editor the editor index (zero-based)
+ * @param {Object} selection the editor selection (start and end properties)
  */
 function tagEditInternalSetSelection(editor, selection) {
-    var  area = TAGEDIT_TEXTAREAS[editor];
-    var  newlines = 0;
-
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var newlines = 0;
     if (area.createTextRange) {
         // IE selection handling
         for (var i = 0; i < selection.start; i++) {
@@ -715,45 +674,4 @@ function tagEditInternalSetSelection(editor, selection) {
         area.selectionStart = selection.start;
         area.selectionEnd = selection.end;
     }
-}
-
-/**
- * Handles a mouse over event for a button.
- *
- * @param event              the event object
- */
-function tagEditInternalMouseOver(event) {
-    this.className = "buttonup";
-}
-
-/**
- * Handles a mouse out event for a button.
- *
- * @param event              the event object
- */
-function tagEditInternalMouseOut(event) {
-    this.className = "button";
-}
-
-/**
- * Handles a mouse down event for a button.
- *
- * @param event              the event object
- */
-function tagEditInternalMouseDown(event) {
-    this.className = "buttondown";
-    if (window.event) {
-        // Hack to avoid script error on IE
-    } else {
-        event.preventDefault();
-    }
-}
-
-/**
- * Handles a mouse up event for a button.
- *
- * @param event              the event object
- */
-function tagEditInternalMouseUp(event) {
-    this.className = "buttonup";
 }
