@@ -4,7 +4,7 @@ Liquid Site 0.11:
 * Admin: add tagedit list support in editor
 * Admin: add tagedit box support in editor
 * Admin: add tagedit image text support in editor
-* Admin: add tagedit preview in editor
+* Admin: add tagedit --- and ___ to <hr> conversion
 
 Liquid Site 0.12:
 =================

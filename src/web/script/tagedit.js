@@ -30,9 +30,9 @@ var TAGEDIT_ICON_PATH = "images/icons/24x24/";
 var TAGEDIT_TEXTAREAS = [];
 
 /**
- * The tag editor images array.
+ * The tag editor images lookup map.
  */
-var TAGEDIT_IMAGES = [];
+var TAGEDIT_IMAGES = {};
 
 /**
  * The tag editor undo information. Each editor may contain an array
@@ -63,9 +63,10 @@ function tagEditInitialize(id) {
  * all the editors on a single page.
  *
  * @param {String} name the image file name
+ * @param {String} url the image preview URL
  */
-function tagEditAddImage(name) {
-    TAGEDIT_IMAGES[TAGEDIT_IMAGES.length] = name;
+function tagEditAddImage(name, url) {
+    TAGEDIT_IMAGES[name] = url;
 }
 
 /**
@@ -101,6 +102,11 @@ function tagEditInternalAddToolbar(parent, editor) {
     img.onclick = new Function("tagEditInternalUndo(" + editor + ");");
     img = tagEditInternalAddButton(td, "Redo", "redo.png");
     img.onclick = new Function("tagEditInternalRedo(" + editor + ");");
+    utilAddTextElement(td, "\u00A0\u00A0");
+    img = tagEditInternalAddButton(td, "Preview", "source.png");
+    img.onclick = function() {
+        tagEditInternalPreview(editor);
+    };
     utilAddTextElement(td, "\u00A0\u00A0");
     img = tagEditInternalAddButton(td, "Help", "help.png");
     img.onclick = new Function("tagEditInternalHelp();");
@@ -311,12 +317,13 @@ function tagEditInternalInsertLink(editor, url, type) {
  * @param {Number} editor the editor index (zero-based)
  */
 function tagEditInternalAddImage(editor) {
+    var length = 0;
     var html = "<tr>\n" +
                "<th width='50%'>Image:</th>\n" +
                "<td width='50%'><select name='url' tabindex='1'>\n";
-    for (var i = 0; i < TAGEDIT_IMAGES.length; i++) {
-        html += "<option value='" + TAGEDIT_IMAGES[i] + "'>" +
-                TAGEDIT_IMAGES[i] + "</option>\n";
+    for (var k in TAGEDIT_IMAGES) {
+        length++;
+        html += "<option value='" + k + "'>" + k + "</option>\n";
     }
     html += "</select>\n" +
             "<script type='text/javascript'>\n" +
@@ -338,7 +345,7 @@ function tagEditInternalAddImage(editor) {
              "var layout = document.getElementsByName('layout').item(0).value;\n" +
              "opener.tagEditInternalInsertImage(" + editor + ", url, layout);\n" +
              "window.close();\n";
-    if (TAGEDIT_IMAGES.length > 0) {
+    if (length > 0) {
         utilCreateDialog("Insert Image",
                          "Choose image to insert and it's layout.",
                          html,
@@ -367,6 +374,86 @@ function tagEditInternalInsertImage(editor, url, layout) {
     var selection = tagEditInternalGetSelection(editor);
     tagEditInternalInsert(editor, selection, tag, null);
     tagEditInternalStoreUndo(editor);
+}
+
+/**
+ * Displays a preview dialog for the current text.
+ *
+ * @param {Number} editor the editor index (zero-based)
+ */
+function tagEditInternalPreview(editor) {
+    function parseTagAttrs(str) {
+        // BUG: attribute values containing whitespace breaks this split...
+        var pairs = str.substring(1, str.length - 2).split(/\s/);
+        var res = {};
+        for (var i = 1; i < pairs.length; i++) {
+            var kv = pairs[i].split("=");
+            var key = (kv.length < 1) ? null : kv[0].replace(/\s$/, "");
+            var value = (kv.length <= 1) ? "" : kv.slice(1).join("=");
+            value = value.replace(/^\s/, "");
+            if (/^[\'\"]/.test(value)) {
+                value = value.substring(1);
+            }
+            if (/[\'\"]$/.test(value)) {
+                value = value.substring(0, value.length - 1);
+            }
+            if (key) {
+                res[key] = value;
+            }
+        }
+        return res;
+    }
+    function replacer(str) {
+        var tags = { "</link>": "</a>", "</list>": "</ul>", "</box>": "</p>",
+                     "<item>": "<li>", "</item>": "</li>" }
+        var attrs = parseTagAttrs(str);
+        if (/<link/.test(str)) {
+            str = "<a href='" + attrs.url + "'";
+            if (attrs["window"] === "new") {
+                str += " target='_blank'";
+            }
+            return str + ">";
+        } else if (/<image/.test(str)) {
+            var url = TAGEDIT_IMAGES[attrs.url] || attrs.url;
+            str = "<img src='" + url + "'";
+            if (attrs.layout) {
+                str += " style='float: " + attrs.layout + ";'";
+            }
+            return str + " />";
+        } else if (/<list/.test(str)) {
+            var type = attrs.type || "*";
+            var style = { "*": "disc",         "1": "decimal",
+                          "i": "lower-roman",  "I": "upper-roman",
+                          "a": "lower-alpha",  "A": "upper-alpha" };
+            return "<ul style='list-style-type: " + style[type] + ";'>";
+        } else if (/<box/.test(str)) {
+            var layout = attrs.layout || "right";
+            return "<p class='box-layout-" + layout + "'>";
+        } else {
+            return tags[str] || str;
+        }
+    }
+    var area = TAGEDIT_TEXTAREAS[editor];
+    var html = area.value.replace(/\r/g, "").replace(/<[^>]*>/g, replacer);
+    var blocks = html.split(/\n\n+/);
+    for (var i = 0; i < blocks.length; i++) {
+        var b = blocks[i];
+        if (/^<h[0-9]/.test(b) || /^<p/.test(b) || /^<ul/.test(b)) {
+            // Do nothing for block-level tags
+        } else {
+            b = "<p>" + b + "</p>";
+        }
+        blocks[i] = b.replace(/\n/g, "<br/>\n");
+    }
+    html = blocks.join("\n\n");
+    // BUG: handle pre-formatted text properly
+    // BUG: handle single <, > and & characters
+    utilCreateDialog("Tag Editor Preview",
+                     "",
+                     "<tr>\n<td>\n" + html + "\n</td>\n</tr>\n",
+                     "window.close();",
+                     650,
+                     600);
 }
 
 /**
@@ -440,7 +527,7 @@ function tagEditInternalHelp() {
                      html,
                      "window.close();",
                      650,
-                     500);
+                     550);
 }
 
 /**
