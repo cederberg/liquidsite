@@ -113,7 +113,7 @@ public abstract class AbstractData {
      * @param param          the parameter name
      *
      * @return the parameter date value, or
-     *         a zero date if the parameter doesn't exist
+     *         null if the parameter doesn't exist
      */
     public Date getDate(Parameter param) {
         Object  obj = getObject(param);
@@ -121,7 +121,7 @@ public abstract class AbstractData {
         if (obj instanceof Date) {
             return (Date) obj;
         } else {
-            return new Date(0);
+            return null;
         }
     }
 

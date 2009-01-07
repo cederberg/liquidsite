@@ -399,20 +399,20 @@
         <description>
           The publishing online date. If this date is set to a date in
           the future, the content object is not yet visible on the
-          site. If the date is set to all zeros (0), no online date
-          has been set.
+          site. If the date is set to NULL, no publishing date has been
+          set.
         </description>
-        <type name="DATETIME" required="true" />
+        <type name="DATETIME" required="false" />
       </column>
       <column name="OFFLINE">
         <description>
           The publishing offline date. If this date is set to a date
           in the past, the content object is no longer visible on the
-          site. If the date is set to all zeros (0), no offline date
-          has been set and the object may thus be visible forever (if
-          an online date has been set).
+          site. If the date is set to NULL, no unpublishing date has
+          been set and the object may thus be visible forever (if an
+          online date exists and has passed).
         </description>
-        <type name="DATETIME" required="true" />
+        <type name="DATETIME" required="false" />
       </column>
       <column name="MODIFIED">
         <description>

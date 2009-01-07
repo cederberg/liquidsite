@@ -448,19 +448,17 @@ public class Content extends PersistentObject {
      * @return the content publishing online date
      */
     public Date getOnlineDate() {
-        Date  date = data.getDate(ContentData.ONLINE);
-
-        return (date.getTime() == 0) ? null : date;
+        return data.getDate(ContentData.ONLINE);
     }
 
     /**
      * Sets the content publishing online date.
      *
-     * @param online         the new publishing online date
+     * @param online         the new publishing online date, or null
      */
     public void setOnlineDate(Date online) {
-        if (online == null) {
-            online = new Date(0);
+        if (online != null && online.getTime() == 0) {
+            online = null;
         }
         data.setDate(ContentData.ONLINE, online);
     }
@@ -471,19 +469,17 @@ public class Content extends PersistentObject {
      * @return the content publishing offline date
      */
     public Date getOfflineDate() {
-        Date  date = data.getDate(ContentData.OFFLINE);
-
-        return (date.getTime() == 0) ? null : date;
+        return data.getDate(ContentData.OFFLINE);
     }
 
     /**
      * Sets the content publishing offline date.
      *
-     * @param offline        the new publishing offline date
+     * @param offline        the new publishing offline date, or null
      */
     public void setOfflineDate(Date offline) {
-        if (offline == null) {
-            offline = new Date(0);
+        if (offline != null && offline.getTime() == 0) {
+            offline = null;
         }
         data.setDate(ContentData.OFFLINE, offline);
     }
