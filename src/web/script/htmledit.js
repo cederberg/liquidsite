@@ -126,26 +126,26 @@ function htmlEditInternalAddToolbar(parent, editor) {
     div.style.display = "block";
     htmlEditInternalAddStyleSelector(div, editor);
     utilAddTextElement(div, "\u00A0\u00A0");
-    img = htmlEditInternalAddButton(div, "Bold", "bold.png");
+    img = htmlEditInternalAddButton(div, "Bold", "format-text-bold.png");
     img.onclick = new Function("htmlEditInternalCommandSelect(" + editor +
                                ", 'bold');");
-    img = htmlEditInternalAddButton(div, "Italic", "italic.png");
+    img = htmlEditInternalAddButton(div, "Italic", "format-text-italic.png");
     img.onclick = new Function("htmlEditInternalCommandSelect(" + editor +
                                ", 'italic');");
     utilAddTextElement(div, "\u00A0\u00A0");
-    img = htmlEditInternalAddButton(div, "Add Link", "link.png");
+    img = htmlEditInternalAddButton(div, "Add Link", "insert-link.png");
     img.onclick = new Function("htmlEditInternalAddLink(" + editor + ");");
-    img = htmlEditInternalAddButton(div, "Add Image", "image.png");
+    img = htmlEditInternalAddButton(div, "Add Image", "insert-image.png");
     img.onclick = new Function("htmlEditInternalAddImage(" + editor + ");");
     utilAddTextElement(div, "\u00A0\u00A0");
-    img = htmlEditInternalAddButton(div, "Undo", "undo.png");
+    img = htmlEditInternalAddButton(div, "Undo", "edit-undo.png");
     img.onclick = new Function("htmlEditInternalCommandSelect(" + editor +
                                ", 'undo');");
-    img = htmlEditInternalAddButton(div, "Redo", "redo.png");
+    img = htmlEditInternalAddButton(div, "Redo", "edit-redo.png");
     img.onclick = new Function("htmlEditInternalCommandSelect(" + editor +
                                ", 'redo');");
     utilAddTextElement(div, "\u00A0\u00A0");
-    img = htmlEditInternalAddButton(div, "Help", "help.png");
+    img = htmlEditInternalAddButton(div, "Help", "help-browser.png");
     img.onclick = new Function("htmlEditInternalHelp();");
     td = utilAddElement(tr, "td");
     img = htmlEditInternalAddButton(td, "Toggle HTML View", "source.png");

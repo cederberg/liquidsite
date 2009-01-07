@@ -84,31 +84,33 @@ function tagEditInternalAddToolbar(parent, editor) {
     td.width = "100%";
     tagEditInternalAddStyleSelector(td, editor);
     utilAddTextElement(td, "\u00A0\u00A0");
-    var img = tagEditInternalAddButton(td, "Bold", "bold.png");
+    var img = tagEditInternalAddButton(td, "Bold", "format-text-bold.png");
     img.onclick = new Function("tagEditInternalFormat(" + editor +
                                ", '<b>', '</b>');");
-    img = tagEditInternalAddButton(td, "Italic", "italic.png");
+    img = tagEditInternalAddButton(td, "Italic", "format-text-italic.png");
     img.onclick = new Function("tagEditInternalFormat(" + editor +
                                ", '<i>', '</i>');");
-    img = tagEditInternalAddButton(td, "Unformat", "noformat.png");
+    img = tagEditInternalAddButton(td, "Unformat", "edit-clear.png");
     img.onclick = new Function("tagEditInternalUnformat(" + editor + ");");
     utilAddTextElement(td, "\u00A0\u00A0");
-    img = tagEditInternalAddButton(td, "Add Link", "link.png");
+    img = tagEditInternalAddButton(td, "Add Link", "insert-link.png");
     img.onclick = new Function("tagEditInternalAddLink(" + editor + ");");
-    img = tagEditInternalAddButton(td, "Add Image", "image.png");
+    img = tagEditInternalAddButton(td, "Add Image", "insert-image.png");
     img.onclick = new Function("tagEditInternalAddImage(" + editor + ");");
+//  img = tagEditInternalAddButton(td, "Add Box", "insert-text.png");
+//  img.onclick = new Function("tagEditInternalAddBox(" + editor + ");");
     utilAddTextElement(td, "\u00A0\u00A0");
-    img = tagEditInternalAddButton(td, "Undo", "undo.png");
+    img = tagEditInternalAddButton(td, "Undo", "edit-undo.png");
     img.onclick = new Function("tagEditInternalUndo(" + editor + ");");
-    img = tagEditInternalAddButton(td, "Redo", "redo.png");
+    img = tagEditInternalAddButton(td, "Redo", "edit-redo.png");
     img.onclick = new Function("tagEditInternalRedo(" + editor + ");");
     utilAddTextElement(td, "\u00A0\u00A0");
-    img = tagEditInternalAddButton(td, "Preview", "source.png");
+    img = tagEditInternalAddButton(td, "Preview", "edit-find-replace.png");
     img.onclick = function() {
         tagEditInternalPreview(editor);
     };
     utilAddTextElement(td, "\u00A0\u00A0");
-    img = tagEditInternalAddButton(td, "Help", "help.png");
+    img = tagEditInternalAddButton(td, "Help", "help-browser.png");
     img.onclick = new Function("tagEditInternalHelp();");
 }
 
@@ -267,7 +269,7 @@ function tagEditInternalAddLink(editor) {
                "<td width='80%'>\n" +
                "<input name='url' size='40' tabindex='1' />\n" + 
                "<script type='text/javascript'>\n" +
-               "document.getElementsByName('url').item(0).focus();\n" +
+               "document.getElementsByName('url')[0].focus();\n" +
                "</script>\n" +
                "</td>\n" +
                "</tr>\n" +
@@ -281,8 +283,8 @@ function tagEditInternalAddLink(editor) {
                "</select>\n" +
                "</td>\n" +
                "</tr>\n";
-    var js = "var url = document.getElementsByName('url').item(0).value;\n" +
-             "var type = document.getElementsByName('type').item(0).value;\n" +
+    var js = "var url = document.getElementsByName('url')[0].value;\n" +
+             "var type = document.getElementsByName('type')[0].value;\n" +
              "opener.tagEditInternalInsertLink(" + editor + ", url, type);\n" +
              "window.close();\n";
     utilCreateDialog("Insert Link", text, html, js, 380, 190);
@@ -327,7 +329,7 @@ function tagEditInternalAddImage(editor) {
     }
     html += "</select>\n" +
             "<script type='text/javascript'>\n" +
-            "document.getElementsByName('url').item(0).focus();\n" +
+            "document.getElementsByName('url')[0].focus();\n" +
             "</script>\n" +
             "</td>\n" +
             "</tr>\n" +
@@ -341,8 +343,8 @@ function tagEditInternalAddImage(editor) {
             "</select>\n" +
             "</td>\n" +
             "</tr>\n";
-    var js = "var url = document.getElementsByName('url').item(0).value;\n" +
-             "var layout = document.getElementsByName('layout').item(0).value;\n" +
+    var js = "var url = document.getElementsByName('url')[0].value;\n" +
+             "var layout = document.getElementsByName('layout')[0].value;\n" +
              "opener.tagEditInternalInsertImage(" + editor + ", url, layout);\n" +
              "window.close();\n";
     if (length > 0) {
