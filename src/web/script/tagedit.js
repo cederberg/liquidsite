@@ -482,6 +482,8 @@ function tagEditInternalPreview(editor) {
         var b = blocks[i];
         if (/^<h[0-9]/.test(b) || /^<p/.test(b) || /^<ul/.test(b)) {
             // Do nothing for block-level tags
+        } else if (/^---+$/.test(b) || /^___+$/.test(b)) {
+            b = "<hr/>";
         } else {
             b = "<p>" + b + "</p>";
         }
@@ -511,6 +513,12 @@ function tagEditInternalHelp() {
                "</td>\n" +
                "</tr>\n" +
                "<tr>\n" +
+               "<th style='padding-bottom: 1em;'>---</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Horizontal separator line. Must be placed on its own line.\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
                "<th style='padding-bottom: 1em;'>&lt;h1&gt;<br/>\n" +
                "&lt;h2&gt;<br/>\n" +
                "&lt;h3&gt;</th>\n" +
@@ -532,6 +540,13 @@ function tagEditInternalHelp() {
                "<td style='padding-bottom: 1em;'>\n" +
                "Italic text. This tag is used inside a paragraph to mark text\n" +
                "that should be shown in italics.\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;code&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Computer code text. This tag is used inside a paragraph to\n" +
+               "mark text that should be shown with a fixed-width font.\n" +
                "</td>\n" +
                "</tr>\n" +
                "<tr>\n" +
@@ -563,13 +578,45 @@ function tagEditInternalHelp() {
                "<code>&lt;image url=image.gif&gt;<br/>\n" +
                "&lt;image url=/images/logo.jpeg layout=right&gt;</code>\n" +
                "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;box&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Bordered box with image and/or text content. The box tag has\n" +
+               "an attribute <strong>layout</strong> for the layout style\n" +
+               "to use.<br/><br/>\n" +
+               "Example:<br/>\n" +
+               "<code>&lt;box layout=right&gt;&lt;image url=image.gif&gt;" +
+               "&lt;/box&gt;</code>\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;list&gt;<br/>\n" +
+               "&lt;item&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Ordered list of items. The list tag has an attribute\n" +
+               "<strong>type</strong> with values *, 1, i, I, a, A\n" +
+               "for different types of item indices.<br/><br/>\n" +
+               "Example:<br/>\n" +
+               "<code>&lt;list type=1&gt;<br/>\n" +
+               "&lt;item&gt;Content of the first item&lt;/item&gt;<br/>\n" +
+               "&lt;item&gt;Content of the second item&lt;/item&gt;<br/>\n" +
+               "&lt;/list&gt;</code>\n" +
+               "</td>\n" +
+               "</tr>\n" +
+               "<tr>\n" +
+               "<th>&lt;pre&gt;</th>\n" +
+               "<td style='padding-bottom: 1em;'>\n" +
+               "Pre-formatted text using a fixed-width font to preserve\n" +
+               "whitespace and linebreaks between the tags.\n" +
+               "</td>\n" +
                "</tr>\n";
     utilCreateDialog("Tag Editor Help",
                      "Quick reference for the tagged text editor.",
                      html,
                      "window.close();",
                      650,
-                     550);
+                     700);
 }
 
 /**
