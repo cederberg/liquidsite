@@ -1,8 +1,6 @@
 Liquid Site 0.11:
 =================
 * Installer: add check for MySQL 4.1 version
-* Admin: add tagedit list support in editor
-* Admin: add tagedit --- and ___ to <hr> conversion
 
 Liquid Site 0.12:
 =================
@@ -46,6 +44,7 @@ Liquid Site Unscheduled:
 * General: separate section inheritance from hierarchy
 * Template: add pagePath attribute (or processedPath)
 * Template: add access to last error message
+* Admin: add tagedit list support in editor
 * Admin: add translator preview
 * Admin: add forum object previews
 * Admin: add possibility to choose local links from a site tree
