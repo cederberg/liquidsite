@@ -97,8 +97,8 @@ function tagEditInternalAddToolbar(parent, editor) {
     img.onclick = new Function("tagEditInternalAddLink(" + editor + ");");
     img = tagEditInternalAddButton(td, "Add Image", "insert-image.png");
     img.onclick = new Function("tagEditInternalAddImage(" + editor + ");");
-//  img = tagEditInternalAddButton(td, "Add Box", "insert-text.png");
-//  img.onclick = new Function("tagEditInternalAddBox(" + editor + ");");
+    img = tagEditInternalAddButton(td, "Add Box", "insert-text.png");
+    img.onclick = new Function("tagEditInternalAddBox(" + editor + ");");
     utilAddTextElement(td, "\u00A0\u00A0");
     img = tagEditInternalAddButton(td, "Undo", "edit-undo.png");
     img.onclick = new Function("tagEditInternalUndo(" + editor + ");");
@@ -184,7 +184,7 @@ function tagEditInternalStyleSelect(editor, select) {
     var endTag;
     if (select.selectedIndex > 0) {
         var tag = select.value;
-        tagEditInternalAdjustSelection(editor, true);
+        tagEditInternalAdjustSelection(editor, true, true);
         var selection = tagEditInternalGetSelection(editor);
         var text = area.value.substring(selection.start, selection.end);
         if (text.indexOf("<") == 0) {
@@ -198,7 +198,7 @@ function tagEditInternalStyleSelect(editor, select) {
         }
         if (tag != "") {
             endTag = "</" + tag.substring(1);
-            tagEditInternalInsert(editor, selection, tag, endTag);
+            tagEditInternalInsert(editor, selection, tag, endTag, true);
         }
         tagEditInternalStoreUndo(editor);
         select.selectedIndex = 0;
@@ -215,13 +215,13 @@ function tagEditInternalStyleSelect(editor, select) {
  */
 function tagEditInternalFormat(editor, start, end) {
     var area = TAGEDIT_TEXTAREAS[editor];
-    tagEditInternalAdjustSelection(editor, false);
+    tagEditInternalAdjustSelection(editor, true, false);
     var selection = tagEditInternalGetSelection(editor);
     var pos = selection.start
     if (area.value.substring(pos, pos + start.length) == start) {
         tagEditInternalRemove(editor, selection, start, end);
     } else {
-        tagEditInternalInsert(editor, selection, start, end);
+        tagEditInternalInsert(editor, selection, start, end, false);
     }
     tagEditInternalStoreUndo(editor);
 }
@@ -308,7 +308,7 @@ function tagEditInternalInsertLink(editor, url, type) {
     }
     if (url != "") {
         var selection = tagEditInternalGetSelection(editor);
-        tagEditInternalInsert(editor, selection, tag, "</link>");
+        tagEditInternalInsert(editor, selection, tag, "</link>", false);
         tagEditInternalStoreUndo(editor);
     }
 }
@@ -374,7 +374,47 @@ function tagEditInternalInsertImage(editor, url, layout) {
         tag = "<image url=" + url + ">";
     }
     var selection = tagEditInternalGetSelection(editor);
-    tagEditInternalInsert(editor, selection, tag, null);
+    tagEditInternalInsert(editor, selection, tag, null, false);
+    tagEditInternalStoreUndo(editor);
+}
+
+/**
+ * Handles an add box event.
+ *
+ * @param {Number} editor the editor index (zero-based)
+ */
+function tagEditInternalAddBox(editor) {
+    var html = "<tr>\n" +
+               "<th width='50%'>Layout:</th>\n" +
+               "<td width='50%'>\n" +
+               "<select name='layout' tabindex='1'>\n" +
+               "<option value='right'>Floating Right</option>\n" +
+               "<option value='left'>Floating Left</option>\n" +
+               "</select>\n" +
+               "</td>\n" +
+               "</tr>\n";
+    var js = "var layout = document.getElementsByName('layout')[0].value;\n" +
+             "opener.tagEditInternalInsertBox(" + editor + ", layout);\n" +
+             "window.close();\n";
+    utilCreateDialog("Insert Box",
+                     "Choose the box layout.",
+                     html,
+                     js,
+                     250,
+                     130);
+}
+
+/**
+ * Inserts a box.
+ *
+ * @param {Number} editor the editor index (zero-based)
+ * @param {String} layout the layout style
+ */
+function tagEditInternalInsertBox(editor, layout) {
+    tagEditInternalAdjustSelection(editor, false, true);
+    var selection = tagEditInternalGetSelection(editor);
+    var tag = "<box layout=" + layout + ">";
+    tagEditInternalInsert(editor, selection, tag, "</box>", true);
     tagEditInternalStoreUndo(editor);
 }
 
@@ -386,7 +426,7 @@ function tagEditInternalInsertImage(editor, url, layout) {
 function tagEditInternalPreview(editor) {
     function parseTagAttrs(str) {
         // BUG: attribute values containing whitespace breaks this split...
-        var pairs = str.substring(1, str.length - 2).split(/\s/);
+        var pairs = str.substring(1, str.length - 1).split(/\s/);
         var res = {};
         for (var i = 1; i < pairs.length; i++) {
             var kv = pairs[i].split("=");
@@ -533,25 +573,27 @@ function tagEditInternalHelp() {
 }
 
 /**
- * Adjusts the tag editor current selection. This makes sure that the
- * selection does not exceed various paragraphs. It also enlarges
- * selections to the whole paragraph if the paragraph flag is set.
+ * Adjusts the current tag editor selection based on the position of
+ * newline characters. Firstly, the selection can be shortened to
+ * only span text without line breaks. Secondly, the selection can be
+ * expanded to span whole lines.
  *
  * @param {Number} editor the editor index (zero-based)
- * @param {Boolean} paragraph the paragraph flag
+ * @param {Boolean} singleLine the single line restriction flag
+ * @param {Boolean} fullLine the full line expansion flag
  */
-function tagEditInternalAdjustSelection(editor, paragraph) {
+function tagEditInternalAdjustSelection(editor, singleLine, fullLine) {
     var area = TAGEDIT_TEXTAREAS[editor];
     var selection = tagEditInternalGetSelection(editor);
     var pos = selection.start;
     var value = area.value;
-    while (pos < selection.end) {
+    while (singleLine && pos < selection.end) {
         if (value.charAt(pos) == '\n' || value.charAt(pos) == '\r') {
             selection.end = pos;
         }
         pos++;
     }
-    if (paragraph) {
+    if (fullLine) {
         pos = selection.start;
         while (pos > 0) {
             if (value.charAt(pos-1) == '\n' || value.charAt(pos-1) == '\r') {
@@ -579,20 +621,28 @@ function tagEditInternalAdjustSelection(editor, paragraph) {
  * @param {Object} selection the editor selection (start and end properties)
  * @param {String} start the starting text
  * @param {String} [end] the ending text, or null
+ * @param {Boolean} [block] the block tag flag (adds newline separators)
  */
-function tagEditInternalInsert(editor, selection, start, end) {
+function tagEditInternalInsert(editor, selection, start, end, block) {
     var area = TAGEDIT_TEXTAREAS[editor];
     var value = area.value;
+    var head = value.substring(0, selection.start);
+    var inner = value.substring(selection.start, selection.end);
+    var tail = value.substring(selection.end);
     if (end == null) {
-        area.value = value.substring(0, selection.start) + start +
-                     value.substring(selection.start);
-        selection.end = selection.start + start.length;
-    } else {
-        area.value = value.substring(0, selection.start) + start +
-                     value.substring(selection.start, selection.end) +
-                     end + value.substring(selection.end);
-        selection.end = selection.end + start.length + end.length;
+        inner = "";
+        end = "";
+        tail = value.substring(selection.start);
     }
+    while (block && head != "" && !/\n\n$/.test(head)) {
+        head += "\n";
+    }
+    while (block && tail != "" && !/^\n\n/.test(tail)) {
+        tail = "\n" + tail;
+    }
+    area.value = head + start + inner + end + tail;
+    selection.start = head.length;
+    selection.end = selection.start + start.length + inner.length + end.length;
     tagEditInternalSetSelection(editor, selection);
 }
 

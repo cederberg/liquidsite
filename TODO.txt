@@ -2,8 +2,6 @@ Liquid Site 0.11:
 =================
 * Installer: add check for MySQL 4.1 version
 * Admin: add tagedit list support in editor
-* Admin: add tagedit box support in editor
-* Admin: add tagedit image text support in editor
 * Admin: add tagedit --- and ___ to <hr> conversion
 
 Liquid Site 0.12:
