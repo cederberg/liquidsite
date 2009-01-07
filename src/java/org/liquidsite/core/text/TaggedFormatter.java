@@ -41,6 +41,11 @@ public class TaggedFormatter {
     private static Pattern SPACE_END = Pattern.compile("\\s+$");
 
     /**
+     * The horizontal ruler regex.
+     */
+    private static Pattern HORIZ_RULE = Pattern.compile("((---+)|(___+))(\\n|$)");
+
+    /**
      * The pre-formatted text tag regex.
      */
     private static Pattern TAG_PRE = Pattern.compile("<pre[^>]*>");
@@ -125,11 +130,16 @@ public class TaggedFormatter {
      * @return the new text position
      */
     private static int cleanBlock(String text, int pos, StringBuffer result) {
-        int     backupLength;
-        int     newPos;
-        String  tag;
+        Matcher  m = HORIZ_RULE.matcher(text);
+        int      backupLength;
+        int      newPos;
+        String   tag;
 
-        if (text.charAt(pos) == '<') {
+        m.region(pos, text.length());
+        if (m.lookingAt()) {
+            result.append("---");
+            pos = m.end();
+        } else if (text.charAt(pos) == '<') {
             backupLength = result.length();
             newPos = cleanTag(text, pos, result);
             tag = result.substring(backupLength);
@@ -163,7 +173,6 @@ public class TaggedFormatter {
         } else {
             pos = cleanInline(text, pos, result);
         }
-
         return pos;
     }
 
@@ -186,6 +195,8 @@ public class TaggedFormatter {
 
         while (pos < text.length()) {
             if (text.startsWith("\n\n", pos)
+             || text.startsWith("\n---", pos)
+             || text.startsWith("\n___", pos)
              || text.startsWith("\n<p", pos)
              || text.startsWith("\n<h", pos)
              || text.startsWith("\n<list", pos)
@@ -625,7 +636,13 @@ public class TaggedFormatter {
                                        FormattingContext context,
                                        StringBuffer result) {
 
-        if (text.startsWith("<list", pos)) {
+        Matcher  m = HORIZ_RULE.matcher(text);
+
+        m.region(pos, text.length());
+        if (m.lookingAt()) {
+            result.append("<hr/>");
+            pos = m.end();
+        } else if (text.startsWith("<list", pos)) {
             pos = formatHtmlList(text, pos, context, result);
         } else if (text.startsWith("<h1>", pos)
                 || text.startsWith("<h2>", pos)
@@ -659,6 +676,8 @@ public class TaggedFormatter {
 
         while (pos < text.length()
             && !text.startsWith("\n\n", pos)
+            && !text.startsWith("\n---", pos)
+            && !text.startsWith("\n___", pos)
             && !text.startsWith("<list", pos)
             && !text.startsWith("</list>", pos)
             && !text.startsWith("<item>", pos)
