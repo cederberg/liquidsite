@@ -608,9 +608,18 @@ public class InstallRequestProcessor extends RequestProcessor {
         try {
             connector.loadFunctions(getFile("WEB-INF/database.properties"));
             connector.returnConnection(connector.getConnection());
-            installer = new Installer(application.getBuildVersion(),
-                                      connector,
-                                      getFile("WEB-INF/sql"));
+            int[] ver = connector.getVersion();
+            if (ver[0] < 5) {
+                lastError = "MySQL server version 5.0.0 or higher is " +
+                            "required, found version " + ver[0] + "." +
+                            ver[1] + "." + ver[2];
+                LOG.error(lastError);
+                connector = null;
+            } else {
+                installer = new Installer(application.getBuildVersion(),
+                                          connector,
+                                          getFile("WEB-INF/sql"));
+            }
         } catch (FileNotFoundException e) {
             LOG.error("couldn't read database functions", e);
             lastError = "Couldn't find 'database.properties' file";
@@ -621,6 +630,10 @@ public class InstallRequestProcessor extends RequestProcessor {
             connector = null;
         } catch (DatabaseConnectionException e) {
             LOG.error("couldn't connect to database", e);
+            lastError = e.getMessage();
+            connector = null;
+        } catch (DatabaseException e) {
+            LOG.error("couldn't read database version", e);
             lastError = e.getMessage();
             connector = null;
         }

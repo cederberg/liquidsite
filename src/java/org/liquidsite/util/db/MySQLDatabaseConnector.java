@@ -127,6 +127,48 @@ public class MySQLDatabaseConnector extends DatabaseConnector {
     }
 
     /**
+     * Returns the database version number array. This is always an
+     * array with three elements; the first being the major version
+     * number, the second being the minor version number and the
+     * third being the patch version number.
+     *
+     * @return the database server version number array
+     *
+     * @throws DatabaseConnectionException if a database connection
+     *             couldn't be established
+     * @throws DatabaseException if the database user couldn't be
+     *             determined
+     */
+    public int[] getVersion()
+        throws DatabaseConnectionException, DatabaseException {
+
+        DatabaseQuery    query = new DatabaseQuery();
+        DatabaseResults  res;
+        String[]         parts;
+        int[]            version = new int[3];
+
+        try {
+            query.setSql("SELECT VERSION()");
+            res = execute(query);
+            parts = res.getRow(0).getString(0).split("\\.");
+        } catch (DatabaseDataException e) {
+            LOG.warning("failed to read database version number", e);
+            throw new DatabaseException("cannot determine version", e);
+        }
+        for (int i = 0; i < version.length; i++) {
+            version[i] = 0;
+            if (parts.length > i) {
+                try {
+                    version[i] = Integer.parseInt(parts[i]);
+                } catch (NumberFormatException e) {
+                    // Nothing to do here
+                }
+            }
+        }
+        return version;
+    }
+
+    /**
      * Returns the database user being used. This is a string in the
      * form "user@host", where the host name is the name of the
      * connecting host.
