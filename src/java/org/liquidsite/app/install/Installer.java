@@ -107,8 +107,8 @@ public class Installer {
                                          "UPDATE_LIQUIDSITE_TABLES_0.10.sql"));
         updaters.add(new DatabaseUpdater("0.10", "0.10.1"));
         updaters.add(new DatabaseUpdater("0.10.1",
-                                         "0.11",
-                                         "UPDATE_LIQUIDSITE_TABLES_0.11.sql"));
+                                         "1.0.0",
+                                         "UPDATE_LIQUIDSITE_TABLES_1.0.sql"));
     }
 
     /**

@@ -1,4 +1,4 @@
--- Updates Liquid Site Tables to version 0.11 (from 0.10.1)
+-- Updates Liquid Site Tables to version 1.0 (from 0.10.1)
 
 -- Change all text columns to binary
 ALTER TABLE `LS_CONFIGURATION`

@@ -1,4 +1,4 @@
-Liquid Site 0.12:
+Liquid Site 1.1:
 =================
 * BUG: cached permission lists may have wrong content manager
 * BUG: failure to find site should either display default 404
