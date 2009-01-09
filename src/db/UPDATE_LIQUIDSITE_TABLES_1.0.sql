@@ -99,7 +99,7 @@ ALTER TABLE `LS_LOCK`
     MODIFY `USER` VARCHAR(30) CHARACTER SET utf8 NOT NULL;
 
 -- Set correct UTF-8 character set for database
-ALTER DATABASE DEFAULT CHARACTER SET utf8
+ALTER DATABASE DEFAULT CHARACTER SET utf8;
 
 -- Change content online and offline to allow NULL values
 ALTER TABLE `LS_CONTENT`
