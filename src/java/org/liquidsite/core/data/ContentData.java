@@ -72,13 +72,13 @@ public class ContentData extends AbstractData {
      * The online parameter.
      */
     public static final Parameter ONLINE =
-        new DateParameter(ContentData.class, "ONLINE", new Date(0));
+        new DateParameter(ContentData.class, "ONLINE", null);
 
     /**
      * The offline parameter.
      */
     public static final Parameter OFFLINE =
-        new DateParameter(ContentData.class, "OFFLINE", new Date(0));
+        new DateParameter(ContentData.class, "OFFLINE", null);
 
     /**
      * The modified parameter.

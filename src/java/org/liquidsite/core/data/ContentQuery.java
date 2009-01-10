@@ -356,8 +356,8 @@ public class ContentQuery {
         }
         sql.append(") > 0");
         if (online) {
-            sql.append(" AND c.ONLINE > '1970-01-01' AND c.ONLINE < NOW()");
-            sql.append(" AND (c.OFFLINE < '1970-01-02' OR c.OFFLINE > NOW())");
+            sql.append(" AND c.ONLINE IS NOT NULL AND c.ONLINE < NOW()");
+            sql.append(" AND (c.OFFLINE IS NULL OR c.OFFLINE > NOW())");
         }
         iter = attributeValues.keySet().iterator();
         while (iter.hasNext()) {
