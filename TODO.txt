@@ -1,3 +1,5 @@
+* BUG: inside <pre> tags, HTML < > and & are not escaped properly
+
 Liquid Site 1.1:
 =================
 * BUG: cached permission lists may have wrong content manager
