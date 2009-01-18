@@ -1,4 +1,6 @@
 * BUG: inside <pre> tags, HTML < > and & are not escaped properly
+* Section field descriptions might contain HTML, so shouldn't be
+  escaped as was introduced in 1.0
 
 Liquid Site 1.1:
 =================
