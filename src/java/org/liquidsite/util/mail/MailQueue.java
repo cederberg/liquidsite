@@ -169,6 +169,7 @@ public class MailQueue {
         }
         if (from != null) {
             props.setProperty("mail.from", from);
+            props.setProperty("mail.smtp.from", from);
         }
         props.setProperty("mail.smtp.connectiontimeout", "60000");
         props.setProperty("mail.smtp.timeout", "60000");
