@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -84,6 +87,11 @@ public class MailQueue {
         "If you are not the intended recipient of this message, please\n" +
         "forward it to abuse@liquidsite.net for investigation. Be sure to\n" +
         "include the whole message, including the following lines.\n";
+
+    /**
+     * The email address regular expression.
+     */
+    private static final Pattern ADDRESS_RE = Pattern.compile("<.+>");
 
     /**
      * The one and only mail queue instance.
@@ -158,6 +166,7 @@ public class MailQueue {
      */
     public void initialize(String host, String user, String from) {
         Properties  props = new Properties();
+        Matcher     m;
 
         props.setProperty("mail.transport.protocol", "smtp");
         if (host == null) {
@@ -169,6 +178,10 @@ public class MailQueue {
         }
         if (from != null) {
             props.setProperty("mail.from", from);
+            m = ADDRESS_RE.matcher(from);
+            if (m.find()) {
+                from = m.group();
+            }
             props.setProperty("mail.smtp.from", from);
         }
         props.setProperty("mail.smtp.connectiontimeout", "60000");
