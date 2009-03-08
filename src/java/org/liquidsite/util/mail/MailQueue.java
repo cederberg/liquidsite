@@ -179,9 +179,7 @@ public class MailQueue {
         if (from != null) {
             props.setProperty("mail.from", from);
             m = ADDRESS_RE.matcher(from);
-            if (m.find()) {
-                from = m.group();
-            }
+            from = m.find() ? m.group() : "<" + from + ">";
             props.setProperty("mail.smtp.from", from);
         }
         props.setProperty("mail.smtp.connectiontimeout", "60000");
