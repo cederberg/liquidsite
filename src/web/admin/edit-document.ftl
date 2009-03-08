@@ -144,11 +144,11 @@
           <input type="hidden"
                  name="propertytype.${prop.id}" value="${prop.type}" />
   <#if prop.type == 1>
-            ${prop.description?html}<br/><br/>
+            ${prop.description}<br/><br/>
             <textarea tabindex="10" rows="6" cols="60"
                       name="property.${prop.id}">${data[prop.id]?html}</textarea>
   <#elseif prop.type == 2>
-            ${prop.description?html}<br/><br/>
+            ${prop.description}<br/><br/>
             <div id="property.${prop.id}.toolbar"></div>
             <textarea id="property.${prop.id}.editor"
                       tabindex="10" rows="25" cols="60"
@@ -157,7 +157,7 @@
             tagEditInitialize('property.${prop.id}');
             </script>
   <#elseif prop.type == 3>
-            ${prop.description?html}<br/><br/>
+            ${prop.description}<br/><br/>
             <div id="property.${prop.id}.toolbar"></div>
             <div id="property.${prop.id}.editor"></div>
             <script type="text/javascript">
