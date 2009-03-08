@@ -578,11 +578,13 @@ public class TaggedFormatter {
             result.append(m.group());
             pos = text.indexOf("</pre>", m.end());
             if (pos < 0) {
-                result.append(text.substring(m.end()));
+                str = text.substring(m.end());
+                result.append(PlainFormatter.escapeHtml(str));
                 result.append("</pre>");
                 pos = text.length();
             } else {
-                result.append(text.substring(m.end(), pos));
+                str = text.substring(m.end(), pos);
+                result.append(PlainFormatter.escapeHtml(str));
                 result.append("</pre>");
                 pos += 6;
             }
