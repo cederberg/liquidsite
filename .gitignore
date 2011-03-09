@@ -1,0 +1,6 @@
+/classes
+/doc
+/sql
+/lib/liquidsite-*.jar
+/liquidsite.war
+/liquidsite-*.tar.gz
