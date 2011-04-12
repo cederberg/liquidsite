@@ -110,6 +110,7 @@ public class Installer {
                                          "1.0.0",
                                          "UPDATE_LIQUIDSITE_TABLES_1.0.sql"));
         updaters.add(new DatabaseUpdater("1.0.0", "1.0.1"));
+        updaters.add(new DatabaseUpdater("1.0.1", "1.0.2"));
     }
 
     /**
