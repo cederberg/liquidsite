@@ -96,8 +96,11 @@ public class DefaultRequestProcessor extends RequestProcessor {
                                                 request.getPort(),
                                                 request.getPath());
             if (site == null) {
-                LOG.warning("failed to locate site for request: " +
-                            request);
+                LOG.warning("failed to locate site for request: " + request +
+                            " (protocol: " + request.getProtocol() +
+                            ", host: " + request.getHost() +
+                            ", port: " + request.getPort() +
+                            ", path: " + request.getPath() + ")");
                 return;
             }
             request.getEnvironment().setDomain(site.getDomain());
