@@ -295,9 +295,7 @@ public class AdminUtils {
                 } else if (str.charAt(i) == '"') {
                     buffer.append("\\\"");
                 } else if (str.charAt(i) == '<') {
-                    buffer.append("\\<");
-                } else if (str.charAt(i) == '>') {
-                    buffer.append("\\>");
+                    buffer.append("\\u003C");
                 } else {
                     buffer.append(str.charAt(i));
                 }
