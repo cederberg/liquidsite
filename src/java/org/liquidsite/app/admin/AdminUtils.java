@@ -278,26 +278,38 @@ public class AdminUtils {
      */
     public static String getScriptString(String str) {
         StringBuffer  buffer = new StringBuffer();
+        char          chr;
 
         if (str == null) {
             return "null";
         } else {
             buffer.append("'");
             for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) == '\\') {
+                chr = str.charAt(i);
+                if (chr == '\\') {
                     buffer.append("\\\\");
-                } else if (str.charAt(i) == '\n') {
+                } else if (chr == '\n') {
                     buffer.append("\\n");
-                } else if (str.charAt(i) == '\r') {
+                } else if (chr == '\r') {
                     buffer.append("\\r");
-                } else if (str.charAt(i) == '\'') {
+                } else if (chr == '\t') {
+                    buffer.append("\\t");
+                } else if (chr == '\'') {
                     buffer.append("\\'");
-                } else if (str.charAt(i) == '"') {
+                } else if (chr == '"') {
                     buffer.append("\\\"");
-                } else if (str.charAt(i) == '<') {
-                    buffer.append("\\u003C");
+                } else if (chr != '<' && 32 <= chr && chr < 127) {
+                    buffer.append(chr);
                 } else {
-                    buffer.append(str.charAt(i));
+                    buffer.append("\\u");
+                    if (chr <= 0x000F) {
+                        buffer.append("000");
+                    } else if (chr <= 0x00FF) {
+                        buffer.append("00");
+                    } else if (chr <= 0x0FFF) {
+                        buffer.append("0");
+                    }
+                    buffer.append(Integer.toHexString(chr).toUpperCase());
                 }
             }
             buffer.append("'");
@@ -315,21 +327,27 @@ public class AdminUtils {
      */
     public static String getXmlString(String str) {
         StringBuffer  buffer = new StringBuffer();
+        char          chr;
 
         if (str == null) {
             return "";
         } else {
             for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) == '<') {
+                chr = str.charAt(i);
+                if (chr == '<') {
                     buffer.append("&lt;");
-                } else if (str.charAt(i) == '>') {
+                } else if (chr == '>') {
                     buffer.append("&gt;");
-                } else if (str.charAt(i) == '&') {
+                } else if (chr == '&') {
                     buffer.append("&amp;");
-                } else if (str.charAt(i) == '"') {
+                } else if (chr == '"') {
                     buffer.append("&quot;");
+                } else if (32 <= chr && chr < 127) {
+                    buffer.append(chr);
                 } else {
-                    buffer.append(str.charAt(i));
+                    buffer.append("&#");
+                    buffer.append((int) chr);
+                    buffer.append(";");
                 }
             }
             return buffer.toString();
